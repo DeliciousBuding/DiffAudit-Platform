@@ -32,7 +32,8 @@
 ### 平台代码结构
 
 - `apps/web`: Next.js
-- `apps/api`: FastAPI stub
+- `apps/api-go`: active Go backend gateway
+- `apps/api`: legacy FastAPI stub
 - `packages/shared`: 共享 prompt 和契约
 
 ### 当前公网架构
@@ -41,7 +42,7 @@
   - nginx 入口
   - 反向代理到 `gz2`
 - `gz2`:
-  - 运行平台 Web 和 API
+  - 运行平台 Web 和 `apps/api-go`
 
 ### 当前访问控制
 
@@ -70,8 +71,8 @@
 ### 服务器当前职责
 
 - `hk` 只做域名入口和 nginx 反代
-- `gz2` 跑 `apps/web` 和 `apps/api`
-- FastAPI 不应直接暴露在公网入口上
+- `gz2` 跑 `apps/web` 和 `apps/api-go`
+- active backend 不应直接暴露在公网入口上
 
 ## 你的任务边界
 
@@ -96,13 +97,18 @@
    - `git status`
    - `npm --prefix apps/web run lint`
    - `npm --prefix apps/web run build`
-   - `uv run --directory apps/api pytest`
+   - `go -C apps/api-go test ./...`
 2. 再检查服务器：
    - `hk` nginx 配置
    - `gz2` 上两个 systemd 服务
 3. 做最短路径修复，不要做大重构
 4. 每次改动后本地验证
 5. 小步提交，提交后马上 push
+
+补充：
+
+- `apps/api-go` 是当前 active backend，部署、systemd 和联调默认都以它为准
+- `apps/api` 只在明确处理 legacy stub 时单独检查，不作为当前 release gate
 
 ## 你需要优先关注的文件
 
