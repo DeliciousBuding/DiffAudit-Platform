@@ -108,7 +108,7 @@
 
 | 字段 | 含义 |
 | --- | --- |
-| `key` | 合同键，等于 `<track>/<attack_family>/<target_key>` |
+| `contract_key` | 合同键，等于 `<track>/<attack_family>/<target_key>` |
 | `track` | `black-box` / `gray-box` / `white-box` |
 | `attack_family` | 方法族 |
 | `target_key` | 目标模型键 |
@@ -266,7 +266,10 @@
   "job_type": "recon_artifact_mainline",
   "contract_key": "black-box/recon/sd15-ddim",
   "workspace_name": "api-job-001",
-  "artifact_dir": "D:/.../score-artifacts"
+  "job_inputs": {
+    "artifact_dir": "D:/.../score-artifacts",
+    "method": "threshold"
+  }
 }
 ```
 
@@ -274,6 +277,7 @@
 
 - `contract_key` 必须进入提交体，避免第二条线接入后继续靠 `job_type` 猜语义
 - `job_type` 只描述执行入口，不描述攻击线
+- 合同项特有字段进入 `job_inputs`，不要继续把 gray-box / white-box 差异扩散成新的顶层键
 - 只允许白名单任务类型，不能把研究 CLI 暴露成通用远程执行器
 
 ### 最短消费路径
