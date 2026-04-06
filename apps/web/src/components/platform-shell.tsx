@@ -9,6 +9,14 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { navItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
 
+function GithubIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-current">
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.79 8.2 11.38.6.11.82-.25.82-.56 0-.28-.01-1.2-.01-2.19-3.34.73-4.04-1.42-4.04-1.42-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .11-.77.42-1.3.77-1.6-2.66-.3-5.45-1.33-5.45-5.94 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.55.12-3.22 0 0 1-.32 3.3 1.23A11.4 11.4 0 0 1 12 5.8c1.02 0 2.05.14 3.01.42 2.29-1.55 3.29-1.23 3.29-1.23.66 1.67.24 2.91.12 3.22.77.84 1.24 1.91 1.24 3.22 0 4.62-2.8 5.63-5.47 5.93.43.38.81 1.11.81 2.23 0 1.61-.01 2.9-.01 3.29 0 .31.21.68.82.56A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z" />
+    </svg>
+  );
+}
+
 export function PlatformShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const current = findActiveNavItem(pathname);
@@ -28,7 +36,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
                     DiffAudit
                   </h1>
                   <span className="inline-flex w-fit items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
-                    Preview
+                    Private Preview
                   </span>
                 </div>
               </div>
@@ -71,15 +79,15 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
 
             <div className="mt-auto flex items-center justify-between gap-3">
               <StatusBadge tone="success">Online</StatusBadge>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <a
                   href="https://github.com/DeliciousBuding/DiffAudit-Platform"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white/55 text-[11px] font-semibold text-muted-foreground transition hover:-translate-y-px hover:text-foreground dark:bg-white/5"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-all duration-150 hover:-translate-y-px hover:bg-white/60 hover:text-foreground dark:hover:bg-white/10"
                   title="GitHub"
                 >
-                  GH
+                  <GithubIcon />
                 </a>
                 <ThemeToggle />
               </div>
@@ -109,12 +117,9 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
               <div className="mono text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/80">
                 DiffAudit / {current.shortLabel}
               </div>
-              <div className="mt-2 text-sm text-muted-foreground">{current.subtitle}</div>
+              <div className="mt-2 text-sm text-muted-foreground">面向审阅者的扩散模型隐私审计体验预览</div>
             </div>
             <div className="flex items-center gap-2">
-              <StatusBadge tone="primary">Recon</StatusBadge>
-              <StatusBadge tone="warning">Shared Access</StatusBadge>
-              <ThemeToggle />
               <LogoutButton />
             </div>
           </div>

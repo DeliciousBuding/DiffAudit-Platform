@@ -14,10 +14,10 @@ export default function BatchPage() {
     <div className="space-y-6">
       <PageHeader
         title="批量检测"
-        description="第二阶段会把单图输入扩展到批量作业和任务队列。第一版先预留列表和状态视图。"
+        description="批量页展示未来如何把多张图像和成组任务纳入统一的审计视图，让规模化评估也保持清晰的浏览体验。"
       />
 
-      <SectionCard eyebrow="Queue" title="任务队列">
+      <SectionCard eyebrow="Preview queue" title="批量任务视图">
         <div className="space-y-3">
           {queue.map((item) => (
             <div
@@ -26,7 +26,7 @@ export default function BatchPage() {
             >
               <div>
                 <div className="mono text-xs text-foreground">{item.name}</div>
-                <div className="mt-1 text-xs text-muted-foreground">batch placeholder job</div>
+                <div className="mt-1 text-xs text-muted-foreground">演示用批量任务条目</div>
               </div>
               <StatusBadge tone="success">{item.status}</StatusBadge>
             </div>
@@ -35,17 +35,17 @@ export default function BatchPage() {
       </SectionCard>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <SectionCard eyebrow="Planned inputs" title="后续输入扩展">
+        <SectionCard eyebrow="Value" title="批量体验会带来什么">
           <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>多图批量上传</li>
-            <li>队列级状态轮询</li>
-            <li>失败任务重试与日志追踪</li>
+            <li>在一个视图里组织多张图像的审计任务</li>
+            <li>更适合比较同批次结果与状态变化</li>
+            <li>帮助研究团队和审阅者快速浏览整体进度</li>
           </ul>
         </SectionCard>
 
-        <SectionCard eyebrow="Delivery note" title="当前阶段">
+        <SectionCard eyebrow="Direction" title="接下来会继续完善">
           <p className="text-sm leading-7 text-muted-foreground">
-            当前页面只承接队列样式和状态结构，不引入新的后台行为。等任务执行链路稳定后，再接入真实批量作业。
+            当前版本先展示批量任务的组织方式。随着更多实际任务接入，这里会继续补充更完整的状态、结果和筛选能力。
           </p>
         </SectionCard>
       </div>

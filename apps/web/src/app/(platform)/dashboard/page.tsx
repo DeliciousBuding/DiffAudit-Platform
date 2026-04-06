@@ -4,18 +4,18 @@ import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 
 const stats = [
-  { label: "Models Ready", value: "3", sub: "当前已对齐的模型配置", iconLabel: "MD", tone: "primary" as const },
-  { label: "Best Recon Scale", value: "25", sub: "公开子集上的最强证据点", iconLabel: "SC", tone: "warning" as const },
-  { label: "Best AUC", value: "0.768", sub: "当前摘要里记录的最佳结果", iconLabel: "AU", tone: "info" as const },
-  { label: "Platform Mode", value: "Stub", sub: "前端和接口壳已连通", iconLabel: "ST", tone: "success" as const },
+  { label: "体验页面", value: "6", sub: "覆盖审计、报告、指南与批量视图", iconLabel: "UI", tone: "primary" as const },
+  { label: "重点路径", value: "Recon", sub: "当前展示围绕成熟黑盒审计路线展开", iconLabel: "RC", tone: "warning" as const },
+  { label: "报告视图", value: "Ready", sub: "支持以结果卡片与摘要方式展示结论", iconLabel: "RP", tone: "info" as const },
+  { label: "访问状态", value: "Private", sub: "采用共享凭据进行受控预览", iconLabel: "AC", tone: "success" as const },
 ];
 
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="平台状态总览"
-        description="当前页面聚合第一版平台壳的运行状态、研究路线摘要和接入方向，作为公网审阅入口的总控视图。"
+        title="平台体验总览"
+        description="这一页用于帮助审阅者快速了解 DiffAudit 当前可以展示的能力、典型场景，以及整个平台的整体体验方向。"
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -26,34 +26,34 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.25fr_0.95fr]">
         <SectionCard
-          eyebrow="Primary Route"
-          title="当前最强黑盒证据"
-          description="当前研究主线的最强公开子集证据来自 Stable Diffusion + DDIM 的 public-25 step10。第一版平台应该围绕这条路径先完成产品化接入。"
+          eyebrow="Highlighted experience"
+          title="聚焦单一路线，降低理解成本"
+          description="当前展示版本聚焦最成熟的一条扩散模型审计路线，让审阅者先看清楚输入、结果和报告结构，再逐步扩展更多方法。"
         >
           <div className="flex flex-wrap gap-2">
             <StatusBadge tone="primary">Stable Diffusion 1.5</StatusBadge>
             <StatusBadge tone="info">DDIM</StatusBadge>
-            <StatusBadge tone="warning">public-25</StatusBadge>
+            <StatusBadge tone="warning">Membership Audit</StatusBadge>
           </div>
         </SectionCard>
 
         <SectionCard
-          eyebrow="Runtime"
-          title="系统状态"
-          description="前端结构已切到新壳，后端接口仍保持 stub。研究仓库 CLI 接入和真实结果回填仍是后续工作。"
+          eyebrow="What reviewers see"
+          title="体验重点"
+          description="平台当前强调统一的任务入口、清晰的结果呈现和便于展示的报告结构，帮助外部审阅者快速抓住重点。"
         >
           <div className="space-y-3 text-sm leading-6 text-muted-foreground">
             <div className="flex items-center justify-between rounded-2xl border border-border bg-white/45 px-4 py-3 dark:bg-white/5">
-              <span>Public Web Shell</span>
+              <span>统一审计入口</span>
               <StatusBadge tone="success">Ready</StatusBadge>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-border bg-white/45 px-4 py-3 dark:bg-white/5">
-              <span>FastAPI Stub</span>
-              <StatusBadge tone="info">Connected</StatusBadge>
+              <span>结果与报告展示</span>
+              <StatusBadge tone="info">Ready</StatusBadge>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-border bg-white/45 px-4 py-3 dark:bg-white/5">
-              <span>Research CLI Bridge</span>
-              <StatusBadge tone="warning">Pending</StatusBadge>
+              <span>批量任务视图</span>
+              <StatusBadge tone="warning">Preview</StatusBadge>
             </div>
           </div>
         </SectionCard>
@@ -61,30 +61,30 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard
-          eyebrow="Delivery Focus"
-          title="第一版交付边界"
-          description="保持平台仓库薄壳，不把研究代码直接搬进来。先稳定任务形状、会话保护、展示层和对研究仓库的调用边界。"
+          eyebrow="Designed for review"
+          title="为什么先做这个版本"
+          description="相比直接暴露实验脚本，这一版更适合演示、交流和审阅。它把复杂的研究流程整理成更稳定、可浏览、可沟通的产品体验。"
         >
           <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>统一前端入口、结果页和任务状态页</li>
-            <li>通过代理层统一保护 `/api/v1/*`</li>
-            <li>后续只通过明确契约调用研究仓库</li>
+            <li>用一致的页面结构降低理解门槛</li>
+            <li>让结果说明和报告展示更适合面向外部沟通</li>
+            <li>为后续扩展更多审计方式预留清晰空间</li>
           </ul>
         </SectionCard>
 
         <SectionCard
-          eyebrow="Next Phase"
-          title="后续接入方向"
-          description="平台下一阶段应该优先把 audit job 创建、任务轮询和结果读取打通，再补真实上传、批量输入和 artifact 追踪。"
+          eyebrow="What comes next"
+          title="下一步会继续完善的方向"
+          description="在统一体验骨架确定后，后续会继续丰富数据接入、任务执行联动与更完整的结果内容，让展示层和实际审计过程进一步靠拢。"
         >
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-border bg-white/45 p-4 dark:bg-white/5">
-              <div className="mono text-[11px] uppercase tracking-[0.14em] text-primary/80">Step 1</div>
-              <div className="mt-2 text-sm font-semibold">统一任务创建</div>
+              <div className="mono text-[11px] uppercase tracking-[0.14em] text-primary/80">Experience</div>
+              <div className="mt-2 text-sm font-semibold">更完整的任务与结果流转</div>
             </div>
             <div className="rounded-2xl border border-border bg-white/45 p-4 dark:bg-white/5">
-              <div className="mono text-[11px] uppercase tracking-[0.14em] text-primary/80">Step 2</div>
-              <div className="mt-2 text-sm font-semibold">结果与 artifact 回填</div>
+              <div className="mono text-[11px] uppercase tracking-[0.14em] text-primary/80">Presentation</div>
+              <div className="mt-2 text-sm font-semibold">更深入的报告与可视化内容</div>
             </div>
           </div>
         </SectionCard>

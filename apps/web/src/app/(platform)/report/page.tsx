@@ -8,52 +8,52 @@ export default function ReportPage() {
     <div className="space-y-6">
       <PageHeader
         title="合规报告"
-        description="报告页用于给出成员风险判断、实验上下文、模型信息和建议项。当前阶段先把结构搭出来，后续由后端真实结果驱动。"
+        description="报告页把一次审计的核心结论、模型上下文与建议内容整理成更适合阅读与交流的展示形式。"
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Verdict" value="Likely member" sub="当前占位风险结论" iconLabel="VR" tone="warning" />
-        <StatCard label="Confidence" value="0.82" sub="风险判断置信度" iconLabel="CF" tone="primary" />
-        <StatCard label="Method" value="Recon" sub="当前摘要对应的方法" iconLabel="MT" tone="info" />
-        <StatCard label="Target" value="SD1.5" sub="模型与调度配置" iconLabel="TG" tone="success" />
+        <StatCard label="Confidence" value="0.82" sub="用于快速感知判断强度" iconLabel="CF" tone="primary" />
+        <StatCard label="Method" value="Recon" sub="当前展示聚焦的审计方式" iconLabel="MT" tone="info" />
+        <StatCard label="Target" value="SD1.5" sub="本次结果对应的模型设置" iconLabel="TG" tone="success" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <SectionCard eyebrow="Risk summary" title="成员风险结论">
+        <SectionCard eyebrow="Summary" title="风险判断概览">
           <div className="flex flex-wrap gap-2">
             <StatusBadge tone="warning">Likely member</StatusBadge>
-            <StatusBadge tone="primary">Recon evidence</StatusBadge>
+            <StatusBadge tone="primary">Recon Assessment</StatusBadge>
           </div>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            当前页面用于承接未来后端返回的 verdict、置信度、运行上下文与 artifact 链接。这里先用静态占位结构保证页面语义和展示层完整。
+            在完整版本中，报告会把风险结论、判断依据和上下文信息整合到同一页，方便外部审阅者快速理解结果。
           </p>
         </SectionCard>
 
-        <SectionCard eyebrow="Artifacts" title="结果产物">
+        <SectionCard eyebrow="Contents" title="报告包含的内容">
           <div className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <div>summary.json</div>
-            <div>risk histogram</div>
-            <div>prompt / scheduler metadata</div>
-            <div>runtime logs</div>
+            <div>风险结果摘要</div>
+            <div>关键指标与可视化占位</div>
+            <div>模型与方法背景说明</div>
+            <div>可进一步追踪的上下文信息</div>
           </div>
         </SectionCard>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <SectionCard eyebrow="Model context" title="模型与实验上下文">
+        <SectionCard eyebrow="Context" title="模型与方法背景">
           <div className="space-y-3 text-sm leading-6 text-muted-foreground">
             <div>Stable Diffusion 1.5</div>
             <div>DDIM scheduler</div>
-            <div>public-25 route</div>
-            <div>recon membership inference</div>
+            <div>受控演示用评估路径</div>
+            <div>面向成员推断风险的结果展示</div>
           </div>
         </SectionCard>
 
-        <SectionCard eyebrow="Recommendations" title="建议项">
+        <SectionCard eyebrow="Interpretation" title="建议如何阅读结果">
           <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>结合 artifact 和 summary 检查证据强度是否稳定</li>
-            <li>在正式输出时补充非成员对照与阈值说明</li>
-            <li>保留运行元数据，便于结果追溯与二次验证</li>
+            <li>先看结论卡片，再结合置信度理解判断强弱</li>
+            <li>通过模型与方法背景模块理解结果适用范围</li>
+            <li>后续版本会继续补充更完整的对照与说明信息</li>
           </ul>
         </SectionCard>
       </div>
