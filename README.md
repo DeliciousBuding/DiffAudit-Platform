@@ -12,7 +12,8 @@ This repo is intentionally separate from the research repo:
 ```text
 apps/
   web/      Next.js frontend
-  api/      FastAPI backend
+  api/      legacy FastAPI stub
+  api-go/   Go backend gateway
 packages/
   shared/   shared contracts and copyable prompts
 docs/       architecture and integration docs
@@ -26,11 +27,11 @@ The first release is a platform shell, not the final product.
 It focuses on:
 
 - a stable frontend structure in Next.js
-- a small FastAPI backend
+- a small Go backend gateway
 - a minimal audit job contract
 - wiring to the existing research repo later
 
-The first API implementation is a stub and does not yet run the real audit job.
+The active platform backend now proxies to the research local API and does not run research jobs directly.
 
 ## Quick start
 
@@ -57,7 +58,6 @@ copy apps\web\.env.example apps\web\.env.local
 
 ```powershell
 cd D:\Code\DiffAudit\Platform
-uv sync --directory apps/api
 npm run dev:api
 ```
 
@@ -86,8 +86,8 @@ GitHub Actions checks:
 
 Phase 1:
 
-- backend exposes minimal audit job endpoints
-- backend later shells out to `D:\Code\DiffAudit\Project`
+- backend proxies minimal audit job endpoints
+- backend forwards to `D:\Code\DiffAudit\Project\tools\local-api-go`
 - frontend consumes job status and result payloads
 
 Phase 2:
