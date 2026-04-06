@@ -22,6 +22,19 @@ Use Next.js as the public edge:
 - Next.js route handlers under `/api/v1/*` and `/health` proxy to the internal `apps/api-go` service on `gz2`
 - `hk` nginx proxies all public traffic to the Next.js service only
 
+## Detectability Constraint
+
+This design creates a deliberate boundary:
+
+- `/health` and `/api/v1/*` are protected application routes, not anonymous
+  public probe routes
+- public monitoring should use a separate edge canary path such as `/login`
+- deep service health should be checked on the private origin, not from the
+  anonymous internet
+
+If Cloudflare challenge policy blocks the public canary too, the fix belongs to
+external edge configuration, not to the shared-login implementation itself.
+
 ## Runtime Variables
 
 - `DIFFAUDIT_SHARED_USERNAME`

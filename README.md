@@ -92,6 +92,17 @@ GitHub Actions checks:
 The legacy `apps/api` FastAPI stub is kept as a historical reference and is not
 the active release gate.
 
+## Deploy Handoff
+
+Deployment and runtime handoff notes live in `docs/public-runtime-handoff.md`.
+
+Use that document as the source of truth for:
+
+- active backend ownership
+- public edge probe expectations
+- private service probe commands
+- external dependencies that are not versioned in this repo
+
 ## Integration direction
 
 Phase 1:
@@ -114,4 +125,13 @@ The current public preview uses a shared temporary login implemented in Next.js:
 - proxy protection covers platform pages and the public `/api/v1/*` routes
 - public ingress should send all requests to the Next.js app
 - the private platform API behind that proxy is the `apps/api-go` gateway
+
+### Public Probe Boundary
+
+- `/health` and `/api/v1/*` are application routes behind the shared-login
+  boundary and should not be treated as anonymous public probe endpoints
+- the shortest stable public canary path is `GET /login`, but it still depends
+  on external Cloudflare challenge policy
+- the stable service probes are private checks on the origin machine, not
+  anonymous internet checks
 
