@@ -20,6 +20,14 @@ describe("platform api proxy routes", () => {
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/experiments/recon/best");
   });
 
+  it("proxies catalog requests to the backend", async () => {
+    const route = await import("./catalog/route");
+
+    await route.GET();
+
+    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/catalog");
+  });
+
   it("proxies audit job list requests to the backend", async () => {
     const route = await import("./audit/jobs/route");
 
