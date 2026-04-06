@@ -1,3 +1,24 @@
+# Platform 仓库协作指南
+
+这是 `D:\Code\DiffAudit\Platform` 的仓库级协作文件。
+
+先明确边界：
+
+- `Platform` 是平台仓库
+- 它承载平台前端、平台后端、部署与联调文档
+- 它不复制研究仓库大文件
+- 它不承载本机飞书运维规则
+
+对应角色：
+
+- 平台前端/部署 Agent
+- 平台后端 + 本地 API Agent
+- 总管理 Agent
+
+以下原有平台协作规则继续有效。
+
+---
+
 # DiffAudit Platform Agent Rules
 
 This file is the repo-local coordination contract for the shared `Platform` repository.
