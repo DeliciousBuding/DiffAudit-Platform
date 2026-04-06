@@ -1,6 +1,8 @@
 # DiffAudit Platform Agent Rules
 
-This file is the repo-local coordination contract for `D:\Code\DiffAudit\Platform`.
+This file is the repo-local coordination contract for the shared `Platform` repository.
+
+This repository is a multi-person and multi-agent collaboration workspace. Rules here are written for shared use, not for one local machine.
 
 ## Mandatory Working Model
 
@@ -26,7 +28,9 @@ If a task touches multiple ownership areas, split the work by branch unless the 
   - `codex/docs-*`
   - `codex/ops-*`
 - Recommended worktree location:
-  - `D:\Code\DiffAudit\Platform\.worktrees\<branch-name>`
+  - `.worktrees/<branch-name>`
+
+Use repository-relative paths in discussions, docs, and handoff notes unless an absolute path is strictly required for a machine-specific operation.
 
 ## Shared Root Worktree Rules
 
@@ -46,6 +50,8 @@ Not allowed in the root worktree:
 - exploratory edits
 - mixing unrelated frontend and backend changes
 
+If you need to implement anything beyond a trivial one-file doc fix, create a new worktree first.
+
 ## Merge Rules
 
 Before merging any worktree branch:
@@ -59,6 +65,11 @@ When resolving conflicts in shared frontend files:
 
 - preserve approved frontend structure and copy
 - preserve any active backend wiring or API behavior already validated on the integration branch
+
+When resolving conflicts in shared backend-facing files:
+
+- preserve validated API behavior from the integration branch
+- preserve approved frontend consumption contracts when they are already wired and tested
 
 ## Verification Rules
 
@@ -83,3 +94,5 @@ Deploy only from the merged integration result, never from an orphaned feature w
 ## Coordination Rule
 
 If another agent owns a live change stream in a directory, do not rewrite their files casually. Stop, inspect, and merge with intent.
+
+If a task requires touching another worker's owned area, document why and merge only the smallest necessary change.

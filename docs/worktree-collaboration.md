@@ -4,6 +4,8 @@
 
 Keep frontend, backend, and deployment work moving in parallel without stepping on each other.
 
+This document assumes `Platform` is a shared collaboration repo used by multiple people and multiple agents.
+
 ## Non-Negotiable Rules
 
 1. Do not develop directly in the shared repository root worktree unless the task is only inspection or coordination.
@@ -22,7 +24,9 @@ Keep frontend, backend, and deployment work moving in parallel without stepping 
   - backend: `codex/backend-*`
   - docs or ops: `codex/docs-*`, `codex/ops-*`
 - Recommended location:
-  - `D:\Code\DiffAudit\Platform\.worktrees\<branch-name>`
+  - `.worktrees/<branch-name>`
+
+Use repo-relative paths in specs, plans, handoff notes, and collaboration docs whenever possible.
 
 ### 1a. Treat the repo root as integration-only
 
@@ -35,6 +39,8 @@ Use it only for:
 - merge
 - integration verification
 - deployment preparation
+
+If a change requires editing product code under `apps/`, do that in a dedicated worktree, not here.
 
 ### 2. Keep ownership boundaries clear
 
@@ -50,6 +56,13 @@ If a frontend task needs backend changes, or a backend task needs frontend chang
 1. finish the owning side first
 2. merge it
 3. then implement the dependent side in a separate worktree
+
+Do not use absolute local machine paths in shared repo docs unless the operation is truly machine-specific. Prefer paths like:
+
+- `apps/web`
+- `apps/api-go`
+- `docs/worktree-collaboration.md`
+- `.worktrees/<branch-name>`
 
 ### 3. Merge back through the main working branch
 
@@ -88,6 +101,12 @@ If a merge conflict happens in shared UI pages or shared components:
 2. keep the latest approved frontend structure, copy, and interaction model from the feature branch
 3. re-run frontend verification after conflict resolution
 
+If a conflict mixes frontend UX work and backend transport work, resolve it in favor of:
+
+1. tested backend behavior
+2. latest approved frontend user-facing structure
+3. explicit re-verification after merge
+
 ## Coordination Rules
 
 1. If another worker owns a directory, do not rewrite their files casually.
@@ -115,3 +134,12 @@ Use this pattern unless there is a strong reason not to:
 4. Push feature branch
 5. Merge back into the integration branch
 6. Deploy from the merged result
+
+## Shared Repo Communication Rule
+
+When documenting progress for other collaborators:
+
+1. say which branch owns the change
+2. say which worktree owns the change
+3. use repo-relative file paths
+4. separate machine-specific deployment details from shared repository rules
