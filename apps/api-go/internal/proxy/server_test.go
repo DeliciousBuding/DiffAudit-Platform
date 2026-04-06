@@ -61,6 +61,28 @@ func TestModelsEndpointIsProxied(t *testing.T) {
 	}
 }
 
+func TestCatalogEndpointIsProxied(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/v1/catalog" {
+			t.Fatalf("unexpected path %s", request.URL.Path)
+		}
+		writeJSON(writer, http.StatusOK, []map[string]any{
+			{"contract_key": "black-box/recon/sd15-ddim"},
+		})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/catalog", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+}
+
 func TestBestReconEndpointIsProxied(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/api/v1/experiments/recon/best" {
@@ -90,6 +112,30 @@ func TestBestReconEndpointIsProxied(t *testing.T) {
 	}
 	if payload["workspace"] == nil {
 		t.Fatalf("expected workspace payload")
+	}
+}
+
+func TestWorkspaceSummaryEndpointIsProxied(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/v1/experiments/gray-box-pia-probe-001/summary" {
+			t.Fatalf("unexpected path %s", request.URL.Path)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"track":   "gray-box",
+			"method":  "pia",
+			"workspace": "gray-box-pia-probe-001",
+		})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/experiments/gray-box-pia-probe-001/summary", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
 	}
 }
 
@@ -128,6 +174,16 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 		if err := json.NewDecoder(request.Body).Decode(&payload); err != nil {
 			t.Fatalf("decode failed: %v", err)
 		}
+		if payload["contract_key"] != "black-box/recon/sd15-ddim" {
+			t.Fatalf("unexpected contract_key %v", payload["contract_key"])
+		}
+		jobInputs, ok := payload["job_inputs"].(map[string]any)
+		if !ok {
+			t.Fatalf("expected job_inputs object, got %T", payload["job_inputs"])
+		}
+		if jobInputs["artifact_dir"] != "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts" {
+			t.Fatalf("unexpected job_inputs payload %v", jobInputs)
+		}
 		if payload["workspace_name"] != "api-job-001" {
 			t.Fatalf("unexpected payload %v", payload)
 		}
@@ -142,8 +198,12 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
 		"job_type":       "recon_artifact_mainline",
+		"contract_key":   "black-box/recon/sd15-ddim",
 		"workspace_name": "api-job-001",
-		"artifact_dir":   "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+		"job_inputs": map[string]any{
+			"artifact_dir": "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+			"method":       "threshold",
+		},
 	})
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
@@ -190,8 +250,12 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
 		"job_type":       "recon_artifact_mainline",
+		"contract_key":   "black-box/recon/sd15-ddim",
 		"workspace_name": "api-job-001",
-		"artifact_dir":   "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+		"job_inputs": map[string]any{
+			"artifact_dir": "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+			"method":       "threshold",
+		},
 	})
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")

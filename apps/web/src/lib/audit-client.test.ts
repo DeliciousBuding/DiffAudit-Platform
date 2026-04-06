@@ -17,10 +17,13 @@ describe("audit client helpers", () => {
 
     expect(payload).toEqual({
       job_type: "recon_artifact_mainline",
+      contract_key: "black-box/recon/sd15-ddim",
       workspace_name: "audit-replay-001",
-      artifact_dir:
-        "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
-      method: "threshold",
+      job_inputs: {
+        artifact_dir:
+          "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+        method: "threshold",
+      },
     });
   });
 

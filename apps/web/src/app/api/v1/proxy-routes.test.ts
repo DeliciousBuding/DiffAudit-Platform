@@ -20,6 +20,18 @@ describe("platform api proxy routes", () => {
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/experiments/recon/best");
   });
 
+  it("proxies workspace summary requests to the backend", async () => {
+    const route = await import("./experiments/[workspace]/summary/route");
+
+    await route.GET(new Request("http://localhost"), {
+      params: Promise.resolve({ workspace: "gray-box-pia-probe-001" }),
+    });
+
+    expect(proxyToBackend).toHaveBeenCalledWith(
+      "/api/v1/experiments/gray-box-pia-probe-001/summary",
+    );
+  });
+
   it("proxies audit job list requests to the backend", async () => {
     const route = await import("./audit/jobs/route");
 
