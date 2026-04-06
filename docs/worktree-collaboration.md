@@ -10,6 +10,8 @@ Keep frontend, backend, and deployment work moving in parallel without stepping 
 2. Every implementation task must use its own git worktree and branch.
 3. One worktree owns one change stream. Do not mix unrelated frontend, backend, and infra changes in the same worktree.
 4. Before merging, the worker who made the change is responsible for local verification.
+5. Deployment must happen from the merged integration result, never from an unmerged feature worktree.
+6. If another worker is actively rewriting a subsystem, do not edit that subsystem without explicit coordination.
 
 ## Required Workflow
 
@@ -22,6 +24,18 @@ Keep frontend, backend, and deployment work moving in parallel without stepping 
 - Recommended location:
   - `D:\Code\DiffAudit\Platform\.worktrees\<branch-name>`
 
+### 1a. Treat the repo root as integration-only
+
+The root worktree is not a normal development workspace.
+
+Use it only for:
+
+- status inspection
+- review
+- merge
+- integration verification
+- deployment preparation
+
 ### 2. Keep ownership boundaries clear
 
 - `apps/web`: frontend owner
@@ -30,6 +44,12 @@ Keep frontend, backend, and deployment work moving in parallel without stepping 
 - `docs/`: doc or handoff owner
 
 If a task needs cross-cutting changes, split them by branch and merge in order instead of editing everything in one place.
+
+If a frontend task needs backend changes, or a backend task needs frontend changes, prefer:
+
+1. finish the owning side first
+2. merge it
+3. then implement the dependent side in a separate worktree
 
 ### 3. Merge back through the main working branch
 
@@ -60,6 +80,14 @@ npm --prefix apps/web run build
 
 Run the backend-specific checks required by the branch owner before merge.
 
+### Merge conflict rule
+
+If a merge conflict happens in shared UI pages or shared components:
+
+1. keep validated backend and API wiring from the integration branch
+2. keep the latest approved frontend structure, copy, and interaction model from the feature branch
+3. re-run frontend verification after conflict resolution
+
 ## Coordination Rules
 
 1. If another worker owns a directory, do not rewrite their files casually.
@@ -75,6 +103,7 @@ For deployment work:
 1. Merge the approved frontend or backend branch back into the integration branch first.
 2. Verify local build or tests.
 3. Sync production from the merged branch, not from an orphaned experimental worktree.
+4. If production needs a direct server-side edit, mirror the change back into git immediately or stop and document why not.
 
 ## Practical Default
 
