@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
+import { toEvidenceViewModel } from "@/lib/audit-client";
 import { fetchBestReconReport } from "@/lib/recon-report";
 
 const unavailableActions = [
@@ -89,33 +90,53 @@ export default async function ReportPage() {
     );
   }
 
-  const reportMetrics = [
-    { label: "AUC", value: report.aucLabel, sub: "headline metric", iconLabel: "AU", tone: "warning" as const },
-    { label: "ASR", value: report.asrLabel, sub: "attack success rate", iconLabel: "AR", tone: "primary" as const },
-    { label: "TPR @ 1% FPR", value: report.tprLabel, sub: "low-fpr sensitivity", iconLabel: "TP", tone: "success" as const },
-    { label: "运行模式", value: report.mode, sub: "best evidence mode", iconLabel: "MD", tone: "info" as const },
+  const evidence = toEvidenceViewModel(report);
+
+  const evidenceMetrics = [
+    {
+      label: "AUC",
+      value: evidence.metrics.aucLabel,
+      sub: "headline metric",
+      iconLabel: "AU",
+      tone: "warning" as const,
+    },
+    {
+      label: "ASR",
+      value: evidence.metrics.asrLabel,
+      sub: "attack success rate",
+      iconLabel: "AR",
+      tone: "primary" as const,
+    },
+    {
+      label: "TPR @ 1% FPR",
+      value: evidence.metrics.tprLabel,
+      sub: "low-fpr sensitivity",
+      iconLabel: "TP",
+      tone: "success" as const,
+    },
+    { label: "运行模式", value: evidence.executionMode, sub: "best evidence mode", iconLabel: "MD", tone: "info" as const },
   ];
 
   const evidenceSummary = [
     {
       title: "当前最佳 workspace",
-      detail: report.workspaceName,
+      detail: evidence.workspace.name,
     },
     {
       title: "后端 / 调度器",
-      detail: report.backendLabel,
+      detail: evidence.backendLabel,
     },
     {
       title: "报告来源",
-      detail: report.summaryPath,
+      detail: evidence.summaryPath,
     },
   ];
 
   const scopeDetails = [
-    { label: "Paper", value: report.paper },
-    { label: "Method", value: report.method },
-    { label: "Workspace Path", value: report.workspacePath },
-    { label: "Status", value: report.statusLabel },
+    { label: "Paper", value: evidence.context.paper },
+    { label: "Method", value: evidence.context.method },
+    { label: "Workspace Path", value: evidence.workspace.path },
+    { label: "Status", value: evidence.status.label },
   ];
 
   return (
@@ -127,16 +148,16 @@ export default async function ReportPage() {
 
       <SectionCard
         eyebrow="执行摘要"
-        title={`当前最佳 recon 证据来自 ${report.workspaceName}`}
+        title={`当前最佳 recon 证据来自 ${evidence.workspace.name}`}
         description="这页不再声称单张图像已经被审计，也不再引用演示态成员结论；它只陈述当前研究主线里最强的一份 recon 证据。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(36_95%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(36_70%_24%/0.45),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <StatusBadge tone={report.statusTone}>{report.statusLabel}</StatusBadge>
-              <StatusBadge tone="info">{report.paper}</StatusBadge>
-              <StatusBadge tone="primary">{report.backendLabel}</StatusBadge>
+              <StatusBadge tone={evidence.status.tone}>{evidence.status.label}</StatusBadge>
+              <StatusBadge tone="info">{evidence.context.paper}</StatusBadge>
+              <StatusBadge tone="primary">{evidence.backendLabel}</StatusBadge>
             </div>
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)] dark:bg-white/6">
@@ -150,15 +171,15 @@ export default async function ReportPage() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-            <SummaryTile label="Best workspace" value={report.workspaceName} sub={report.mode} />
-            <SummaryTile label="Backend stack" value={report.backendLabel} sub={report.paper} />
-            <SummaryTile label="Summary path" value="source of truth" sub={report.summaryPath} />
+            <SummaryTile label="Best workspace" value={evidence.workspace.name} sub={evidence.executionMode} />
+            <SummaryTile label="Backend stack" value={evidence.backendLabel} sub={evidence.context.paper} />
+            <SummaryTile label="Summary path" value="source of truth" sub={evidence.summaryPath} />
           </div>
         </div>
       </SectionCard>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {reportMetrics.map((metric) => (
+        {evidenceMetrics.map((metric) => (
           <StatCard key={metric.label} {...metric} />
         ))}
       </div>
