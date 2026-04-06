@@ -15,15 +15,21 @@ type runtimeConfig struct {
 	ResearchAPIBaseURL string
 }
 
+const (
+	defaultHost               = "127.0.0.1"
+	defaultPort               = "8000"
+	defaultResearchAPIBaseURL = "http://127.0.0.1:8765"
+)
+
 func parseConfig(args []string) (runtimeConfig, error) {
 	flagSet := flag.NewFlagSet("platform-api", flag.ContinueOnError)
 	flagSet.SetOutput(os.Stdout)
 
-	host := flagSet.String("host", "127.0.0.1", "listen host")
-	port := flagSet.String("port", "8780", "listen port")
+	host := flagSet.String("host", defaultHost, "listen host")
+	port := flagSet.String("port", defaultPort, "listen port")
 	researchAPIBaseURL := flagSet.String(
 		"research-api-base-url",
-		"http://127.0.0.1:8765",
+		defaultResearchAPIBaseURL,
 		"upstream local research api base url",
 	)
 	if err := flagSet.Parse(args); err != nil {

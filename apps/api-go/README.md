@@ -10,6 +10,21 @@ Default upstream:
 
 ## Run
 
+Start the local research control plane first:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Services\Local-API\run-local-api.ps1
+```
+
+Then start the platform gateway on its default port:
+
+```powershell
+cd apps/api-go
+go run ./cmd/platform-api
+```
+
+Equivalent explicit form:
+
 ```powershell
 cd apps/api-go
 go run ./cmd/platform-api --host 127.0.0.1 --port 8000 --research-api-base-url http://127.0.0.1:8765
