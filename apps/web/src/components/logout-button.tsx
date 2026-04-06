@@ -17,7 +17,7 @@ export function LogoutButton() {
     <button
       type="button"
       onClick={handleLogout}
-      className="rounded-full border border-[var(--border)] px-3 py-1 text-[11px] text-[var(--muted)] transition hover:border-[rgba(255,255,255,0.18)] hover:text-[var(--foreground)]"
+      className="inline-flex items-center justify-center rounded-xl border border-border bg-white/55 px-3.5 py-2 text-xs font-semibold text-muted-foreground transition hover:-translate-y-px hover:text-foreground dark:bg-white/5"
     >
       退出共享会话
     </button>

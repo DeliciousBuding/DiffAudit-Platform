@@ -37,38 +37,40 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
   }
 
   return (
-    <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+    <form className="space-y-5" onSubmit={handleSubmit}>
       <div className="space-y-2">
-        <label className="text-sm text-[var(--muted)]" htmlFor="username">
+        <label className="text-sm font-medium text-muted-foreground" htmlFor="username">
           共享账号
         </label>
         <input
           id="username"
-          className="w-full rounded-2xl border border-[var(--border)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-sm outline-none transition focus:border-[rgba(79,255,176,0.4)]"
+          className="w-full rounded-2xl border border-input bg-white/70 px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15 dark:bg-[hsl(220_13%_14%/0.88)]"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
           required
+          placeholder="diffaudit-review"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm text-[var(--muted)]" htmlFor="password">
+        <label className="text-sm font-medium text-muted-foreground" htmlFor="password">
           共享密码
         </label>
         <input
           id="password"
           type="password"
-          className="w-full rounded-2xl border border-[var(--border)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-sm outline-none transition focus:border-[rgba(79,255,176,0.4)]"
+          className="w-full rounded-2xl border border-input bg-white/70 px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15 dark:bg-[hsl(220_13%_14%/0.88)]"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="current-password"
           required
+          placeholder="DiffAuditTemp!2026"
         />
       </div>
 
       {error ? (
-        <div className="rounded-2xl border border-[rgba(255,77,109,0.3)] bg-[rgba(255,77,109,0.08)] px-4 py-3 text-sm text-[var(--danger)]">
+        <div className="rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
@@ -76,7 +78,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[#07110d] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-px hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? "验证中..." : "进入平台"}
       </button>

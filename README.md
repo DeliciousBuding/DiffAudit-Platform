@@ -73,6 +73,7 @@ npm run dev:api
 - Add new audit methods behind clear API contracts first.
 - Prefer stable wrappers over deep coupling to the research repo internals.
 - Keep the first production path focused on `Stable Diffusion + DDIM recon`.
+- Use dedicated git worktrees for implementation tasks. See `docs/worktree-collaboration.md`.
 
 ## CI
 
