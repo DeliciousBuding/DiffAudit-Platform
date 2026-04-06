@@ -10,11 +10,7 @@ Default upstream:
 
 ## Run
 
-Start the local research control plane first:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Services\Local-API\run-local-api.ps1
-```
+Start the local research control plane first.
 
 Then start the platform gateway on its default port:
 
