@@ -10,8 +10,8 @@
     "dev:web": "npm --prefix apps/web run dev",
     "build:web": "npm --prefix apps/web run build",
     "lint:web": "npm --prefix apps/web run lint",
-    "dev:api": "go run ./apps/api-go/cmd/platform-api --host 0.0.0.0 --port 8000",
-    "test:api": "go test ./apps/api-go/...",
+    "dev:api": "go -C ./apps/api-go run ./cmd/platform-api --host 0.0.0.0 --port 8780",
+    "test:api": "go -C ./apps/api-go test ./...",
     "lint:api": "gofmt -w apps/api-go",
     "format:api": "gofmt -w apps/api-go"
   }

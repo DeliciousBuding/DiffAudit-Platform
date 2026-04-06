@@ -10,8 +10,8 @@ func TestParseConfigUsesDefaults(t *testing.T) {
 	if config.Host != defaultHost {
 		t.Fatalf("expected default host %s, got %s", defaultHost, config.Host)
 	}
-	if config.Port != defaultPort {
-		t.Fatalf("expected default port %s, got %s", defaultPort, config.Port)
+	if config.Port != "8780" {
+		t.Fatalf("expected default port 8780, got %s", config.Port)
 	}
 	if config.ResearchAPIBaseURL != defaultResearchAPIBaseURL {
 		t.Fatalf("expected default upstream url %s, got %s", defaultResearchAPIBaseURL, config.ResearchAPIBaseURL)

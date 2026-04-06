@@ -27,11 +27,13 @@ Equivalent explicit form:
 ```powershell
 powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Platform\apps\api-go\run-platform-api.ps1 `
   -ListenHost 127.0.0.1 `
-  -ListenPort 8000 `
+  -ListenPort 8780 `
   -ResearchAPIBaseURL http://127.0.0.1:8765
 ```
 
-If `8000` is already occupied, the script exits with a clear warning instead of silently fighting another local service.
+Default listen port is `8780` so the gateway does not collide with the unrelated local service already occupying `8000` on this workstation.
+
+If `8780` is already occupied too, the script exits with a clear warning instead of silently fighting another local service.
 
 ## Covered Routes
 

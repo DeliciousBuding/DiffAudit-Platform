@@ -1,6 +1,6 @@
 param(
     [string]$ListenHost = "127.0.0.1",
-    [string]$ListenPort = "8000",
+    [string]$ListenPort = "8780",
     [string]$ResearchAPIBaseURL = "http://127.0.0.1:8765"
 )
 
