@@ -1,10 +1,11 @@
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system";
+export type EffectiveTheme = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "diffaudit-theme";
-export const DEFAULT_THEME: ThemeMode = "light";
+export const DEFAULT_THEME: ThemeMode = "system";
 
 export function isThemeMode(value: unknown): value is ThemeMode {
-  return value === "light" || value === "dark";
+  return value === "light" || value === "dark" || value === "system";
 }
 
 export function resolveThemeMode(
@@ -14,8 +15,27 @@ export function resolveThemeMode(
   return isThemeMode(value) ? value : fallback;
 }
 
-export function themeClassName(theme: ThemeMode): string {
-  return theme === "dark" ? "dark" : "";
+export function getEffectiveTheme(
+  mode: ThemeMode,
+  prefersDark: boolean,
+): EffectiveTheme {
+  if (mode === "system") {
+    return prefersDark ? "dark" : "light";
+  }
+
+  return mode;
+}
+
+export function getThemeLabel(mode: ThemeMode): string {
+  if (mode === "light") {
+    return "浅色";
+  }
+
+  if (mode === "dark") {
+    return "深色";
+  }
+
+  return "跟随系统";
 }
 
 export function getThemeBootScript(
@@ -24,16 +44,33 @@ export function getThemeBootScript(
 ): string {
   return `(() => {
     const root = document.documentElement;
-    const apply = (theme) => {
-      root.dataset.theme = theme;
-      root.style.colorScheme = theme;
-      root.classList.toggle("dark", theme === "dark");
+    const systemQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const resolveEffectiveTheme = (themeMode) => {
+      if (themeMode === "system") {
+        return systemQuery.matches ? "dark" : "light";
+      }
+
+      return themeMode === "dark" ? "dark" : "light";
+    };
+    const apply = (themeMode) => {
+      const effectiveTheme = resolveEffectiveTheme(themeMode);
+      root.dataset.themeMode = themeMode;
+      root.dataset.theme = effectiveTheme;
+      root.style.colorScheme = effectiveTheme;
+      root.classList.toggle("dark", effectiveTheme === "dark");
     };
 
     try {
       const stored = window.localStorage.getItem("${storageKey}");
-      const theme = stored === "light" || stored === "dark" ? stored : "${fallback}";
-      apply(theme);
+      const themeMode = stored === "light" || stored === "dark" || stored === "system"
+        ? stored
+        : "${fallback}";
+      apply(themeMode);
+      systemQuery.addEventListener("change", () => {
+        if ((root.dataset.themeMode || "${fallback}") === "system") {
+          apply("system");
+        }
+      });
     } catch (error) {
       apply("${fallback}");
     }

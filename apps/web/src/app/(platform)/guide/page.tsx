@@ -2,10 +2,10 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 
 const steps = [
-  "前端调用 FastAPI `/api/v1/audit/jobs` 创建任务",
-  "后端后续会把任务转发到研究仓库 CLI",
-  "研究仓库输出 `summary.json` 和 artifact 路径",
-  "平台读取结果并展示成员风险结论"
+  "上传目标图像并确认本次审计任务的输入内容",
+  "选择当前适合演示的模型与审计路径",
+  "查看平台生成的结果摘要、结论与说明结构",
+  "在报告页中继续浏览风险判断与上下文信息"
 ];
 
 export default function GuidePage() {
@@ -13,10 +13,10 @@ export default function GuidePage() {
     <div className="space-y-6">
       <PageHeader
         title="接入指南"
-        description="第一版平台先面向最小闭环：前端调用 FastAPI，FastAPI 再调用研究仓库并读取标准 summary 输出。"
+        description="这一页帮助审阅者快速理解平台如何组织一次审计体验，以及每个页面在整体流程中的角色。"
       />
 
-      <SectionCard eyebrow="Pipeline" title="任务链路">
+      <SectionCard eyebrow="Journey" title="审计体验路径">
         <div className="space-y-4">
           {steps.map((step, index) => (
             <div key={step} className="flex gap-4 rounded-3xl border border-border bg-white/45 p-4 dark:bg-white/5">
@@ -31,27 +31,27 @@ export default function GuidePage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard
-          eyebrow="Boundary"
-          title="平台仓库职责"
-          description="平台负责产品壳、API 契约、共享登录和结果展示，不复制算法实现。"
+          eyebrow="For reviewers"
+          title="你会在这里看到什么"
+          description="平台把复杂的研究过程整理成更容易沟通的浏览体验，让结果页、报告页和说明页更适合面向外部展示。"
         >
           <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>稳定页面入口与结果摘要结构</li>
-            <li>统一保护受控 API 路由</li>
-            <li>保持研究代码在独立仓库内演进</li>
+            <li>统一的页面入口与结果浏览路径</li>
+            <li>更清晰的报告卡片和结论展示结构</li>
+            <li>便于后续扩展的统一产品骨架</li>
           </ul>
         </SectionCard>
 
         <SectionCard
-          eyebrow="Artifacts"
-          title="预期输出"
-          description="研究仓库后续至少应返回统一任务状态、summary 路径、artifact 列表和成员风险结论。"
+          eyebrow="Outputs"
+          title="平台展示的核心信息"
+          description="在完整体验中，平台会围绕风险判断、方法说明、模型上下文和结果摘要，持续丰富页面内容。"
         >
           <div className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <div>summary.json</div>
-            <div>artifact paths</div>
-            <div>risk score and verdict</div>
-            <div>runtime logs</div>
+            <div>风险分数与判断结果</div>
+            <div>方法与模型的核心背景说明</div>
+            <div>便于展示的报告卡片与摘要模块</div>
+            <div>可继续扩展的结果上下文信息</div>
           </div>
         </SectionCard>
       </div>
