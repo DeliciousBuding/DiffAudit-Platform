@@ -42,12 +42,24 @@ describe("ReportPage", () => {
 
     const markup = renderToStaticMarkup(await ReportPage());
 
-    expect(markup).toContain("best evidence workspace");
+    expect(markup).toContain(
+      "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
+    );
     expect(markup).toContain("0.849");
     expect(markup).toContain("0.510");
     expect(markup).toContain("1.000");
     expect(markup).toContain("stable_diffusion / ddim");
-    expect(markup).toContain("source of truth");
+    expect(markup).toContain(
+      "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30\\summary.json",
+    );
+    expect(markup).not.toContain("best evidence workspace");
+    expect(markup).not.toContain("source of truth");
+    expect(markup).not.toContain("研究实验");
+    expect(markup).not.toContain("平台前端");
+    expect(markup).not.toContain("飞书");
+    expect(markup).not.toContain("blackbox-status");
+    expect(markup).not.toContain("mock");
+    expect(markup).not.toContain("上层联调");
   });
 
   it("shows a clear unavailable state when the backend is unreachable", async () => {
@@ -57,5 +69,8 @@ describe("ReportPage", () => {
 
     expect(markup).toContain("最佳 recon 证据暂不可用");
     expect(markup).toContain("未能从平台后端读取当前最佳实验摘要");
+    expect(markup).not.toContain("8780");
+    expect(markup).not.toContain("8765");
+    expect(markup).not.toContain("/api/v1/experiments/recon/best");
   });
 });
