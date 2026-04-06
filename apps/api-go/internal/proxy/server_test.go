@@ -67,7 +67,7 @@ func TestBestReconEndpointIsProxied(t *testing.T) {
 			t.Fatalf("unexpected path %s", request.URL.Path)
 		}
 		writeJSON(writer, http.StatusOK, map[string]any{
-			"workspace": "D:/Code/DiffAudit/Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+			"workspace": "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
 			"metrics": map[string]any{
 				"auc": 0.866,
 			},
@@ -143,7 +143,7 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 	body, _ := json.Marshal(map[string]any{
 		"job_type":       "recon_artifact_mainline",
 		"workspace_name": "api-job-001",
-		"artifact_dir":   "D:/artifacts/recon-scores",
+		"artifact_dir":   "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
 	})
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
@@ -191,7 +191,7 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 	body, _ := json.Marshal(map[string]any{
 		"job_type":       "recon_artifact_mainline",
 		"workspace_name": "api-job-001",
-		"artifact_dir":   "D:/artifacts/recon-scores",
+		"artifact_dir":   "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
 	})
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")

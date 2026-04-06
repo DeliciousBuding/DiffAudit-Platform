@@ -10,7 +10,7 @@
 维护并推进公网平台：
 
 - 域名：`https://diffaudit.vectorcontrol.tech`
-- 代码仓库：`D:\Code\DiffAudit\Platform`
+- 代码仓库：当前仓库 `./`
 - GitHub：`https://github.com/DeliciousBuding/DiffAudit-Platform`
 
 你只负责：
@@ -23,7 +23,7 @@
 
 你不要负责：
 
-- `D:\Code\DiffAudit\Project` 里的算法复现
+- sibling `Project` 仓库里的算法复现
 - GPU 实验
 - 真实模型训练或推理
 
@@ -56,16 +56,16 @@
 
 ### 当前共享登录信息
 
-- 用户名：`diffaudit-review`
-- 密码：`DiffAuditTemp!2026`
+- 用户名：从部署环境变量或安全配置中读取
+- 密码：从部署环境变量或安全配置中读取
 
 ### 当前关键实现文件
 
-- `D:\Code\DiffAudit\Platform\apps\web\src\app\login\page.tsx`
-- `D:\Code\DiffAudit\Platform\apps\web\src\app\api\auth\login\route.ts`
-- `D:\Code\DiffAudit\Platform\apps\web\src\app\api\auth\logout\route.ts`
-- `D:\Code\DiffAudit\Platform\apps\web\src\lib\auth.ts`
-- `D:\Code\DiffAudit\Platform\apps\web\src\proxy.ts`
+- `apps/web/src/app/login/page.tsx`
+- `apps/web/src/app/api/auth/login/route.ts`
+- `apps/web/src/app/api/auth/logout/route.ts`
+- `apps/web/src/lib/auth.ts`
+- `apps/web/src/proxy.ts`
 
 ### 服务器当前职责
 
@@ -85,7 +85,7 @@
 
 你不要做：
 
-1. 不要改 `D:\Code\DiffAudit\Project` 的攻击算法
+1. 不要改 sibling `Project` 仓库的攻击算法
 2. 不要申请 GPU 跑模型
 3. 不要把 portal 的复杂用户体系接进来
 4. 不要把真实数据集或模型权重塞进平台仓库
@@ -106,9 +106,9 @@
 
 ## 你需要优先关注的文件
 
-- `D:\Code\DiffAudit\Platform\README.md`
-- `D:\Code\DiffAudit\Platform\docs\architecture.md`
-- `D:\Code\DiffAudit\Platform\docs\superpowers\specs\2026-04-06-temporary-shared-login-design.md`
+- `README.md`
+- `docs/architecture.md`
+- `docs/superpowers/specs/2026-04-06-temporary-shared-login-design.md`
 
 ## 完成标准
 

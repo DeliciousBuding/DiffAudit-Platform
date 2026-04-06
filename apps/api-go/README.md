@@ -2,9 +2,7 @@
 
 Primary backend gateway for the platform shell.
 
-This service proxies platform API calls to the local research control plane in:
-
-- `D:\Code\DiffAudit\Services\Local-API`
+This service proxies platform API calls to the local research control plane service.
 
 Default upstream:
 
@@ -13,7 +11,7 @@ Default upstream:
 ## Run
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go run ./cmd/platform-api --host 127.0.0.1 --port 8000 --research-api-base-url http://127.0.0.1:8765
 ```
 
