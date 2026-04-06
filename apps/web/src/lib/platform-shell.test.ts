@@ -4,6 +4,16 @@ import { navItems } from "./navigation";
 import { findActiveNavItem } from "./platform-shell";
 
 describe("platform shell helpers", () => {
+  it("exposes icon metadata for every navigation item", () => {
+    expect(navItems.map((item) => item.icon)).toEqual([
+      "image",
+      "dashboard",
+      "stack",
+      "report",
+      "guide",
+    ]);
+  });
+
   it("returns the matching nav item for an exact route", () => {
     expect(findActiveNavItem("/audit")).toEqual(navItems[0]);
     expect(findActiveNavItem("/dashboard")).toEqual(navItems[1]);
