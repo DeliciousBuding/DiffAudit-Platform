@@ -19,16 +19,19 @@ powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Services\Local-API\ru
 Then start the platform gateway on its default port:
 
 ```powershell
-cd apps/api-go
-go run ./cmd/platform-api
+powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Platform\apps\api-go\run-platform-api.ps1
 ```
 
 Equivalent explicit form:
 
 ```powershell
-cd apps/api-go
-go run ./cmd/platform-api --host 127.0.0.1 --port 8000 --research-api-base-url http://127.0.0.1:8765
+powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Platform\apps\api-go\run-platform-api.ps1 `
+  -ListenHost 127.0.0.1 `
+  -ListenPort 8000 `
+  -ResearchAPIBaseURL http://127.0.0.1:8765
 ```
+
+If `8000` is already occupied, the script exits with a clear warning instead of silently fighting another local service.
 
 ## Covered Routes
 
