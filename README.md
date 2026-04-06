@@ -73,7 +73,10 @@ npm run dev:api
 - Add new audit methods behind clear API contracts first.
 - Prefer stable wrappers over deep coupling to the research repo internals.
 - Keep the first production path focused on `Stable Diffusion + DDIM recon`.
-- Use dedicated git worktrees for implementation tasks. See `docs/worktree-collaboration.md`.
+- Do not implement features directly in the shared root worktree.
+- Use dedicated git worktrees for all implementation tasks.
+- Treat the root worktree as integration-only.
+- See `AGENTS.md` and `docs/worktree-collaboration.md`.
 
 ## CI
 
@@ -88,7 +91,7 @@ GitHub Actions checks:
 Phase 1:
 
 - backend proxies minimal audit job endpoints
-- backend forwards to `D:\Code\DiffAudit\Project\tools\local-api-go`
+- backend forwards to `D:\Code\DiffAudit\Services\Local-API`
 - frontend consumes job status and result payloads
 
 Phase 2:
@@ -105,3 +108,4 @@ The current public preview uses a shared temporary login implemented in Next.js:
 - proxy protection covers platform pages and the public `/api/v1/*` routes
 - public ingress should send all requests to the Next.js app
 - FastAPI stays on the private side and is consumed through the frontend proxy layer
+
