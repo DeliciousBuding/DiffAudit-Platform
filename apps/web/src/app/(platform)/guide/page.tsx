@@ -1,6 +1,6 @@
 const steps = [
-  "前端调用 FastAPI `/api/v1/audit/jobs` 创建任务",
-  "后端后续会把任务转发到研究仓库 CLI",
+  "前端调用平台 Go API `/api/v1/audit/jobs` 创建任务",
+  "平台 Go API 把请求转发到研究仓库本地 Go 服务",
   "研究仓库输出 `summary.json` 和 artifact 路径",
   "平台读取结果并展示成员风险结论"
 ];
@@ -11,7 +11,8 @@ export default function GuidePage() {
       <div className="glass-card p-6">
         <h1 className="text-2xl font-semibold">接入指南</h1>
         <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-          第一版平台先面向最小闭环：前端调用 FastAPI，FastAPI 再调用研究仓库。
+          当前已经形成两层 Go 控制面：平台侧负责 API 网关，研究侧负责本地审计控制面。
+          后续前端只需要围绕这条已打通的任务链继续接页面状态和交互。
         </p>
       </div>
 
