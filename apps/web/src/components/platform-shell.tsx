@@ -36,7 +36,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
                     DiffAudit
                   </h1>
                   <span className="inline-flex w-fit items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
-                    Private Preview
+                    扩散模型隐私审计平台 v1.0
                   </span>
                 </div>
               </div>
@@ -44,7 +44,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
 
             <nav className="flex flex-1 flex-col gap-2 pt-5" aria-label="Main navigation">
               <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-primary/70">
-                Audit Console
+                审计导航
               </span>
           {navItems.map((item) => {
                 const active = current.href === item.href;
@@ -78,7 +78,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
         </nav>
 
             <div className="mt-auto flex items-center justify-between gap-3">
-              <StatusBadge tone="success">Online</StatusBadge>
+              <StatusBadge tone="success">模拟模式运行中</StatusBadge>
               <div className="flex items-center gap-1.5">
                 <a
                   href="https://github.com/DeliciousBuding/DiffAudit-Platform"
@@ -117,9 +117,11 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
               <div className="mono text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/80">
                 DiffAudit / {current.shortLabel}
               </div>
-              <div className="mt-2 text-sm text-muted-foreground">面向审阅者的扩散模型隐私审计体验预览</div>
+              <div className="mt-2 text-sm text-muted-foreground">REDIFFUSE 前端展示层，当前以后端未连接的模拟模式运行</div>
             </div>
             <div className="flex items-center gap-2">
+              <StatusBadge tone="primary">REDIFFUSE</StatusBadge>
+              <StatusBadge tone="warning">模拟模式</StatusBadge>
               <LogoutButton />
             </div>
           </div>
