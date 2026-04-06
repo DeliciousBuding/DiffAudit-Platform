@@ -2,10 +2,9 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 
 const steps = [
-  "上传目标图像并确认本次审计任务的输入内容",
-  "选择当前适合演示的模型与审计路径",
-  "查看平台生成的结果摘要、结论与说明结构",
-  "在报告页中继续浏览风险判断与上下文信息"
+  "第一层：模型层（Stable Diffusion / DDIM / 自训练 checkpoint）",
+  "第二层：审计引擎（REDIFFUSE / Inversion / Attention）",
+  "第三层：本平台（仪表盘 / 热力图 / 报告导出）",
 ];
 
 export default function GuidePage() {
@@ -13,10 +12,10 @@ export default function GuidePage() {
     <div className="space-y-6">
       <PageHeader
         title="接入指南"
-        description="这一页帮助审阅者快速理解平台如何组织一次审计体验，以及每个页面在整体流程中的角色。"
+        description="明确平台展示层、审计引擎与模型层之间的职责边界，并给出真实 API 联调的接口约定。"
       />
 
-      <SectionCard eyebrow="Journey" title="审计体验路径">
+      <SectionCard eyebrow="① 三层架构示意" title="三层架构示意">
         <div className="space-y-4">
           {steps.map((step, index) => (
             <div key={step} className="flex gap-4 rounded-3xl border border-border bg-white/45 p-4 dark:bg-white/5">
@@ -31,30 +30,71 @@ export default function GuidePage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard
-          eyebrow="For reviewers"
-          title="你会在这里看到什么"
-          description="平台把复杂的研究过程整理成更容易沟通的浏览体验，让结果页、报告页和说明页更适合面向外部展示。"
+          eyebrow="② 后端接口约定（给算法同学）"
+          title="审计引擎 API"
+          description="算法同学只需要用 FastAPI 实现统一接口，前端即可直接联调。"
         >
-          <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>统一的页面入口与结果浏览路径</li>
-            <li>更清晰的报告卡片和结论展示结构</li>
-            <li>便于后续扩展的统一产品骨架</li>
-          </ul>
+          <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
+{`POST /api/audit
+Content-Type: multipart/form-data
+
+{
+  "image": <file>,
+  "model": "sd15",
+  "diffusion_step": 200,
+  "average_n": 10,
+  "methods": ["blackbox", "whitebox"]
+}
+
+{
+  "is_member": true,
+  "confidence": 0.82,
+  "distance": 0.043,
+  "ssim": 0.91,
+  "elapsed_s": 6.2,
+  "threshold": 0.05
+}`}
+          </pre>
         </SectionCard>
 
         <SectionCard
-          eyebrow="Outputs"
-          title="平台展示的核心信息"
-          description="在完整体验中，平台会围绕风险判断、方法说明、模型上下文和结果摘要，持续丰富页面内容。"
+          eyebrow="③ 前端替换真实 API"
+          title="前端联调说明"
+          description="联调时把 API 地址填到页面输入框，保持字段名一致即可。"
         >
-          <div className="space-y-3 text-sm leading-6 text-muted-foreground">
-            <div>风险分数与判断结果</div>
-            <div>方法与模型的核心背景说明</div>
-            <div>便于展示的报告卡片与摘要模块</div>
-            <div>可继续扩展的结果上下文信息</div>
-          </div>
+          <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
+{`async function callAPI(file, params) {
+  const fd = new FormData();
+  fd.append("image", file);
+  fd.append("model", params.model);
+  fd.append("diffusion_step", params.t);
+  fd.append("average_n", params.n);
+  const r = await fetch(document.getElementById("apiep").value, {
+    method: "POST",
+    body: fd,
+  });
+  return r.json();
+}
+
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(CORSMiddleware, allow_origins=["*"])`}
+          </pre>
         </SectionCard>
       </div>
+
+      <SectionCard
+        eyebrow="④ 部署方式"
+        title="演示版部署方式"
+        description="演示 HTML 可以独立运行，也可以用简单静态服务启动；联调时填入后端地址并点击测试连接。"
+      >
+        <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
+{`# 演示模式可直接双击 HTML 打开
+# 联调时填入后端地址，点击“测试连接”
+
+python -m http.server 5500
+# 然后访问 http://<你的IP>:5500/diffaudit.html`}
+        </pre>
+      </SectionCard>
     </div>
   );
 }
