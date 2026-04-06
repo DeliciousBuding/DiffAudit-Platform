@@ -1,0 +1,11 @@
+{
+  "job_id": "job_local_001",
+  "status": "queued",
+  "model_key": "sd15-ddim",
+  "audit_method": "recon",
+  "image_name": "example.png",
+  "risk_score": null,
+  "is_likely_member": null,
+  "summary_path": null,
+  "artifact_path": null
+}
