@@ -104,25 +104,18 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <div className="mb-8 flex items-end justify-between gap-6 max-sm:flex-col max-sm:items-stretch">
-            <div className="max-w-[760px]">
+          <div className="mb-6 flex items-center justify-between gap-4 max-lg:hidden">
+            <div>
               <div className="mono text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/80">
                 DiffAudit / {current.shortLabel}
               </div>
-              <h2 className="mt-3 text-[clamp(30px,4vw,40px)] font-semibold leading-[1.08] tracking-tight">
-                {current.title}
-              </h2>
-              <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{current.subtitle}</p>
+              <div className="mt-2 text-sm text-muted-foreground">{current.subtitle}</div>
             </div>
-            <div className="flex items-center gap-2 max-sm:w-full max-sm:flex-wrap">
+            <div className="flex items-center gap-2">
               <StatusBadge tone="primary">Recon</StatusBadge>
               <StatusBadge tone="warning">Shared Access</StatusBadge>
-              <div className="hidden lg:block">
-                <ThemeToggle />
-              </div>
-              <div className="hidden lg:block">
-                <LogoutButton />
-              </div>
+              <ThemeToggle />
+              <LogoutButton />
             </div>
           </div>
 
