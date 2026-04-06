@@ -17,7 +17,7 @@ type runtimeConfig struct {
 
 const (
 	defaultHost               = "127.0.0.1"
-	defaultPort               = "8000"
+	defaultPort               = "8780"
 	defaultResearchAPIBaseURL = "http://127.0.0.1:8765"
 )
 

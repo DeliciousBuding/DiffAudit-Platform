@@ -52,7 +52,7 @@ copy apps\web\.env.example apps\web\.env.local
 - `DIFFAUDIT_SHARED_USERNAME`: shared preview username
 - `DIFFAUDIT_SHARED_PASSWORD`: shared preview password
 - `DIFFAUDIT_SESSION_TOKEN`: opaque session cookie value
-- `DIFFAUDIT_API_BASE_URL`: internal backend URL, defaults to `http://127.0.0.1:8000`
+- `DIFFAUDIT_API_BASE_URL`: internal backend URL, defaults to `http://127.0.0.1:8780`
 
 ### Backend
 
@@ -64,7 +64,7 @@ npm run dev:api
 ### Local URLs
 
 - web: `http://localhost:3000`
-- api: `http://localhost:8000`
+- api: `http://localhost:8780`
 
 ## Development rules
 
