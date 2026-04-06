@@ -9,9 +9,32 @@ describe("ReportPage", () => {
   });
 
   it("renders the best recon evidence from the backend", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify([
+            {
+              contract_key: "black-box/recon/sd15-ddim",
+              track: "black-box",
+              attack_family: "recon",
+              target_key: "sd15-ddim",
+              label: "Stable Diffusion 1.5 DDIM Recon",
+              availability: "ready",
+              evidence_level: "best-summary",
+              best_workspace:
+                "recon-runtime-mainline-ddim-public-100-step30",
+            },
+          ]),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json",
+            },
+          },
+        ),
+      )
+      .mockResolvedValueOnce(
         new Response(
           JSON.stringify({
             status: "ready",
@@ -37,11 +60,17 @@ describe("ReportPage", () => {
             },
           },
         ),
-      ),
-    );
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
 
     const markup = renderToStaticMarkup(await ReportPage());
 
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/api/v1/catalog");
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
+      "/api/v1/experiments/recon-runtime-mainline-ddim-public-100-step30/summary",
+    );
     expect(markup).toContain(
       "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
     );
@@ -63,7 +92,31 @@ describe("ReportPage", () => {
   });
 
   it("shows a clear unavailable state when the backend is unreachable", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              contract_key: "black-box/recon/sd15-ddim",
+              track: "black-box",
+              attack_family: "recon",
+              target_key: "sd15-ddim",
+              label: "Stable Diffusion 1.5 DDIM Recon",
+              availability: "ready",
+              evidence_level: "best-summary",
+              best_workspace: null,
+            },
+          ]),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json",
+            },
+          },
+        ),
+      ),
+    );
 
     const markup = renderToStaticMarkup(await ReportPage());
 
