@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildArtifactReplayJobPayload, summarizeBestRecon } from "./audit-client";
+import { buildArtifactReplayJobPayload, summarizeBestRecon, toEvidenceViewModel } from "./audit-client";
 
 describe("audit client helpers", () => {
   it("builds a recon artifact replay payload from the best evidence", () => {
@@ -52,6 +52,46 @@ describe("audit client helpers", () => {
       aucLabel: "0.866",
       asrLabel: "0.510",
       tprLabel: "1.000",
+    });
+  });
+
+  it("maps a source snapshot into an evidence view model", () => {
+    expect(
+      toEvidenceViewModel({
+        statusLabel: "ready",
+        statusTone: "success",
+        workspaceName: "best evidence workspace",
+        workspacePath: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        paper: "diffaudit-2024",
+        method: "threshold",
+        mode: "blackbox",
+        backendLabel: "stable_diffusion / ddim",
+        aucLabel: "0.866",
+        asrLabel: "0.510",
+        tprLabel: "1.000",
+        summaryPath: "source of truth",
+      }),
+    ).toEqual({
+      status: {
+        label: "ready",
+        tone: "success",
+      },
+      workspace: {
+        name: "best evidence workspace",
+        path: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+      },
+      context: {
+        paper: "diffaudit-2024",
+        method: "threshold",
+      },
+      executionMode: "blackbox",
+      backendLabel: "stable_diffusion / ddim",
+      metrics: {
+        aucLabel: "0.866",
+        asrLabel: "0.510",
+        tprLabel: "1.000",
+      },
+      summaryPath: "source of truth",
     });
   });
 });
