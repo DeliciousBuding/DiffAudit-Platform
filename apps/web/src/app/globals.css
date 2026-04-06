@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0c10;
+  --background-soft: #111318;
+  --surface: #181c24;
+  --foreground: #e8eaf0;
+  --muted: #8a8f9e;
+  --muted-2: #555a6a;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #4fffb0;
+  --accent-2: #ff6b35;
+  --accent-3: #7b8fff;
+  --danger: #ff4d6d;
+  --warn: #ffb347;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79, 255, 176, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 255, 176, 0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+.platform-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-card {
+  border: 1px solid var(--border);
+  background: var(--background-soft);
+  border-radius: 16px;
+}
+
+.mono {
+  font-family: var(--font-mono), monospace;
+}
