@@ -4,7 +4,7 @@
 
 **Goal:** Replace `Platform/apps/api` Python stub behavior with a Go proxy service that forwards platform API requests to the local research Go API in `Project`.
 
-**Architecture:** Add a standalone Go service under `apps/api-go/` that exposes the platform API routes and forwards them to the research local API over HTTP. The service remains a thin gateway; actual job execution and research state stay in `Project/tools/local-api-go`.
+**Architecture:** Add a standalone Go service under `apps/api-go/` that exposes the platform API routes and forwards them to the research local API over HTTP. The service remains a thin gateway; actual job execution and research state stay in `Services/Local-API`.
 
 **Tech Stack:** Go 1.26, standard library `net/http`, `httptest`, JSON proxying, upstream local research API
 
@@ -219,7 +219,7 @@ go test ./...
 - [ ] **Step 2: Start the research local API**
 
 ```powershell
-cd D:\Code\DiffAudit\Project\tools\local-api-go
+cd D:\Code\DiffAudit\Services\Local-API
 go run ./cmd/local-api
 ```
 
@@ -244,3 +244,4 @@ curl http://127.0.0.1:8780/api/v1/experiments/recon/best
 git -C D:\Code\DiffAudit\Platform add .
 git -C D:\Code\DiffAudit\Platform commit -m "Finish platform Go API proxy integration"
 ```
+

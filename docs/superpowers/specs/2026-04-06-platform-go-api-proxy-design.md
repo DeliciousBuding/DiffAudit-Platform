@@ -2,7 +2,7 @@
 
 ## Goal
 
-Replace `Platform/apps/api` with a Go proxy service that fronts the local research control plane in `Project/tools/local-api-go`.
+Replace `Platform/apps/api` with a Go proxy service that fronts the local research control plane in `Services/Local-API`.
 
 This sub-project is intentionally narrow:
 
@@ -148,3 +148,4 @@ Use stub upstream servers instead of requiring a live research service during te
 - current platform-relevant endpoints are covered
 - gateway errors are explicit when the research service is down
 - `apps/web` can switch to the Go platform API without another backend redesign
+

@@ -13,3 +13,4 @@ Primary research local API:
 - [Project/docs/local-api.md](D:\Code\DiffAudit\Project\docs\local-api.md)
 
 Keep this Python stub only as a temporary reference during the Go migration.
+
