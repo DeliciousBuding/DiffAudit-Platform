@@ -55,6 +55,12 @@
 - Next.js `proxy.ts` 保护页面与 `/api/v1/*`
 - 公网入口统一走 Next.js
 
+补充边界：
+
+- `/health` 和 `/api/v1/*` 现在都不是匿名公网探测口
+- 公网探测默认应以 `/login` 作为 edge canary
+- 深度健康检查应在 `gz2` 本机或私网内检查 `apps/web` 与 `apps/api-go`
+
 ### 当前共享登录信息
 
 - 用户名：从部署环境变量或安全配置中读取
@@ -73,6 +79,7 @@
 - `hk` 只做域名入口和 nginx 反代
 - `gz2` 跑 `apps/web` 和 `apps/api-go`
 - active backend 不应直接暴露在公网入口上
+- Cloudflare challenge / allow 规则属于外部系统，不在仓库版本控制中
 
 ## 你的任务边界
 
@@ -101,6 +108,7 @@
 2. 再检查服务器：
    - `hk` nginx 配置
    - `gz2` 上两个 systemd 服务
+   - Cloudflare 是否已为监控来源放行 `/login`
 3. 做最短路径修复，不要做大重构
 4. 每次改动后本地验证
 5. 小步提交，提交后马上 push
@@ -109,6 +117,7 @@
 
 - `apps/api-go` 是当前 active backend，部署、systemd 和联调默认都以它为准
 - `apps/api` 只在明确处理 legacy stub 时单独检查，不作为当前 release gate
+- 如果当前公网链使用 Tailscale 或其他私网覆盖层，必须在 handoff 里写明；仓库里目前没有这部分版本化说明
 
 ## 你需要优先关注的文件
 
@@ -123,9 +132,10 @@
 1. 当前公网地址是否可访问
 2. 登录是否正常
 3. 未登录访问 `/audit` 和 `/api/v1/models` 的行为
-4. `web` 和 `api` 服务状态
+4. `web` 和 `api-go` 服务状态
 5. 你改了哪些文件
 6. 你执行了哪些验证命令
+7. 公网 probe 现在走哪条路径，哪些依赖仍在仓库外
 
 ## 输出要求
 
