@@ -4,8 +4,8 @@ Monorepo for the first platformized version of DiffAudit.
 
 This repo is intentionally separate from the research repo:
 
-- `D:\Code\DiffAudit\Project`: algorithms, experiments, datasets, papers
-- `D:\Code\DiffAudit\Platform`: product shell, API layer, frontend, integration docs
+- sibling research repo `../Project`: algorithms, experiments, datasets, papers
+- this repo `./`: product shell, API layer, frontend, integration docs
 
 ## Structure
 
@@ -38,7 +38,7 @@ The active platform backend now proxies to the research local API and does not r
 ### Frontend
 
 ```powershell
-cd D:\Code\DiffAudit\Platform
+cd <platform-repo>
 npm --prefix apps/web install
 npm run dev:web
 ```
@@ -57,7 +57,7 @@ copy apps\web\.env.example apps\web\.env.local
 ### Backend
 
 ```powershell
-cd D:\Code\DiffAudit\Platform
+cd <platform-repo>
 npm run dev:api
 ```
 
@@ -72,6 +72,7 @@ npm run dev:api
 - Add new audit methods behind clear API contracts first.
 - Prefer stable wrappers over deep coupling to the research repo internals.
 - Keep the first production path focused on `Stable Diffusion + DDIM recon`.
+- `Platform` is a shared collaboration repo. Write docs and handoffs so they work for other people and agents, not just one machine.
 - Do not implement features directly in the shared root worktree.
 - Use dedicated git worktrees for all implementation tasks.
 - Treat the root worktree as integration-only.
@@ -90,7 +91,7 @@ GitHub Actions checks:
 Phase 1:
 
 - backend proxies minimal audit job endpoints
-- backend forwards to `D:\Code\DiffAudit\Services\Local-API`
+- backend forwards to the local research-facing API service
 - frontend consumes job status and result payloads
 
 Phase 2:
