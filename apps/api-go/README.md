@@ -4,7 +4,7 @@ Primary backend gateway for the platform shell.
 
 This service proxies platform API calls to the local research control plane in:
 
-- `D:\Code\DiffAudit\Project\tools\local-api-go`
+- `D:\Code\DiffAudit\Services\Local-API`
 
 Default upstream:
 
@@ -33,3 +33,4 @@ This service is a platform gateway only.
 - It does not run research jobs directly.
 - It does not shell out to Python.
 - It forwards to the research local API, which then manages job execution.
+

@@ -65,7 +65,6 @@ npm run dev:api
 
 - web: `http://localhost:3000`
 - api: `http://localhost:8000`
-- api docs: `http://localhost:8000/docs`
 
 ## Development rules
 
