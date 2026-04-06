@@ -7,37 +7,31 @@ import { fetchBestReconReport } from "@/lib/recon-report";
 
 const unavailableActions = [
   {
-    title: "确认平台后端与本地 API 都已启动",
-    owner: "平台 / 本地 API",
-    note: "先检查 8780 平台网关和 8765 研究 API，再重试读取最佳 recon 摘要。",
+    title: "稍后重试读取证据摘要",
+    note: "如果当前摘要源短暂不可用，系统恢复后会继续展示最新的已发布证据。",
   },
   {
-    title: "核对 blackbox-status 是否仍指向有效 summary.json",
-    owner: "研究实验",
-    note: "当前页面依赖 /api/v1/experiments/recon/best 指向的 source of truth。",
+    title: "改看最近一次已导出的证据副本",
+    note: "如果你手头已有这条线的上一次导出结果，可以暂时先基于那份证据继续沟通。",
   },
   {
-    title: "恢复后再同步飞书与平台展示",
-    owner: "飞书治理 / 平台",
-    note: "不要在摘要缺失时继续发布演示结论，避免状态口径再次漂移。",
+    title: "等待最新摘要恢复后再更新结论",
+    note: "摘要恢复前，不要把临时口头判断升级为正式结论。",
   },
 ];
 
 const reportActions = [
   {
-    title: "继续以 blackbox-status 作为 recon 主结论入口",
-    owner: "研究实验",
-    note: "平台页只展示当前最佳证据，不再自己挑 summary，避免与研究口径分叉。",
+    title: "先确认当前证据状态与运行模式",
+    note: "优先阅读当前状态、运行模式和 headline metrics，再决定这份证据是否适合继续引用。",
   },
   {
-    title: "围绕当前最佳 workspace 做下一轮 artifact replay 或报告发布",
-    owner: "平台 / 飞书治理",
-    note: "后续操作统一围绕这份 best evidence，减少“展示一套、实验一套”的分裂状态。",
+    title: "沿着当前 workspace 继续追踪同一份证据",
+    note: "如果需要继续深读或复核，围绕当前 workspace 和 summary 路径往下追，不要切到另一份未对齐的摘要。",
   },
   {
-    title: "补齐 dashboard 的真实读链",
-    owner: "平台前端",
-    note: "report 已有真实摘要后，下一步再把 dashboard 从静态仪表盘推进到真实状态概览。",
+    title: "把跨轨道判断留给系统状态页",
+    note: "这页只解释当前这份 evidence，本线之外的成熟度和入口状态继续回到系统状态页查看。",
   },
 ];
 
@@ -49,7 +43,7 @@ export default async function ReportPage() {
       <div className="space-y-6">
         <PageHeader
           title="研究报告"
-          description="当前页优先展示最佳 black-box recon 证据；如果读取失败，就明确告诉接手者缺什么，而不是继续展示演示结论。"
+          description="当前页优先展示最佳 black-box recon 证据；如果读取失败，就暂停引用这份 evidence，等待摘要恢复。"
         />
 
         <SectionCard
@@ -69,7 +63,7 @@ export default async function ReportPage() {
                 真实摘要链断了，页面现在应该优先恢复数据入口，而不是继续输出结论性文案。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                先恢复平台 API 到研究 API 的读链，再继续讨论展示层和飞书同步。否则只是在放大旧的演示态误导。
+                这意味着当前无法安全引用这份 evidence。最稳妥的做法是等待摘要恢复，再基于同一份已发布证据继续判断。
               </p>
             </div>
           </div>
@@ -119,23 +113,23 @@ export default async function ReportPage() {
 
   const evidenceSummary = [
     {
-      title: "当前最佳 workspace",
-      detail: evidence.workspace.name,
+      title: "当前状态",
+      detail: evidence.status.label,
     },
     {
-      title: "后端 / 调度器",
-      detail: evidence.backendLabel,
+      title: "运行模式",
+      detail: evidence.executionMode,
     },
     {
-      title: "报告来源",
-      detail: evidence.summaryPath,
+      title: "论文 / 方法",
+      detail: `${evidence.context.paper} / ${evidence.context.method}`,
     },
   ];
 
   const scopeDetails = [
-    { label: "Paper", value: evidence.context.paper },
-    { label: "Method", value: evidence.context.method },
-    { label: "Workspace Path", value: evidence.workspace.path },
+    { label: "Best workspace", value: evidence.workspace.path },
+    { label: "Summary path", value: evidence.summaryPath },
+    { label: "Backend stack", value: evidence.backendLabel },
     { label: "Status", value: evidence.status.label },
   ];
 
@@ -143,7 +137,7 @@ export default async function ReportPage() {
     <div className="space-y-6">
       <PageHeader
         title="研究报告"
-        description="当前页直接读取最佳 black-box recon 证据，把平台展示口径对齐到研究仓库的 source of truth。"
+        description="当前页直接读取最佳 black-box recon 证据，把平台展示口径对齐到研究仓库当前已发布的证据摘要。"
       />
 
       <SectionCard
@@ -162,10 +156,10 @@ export default async function ReportPage() {
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                平台现在展示的是研究主线的最佳 recon 摘要，不再把 mock 结论伪装成真实审计结果。
+                这页展示的是当前已发布的最佳 recon 证据摘要，用来陈述事实证据，而不是代替研究结论之外的推断。
               </div>
               <p className="mt-3 max-w-[58ch] text-sm leading-7 text-muted-foreground">
-                当前证据的核心信息是 workspace、运行模式、后端组合和 headline metrics。更进一步的判断应该继续回到研究 summary，而不是由页面自己发明语义。
+                当前证据的核心信息是状态、运行模式、论文方法与 headline metrics。更进一步的复核可以继续沿着同一份 workspace 和 summary 往下追踪。
               </p>
             </div>
           </div>
@@ -173,7 +167,7 @@ export default async function ReportPage() {
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
             <SummaryTile label="Best workspace" value={evidence.workspace.name} sub={evidence.executionMode} />
             <SummaryTile label="Backend stack" value={evidence.backendLabel} sub={evidence.context.paper} />
-            <SummaryTile label="Summary path" value="source of truth" sub={evidence.summaryPath} />
+            <SummaryTile label="Summary path" value={evidence.summaryPath} sub={evidence.status.label} />
           </div>
         </div>
       </SectionCard>
@@ -219,7 +213,7 @@ export default async function ReportPage() {
       <SectionCard
         eyebrow="下一步"
         title="基于这份最佳证据继续推进"
-        description="后续动作统一围绕当前 best evidence 展开，避免平台、研究和飞书各说各话。"
+        description="后续动作统一围绕当前 best evidence 展开，避免不同页面和不同摘要源给出相互冲突的结论。"
       >
         <div className="space-y-3">
           {reportActions.map((item, index) => (
@@ -261,24 +255,19 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 function ActionCard({
   index,
   title,
-  owner,
   note,
 }: {
   index: number;
   title: string;
-  owner: string;
   note: string;
 }) {
   return (
     <div className="rounded-[24px] border border-border bg-white/45 p-4 dark:bg-white/5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="mono inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-            {index}
-          </span>
-          <div className="text-sm font-semibold text-foreground">{title}</div>
-        </div>
-        <div className="mono text-xs text-muted-foreground">{owner}</div>
+      <div className="flex items-center gap-3">
+        <span className="mono inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+          {index}
+        </span>
+        <div className="text-sm font-semibold text-foreground">{title}</div>
       </div>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{note}</p>
     </div>

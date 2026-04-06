@@ -11,7 +11,8 @@ export type CatalogAvailability = "ready" | "partial" | "planned";
 export type CatalogTrack = (typeof TRACK_ORDER)[number];
 
 export type CatalogEntryPayload = {
-  key: string;
+  contract_key?: string | null;
+  key?: string | null;
   track: string;
   attack_family: string;
   target_key: string;
@@ -35,7 +36,7 @@ export type CatalogTrackSummary = {
 };
 
 export type CatalogEntryViewModel = {
-  key: string;
+  contractKey: string;
   label: string;
   track: string;
   availability: CatalogAvailability;
@@ -57,6 +58,14 @@ export type CatalogDashboardViewModel = {
   tracks: CatalogTrackSummary[];
 };
 
+function isCatalogTrack(value: unknown): value is CatalogTrack {
+  return TRACK_ORDER.includes(value as CatalogTrack);
+}
+
+function isCatalogAvailability(value: unknown): value is CatalogAvailability {
+  return value === "ready" || value === "partial" || value === "planned";
+}
+
 function backendBaseUrl() {
   return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
 }
@@ -71,7 +80,7 @@ function formatRuntimeLabel(entry: CatalogEntryPayload) {
 
 function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
   return {
-    key: entry.key,
+    contractKey: entry.contract_key ?? entry.key ?? "",
     label: entry.label,
     track: entry.track,
     availability: entry.availability,
@@ -84,17 +93,63 @@ function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
   };
 }
 
+function normalizeCatalogEntry(entry: unknown): CatalogEntryPayload | null {
+  if (!entry || typeof entry !== "object") {
+    return null;
+  }
+
+  const candidate = entry as Record<string, unknown>;
+  const contractKey =
+    typeof candidate.contract_key === "string"
+      ? candidate.contract_key
+      : typeof candidate.key === "string"
+        ? candidate.key
+        : null;
+  if (
+    typeof contractKey !== "string" ||
+    !isCatalogTrack(candidate.track) ||
+    typeof candidate.attack_family !== "string" ||
+    typeof candidate.target_key !== "string" ||
+    typeof candidate.label !== "string" ||
+    !isCatalogAvailability(candidate.availability)
+  ) {
+    return null;
+  }
+
+  return {
+    contract_key: contractKey,
+    track: candidate.track,
+    attack_family: candidate.attack_family,
+    target_key: candidate.target_key,
+    label: candidate.label,
+    paper: typeof candidate.paper === "string" ? candidate.paper : null,
+    backend: typeof candidate.backend === "string" ? candidate.backend : null,
+    scheduler: typeof candidate.scheduler === "string" ? candidate.scheduler : null,
+    availability: candidate.availability,
+    evidence_level:
+      typeof candidate.evidence_level === "string" ? candidate.evidence_level : null,
+    best_summary_path:
+      typeof candidate.best_summary_path === "string" ? candidate.best_summary_path : null,
+    best_workspace:
+      typeof candidate.best_workspace === "string" ? candidate.best_workspace : null,
+  };
+}
+
 export function summarizeCatalogEntries(
   entries: CatalogEntryPayload[],
 ): CatalogDashboardViewModel {
+  const normalizedEntries = entries
+    .map((entry) => normalizeCatalogEntry(entry))
+    .filter((entry): entry is CatalogEntryPayload => entry !== null);
+
   const stats = {
-    total: entries.length,
-    ready: entries.filter((entry) => entry.availability === "ready").length,
-    partial: entries.filter((entry) => entry.availability === "partial").length,
-    planned: entries.filter((entry) => entry.availability === "planned").length,
+    total: normalizedEntries.length,
+    ready: normalizedEntries.filter((entry) => entry.availability === "ready").length,
+    partial: normalizedEntries.filter((entry) => entry.availability === "partial").length,
+    planned: normalizedEntries.filter((entry) => entry.availability === "planned").length,
   };
 
-  const mappedEntries = entries
+  const mappedEntries = normalizedEntries
     .map(toEntryViewModel)
     .sort((left, right) => {
       const trackDiff =
@@ -110,7 +165,7 @@ export function summarizeCatalogEntries(
         return availabilityDiff;
       }
 
-      return left.key.localeCompare(right.key);
+      return left.contractKey.localeCompare(right.contractKey);
     });
 
   const tracks = TRACK_ORDER.map((track) => {
