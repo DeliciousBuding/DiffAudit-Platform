@@ -1,6 +1,8 @@
 import { BestReconPayload, summarizeBestRecon } from "@/lib/audit-client";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
+const WORKSPACE_LABEL = "best evidence workspace";
+const SUMMARY_LABEL = "source of truth";
 
 export type ReconReportViewModel = {
   statusLabel: string;
@@ -19,14 +21,6 @@ export type ReconReportViewModel = {
 
 function backendBaseUrl() {
   return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
-}
-
-function workspaceNameFromPath(workspacePath: string) {
-  const parts = workspacePath.split(/[\\/]/).filter(Boolean);
-  if (parts.length === 0) {
-    return workspacePath;
-  }
-  return parts[parts.length - 1];
 }
 
 function statusTone(status?: string): ReconReportViewModel["statusTone"] {
@@ -55,8 +49,8 @@ function toViewModel(best: BestReconPayload): ReconReportViewModel {
   return {
     statusLabel: statusLabel(best.status),
     statusTone: statusTone(best.status),
-    workspaceName: workspaceNameFromPath(best.workspace),
-    workspacePath: best.workspace,
+    workspaceName: WORKSPACE_LABEL,
+    workspacePath: WORKSPACE_LABEL,
     paper: best.paper ?? "unknown",
     method: best.method ?? "unknown",
     mode: best.mode ?? "unknown",
@@ -64,7 +58,7 @@ function toViewModel(best: BestReconPayload): ReconReportViewModel {
     aucLabel: summary.aucLabel,
     asrLabel: summary.asrLabel,
     tprLabel: summary.tprLabel,
-    summaryPath: best.summary_path ?? "n/a",
+    summaryPath: SUMMARY_LABEL,
   };
 }
 

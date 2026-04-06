@@ -42,11 +42,12 @@ describe("ReportPage", () => {
 
     const markup = renderToStaticMarkup(await ReportPage());
 
-    expect(markup).toContain("recon-runtime-mainline-ddim-public-100-step30");
+    expect(markup).toContain("best evidence workspace");
     expect(markup).toContain("0.849");
     expect(markup).toContain("0.510");
     expect(markup).toContain("1.000");
     expect(markup).toContain("stable_diffusion / ddim");
+    expect(markup).toContain("source of truth");
   });
 
   it("shows a clear unavailable state when the backend is unreachable", async () => {
