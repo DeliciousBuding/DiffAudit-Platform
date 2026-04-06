@@ -1,0 +1,57 @@
+type BestReconPayload = {
+  workspace: string;
+  backend?: string | null;
+  scheduler?: string | null;
+  metrics?: {
+    auc?: number | null;
+    asr?: number | null;
+    tpr_at_1pct_fpr?: number | null;
+  };
+  artifact_paths?: {
+    score_artifact_dir?: string;
+  };
+};
+
+export type ArtifactReplayJobPayload = {
+  job_type: "recon_artifact_mainline";
+  workspace_name: string;
+  artifact_dir: string;
+  method: "threshold";
+};
+
+function formatMetric(value: number | null | undefined) {
+  if (typeof value !== "number") {
+    return "n/a";
+  }
+  return value.toFixed(3);
+}
+
+export function summarizeBestRecon(best: BestReconPayload) {
+  const backendLabel = best.scheduler
+    ? `${best.backend ?? "unknown"} / ${best.scheduler}`
+    : `${best.backend ?? "unknown"}`;
+
+  return {
+    backendLabel,
+    aucLabel: formatMetric(best.metrics?.auc),
+    asrLabel: formatMetric(best.metrics?.asr),
+    tprLabel: formatMetric(best.metrics?.tpr_at_1pct_fpr),
+  };
+}
+
+export function buildArtifactReplayJobPayload(
+  best: BestReconPayload,
+  workspaceName: string,
+): ArtifactReplayJobPayload {
+  const artifactDir = best.artifact_paths?.score_artifact_dir;
+  if (!artifactDir) {
+    throw new Error("Best recon evidence does not expose score_artifact_dir");
+  }
+
+  return {
+    job_type: "recon_artifact_mainline",
+    workspace_name: workspaceName,
+    artifact_dir: artifactDir,
+    method: "threshold",
+  };
+}
