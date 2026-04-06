@@ -42,6 +42,17 @@ npm --prefix apps/web install
 npm run dev:web
 ```
 
+Temporary login variables for the frontend:
+
+```powershell
+copy apps\web\.env.example apps\web\.env.local
+```
+
+- `DIFFAUDIT_SHARED_USERNAME`: shared preview username
+- `DIFFAUDIT_SHARED_PASSWORD`: shared preview password
+- `DIFFAUDIT_SESSION_TOKEN`: opaque session cookie value
+- `DIFFAUDIT_API_BASE_URL`: internal backend URL, defaults to `http://127.0.0.1:8000`
+
 ### Backend
 
 ```powershell
@@ -84,3 +95,12 @@ Phase 2:
 - add persistent job store
 - add auth / gateway layer
 - move long-running compute off the local workstation if needed
+
+## Temporary Preview Auth
+
+The current public preview uses a shared temporary login implemented in Next.js:
+
+- `/login` issues an `HttpOnly` cookie after validating the shared credentials
+- proxy protection covers platform pages and the public `/api/v1/*` routes
+- public ingress should send all requests to the Next.js app
+- FastAPI stays on the private side and is consumed through the frontend proxy layer
