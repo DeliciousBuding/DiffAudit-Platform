@@ -1,8 +1,6 @@
 import { BestReconPayload, summarizeBestRecon } from "@/lib/audit-client";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
-const WORKSPACE_LABEL = "best evidence workspace";
-const SUMMARY_LABEL = "source of truth";
 
 export type ReconReportViewModel = {
   statusLabel: string;
@@ -49,8 +47,8 @@ function toViewModel(best: BestReconPayload): ReconReportViewModel {
   return {
     statusLabel: statusLabel(best.status),
     statusTone: statusTone(best.status),
-    workspaceName: WORKSPACE_LABEL,
-    workspacePath: WORKSPACE_LABEL,
+    workspaceName: best.workspace,
+    workspacePath: best.workspace,
     paper: best.paper ?? "unknown",
     method: best.method ?? "unknown",
     mode: best.mode ?? "unknown",
@@ -58,7 +56,7 @@ function toViewModel(best: BestReconPayload): ReconReportViewModel {
     aucLabel: summary.aucLabel,
     asrLabel: summary.asrLabel,
     tprLabel: summary.tprLabel,
-    summaryPath: SUMMARY_LABEL,
+    summaryPath: best.summary_path ?? "summary path unavailable",
   };
 }
 

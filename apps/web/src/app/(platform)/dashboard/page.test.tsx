@@ -15,7 +15,7 @@ describe("DashboardPage", () => {
         new Response(
           JSON.stringify([
             {
-              key: "black-box/recon/sd15-ddim",
+              contract_key: "black-box/recon/sd15-ddim",
               track: "black-box",
               attack_family: "recon",
               target_key: "sd15-ddim",
@@ -29,7 +29,7 @@ describe("DashboardPage", () => {
               best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
             },
             {
-              key: "gray-box/pia/sd15-ddim",
+              contract_key: "gray-box/pia/sd15-ddim",
               track: "gray-box",
               attack_family: "pia",
               target_key: "sd15-ddim",
@@ -55,7 +55,8 @@ describe("DashboardPage", () => {
 
     const markup = renderToStaticMarkup(await DashboardPage());
 
-    expect(markup).toContain("统一 evidence / catalog 展示壳");
+    expect(markup).toContain("三轨系统状态");
+    expect(markup).toContain("统一三线当前能力与证据状态");
     expect(markup).toContain("三线目录状态");
     expect(markup).toContain("black-box");
     expect(markup).toContain("gray-box");
@@ -63,8 +64,13 @@ describe("DashboardPage", () => {
     expect(markup).toContain("black-box/recon/sd15-ddim");
     expect(markup).toContain("gray-box/pia/sd15-ddim");
     expect(markup).toContain("best-summary");
-    expect(markup).toContain("catalog -&gt; summary");
     expect(markup).toContain("当前无 catalog 条目");
+    expect(markup).toContain("主线证据可读");
+    expect(markup).toContain("准备态或 smoke 证据");
+    expect(markup).not.toContain("黑盒特例逻辑");
+    expect(markup).not.toContain("fan-out");
+    expect(markup).not.toContain("dashboard 壳");
+    expect(markup).not.toContain("catalog -&gt; summary");
   });
 
   it("shows a clear unavailable state when the catalog is unreachable", async () => {
@@ -72,7 +78,8 @@ describe("DashboardPage", () => {
 
     const markup = renderToStaticMarkup(await DashboardPage());
 
-    expect(markup).toContain("统一 catalog 暂不可用");
-    expect(markup).toContain("先恢复 /api/v1/catalog");
+    expect(markup).toContain("系统状态暂时不可用");
+    expect(markup).toContain("三线能力目录暂时无法加载");
+    expect(markup).not.toContain("/api/v1/catalog");
   });
 });

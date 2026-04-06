@@ -6,23 +6,17 @@ import { fetchCatalogDashboard, type CatalogAvailability } from "@/lib/catalog";
 
 const catalogActions = [
   {
-    title: "Dashboard 只读 catalog，不在这里 fan-out 拉 summary",
-    note: "这页先负责能力发现和成熟度可见性，把单条 evidence 深读继续留给 report。",
+    title: "主线证据可读",
+    note: "Black-box 当前已有主线证据，可作为统一系统里最成熟的入口查看状态。",
   },
   {
-    title: "统一消费路径固定为 catalog -> summary",
-    note: "前端先识别 contract_key、availability 和 evidence_level，再决定是否进入更深的 evidence 页面。",
+    title: "准备态或 smoke 证据可见",
+    note: "Gray-box 当前以准备态和 smoke 结果为主，页面忠实展示成熟度，不提前承诺默认执行入口。",
   },
   {
-    title: "灰盒 / 白盒先忠实展示成熟度，不伪装成已同级可执行",
-    note: "planned 和 partial 条目只陈述当前状态，不提前承诺运行入口。",
+    title: "规划中能力单独标记",
+    note: "White-box 保留为统一入口的一部分，但明确标成 planned，等待资产和研究条件就绪。",
   },
-];
-
-const unavailableActions = [
-  "先恢复 /api/v1/catalog",
-  "确认平台网关和后端代理仍能访问统一 catalog",
-  "catalog 恢复后再继续扩 dashboard 文案或更深层指标读取",
 ];
 
 const trackTone: Record<string, "primary" | "warning" | "info"> = {
@@ -44,42 +38,30 @@ export default async function DashboardPage() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="审计仪表盘"
-          description="这页现在优先承担统一 catalog 展示壳。读不到 catalog 时，不继续输出静态仪表盘，而是先明确恢复真实读链。"
+          title="三轨系统状态"
+          description="统一查看 black-box、gray-box、white-box 三条线当前的能力成熟度、最佳证据状态和可读入口。"
         />
 
         <SectionCard
           eyebrow="当前状态"
-          title="统一 catalog 暂不可用"
-          description="未能从平台后端读取统一 contract 目录。现在应该先恢复 catalog，而不是继续保留黑盒特例页的静态演示内容。 "
+          title="系统状态暂时不可用"
+          description="三线能力目录暂时无法加载。请稍后重试，系统恢复后这里会继续展示当前可读证据和规划中的能力入口。"
           className="overflow-hidden bg-[linear-gradient(135deg,hsl(28_94%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))]"
         >
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <StatusBadge tone="warning">catalog unavailable</StatusBadge>
-              <StatusBadge tone="info">waiting for unified contract list</StatusBadge>
+              <StatusBadge tone="warning">state feed unavailable</StatusBadge>
+              <StatusBadge tone="info">waiting for capability status</StatusBadge>
             </div>
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)]">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                dashboard 的真实入口已经改成 catalog，当前应该先恢复能力目录，而不是继续播放静态监控故事。
+                当前无法展示三条线的最新状态，但系统恢复后会继续提供统一的能力与证据概览。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                report 保持单条 evidence 深读不变，但 dashboard 这页必须先看见统一 contract 目录，才能继续承担三线化展示壳。
+                这页默认展示哪些能力已经有证据、哪些仍处于准备态，以及哪些能力还在规划中，而不是放大单一研究方法的临时状态。
               </p>
             </div>
-          </div>
-        </SectionCard>
-
-        <SectionCard
-          eyebrow="恢复动作"
-          title="先恢复 catalog 根，再继续上层展示"
-          description="这三步是当前最短恢复路径。"
-        >
-          <div className="space-y-3">
-            {unavailableActions.map((item, index) => (
-              <ActionCard key={item} index={index + 1} title={item} note="" />
-            ))}
           </div>
         </SectionCard>
       </div>
@@ -120,30 +102,31 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="审计仪表盘"
-        description="dashboard 现在先承担统一 evidence / catalog 展示壳，只消费 contract 目录，不在这里继续下钻 ready 条目的 summary。"
+        title="三轨系统状态"
+        description="统一三线当前能力与证据状态，先看哪条线已经有可读证据，哪条线仍处于准备态或规划态。"
       />
 
       <SectionCard
-        eyebrow="展示壳"
-        title="统一 evidence / catalog 展示壳"
-        description="这页先看见当前有哪些 contract_key、成熟度如何、最佳证据落点在哪里；更深的单条 evidence 继续留在 report。"
+        eyebrow="系统概览"
+        title="统一三线当前能力与证据状态"
+        description="首页先讲三条线现在处于什么成熟度，再列出每条线的能力目录与最佳证据状态。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(258_82%_97%),transparent_50%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(258_40%_22%/0.55),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <StatusBadge tone="primary">catalog -&gt; summary</StatusBadge>
+              <StatusBadge tone="primary">3 tracks</StatusBadge>
               <StatusBadge tone="success">{catalog.stats.ready} ready</StatusBadge>
               <StatusBadge tone="warning">{catalog.stats.partial} partial</StatusBadge>
+              <StatusBadge tone="info">{catalog.stats.planned} planned</StatusBadge>
             </div>
 
             <div className="rounded-[26px] border border-primary/15 bg-white/60 p-5 shadow-[0_20px_60px_hsl(258_45%_30%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                dashboard 不再讲“某个黑盒样本今天有多危险”，而是先忠实陈述三线 contract 当前到了哪一步。
+                这页先告诉你哪条线已经有主线证据，哪条线还停留在准备态，以及哪条线仍在规划中。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                当前最短路径是把 dashboard 收口成 catalog 入口，再把单条 evidence 深读继续放在 report。这样既去掉黑盒特例页，又不会把 summary fan-out 塞回首页。
+                Black-box 当前是最成熟入口，Gray-box 以准备态和 smoke 证据为主，White-box 继续保留统一入口但明确标记为 planned。页面统一展示能力目录和最佳证据状态，避免把单条方法误当成整个系统。
               </p>
             </div>
           </div>
@@ -159,7 +142,11 @@ export default async function DashboardPage() {
                 </div>
                 <div className="mt-3 text-2xl font-semibold tracking-tight">{item.total}</div>
                 <div className="mt-2 text-sm leading-6 text-muted-foreground">
-                  ready {item.ready} / total {item.total}
+                  {item.track === "black-box"
+                    ? "主线证据可读"
+                    : item.track === "gray-box"
+                      ? "准备态或 smoke 证据"
+                      : "等待研究资产就绪"}
                 </div>
               </div>
             ))}
@@ -204,7 +191,7 @@ export default async function DashboardPage() {
         <SectionCard
           eyebrow="统一目录"
           title="按 track 分组的 catalog 条目"
-          description="目录项按 black-box、gray-box、white-box 分组展示，只陈述能力目录和状态，不在 dashboard 再次读取 summary 内容。"
+          description="每条线都先展示当前成熟度，再列出已进入系统目录的能力项和已发布的最佳证据状态。"
         >
           <div className="space-y-4">
             {catalog.tracks.map((track) => (
@@ -232,14 +219,14 @@ export default async function DashboardPage() {
                 ) : (
                   track.entries.map((entry) => (
                     <div
-                      key={entry.key}
+                      key={entry.contractKey}
                       className="rounded-[24px] border border-border bg-white/45 p-4 dark:bg-white/5"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <div className="mono text-xs text-muted-foreground">{entry.key}</div>
+                          <div className="mono text-xs text-muted-foreground">{entry.contractKey}</div>
                           <div className="mt-1 text-sm font-semibold text-foreground">{entry.label}</div>
-                          <div className="mt-2 text-sm text-muted-foreground">{entry.capabilityLabel}</div>
+                          <div className="mt-2 text-sm text-muted-foreground">{entry.paper}</div>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                           <StatusBadge tone={trackTone[entry.track] ?? "primary"}>{entry.track}</StatusBadge>
@@ -248,10 +235,10 @@ export default async function DashboardPage() {
                       </div>
 
                       <div className="mt-4 grid gap-3 md:grid-cols-2">
-                        <CatalogDetail label="Evidence level" value={entry.evidenceLevel} />
-                        <CatalogDetail label="Runtime" value={entry.runtimeLabel} />
-                        <CatalogDetail label="Best workspace" value={entry.bestWorkspace} />
-                        <CatalogDetail label="Best summary path" value={entry.bestSummaryPath} />
+                        <CatalogDetail label="Capability" value={entry.capabilityLabel} />
+                        <CatalogDetail label="Best evidence status" value={entry.evidenceLevel} />
+                        <CatalogDetail label="Published workspace" value={entry.bestWorkspace} />
+                        <CatalogDetail label="Runtime status" value={entry.runtimeLabel} />
                       </div>
                     </div>
                   ))
@@ -263,9 +250,9 @@ export default async function DashboardPage() {
 
         <div className="space-y-6">
           <SectionCard
-            eyebrow="当前规则"
-            title="这页只负责能力发现"
-            description="dashboard 和 report 的分工先明确收口，避免再次把首页堆回黑盒特例逻辑。"
+            eyebrow="当前重点"
+            title="三条线的当前解读"
+            description="用统一语言解释当前系统成熟度，而不是把内部重构过程暴露给用户。"
           >
             <div className="space-y-3">
               {catalogActions.map((item) => (
@@ -282,19 +269,19 @@ export default async function DashboardPage() {
 
           <SectionCard
             eyebrow="下一步"
-            title="后续推进顺序"
-            description="保持 report 现状不回退，同时让 dashboard 成为统一目录入口。"
+            title="后续接 evidence 视图层的准备"
+            description="首页先稳住三轨系统状态，后续再把单条能力的 evidence 深读继续往下接。"
           >
             <div className="space-y-4">
               <ActionCard
                 index={1}
-                title="继续把 dashboard 作为 catalog 壳迭代"
-                note="后续如果需要更深指标，再基于明确需求讨论是否新增二级 evidence drill-down，而不是默认 fan-out。"
+                title="保持首页只讲系统状态"
+                note="首页继续展示 track、availability、evidence level 和已发布 workspace，不在这里扩成逐条 evidence 细读。"
               />
               <ActionCard
                 index={2}
-                title="report 继续保留单条 evidence 深读"
-                note="当前最佳 recon 证据仍然由 report 负责读取和陈述，不在这轮改动里回退。"
+                title="继续接单条 evidence 深读"
+                note="下一步可以围绕 contract_key 和 best workspace 补更明确的 evidence 入口，但不把首页重新变成黑盒方法页。"
               />
             </div>
           </SectionCard>
