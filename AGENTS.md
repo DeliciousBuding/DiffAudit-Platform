@@ -10,6 +10,7 @@ This repository is a multi-person and multi-agent collaboration workspace. Rules
 2. Every implementation task must start in a dedicated git worktree.
 3. One worktree owns one change stream.
 4. Merge back into the shared integration branch only after local verification.
+5. Follow `docs/merge-playbook.md` when multiple workers are active.
 
 ## Directory Ownership
 

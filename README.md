@@ -76,7 +76,7 @@ npm run dev:api
 - Do not implement features directly in the shared root worktree.
 - Use dedicated git worktrees for all implementation tasks.
 - Treat the root worktree as integration-only.
-- See `AGENTS.md` and `docs/worktree-collaboration.md`.
+- See `AGENTS.md`, `docs/worktree-collaboration.md`, and `docs/merge-playbook.md`.
 
 ## CI
 
