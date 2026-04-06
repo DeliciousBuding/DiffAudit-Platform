@@ -1,8 +1,14 @@
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 
 const TRACK_ORDER = ["black-box", "gray-box", "white-box"] as const;
+const AVAILABILITY_ORDER: Record<CatalogAvailability, number> = {
+  ready: 0,
+  partial: 1,
+  planned: 2,
+};
 
 export type CatalogAvailability = "ready" | "partial" | "planned";
+export type CatalogTrack = (typeof TRACK_ORDER)[number];
 
 export type CatalogEntryPayload = {
   key: string;
@@ -20,9 +26,12 @@ export type CatalogEntryPayload = {
 };
 
 export type CatalogTrackSummary = {
-  track: string;
+  track: CatalogTrack;
   total: number;
   ready: number;
+  partial: number;
+  planned: number;
+  entries: CatalogEntryViewModel[];
 };
 
 export type CatalogEntryViewModel = {
@@ -46,7 +55,6 @@ export type CatalogDashboardViewModel = {
     planned: number;
   };
   tracks: CatalogTrackSummary[];
-  entries: CatalogEntryViewModel[];
 };
 
 function backendBaseUrl() {
@@ -61,6 +69,21 @@ function formatRuntimeLabel(entry: CatalogEntryPayload) {
   return entry.scheduler ? `${entry.backend} / ${entry.scheduler}` : entry.backend;
 }
 
+function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
+  return {
+    key: entry.key,
+    label: entry.label,
+    track: entry.track,
+    availability: entry.availability,
+    evidenceLevel: entry.evidence_level ?? "catalog",
+    capabilityLabel: `${entry.attack_family} / ${entry.target_key}`,
+    paper: entry.paper ?? "unknown",
+    runtimeLabel: formatRuntimeLabel(entry),
+    bestWorkspace: entry.best_workspace ?? "pending workspace",
+    bestSummaryPath: entry.best_summary_path ?? "pending summary",
+  };
+}
+
 export function summarizeCatalogEntries(
   entries: CatalogEntryPayload[],
 ): CatalogDashboardViewModel {
@@ -71,30 +94,40 @@ export function summarizeCatalogEntries(
     planned: entries.filter((entry) => entry.availability === "planned").length,
   };
 
+  const mappedEntries = entries
+    .map(toEntryViewModel)
+    .sort((left, right) => {
+      const trackDiff =
+        TRACK_ORDER.indexOf(left.track as CatalogTrack) -
+        TRACK_ORDER.indexOf(right.track as CatalogTrack);
+      if (trackDiff !== 0) {
+        return trackDiff;
+      }
+
+      const availabilityDiff =
+        AVAILABILITY_ORDER[left.availability] - AVAILABILITY_ORDER[right.availability];
+      if (availabilityDiff !== 0) {
+        return availabilityDiff;
+      }
+
+      return left.key.localeCompare(right.key);
+    });
+
   const tracks = TRACK_ORDER.map((track) => {
-    const trackEntries = entries.filter((entry) => entry.track === track);
+    const trackEntries = mappedEntries.filter((entry) => entry.track === track);
     return {
       track,
       total: trackEntries.length,
       ready: trackEntries.filter((entry) => entry.availability === "ready").length,
+      partial: trackEntries.filter((entry) => entry.availability === "partial").length,
+      planned: trackEntries.filter((entry) => entry.availability === "planned").length,
+      entries: trackEntries,
     };
-  }).filter((track) => track.total > 0);
+  });
 
   return {
     stats,
     tracks,
-    entries: entries.map((entry) => ({
-      key: entry.key,
-      label: entry.label,
-      track: entry.track,
-      availability: entry.availability,
-      evidenceLevel: entry.evidence_level ?? "catalog",
-      capabilityLabel: `${entry.attack_family} / ${entry.target_key}`,
-      paper: entry.paper ?? "unknown",
-      runtimeLabel: formatRuntimeLabel(entry),
-      bestWorkspace: entry.best_workspace ?? "pending workspace",
-      bestSummaryPath: entry.best_summary_path ?? "pending summary",
-    })),
   };
 }
 

@@ -173,36 +173,89 @@ export default async function DashboardPage() {
         ))}
       </div>
 
+      <SectionCard
+        eyebrow="三线状态"
+        title="三线目录状态"
+        description="固定展示 black-box、gray-box、white-box 三条线当前的目录数量和成熟度分布，即使某条线暂时还没有条目。"
+      >
+        <div className="grid gap-4 lg:grid-cols-3">
+          {catalog.tracks.map((track) => (
+            <div
+              key={track.track}
+              className="rounded-[24px] border border-border bg-white/55 p-5 dark:bg-white/5"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                  {track.track}
+                </div>
+                <StatusBadge tone={trackTone[track.track] ?? "primary"}>{track.total} total</StatusBadge>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <TrackMetric label="ready" value={track.ready} />
+                <TrackMetric label="partial" value={track.partial} />
+                <TrackMetric label="planned" value={track.planned} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
       <div className="grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
         <SectionCard
           eyebrow="统一目录"
-          title="当前 catalog 条目"
-          description="这里只展示 contract 目录和最佳证据落点，不在 dashboard 再次读取条目对应的 summary 内容。"
+          title="按 track 分组的 catalog 条目"
+          description="目录项按 black-box、gray-box、white-box 分组展示，只陈述能力目录和状态，不在 dashboard 再次读取 summary 内容。"
         >
           <div className="space-y-4">
-            {catalog.entries.map((entry) => (
-              <div
-                key={entry.key}
-                className="rounded-[24px] border border-border bg-white/45 p-4 dark:bg-white/5"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
+            {catalog.tracks.map((track) => (
+              <div key={track.track} className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <div className="mono text-xs text-muted-foreground">{entry.key}</div>
-                    <div className="mt-1 text-sm font-semibold text-foreground">{entry.label}</div>
-                    <div className="mt-2 text-sm text-muted-foreground">{entry.capabilityLabel}</div>
+                    <div className="mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                      {track.track}
+                    </div>
+                    <div className="mt-1 text-base font-semibold text-foreground">
+                      {track.total > 0 ? `${track.total} 个 contract` : "当前无 catalog 条目"}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge tone={trackTone[entry.track] ?? "primary"}>{entry.track}</StatusBadge>
-                    <StatusBadge tone={availabilityTone[entry.availability]}>{entry.availability}</StatusBadge>
+                  <div className="flex flex-wrap gap-2">
+                    <StatusBadge tone="success">{track.ready} ready</StatusBadge>
+                    <StatusBadge tone="warning">{track.partial} partial</StatusBadge>
+                    <StatusBadge tone="info">{track.planned} planned</StatusBadge>
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <CatalogDetail label="Evidence level" value={entry.evidenceLevel} />
-                  <CatalogDetail label="Runtime" value={entry.runtimeLabel} />
-                  <CatalogDetail label="Best workspace" value={entry.bestWorkspace} />
-                  <CatalogDetail label="Best summary path" value={entry.bestSummaryPath} />
-                </div>
+                {track.entries.length === 0 ? (
+                  <div className="rounded-[24px] border border-dashed border-border bg-white/35 p-4 text-sm leading-6 text-muted-foreground dark:bg-white/4">
+                    当前无 catalog 条目
+                  </div>
+                ) : (
+                  track.entries.map((entry) => (
+                    <div
+                      key={entry.key}
+                      className="rounded-[24px] border border-border bg-white/45 p-4 dark:bg-white/5"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div className="mono text-xs text-muted-foreground">{entry.key}</div>
+                          <div className="mt-1 text-sm font-semibold text-foreground">{entry.label}</div>
+                          <div className="mt-2 text-sm text-muted-foreground">{entry.capabilityLabel}</div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <StatusBadge tone={trackTone[entry.track] ?? "primary"}>{entry.track}</StatusBadge>
+                          <StatusBadge tone={availabilityTone[entry.availability]}>{entry.availability}</StatusBadge>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid gap-3 md:grid-cols-2">
+                        <CatalogDetail label="Evidence level" value={entry.evidenceLevel} />
+                        <CatalogDetail label="Runtime" value={entry.runtimeLabel} />
+                        <CatalogDetail label="Best workspace" value={entry.bestWorkspace} />
+                        <CatalogDetail label="Best summary path" value={entry.bestSummaryPath} />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             ))}
           </div>
@@ -256,6 +309,15 @@ function CatalogDetail({ label, value }: { label: string; value: string }) {
     <div className="rounded-[20px] border border-border bg-white/60 px-4 py-3 dark:bg-white/6">
       <div className="text-sm text-muted-foreground">{label}</div>
       <div className="mt-2 break-all text-sm font-medium leading-6 text-foreground">{value}</div>
+    </div>
+  );
+}
+
+function TrackMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-[18px] border border-border bg-white/60 px-3 py-3 text-center dark:bg-white/6">
+      <div className="mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
+      <div className="mt-2 text-xl font-semibold tracking-tight">{value}</div>
     </div>
   );
 }

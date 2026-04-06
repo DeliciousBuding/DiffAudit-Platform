@@ -56,10 +56,15 @@ describe("DashboardPage", () => {
     const markup = renderToStaticMarkup(await DashboardPage());
 
     expect(markup).toContain("统一 evidence / catalog 展示壳");
+    expect(markup).toContain("三线目录状态");
+    expect(markup).toContain("black-box");
+    expect(markup).toContain("gray-box");
+    expect(markup).toContain("white-box");
     expect(markup).toContain("black-box/recon/sd15-ddim");
     expect(markup).toContain("gray-box/pia/sd15-ddim");
     expect(markup).toContain("best-summary");
     expect(markup).toContain("catalog -&gt; summary");
+    expect(markup).toContain("当前无 catalog 条目");
   });
 
   it("shows a clear unavailable state when the catalog is unreachable", async () => {
