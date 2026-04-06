@@ -1,5 +1,10 @@
-type BestReconPayload = {
+export type BestReconPayload = {
+  status?: string;
+  paper?: string;
+  method?: string;
+  mode?: string;
   workspace: string;
+  summary_path?: string;
   backend?: string | null;
   scheduler?: string | null;
   metrics?: {
