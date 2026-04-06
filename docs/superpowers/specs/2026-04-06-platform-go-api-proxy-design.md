@@ -2,7 +2,7 @@
 
 ## Goal
 
-Replace `Platform/apps/api` with a Go proxy service that fronts the local research control plane in `Services/Local-API`.
+Replace `apps/api` with a Go proxy service that fronts the local research control plane service.
 
 This sub-project is intentionally narrow:
 
@@ -28,8 +28,8 @@ Introduce a standalone Go service under `apps/api-go/` and treat it as the new p
 Flow:
 
 1. frontend or local clients call `Platform` Go API
-2. `Platform` Go API calls `Project` local Go API over HTTP
-3. `Project` local Go API continues to manage jobs and call Python research CLI
+2. the platform Go API calls the research local API over HTTP
+3. the research local API continues to manage jobs and call Python research CLI
 
 ## Rejected Alternatives
 

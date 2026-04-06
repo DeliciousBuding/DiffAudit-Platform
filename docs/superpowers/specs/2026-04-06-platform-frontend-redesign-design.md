@@ -2,7 +2,7 @@
 
 ## Goal
 
-Rebuild the `apps/web` frontend of `DiffAudit-Platform` so that its design system, layout skeleton, and page composition closely follow `D:\Code\Projects\codex2api\frontend`.
+Rebuild the `apps/web` frontend of `DiffAudit-Platform` so that its design system, layout skeleton, and page composition closely follow the `codex2api` frontend.
 
 This is a full-shell redesign, not a cosmetic patch.
 

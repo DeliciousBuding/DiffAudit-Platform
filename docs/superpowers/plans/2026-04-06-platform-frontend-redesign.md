@@ -23,13 +23,13 @@ Update `.gitignore` so project-local worktrees do not pollute repository status.
 
 - [ ] **Step 2: Commit the ignore rule**
 
-Run: `git -C "D:\Code\DiffAudit\Platform" add .gitignore`
-Run: `git -C "D:\Code\DiffAudit\Platform" commit -m "Ignore local worktrees"`
+Run: `git add .gitignore`
+Run: `git commit -m "Ignore local worktrees"`
 Expected: commit succeeds on `main` before worktree creation
 
 - [ ] **Step 3: Create an isolated worktree and branch**
 
-Run: `git -C "D:\Code\DiffAudit\Platform" worktree add ".worktrees/codex/platform-frontend-redesign" -b "codex/platform-frontend-redesign"`
+Run: `git worktree add ".worktrees/codex/platform-frontend-redesign" -b "codex/platform-frontend-redesign"`
 Expected: new worktree created from current HEAD
 
 - [ ] **Step 4: Verify web baseline inside the worktree**

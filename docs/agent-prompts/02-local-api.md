@@ -20,11 +20,11 @@
 
 ### 研究仓库
 
-- `D:\Code\DiffAudit\Project`
+- sibling research repo `../Project`
 
 ### 平台仓库
 
-- `D:\Code\DiffAudit\Platform`
+- current repo `./`
 
 你主要改动应落在研究仓库，必要时少量修改平台仓库的 API 契约或联调文档。
 
@@ -35,7 +35,7 @@
 - 论文：`Black-box Membership Inference Attacks against Fine-tuned Diffusion Models`
 - 方法：`recon`
 - 最强公开证据：
-  - `D:\Code\DiffAudit\Project\experiments\recon-runtime-mainline-ddim-public-25-step10\summary.json`
+  - `../Project/experiments/recon-runtime-mainline-ddim-public-25-step10/summary.json`
   - `auc = 0.768`
   - `asr = 0.52`
   - `tpr_at_1pct_fpr = 0.96`
@@ -89,12 +89,12 @@
 
 ## 你需要先阅读
 
-- `D:\Code\DiffAudit\Project\README.md`
-- `D:\Code\DiffAudit\Project\ROADMAP.md`
-- `D:\Code\DiffAudit\Project\src\diffaudit`
-- `D:\Code\DiffAudit\Project\experiments\blackbox-status\summary.json`
-- `D:\Code\DiffAudit\Project\experiments\recon-runtime-mainline-ddim-public-25-step10\summary.json`
-- `D:\Code\DiffAudit\Platform\apps\api`
+- `../Project/README.md`
+- `../Project/ROADMAP.md`
+- `../Project/src/diffaudit`
+- `../Project/experiments/blackbox-status/summary.json`
+- `../Project/experiments/recon-runtime-mainline-ddim-public-25-step10/summary.json`
+- `apps/api`
 
 ## 数据与接口原则
 
@@ -109,7 +109,7 @@
    - `workspace`
    - `metrics`
    - `artifact_paths`
-4. 路径型字段保留绝对路径，方便本机调试
+4. 在共享文档和公共契约中优先使用 repo-relative 或 service-relative 路径
 
 ## 如果你需要运行实验
 
@@ -117,9 +117,7 @@
 
 如果要跑 GPU：
 
-1. 必须先阅读并遵守：
-   - `D:\Code\DiffAudit\LocalOps\paper-resource-scheduler\gpu-request-rules.md`
-   - `D:\Code\DiffAudit\LocalOps\paper-resource-scheduler\agent-usage-prompt.md`
+1. 必须先阅读并遵守当前机器上的 GPU 调度规则
 2. 按要求申请 GPU
 3. 结束后释放 GPU
 

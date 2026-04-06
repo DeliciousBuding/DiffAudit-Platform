@@ -6,10 +6,10 @@ describe("audit client helpers", () => {
   it("builds a recon artifact replay payload from the best evidence", () => {
     const payload = buildArtifactReplayJobPayload(
       {
-        workspace: "D:/Code/DiffAudit/Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        workspace: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
         artifact_paths: {
           score_artifact_dir:
-            "D:/Code/DiffAudit/Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+            "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
         },
       },
       "audit-replay-001",
@@ -19,7 +19,7 @@ describe("audit client helpers", () => {
       job_type: "recon_artifact_mainline",
       workspace_name: "audit-replay-001",
       artifact_dir:
-        "D:/Code/DiffAudit/Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+        "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
       method: "threshold",
     });
   });
@@ -28,7 +28,7 @@ describe("audit client helpers", () => {
     expect(() =>
       buildArtifactReplayJobPayload(
         {
-          workspace: "D:/Code/DiffAudit/Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+          workspace: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
           artifact_paths: {},
         },
         "audit-replay-001",

@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace `Platform/apps/api` Python stub behavior with a Go proxy service that forwards platform API requests to the local research Go API in `Project`.
+**Goal:** Replace `apps/api` Python stub behavior with a Go proxy service that forwards platform API requests to the local research Go API service.
 
-**Architecture:** Add a standalone Go service under `apps/api-go/` that exposes the platform API routes and forwards them to the research local API over HTTP. The service remains a thin gateway; actual job execution and research state stay in `Services/Local-API`.
+**Architecture:** Add a standalone Go service under `apps/api-go/` that exposes the platform API routes and forwards them to the research local API over HTTP. The service remains a thin gateway; actual job execution and research state stay in the research local API service.
 
 **Tech Stack:** Go 1.26, standard library `net/http`, `httptest`, JSON proxying, upstream local research API
 
@@ -13,11 +13,11 @@
 ### Task 1: Scaffold The Go Platform API Service
 
 **Files:**
-- Create: `D:\Code\DiffAudit\Platform\apps\api-go\go.mod`
-- Create: `D:\Code\DiffAudit\Platform\apps\api-go\cmd\platform-api\main.go`
-- Create: `D:\Code\DiffAudit\Platform\apps\api-go\cmd\platform-api\main_test.go`
-- Create: `D:\Code\DiffAudit\Platform\apps\api-go\internal\proxy\server.go`
-- Create: `D:\Code\DiffAudit\Platform\apps\api-go\internal\proxy\server_test.go`
+- Create: `apps/api-go/go.mod`
+- Create: `apps/api-go/cmd/platform-api/main.go`
+- Create: `apps/api-go/cmd/platform-api/main_test.go`
+- Create: `apps/api-go/internal/proxy/server.go`
+- Create: `apps/api-go/internal/proxy/server_test.go`
 
 - [ ] **Step 1: Write the failing tests for config parsing and service bootstrapping**
 
@@ -32,7 +32,7 @@ Cover:
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
@@ -52,22 +52,22 @@ Add:
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
 - [ ] **Step 5: Commit**
 
 ```powershell
-git -C D:\Code\DiffAudit\Platform add apps/api-go
-git -C D:\Code\DiffAudit\Platform commit -m "Scaffold platform Go API proxy"
+git add apps/api-go
+git commit -m "Scaffold platform Go API proxy"
 ```
 
 ### Task 2: Proxy Health And Read-Only Research Endpoints
 
 **Files:**
-- Modify: `D:\Code\DiffAudit\Platform\apps\api-go\internal\proxy\server.go`
-- Modify: `D:\Code\DiffAudit\Platform\apps\api-go\internal\proxy\server_test.go`
+- Modify: `apps/api-go/internal/proxy/server.go`
+- Modify: `apps/api-go/internal/proxy/server_test.go`
 
 - [ ] **Step 1: Write the failing tests for proxying**
 
@@ -84,7 +84,7 @@ Use `httptest` upstream servers that mimic the local research API.
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
@@ -103,22 +103,22 @@ Requirements:
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
 - [ ] **Step 5: Commit**
 
 ```powershell
-git -C D:\Code\DiffAudit\Platform add apps/api-go
-git -C D:\Code\DiffAudit\Platform commit -m "Proxy platform read endpoints to research API"
+git add apps/api-go
+git commit -m "Proxy platform read endpoints to research API"
 ```
 
 ### Task 3: Proxy Job List, Create, And Detail Endpoints
 
 **Files:**
-- Modify: `D:\Code\DiffAudit\Platform\apps\api-go\internal\proxy\server.go`
-- Modify: `D:\Code\DiffAudit\Platform\apps\api-go\internal\proxy\server_test.go`
+- Modify: `apps/api-go/internal/proxy/server.go`
+- Modify: `apps/api-go/internal/proxy/server_test.go`
 
 - [ ] **Step 1: Write the failing tests for job routes**
 
@@ -135,7 +135,7 @@ Cover:
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
@@ -152,23 +152,23 @@ Requirements:
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
 - [ ] **Step 5: Commit**
 
 ```powershell
-git -C D:\Code\DiffAudit\Platform add apps/api-go
-git -C D:\Code\DiffAudit\Platform commit -m "Proxy platform job endpoints to research API"
+git add apps/api-go
+git commit -m "Proxy platform job endpoints to research API"
 ```
 
 ### Task 4: Make Go The Primary Platform API Runtime
 
 **Files:**
-- Modify: `D:\Code\DiffAudit\Platform\README.md`
-- Modify: `D:\Code\DiffAudit\Platform\apps\api\README.md`
-- Create or modify: `D:\Code\DiffAudit\Platform\apps\api-go\README.md`
+- Modify: `README.md`
+- Modify: `apps/api/README.md`
+- Create or modify: `apps/api-go/README.md`
 
 - [ ] **Step 1: Add a lightweight doc checklist**
 
@@ -191,7 +191,7 @@ Document:
 Run:
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go run ./cmd/platform-api --help
 ```
 
@@ -200,33 +200,30 @@ Expected: usage output with host/port/upstream URL flags.
 - [ ] **Step 4: Commit**
 
 ```powershell
-git -C D:\Code\DiffAudit\Platform add README.md apps/api/README.md apps/api-go/README.md
-git -C D:\Code\DiffAudit\Platform commit -m "Document platform Go API proxy runtime"
+git add README.md apps/api/README.md apps/api-go/README.md
+git commit -m "Document platform Go API proxy runtime"
 ```
 
 ### Task 5: End-To-End Local Integration Verification
 
 **Files:**
-- Modify if needed: `D:\Code\DiffAudit\Platform\apps\api-go\README.md`
+- Modify if needed: `apps/api-go/README.md`
 
 - [ ] **Step 1: Run the full Go test suite**
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go test ./...
 ```
 
 - [ ] **Step 2: Start the research local API**
 
-```powershell
-cd D:\Code\DiffAudit\Services\Local-API
-go run ./cmd/local-api
-```
+Start the local research API service using the instructions in its own repository.
 
 - [ ] **Step 3: Start the platform Go API proxy**
 
 ```powershell
-cd D:\Code\DiffAudit\Platform\apps\api-go
+cd apps/api-go
 go run ./cmd/platform-api --research-api-base-url http://127.0.0.1:8765
 ```
 
@@ -241,7 +238,7 @@ curl http://127.0.0.1:8780/api/v1/experiments/recon/best
 - [ ] **Step 5: Commit final cleanup if needed**
 
 ```powershell
-git -C D:\Code\DiffAudit\Platform add .
-git -C D:\Code\DiffAudit\Platform commit -m "Finish platform Go API proxy integration"
+git add .
+git commit -m "Finish platform Go API proxy integration"
 ```
 

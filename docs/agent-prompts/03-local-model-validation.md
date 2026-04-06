@@ -17,8 +17,8 @@
 
 ## 仓库与主线
 
-- 仓库：`D:\Code\DiffAudit\Project`
-- 当前路线图：`D:\Code\DiffAudit\Project\ROADMAP.md`
+- 仓库：sibling research repo `../Project`
+- 当前路线图：`../Project/ROADMAP.md`
 
 当前主线论文：
 
@@ -30,7 +30,7 @@
 
 当前最强证据：
 
-- `D:\Code\DiffAudit\Project\experiments\recon-runtime-mainline-ddim-public-25-step10\summary.json`
+- `../Project/experiments/recon-runtime-mainline-ddim-public-25-step10/summary.json`
 - 指标：
   - `auc = 0.768`
   - `asr = 0.52`
@@ -40,10 +40,7 @@
 
 ### 1. GPU 调度必须严格遵守
 
-任何 GPU 程序启动前，必须先阅读并遵守：
-
-- `D:\Code\DiffAudit\LocalOps\paper-resource-scheduler\gpu-request-rules.md`
-- `D:\Code\DiffAudit\LocalOps\paper-resource-scheduler\agent-usage-prompt.md`
+任何 GPU 程序启动前，必须先阅读并遵守当前机器上的 GPU 调度规则。
 
 并且：
 
@@ -61,9 +58,7 @@
 
 - `https://www.feishu.cn/docx/ITzEdcyWSoXRqKxuLe3cx4yInEe`
 
-并遵守：
-
-- `D:\Code\DiffAudit\AGENTS.md`
+并遵守当前机器上的根级协调规则。
 
 ### 3. 小步提交并立即 push
 
@@ -109,16 +104,16 @@
 
 ## 你需要先阅读
 
-- `D:\Code\DiffAudit\Project\README.md`
-- `D:\Code\DiffAudit\Project\ROADMAP.md`
-- `D:\Code\DiffAudit\Project\docs\reproduction-status.md`
-- `D:\Code\DiffAudit\Project\experiments\blackbox-status\summary.json`
-- `D:\Code\DiffAudit\Project\workspaces\black-box\plan.md`
+- `../Project/README.md`
+- `../Project/ROADMAP.md`
+- `../Project/docs/reproduction-status.md`
+- `../Project/experiments/blackbox-status/summary.json`
+- `../Project/workspaces/black-box/plan.md`
 
 如果你推进的是 `recon` 主线，还需要看：
 
-- `D:\Code\DiffAudit\Project\external\Reconstruction-based-Attack`
-- `D:\Code\DiffAudit\Project\configs\attacks\recon_plan.yaml`
+- `../Project/external/Reconstruction-based-Attack`
+- `../Project/configs/attacks/recon_plan.yaml`
 
 ## 工作原则
 
