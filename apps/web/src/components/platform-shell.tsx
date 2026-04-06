@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { LogoutButton } from "@/components/logout-button";
 import { navItems } from "@/lib/navigation";
 
 function titleForPath(pathname: string) {
@@ -66,6 +67,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LogoutButton />
               <span className="mono rounded-full border border-[rgba(79,255,176,0.25)] bg-[rgba(79,255,176,0.06)] px-3 py-1 text-[11px] text-[var(--accent)]">
                 RECON
               </span>
