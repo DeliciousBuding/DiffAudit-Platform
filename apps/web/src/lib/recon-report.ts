@@ -1,6 +1,8 @@
 import { BestReconPayload, summarizeBestRecon } from "@/lib/audit-client";
+import type { CatalogEntryPayload } from "@/lib/catalog";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
+const PRIMARY_REPORT_CONTRACT_KEY = "black-box/recon/sd15-ddim";
 
 export type ReconReportViewModel = {
   statusLabel: string;
@@ -41,6 +43,24 @@ function statusLabel(status?: string) {
   return status;
 }
 
+function contractKey(entry: CatalogEntryPayload) {
+  return entry.contract_key ?? entry.key ?? null;
+}
+
+function pickReportCatalogEntry(entries: CatalogEntryPayload[]) {
+  return (
+    entries.find(
+      (entry) =>
+        contractKey(entry) === PRIMARY_REPORT_CONTRACT_KEY && typeof entry.best_workspace === "string",
+    ) ??
+    entries.find(
+      (entry) => entry.availability === "ready" && typeof entry.best_workspace === "string",
+    ) ??
+    entries.find((entry) => typeof entry.best_workspace === "string") ??
+    null
+  );
+}
+
 function toViewModel(best: BestReconPayload): ReconReportViewModel {
   const summary = summarizeBestRecon(best);
 
@@ -61,20 +81,42 @@ function toViewModel(best: BestReconPayload): ReconReportViewModel {
 }
 
 export async function fetchBestReconReport(): Promise<ReconReportViewModel | null> {
-  const url = new URL("/api/v1/experiments/recon/best", backendBaseUrl());
-
   try {
-    const response = await fetch(url, {
+    const catalogResponse = await fetch(new URL("/api/v1/catalog", backendBaseUrl()), {
       cache: "no-store",
     });
-    if (!response.ok) {
+    if (!catalogResponse.ok) {
       return null;
     }
-    const payload = (await response.json()) as BestReconPayload;
-    if (!payload.workspace) {
+
+    const catalogPayload = await catalogResponse.json();
+    if (!Array.isArray(catalogPayload)) {
       return null;
     }
-    return toViewModel(payload);
+
+    const entry = pickReportCatalogEntry(catalogPayload as CatalogEntryPayload[]);
+    if (!entry?.best_workspace) {
+      return null;
+    }
+
+    const summaryResponse = await fetch(
+      new URL(
+        `/api/v1/experiments/${encodeURIComponent(entry.best_workspace)}/summary`,
+        backendBaseUrl(),
+      ),
+      {
+        cache: "no-store",
+      },
+    );
+    if (!summaryResponse.ok) {
+      return null;
+    }
+
+    const summaryPayload = (await summaryResponse.json()) as BestReconPayload;
+    if (!summaryPayload.workspace) {
+      return null;
+    }
+    return toViewModel(summaryPayload);
   } catch {
     return null;
   }

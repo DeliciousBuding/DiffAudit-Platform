@@ -40,6 +40,20 @@ describe("platform api proxy routes", () => {
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/catalog");
   });
 
+  it("proxies workspace summary requests to the backend", async () => {
+    const route = await import("./experiments/[workspace]/summary/route");
+
+    await route.GET(new Request("http://localhost"), {
+      params: Promise.resolve({
+        workspace: "recon-runtime-mainline-ddim-public-100-step30",
+      }),
+    });
+
+    expect(proxyToBackend).toHaveBeenCalledWith(
+      "/api/v1/experiments/recon-runtime-mainline-ddim-public-100-step30/summary",
+    );
+  });
+
   it("proxies audit job list requests to the backend", async () => {
     const route = await import("./audit/jobs/route");
 
