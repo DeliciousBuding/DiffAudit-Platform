@@ -43,12 +43,12 @@ export default async function ReportPage() {
       <div className="space-y-6">
         <PageHeader
           title="研究报告"
-          description="当前页优先展示最佳 black-box recon 证据；如果读取失败，就暂停引用这份 evidence，等待摘要恢复。"
+          description="当前页优先展示单条 evidence 深读；如果读取失败，就暂停引用这份 evidence，等待摘要恢复。"
         />
 
         <SectionCard
           eyebrow="当前状态"
-          title="最佳 recon 证据暂不可用"
+          title="当前 evidence 暂不可用"
           description="未能从平台后端读取当前最佳实验摘要。现在不应该继续引用演示结论，而应该先恢复真实数据链。"
           className="overflow-hidden bg-[linear-gradient(135deg,hsl(28_94%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))]"
         >
@@ -137,13 +137,13 @@ export default async function ReportPage() {
     <div className="space-y-6">
       <PageHeader
         title="研究报告"
-        description="当前页直接读取最佳 black-box recon 证据，把平台展示口径对齐到研究仓库当前已发布的证据摘要。"
+        description="当前页承担单条 evidence 深读，把页面口径对齐到当前已发布的实验摘要。"
       />
 
       <SectionCard
         eyebrow="执行摘要"
-        title={`当前最佳 recon 证据来自 ${evidence.workspace.name}`}
-        description="这页不再声称单张图像已经被审计，也不再引用演示态成员结论；它只陈述当前研究主线里最强的一份 recon 证据。"
+        title={`当前选定 evidence 来自 ${evidence.workspace.name}`}
+        description="这页只解释当前选中的一条 evidence 摘要，不把系统范围内的其他能力或其他结论混进来。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(36_95%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(36_70%_24%/0.45),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -156,7 +156,7 @@ export default async function ReportPage() {
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                这页展示的是当前已发布的最佳 recon 证据摘要，用来陈述事实证据，而不是代替研究结论之外的推断。
+                这页展示的是当前已发布的单条 evidence 摘要，用来陈述事实证据，而不是代替研究结论之外的推断。
               </div>
               <p className="mt-3 max-w-[58ch] text-sm leading-7 text-muted-foreground">
                 当前证据的核心信息是状态、运行模式、论文方法与 headline metrics。更进一步的复核可以继续沿着同一份 workspace 和 summary 往下追踪。

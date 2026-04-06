@@ -28,20 +28,6 @@ describe("DashboardPage", () => {
               best_summary_path: "D:/summary/recon.json",
               best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
             },
-            {
-              contract_key: "gray-box/pia/sd15-ddim",
-              track: "gray-box",
-              attack_family: "pia",
-              target_key: "sd15-ddim",
-              label: "PIA Smoke",
-              paper: "PIA_2024",
-              availability: "partial",
-              evidence_level: "catalog",
-              backend: null,
-              scheduler: null,
-              best_summary_path: null,
-              best_workspace: null,
-            },
           ]),
           {
             status: 200,
@@ -56,17 +42,17 @@ describe("DashboardPage", () => {
     const markup = renderToStaticMarkup(await DashboardPage());
 
     expect(markup).toContain("三轨系统状态");
-    expect(markup).toContain("统一三线当前能力与证据状态");
+    expect(markup).toContain("统一查看当前已经进入 live catalog 的能力状态");
     expect(markup).toContain("三线目录状态");
     expect(markup).toContain("black-box");
     expect(markup).toContain("gray-box");
     expect(markup).toContain("white-box");
     expect(markup).toContain("black-box/recon/sd15-ddim");
-    expect(markup).toContain("gray-box/pia/sd15-ddim");
     expect(markup).toContain("best-summary");
     expect(markup).toContain("当前无 catalog 条目");
-    expect(markup).toContain("主线证据可读");
-    expect(markup).toContain("准备态或 smoke 证据");
+    expect(markup).toContain("当前 live catalog 仅包含已发布条目");
+    expect(markup).toContain("尚未进入 live catalog");
+    expect(markup).not.toContain("准备态或 smoke 证据");
     expect(markup).not.toContain("黑盒特例逻辑");
     expect(markup).not.toContain("fan-out");
     expect(markup).not.toContain("dashboard 壳");
