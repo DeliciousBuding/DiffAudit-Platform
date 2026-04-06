@@ -3,6 +3,9 @@
 This document is the deployment and runtime handoff for the current public
 `DiffAudit-Platform` chain.
 
+The shortest executable operator checklist lives in
+`docs/public-runtime-runbook.md`.
+
 ## Active Runtime Story
 
 - Public domain: `https://diffaudit.vectorcontrol.tech`
