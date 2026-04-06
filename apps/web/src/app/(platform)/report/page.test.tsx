@@ -71,6 +71,8 @@ describe("ReportPage", () => {
     expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
       "/api/v1/experiments/recon-runtime-mainline-ddim-public-100-step30/summary",
     );
+    expect(markup).toContain("单条 evidence 深读");
+    expect(markup).toContain("当前选定 evidence 来自");
     expect(markup).toContain(
       "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
     );
@@ -89,6 +91,8 @@ describe("ReportPage", () => {
     expect(markup).not.toContain("blackbox-status");
     expect(markup).not.toContain("mock");
     expect(markup).not.toContain("上层联调");
+    expect(markup).not.toContain("最佳 recon 证据");
+    expect(markup).not.toContain("black-box recon 证据");
   });
 
   it("shows a clear unavailable state when the backend is unreachable", async () => {
@@ -120,7 +124,7 @@ describe("ReportPage", () => {
 
     const markup = renderToStaticMarkup(await ReportPage());
 
-    expect(markup).toContain("最佳 recon 证据暂不可用");
+    expect(markup).toContain("当前 evidence 暂不可用");
     expect(markup).toContain("未能从平台后端读取当前最佳实验摘要");
     expect(markup).not.toContain("8780");
     expect(markup).not.toContain("8765");
