@@ -24,6 +24,44 @@ export type ArtifactReplayJobPayload = {
   method: "threshold";
 };
 
+export type EvidenceSourceSnapshot = {
+  statusLabel: string;
+  statusTone: "primary" | "success" | "warning" | "info";
+  workspaceName: string;
+  workspacePath: string;
+  paper: string;
+  method: string;
+  mode: string;
+  backendLabel: string;
+  aucLabel: string;
+  asrLabel: string;
+  tprLabel: string;
+  summaryPath: string;
+};
+
+export type EvidenceViewModel = {
+  status: {
+    label: string;
+    tone: EvidenceSourceSnapshot["statusTone"];
+  };
+  workspace: {
+    name: string;
+    path: string;
+  };
+  context: {
+    paper: string;
+    method: string;
+  };
+  executionMode: string;
+  backendLabel: string;
+  metrics: {
+    aucLabel: string;
+    asrLabel: string;
+    tprLabel: string;
+  };
+  summaryPath: string;
+};
+
 function formatMetric(value: number | null | undefined) {
   if (typeof value !== "number") {
     return "n/a";
@@ -41,6 +79,33 @@ export function summarizeBestRecon(best: BestReconPayload) {
     aucLabel: formatMetric(best.metrics?.auc),
     asrLabel: formatMetric(best.metrics?.asr),
     tprLabel: formatMetric(best.metrics?.tpr_at_1pct_fpr),
+  };
+}
+
+export function toEvidenceViewModel(
+  source: EvidenceSourceSnapshot,
+): EvidenceViewModel {
+  return {
+    status: {
+      label: source.statusLabel,
+      tone: source.statusTone,
+    },
+    workspace: {
+      name: source.workspaceName,
+      path: source.workspacePath,
+    },
+    context: {
+      paper: source.paper,
+      method: source.method,
+    },
+    executionMode: source.mode,
+    backendLabel: source.backendLabel,
+    metrics: {
+      aucLabel: source.aucLabel,
+      asrLabel: source.asrLabel,
+      tprLabel: source.tprLabel,
+    },
+    summaryPath: source.summaryPath,
   };
 }
 
