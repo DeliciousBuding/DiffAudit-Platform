@@ -95,6 +95,7 @@ the active release gate.
 ## Deploy Handoff
 
 Deployment and runtime handoff notes live in `docs/public-runtime-handoff.md`.
+The executable ops checklist lives in `docs/public-runtime-runbook.md`.
 
 Use that document as the source of truth for:
 
