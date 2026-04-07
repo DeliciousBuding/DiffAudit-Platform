@@ -41,8 +41,8 @@ describe("DashboardPage", () => {
 
     const markup = renderToStaticMarkup(await DashboardPage());
 
-    expect(markup).toContain("三轨系统状态");
-    expect(markup).toContain("统一查看当前已经进入 live catalog 的能力状态");
+    expect(markup).toContain("系统状态");
+    expect(markup).toContain("统一查看当前目录中的能力状态");
     expect(markup).toContain("三线目录状态");
     expect(markup).toContain("black-box");
     expect(markup).toContain("gray-box");
@@ -50,8 +50,8 @@ describe("DashboardPage", () => {
     expect(markup).toContain("black-box/recon/sd15-ddim");
     expect(markup).toContain("best-summary");
     expect(markup).toContain("当前无 catalog 条目");
-    expect(markup).toContain("当前 live catalog 仅包含已发布条目");
-    expect(markup).toContain("尚未进入 live catalog");
+    expect(markup).toContain("已发布条目");
+    expect(markup).toContain("未发布");
     expect(markup).not.toContain("准备态或 smoke 证据");
     expect(markup).not.toContain("黑盒特例逻辑");
     expect(markup).not.toContain("fan-out");
@@ -65,7 +65,7 @@ describe("DashboardPage", () => {
     const markup = renderToStaticMarkup(await DashboardPage());
 
     expect(markup).toContain("系统状态暂时不可用");
-    expect(markup).toContain("三线能力目录暂时无法加载");
+    expect(markup).toContain("暂时无法加载三条线的状态信息");
     expect(markup).not.toContain("/api/v1/catalog");
   });
 });

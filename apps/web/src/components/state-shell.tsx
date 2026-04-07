@@ -22,8 +22,8 @@ export function StateShell({
       <div className="surface-card flex min-h-[240px] flex-col items-center justify-center gap-4 p-10 text-center">
         <div className="spinner" />
         <div>
-          <div className="text-lg font-semibold">同步页面数据</div>
-          <div className="mt-2 text-sm text-muted-foreground">正在准备当前视图。</div>
+          <div className="text-lg font-semibold">正在加载</div>
+          <div className="mt-2 text-sm text-muted-foreground">请稍候。</div>
         </div>
       </div>
     );
