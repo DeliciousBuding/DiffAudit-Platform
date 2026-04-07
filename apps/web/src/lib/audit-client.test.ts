@@ -95,6 +95,48 @@ describe("audit client helpers", () => {
         tprLabel: "1.000",
       },
       summaryPath: "source of truth",
+      });
     });
   });
-});
+
+  it("attaches optional runtime profile, assets, and repo root metadata", () => {
+    const payload = buildArtifactReplayJobPayload(
+      {
+        workspace: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        artifact_paths: {
+          score_artifact_dir:
+            "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+        },
+      },
+      "audit-replay-002",
+      {
+        runtimeProfile: {
+          executor: "docker",
+          mode: "profile-driven",
+        },
+        assets: {
+          bucket: "pia-assets",
+        },
+        repoRoot: "D:/Code/DiffAudit/Project",
+      },
+    );
+
+    expect(payload).toEqual({
+      job_type: "recon_artifact_mainline",
+      contract_key: "black-box/recon/sd15-ddim",
+      workspace_name: "audit-replay-002",
+      repo_root: "D:/Code/DiffAudit/Project",
+      runtime_profile: {
+        executor: "docker",
+        mode: "profile-driven",
+      },
+      assets: {
+        bucket: "pia-assets",
+      },
+      job_inputs: {
+        artifact_dir:
+          "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+        method: "threshold",
+      },
+    });
+  });

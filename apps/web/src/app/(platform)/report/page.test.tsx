@@ -22,8 +22,19 @@ describe("ReportPage", () => {
               label: "Stable Diffusion 1.5 DDIM Recon",
               availability: "ready",
               evidence_level: "best-summary",
-              best_workspace:
-                "recon-runtime-mainline-ddim-public-100-step30",
+              best_workspace: null,
+              best_summary_path: null,
+            },
+            {
+              contract_key: "white-box/gsa/ddpm-cifar10",
+              track: "white-box",
+              attack_family: "gsa",
+              target_key: "ddpm-cifar10",
+              label: "GSA on DDPM",
+              availability: "ready",
+              evidence_level: "best-summary",
+              best_workspace: "gsa-runtime-mainline-ddpm-cifar10",
+              best_summary_path: "D:/summary/gsa.json",
             },
           ]),
           {
@@ -38,19 +49,19 @@ describe("ReportPage", () => {
         new Response(
           JSON.stringify({
             status: "ready",
-            paper: "BlackBox_Reconstruction_ArXiv2023",
-            method: "recon",
+            paper: "GSA Whitebox",
+            method: "gsa",
             mode: "runtime-mainline",
-            backend: "stable_diffusion",
-            scheduler: "ddim",
+            backend: "gsa-engine",
+            scheduler: "mainline",
             workspace:
-              "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
+              "D:\\Code\\DiffAudit\\Project\\experiments\\gsa-runtime-mainline-ddpm-cifar10",
             summary_path:
-              "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30\\summary.json",
+              "D:\\Code\\DiffAudit\\Project\\experiments\\gsa-runtime-mainline-ddpm-cifar10\\summary.json",
             metrics: {
-              auc: 0.849,
-              asr: 0.51,
-              tpr_at_1pct_fpr: 1.0,
+              auc: 0.912,
+              asr: 0.31,
+              tpr_at_1pct_fpr: 0.92,
             },
           }),
           {
@@ -69,19 +80,19 @@ describe("ReportPage", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/api/v1/catalog");
     expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
-      "/api/v1/experiments/recon-runtime-mainline-ddim-public-100-step30/summary",
+      "/api/v1/experiments/gsa-runtime-mainline-ddpm-cifar10/summary",
     );
     expect(markup).toContain("证据报告");
     expect(markup).toContain("查看当前证据摘要");
     expect(markup).toContain(
-      "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
+      "D:\\Code\\DiffAudit\\Project\\experiments\\gsa-runtime-mainline-ddpm-cifar10",
     );
-    expect(markup).toContain("0.849");
-    expect(markup).toContain("0.510");
-    expect(markup).toContain("1.000");
-    expect(markup).toContain("stable_diffusion / ddim");
+    expect(markup).toContain("0.912");
+    expect(markup).toContain("0.310");
+    expect(markup).toContain("0.920");
+    expect(markup).toContain("gsa-engine / mainline");
     expect(markup).toContain(
-      "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30\\summary.json",
+      "D:\\Code\\DiffAudit\\Project\\experiments\\gsa-runtime-mainline-ddpm-cifar10\\summary.json",
     );
     expect(markup).not.toContain("best evidence workspace");
     expect(markup).not.toContain("source of truth");

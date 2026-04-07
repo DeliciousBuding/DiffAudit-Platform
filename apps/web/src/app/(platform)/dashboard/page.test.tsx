@@ -28,6 +28,26 @@ describe("DashboardPage", () => {
               best_summary_path: "D:/summary/recon.json",
               best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
             },
+            {
+              contract_key: "gray-box/pia/cifar10-ddpm",
+              track: "gray-box",
+              attack_family: "pia",
+              target_key: "cifar10-ddpm",
+              label: "PIA Smoke",
+              paper: "PIA_2024",
+              availability: "partial",
+              evidence_level: "catalog",
+            },
+            {
+              contract_key: "white-box/gsa/sd15-ddim",
+              track: "white-box",
+              attack_family: "gsa",
+              target_key: "sd15-ddim",
+              label: "GSA Planned",
+              paper: "GSA_2024",
+              availability: "planned",
+              evidence_level: "catalog",
+            },
           ]),
           {
             status: 200,
@@ -48,8 +68,11 @@ describe("DashboardPage", () => {
     expect(markup).toContain("gray-box");
     expect(markup).toContain("white-box");
     expect(markup).toContain("black-box/recon/sd15-ddim");
+    expect(markup).toContain("gray-box/pia/cifar10-ddpm");
+    expect(markup).toContain("white-box/gsa/sd15-ddim");
     expect(markup).toContain("best-summary");
-    expect(markup).toContain("当前无 catalog 条目");
+    expect(markup).toContain("PIA Smoke");
+    expect(markup).toContain("GSA Planned");
     expect(markup).toContain("已发布条目");
     expect(markup).toContain("未发布");
     expect(markup).not.toContain("准备态或 smoke 证据");
