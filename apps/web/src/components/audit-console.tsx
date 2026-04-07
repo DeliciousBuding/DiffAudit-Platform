@@ -29,7 +29,7 @@ export function AuditConsole() {
   const [diffusionStep, setDiffusionStep] = useState(200);
   const [averageN, setAverageN] = useState(10);
   const [apiEndpoint, setApiEndpoint] = useState("http://localhost:8780/api/audit");
-  const [apiStatus, setApiStatus] = useState("⬡ 未连接 — 当前使用模拟数据，接入后端后替换此地址");
+  const [apiStatus, setApiStatus] = useState("未连接。当前使用演示数据；接入后端后替换此地址。");
   const [running, setRunning] = useState(false);
   const [activeStep, setActiveStep] = useState(-1);
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
@@ -59,7 +59,7 @@ export function AuditConsole() {
   }
 
   function testConnection() {
-    setApiStatus("✗ 连接失败 — 后端未启动，使用模拟数据");
+    setApiStatus("无法连接后端，当前使用演示数据。");
   }
 
   async function startAudit() {
@@ -347,7 +347,7 @@ export function AuditConsole() {
             <li>REDIFFUSE 作为当前重点审计路线</li>
             <li>黑盒 Likelihood + 白盒 DDIM Inversion 为核心演示方法</li>
             <li>灰盒 Attention Map 作为可扩展的补充方法</li>
-            <li>模拟模式运行中，后端未连接时继续使用演示数据</li>
+            <li>演示模式：未连接后端时使用演示数据</li>
           </ul>
         </SectionCard>
       </div>

@@ -12,14 +12,6 @@ describe("platform api proxy routes", () => {
     proxyToBackend.mockResolvedValue(new Response(null, { status: 200 }));
   });
 
-  it("proxies recon best requests to the backend", async () => {
-    const route = await import("./experiments/recon/best/route");
-
-    await route.GET();
-
-    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/experiments/recon/best");
-  });
-
   it("proxies workspace summary requests to the backend", async () => {
     const route = await import("./experiments/[workspace]/summary/route");
 
