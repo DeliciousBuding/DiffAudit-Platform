@@ -26,66 +26,63 @@ be described as:
 | Item | Class | Why it matters | If unconfirmed today |
 | --- | --- | --- | --- |
 | Cloudflare basic edge reachability | `must-have` | Public users need the domain to resolve and reach the edge at all | Do not call launch ready |
-| `hk` proxy chain to `gz2` | `must-have` | Public requests must still reach the origin host | Do not call launch ready |
-| `gz2` `apps/web` runtime | `must-have` | The public shell depends on it | Do not call launch ready |
-| `gz2` `apps/api-go` runtime | `must-have` | Logged-in reads and platform API flow depend on it | Do not call launch ready |
-| `gz2` deployed `DIFFAUDIT_API_BASE_URL` value | `must-have` | The backend must target the intended upstream | Do not call launch ready |
-| `gz2 -> Local-API` connectivity | `must-have` | Current runtime path depends on the research-facing API | Do not call launch ready |
-| Tailscale connectivity from `gz2` to `100.81.149.78:8765` | `must-have` in current architecture | The live upstream currently uses the Tailscale path | Do not call launch ready |
-| Cloudflare allow / bypass for monitoring source hitting `/login` | `observability-only` | Needed for stable external canarying, not for already-known user function | Can run with risk |
+| `hk` nginx split routing to local Portal and Platform services | `must-have` | Public requests must still reach the right app on the runtime host | Do not call launch ready |
+| `hk` `diffaudit-portal.service` runtime | `must-have` | The public homepage and login depend on it | Do not call launch ready |
+| `hk` `diffaudit-platform-web.service` runtime | `must-have` | Logged-in workbench reads depend on it | Do not call launch ready |
+| `hk` `diffaudit-local-api.service` runtime | `must-have` | Platform catalog and evidence routes depend on it | Do not call launch ready |
+| `hk` deployed `DIFFAUDIT_API_BASE_URL` value | `must-have` | Platform must target the intended upstream | Do not call launch ready |
+| Shared cookie contract between Portal and Platform | `must-have` | Login ownership moved to Portal; workbench auth depends on the shared cookie | Do not call launch ready |
+| Cloudflare browser-like access to `/` and `/login` | `must-have` | Public users need a working homepage and login entry | Do not call launch ready |
+| Cloudflare allow / bypass for monitoring source hitting `/` or `/login` | `observability-only` | Needed for stable CLI canarying, not for already-known user function | Can run with risk |
 | Anonymous `/health` probing | `observability-only` | This route is intentionally protected | Can run with risk |
 | Anonymous `/api/v1/*` probing | `observability-only` | These routes are intentionally protected | Can run with risk |
 | Exact `hk` nginx config recorded in repo-accessible handoff | `known-risk` | Missing documentation slows takeover and incident response | Can run with risk |
-| Exact `gz2` systemd/process names recorded in repo-accessible handoff | `known-risk` | Missing documentation slows restart and recovery | Can run with risk |
+| Exact `hk` systemd/process names recorded in repo-accessible handoff | `known-risk` | Missing documentation slows restart and recovery | Can run with risk |
 | Exact deployed env values recorded in repo-accessible handoff | `known-risk` | Missing documentation makes diagnosis brittle | Can run with risk |
+| Explicit record that `gz2` is currently out of the live chain | `known-risk` | Missing this causes wrong-host diagnosis during incidents | Can run with risk |
 
 ## Classification By System
 
 ### Cloudflare
 
 - `must-have`:
-  - basic public reachability
+  - basic public reachability for browser-like requests
 - `observability-only`:
-  - allow / bypass for monitoring source on `GET /login`
+  - allow / bypass for monitoring source on `GET /` or `GET /login`
 
 Conclusion:
-Cloudflare has both functional and observability roles. The current unresolved
-issue is the observability side, not proven application failure by itself.
+Cloudflare has both functional and observability roles. As of `2026-04-08`, the
+explicit custom WAF challenge on `diffaudit.vectorcontrol.tech` was disabled,
+but anonymous default `curl` may still be challenged by bot heuristics.
 
 ### `hk`
 
 - `must-have`:
-  - proxy chain from public ingress to `gz2`
+  - nginx split routing to local Portal and Platform services
+  - `diffaudit-portal.service`
+  - `diffaudit-platform-web.service`
+  - `diffaudit-local-api.service`
 - `known-risk`:
   - exact config still not captured in repo-managed handoff
 
 ### `gz2`
 
-- `must-have`:
-  - `apps/web` runtime
-  - `apps/api-go` runtime
-  - correct deployed env
 - `known-risk`:
-  - exact service-manager details still live outside repo-managed handoff
-
-### Tailscale
-
-- `must-have` in the current architecture:
-  - live connectivity from `gz2` to the Local-API upstream
-- `known-risk`:
-  - operator procedure and config are still outside repo-managed handoff
+  - host recovery is still unresolved
+  - operators must not assume it is part of the current live path
 
 ## Hard Gate Conclusion
 
 If launching today, the team must first confirm:
 
 1. Cloudflare still routes traffic to the public edge
-2. `hk` still forwards to `gz2`
-3. `gz2` is serving `apps/web`
-4. `gz2` is serving `apps/api-go`
-5. `gz2` deploy env still targets the intended Local-API upstream
-6. `gz2` can still reach `100.81.149.78:8765`
-7. Tailscale is healthy on the path from `gz2` to the Local-API host
+2. `hk` nginx still forwards `/` and `/login` to `127.0.0.1:3011`
+3. `hk` nginx still forwards workbench and `/api/v1/*` routes to
+   `127.0.0.1:3000`
+4. `diffaudit-portal.service` is healthy on `hk`
+5. `diffaudit-platform-web.service` is healthy on `hk`
+6. `diffaudit-local-api.service` is healthy on `hk`
+7. shared-cookie login still produces a session accepted by the workbench
 
 Without those confirmations, the system is not launch-ready.
 
@@ -94,10 +91,11 @@ Without those confirmations, the system is not launch-ready.
 These may remain open during a same-day launch, but only if called out
 explicitly:
 
-- Cloudflare monitoring-source allow / bypass for `/login`
+- Cloudflare monitoring-source allow / bypass for `/` or `/login`
 - repo-managed record of exact `hk` nginx config
-- repo-managed record of exact `gz2` service-manager details
+- repo-managed record of exact `hk` service-manager details
 - repo-managed record of exact deployed env values
+- `gz2` recovery plan
 
 If these remain open, the system may function, but:
 
@@ -108,8 +106,5 @@ If these remain open, the system may function, but:
 ## Current External Confirmations Still Missing
 
 - confirmation that Cloudflare has a monitoring-source bypass or allow rule for
-  `/login`
-- confirmation of the exact live `hk -> gz2` proxy config
-- confirmation of the exact live `gz2` service names or process manager entries
-- confirmation of the exact live `DIFFAUDIT_API_BASE_URL` value on `gz2`
-- confirmation that the Tailscale path to `100.81.149.78:8765` is healthy right now
+  `/` or `/login`
+- a durable recovery decision for `gz2`

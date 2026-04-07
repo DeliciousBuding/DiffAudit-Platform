@@ -14,12 +14,18 @@ Use it to answer three questions quickly:
 - Public domain: `https://diffaudit.vectorcontrol.tech`
 - Public edge: Cloudflare
 - Entry host: `hk`
-- Origin host: `gz2`
-- Public app: `apps/web`
-- Active backend: `apps/api-go`
-- Current documented upstream from `gz2`: `http://100.81.149.78:8765`
-- Current documented private overlay: Tailscale between `gz2` and the machine
-  hosting `Services/Local-API`
+- Runtime host: `hk`
+- Homepage/login app: `Platform-Portal` on `127.0.0.1:3011`
+- Workbench app: `Platform/apps/web` on `127.0.0.1:3000`
+- Research-facing upstream: `Services/Local-API` on `127.0.0.1:8765`
+- Live systemd units:
+  - `diffaudit-portal.service`
+  - `diffaudit-platform-web.service`
+  - `diffaudit-local-api.service`
+- Live nginx upstreams:
+  - `diffaudit_portal -> 127.0.0.1:3011`
+  - `diffaudit_workbench -> 127.0.0.1:3000`
+- `gz2` is not in the live path as of `2026-04-08`
 
 ## Phase 1: Public Canary
 
@@ -28,25 +34,25 @@ confirm the public domain still reaches the platform shell.
 
 Repository-owned expectation:
 
-- the canary path is `GET /login`
+- the canary paths are `GET /` and `GET /login`
 
 External blocker:
 
-- Cloudflare challenge policy can still block this path
+- default bot-like CLI probes may still hit Cloudflare challenge heuristics
 
 Command:
 
 ```powershell
-curl.exe -I https://diffaudit.vectorcontrol.tech/login
+curl.exe -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" https://diffaudit.vectorcontrol.tech/
+curl.exe -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" https://diffaudit.vectorcontrol.tech/login
 ```
 
 Expected steady-state result:
 
 - `200`
-- or `302` to a stable login flow
-- but not Cloudflare `403` with `Cf-Mitigated: challenge`
+- and not Cloudflare `403` for a browser-like request
 
-If result is `403` with `Cf-Mitigated: challenge`:
+If result is `403` for a browser-like request:
 
 - stop treating this as an app outage
 - classify it as an external edge-policy failure
@@ -55,24 +61,26 @@ If result is `403` with `Cf-Mitigated: challenge`:
 ## Phase 2: Private Origin Health
 
 Goal:
-confirm the actual services on `gz2`.
+confirm the actual services on `hk`.
 
 These checks are repository-owned and should work even when the public edge is
 blocked.
 
-Run on `gz2`:
+Run on `hk`:
 
 ```powershell
-curl http://127.0.0.1:3000/login
-curl http://127.0.0.1:8780/health
+curl http://127.0.0.1:3011/login
+curl http://127.0.0.1:3000/health
+curl http://127.0.0.1:8765/health
 ```
 
 Expected result:
 
-- web login page reachable on `127.0.0.1:3000`
-- `apps/api-go` health reachable on `127.0.0.1:8780`
+- Portal login page reachable on `127.0.0.1:3011`
+- Platform `/health` requires auth and returns `401` when unauthenticated
+- Local-API health reachable on `127.0.0.1:8765`
 
-If `127.0.0.1:8780/health` fails:
+If `127.0.0.1:8765/health` fails:
 
 - the issue is inside the origin runtime or its process manager
 - continue with Phase 4
@@ -80,31 +88,30 @@ If `127.0.0.1:8780/health` fails:
 ## Phase 3: Private Upstream Health
 
 Goal:
-confirm `apps/api-go` can still reach `Services/Local-API`.
+confirm `Platform/apps/web` can still reach `Services/Local-API`.
 
-Run on `gz2`:
+Run on `hk`:
 
 ```powershell
-echo $env:DIFFAUDIT_API_BASE_URL
-curl http://100.81.149.78:8765/health
+sudo sed -n '1,20p' /etc/diffaudit-platform-web.env
+curl http://127.0.0.1:8765/health
+curl -H "Cookie: diffaudit_session=diffaudit-shared-session-token" http://127.0.0.1:3000/api/v1/catalog
 ```
-
-If the configured upstream differs from `100.81.149.78:8765`, probe the actual
-configured value instead.
 
 Expected result:
 
-- current `DIFFAUDIT_API_BASE_URL` resolves to the Tailscale-reachable
-  `Local-API`
+- current `DIFFAUDIT_API_BASE_URL` resolves to `http://127.0.0.1:8765`
 - upstream `/health` returns `200`
+- authenticated `api/v1/catalog` returns catalog JSON
 
 If this fails while Phase 2 passed:
 
 - classify it as upstream connectivity or Local-API availability failure
-- check whether Tailscale is up on `gz2`
-- check whether the Local-API host is listening on `0.0.0.0:8765`
+- check `diffaudit-platform-web.service`
+- check `diffaudit-local-api.service`
+- check the deployed env file on `hk`
 
-## Phase 4: hk / gz2 Runtime Checks
+## Phase 4: hk Runtime Checks
 
 Goal:
 separate app failure from host or proxy failure.
@@ -114,18 +121,13 @@ separate app failure from host or proxy failure.
 External-system checks:
 
 - confirm nginx is running
-- confirm the domain still proxies to `gz2`
-- confirm no new WAF rule is forcing a challenge on `/login`
-
-### `gz2`
-
-External-system checks:
-
-- confirm the web service unit is running
-- confirm the `apps/api-go` service or equivalent process is running
-- confirm the deploy env still points `DIFFAUDIT_API_BASE_URL` at the intended
-  upstream
-- confirm Tailscale is connected if the upstream is still the Tailscale IP
+- confirm nginx upstreams still point to `127.0.0.1:3011` and `127.0.0.1:3000`
+- confirm these systemd units are active:
+  - `diffaudit-portal.service`
+  - `diffaudit-platform-web.service`
+  - `diffaudit-local-api.service`
+- confirm no new Cloudflare rule is forcing browser-like requests into
+  challenge
 
 ## Phase 5: Cloudflare Allow / Bypass Checklist
 
@@ -134,7 +136,7 @@ This phase is entirely external-system work.
 Required steady-state policy:
 
 - keep `/health` and `/api/v1/*` protected
-- allow the approved monitoring source to hit `GET /login` without challenge
+- allow browser-like user requests to hit `/` and `/login`
 
 Minimum operator record:
 
@@ -147,9 +149,9 @@ Minimum operator record:
 
 These are the parts you can verify from repo-owned runtime and docs:
 
-- `apps/web` is the public app
-- `apps/api-go` is the active backend
-- `/login` is the public canary target
+- `Platform-Portal` owns the public homepage and login
+- `Platform/apps/web` owns the workbench shell
+- `/` and `/login` are the public canary targets
 - `/health` and `/api/v1/*` are not anonymous probe endpoints
 - the runtime handoff and probe boundary are documented in this repo
 
@@ -159,18 +161,18 @@ These require systems outside git:
 
 - Cloudflare allow / bypass rules
 - `hk` nginx config
-- `gz2` systemd or equivalent service manager
-- Tailscale connectivity between `gz2` and the Local-API host
-- deployed env values on `gz2`
+- `hk` systemd units
+- deployed env values on `hk`
 
 ## Exit Criteria
 
 You can call the public chain operational only when all of the following are
 true:
 
-- public `/login` no longer gets Cloudflare challenge for the approved
-  monitoring source
-- `gz2` local `127.0.0.1:3000/login` is reachable
-- `gz2` local `127.0.0.1:8780/health` returns `200`
-- the configured upstream `Local-API` `/health` returns `200`
-- the Tailscale dependency, if still present, is explicitly written in handoff
+- public `/` returns `200` for a browser-like request
+- public `/login` returns `200` for a browser-like request
+- `hk` local `127.0.0.1:3011/login` is reachable
+- `hk` local `127.0.0.1:3000/health` requires auth and responds correctly when
+  unauthenticated
+- authenticated `hk` local or public `api/v1/catalog` returns `200`
+- the Cloudflare and `hk` service ownership is explicitly written in handoff
