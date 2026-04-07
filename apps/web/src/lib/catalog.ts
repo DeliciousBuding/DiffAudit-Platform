@@ -1,4 +1,7 @@
+import { fetchWithTimeout } from "@/lib/fetch-timeout";
+
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
+const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 
 const TRACK_ORDER = ["black-box", "gray-box", "white-box"] as const;
 const AVAILABILITY_ORDER: Record<CatalogAvailability, number> = {
@@ -190,9 +193,13 @@ export async function fetchCatalogDashboard(): Promise<CatalogDashboardViewModel
   const url = new URL("/api/v1/catalog", backendBaseUrl());
 
   try {
-    const response = await fetch(url, {
-      cache: "no-store",
-    });
+    const response = await fetchWithTimeout(
+      url,
+      {
+        cache: "no-store",
+      },
+      { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
+    );
     if (!response.ok) {
       return null;
     }
