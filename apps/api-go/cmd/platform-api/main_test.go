@@ -7,14 +7,14 @@ func TestParseConfigUsesDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatalf("parseConfig returned error: %v", err)
 	}
-	if config.Host != "127.0.0.1" {
-		t.Fatalf("expected default host 127.0.0.1, got %s", config.Host)
+	if config.Host != defaultHost {
+		t.Fatalf("expected default host %s, got %s", defaultHost, config.Host)
 	}
 	if config.Port != "8780" {
 		t.Fatalf("expected default port 8780, got %s", config.Port)
 	}
-	if config.ResearchAPIBaseURL != "http://127.0.0.1:8765" {
-		t.Fatalf("expected default upstream url, got %s", config.ResearchAPIBaseURL)
+	if config.ResearchAPIBaseURL != defaultResearchAPIBaseURL {
+		t.Fatalf("expected default upstream url %s, got %s", defaultResearchAPIBaseURL, config.ResearchAPIBaseURL)
 	}
 }
 

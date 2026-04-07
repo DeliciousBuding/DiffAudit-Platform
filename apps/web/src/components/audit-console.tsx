@@ -28,7 +28,7 @@ export function AuditConsole() {
   const [distanceFunction, setDistanceFunction] = useState("SSIM");
   const [diffusionStep, setDiffusionStep] = useState(200);
   const [averageN, setAverageN] = useState(10);
-  const [apiEndpoint, setApiEndpoint] = useState("http://localhost:8000/api/audit");
+  const [apiEndpoint, setApiEndpoint] = useState("http://localhost:8780/api/audit");
   const [apiStatus, setApiStatus] = useState("⬡ 未连接 — 当前使用模拟数据，接入后端后替换此地址");
   const [running, setRunning] = useState(false);
   const [activeStep, setActiveStep] = useState(-1);
