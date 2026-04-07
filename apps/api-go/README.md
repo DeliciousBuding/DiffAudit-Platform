@@ -44,7 +44,9 @@ If `8780` is already occupied too, the script exits with a clear warning instead
 
 Job creation bodies are passed through unchanged and should follow the Local-API
 contract, including the required `contract_key`. Contract-specific payload
-fields should live under `job_inputs`; the gateway does not interpret them.
+fields should live under `job_inputs`; `runtime_profile` and `assets` may also
+be present for docker-first execution flows. The gateway does not interpret
+method-specific fields and forwards them unchanged.
 
 ## Boundary
 

@@ -28,6 +28,34 @@ describe("DashboardPage", () => {
               best_summary_path: "D:/summary/recon.json",
               best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
             },
+            {
+              contract_key: "gray-box/pia/cifar10-ddpm",
+              track: "gray-box",
+              attack_family: "pia",
+              target_key: "cifar10-ddpm",
+              label: "PIA Runtime Mainline",
+              paper: "PIA",
+              availability: "ready",
+              evidence_level: "best-summary",
+              backend: null,
+              scheduler: null,
+              best_summary_path: "D:/summary/pia.json",
+              best_workspace: "pia-cifar10-runtime-mainline-20260407-cpu",
+            },
+            {
+              contract_key: "white-box/gsa/ddpm-cifar10",
+              track: "white-box",
+              attack_family: "gsa",
+              target_key: "ddpm-cifar10",
+              label: "GSA Runtime Mainline",
+              paper: "GSA",
+              availability: "partial",
+              evidence_level: "best-summary",
+              backend: null,
+              scheduler: null,
+              best_summary_path: "D:/summary/gsa.json",
+              best_workspace: "gsa-runtime-mainline-20260407-cpu",
+            },
           ]),
           {
             status: 200,
@@ -49,9 +77,12 @@ describe("DashboardPage", () => {
     expect(markup).toContain("white-box");
     expect(markup).toContain("black-box/recon/sd15-ddim");
     expect(markup).toContain("best-summary");
-    expect(markup).toContain("当前无 catalog 条目");
     expect(markup).toContain("已发布条目");
     expect(markup).toContain("未发布");
+    expect(markup).toContain("gray-box/pia/cifar10-ddpm");
+    expect(markup).toContain("white-box/gsa/ddpm-cifar10");
+    expect(markup).toContain("PIA Runtime Mainline");
+    expect(markup).toContain("GSA Runtime Mainline");
     expect(markup).not.toContain("准备态或 smoke 证据");
     expect(markup).not.toContain("黑盒特例逻辑");
     expect(markup).not.toContain("fan-out");
