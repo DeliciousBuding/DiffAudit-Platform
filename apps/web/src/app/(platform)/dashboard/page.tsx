@@ -6,16 +6,16 @@ import { fetchCatalogDashboard, type CatalogAvailability } from "@/lib/catalog";
 
 const catalogActions = [
   {
-    title: "当前 live catalog 仅包含已发布条目",
-    note: "首页只陈述已经进入 live catalog 的能力与证据状态，不把未发布能力写得比后端更完整。",
+    title: "仅展示已发布条目",
+    note: "首页仅展示已进入目录的能力和证据状态。",
   },
   {
-    title: "未发布 track 保留入口但不放大",
-    note: "Gray-box 和 White-box 仍保留统一入口位置，但在没有 live 条目前只显示为空位和目录状态。",
+    title: "未发布轨道保留入口",
+    note: "Gray-box 和 White-box 保留入口，但不展示未发布内容。",
   },
   {
-    title: "证据深读继续留给 report",
-    note: "首页只说明系统状态，不把单条 evidence 的深读内容提前搬到 dashboard。",
+    title: "证据细节在报告页查看",
+    note: "单条证据的详细信息统一在报告页查看。",
   },
 ];
 
@@ -38,14 +38,14 @@ export default async function DashboardPage() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="三轨系统状态"
-          description="统一查看 black-box、gray-box、white-box 三条线当前的能力成熟度、最佳证据状态和可读入口。"
+          title="系统状态"
+          description="统一查看 black-box、gray-box、white-box 三条线的状态、证据和可用入口。"
         />
 
         <SectionCard
           eyebrow="当前状态"
           title="系统状态暂时不可用"
-          description="三线能力目录暂时无法加载。请稍后重试，系统恢复后这里会继续展示当前可读证据和规划中的能力入口。"
+          description="暂时无法加载三条线的状态信息，请稍后重试。"
           className="overflow-hidden bg-[linear-gradient(135deg,hsl(28_94%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))]"
         >
           <div className="space-y-4">
@@ -56,10 +56,10 @@ export default async function DashboardPage() {
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)]">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                当前无法展示三条线的最新状态，但系统恢复后会继续提供统一的能力与证据概览。
+                当前无法显示最新状态。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                这页默认展示哪些能力已经有证据、哪些仍处于准备态，以及哪些能力还在规划中，而不是放大单一研究方法的临时状态。
+                系统恢复后，这里会继续展示各轨道的状态和证据信息。
               </p>
             </div>
           </div>
@@ -102,14 +102,14 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="三轨系统状态"
-        description="统一查看当前已经进入 live catalog 的能力状态，并保留三条线的统一入口结构。"
+        title="系统状态"
+        description="统一查看当前目录中的能力状态，并保留三条线的入口结构。"
       />
 
       <SectionCard
         eyebrow="系统概览"
-        title="统一三线当前 live 状态"
-        description="首页先展示当前已经进入 live catalog 的能力，再保留三条线的入口和目录位置。"
+        title="当前目录状态"
+        description="展示当前目录中的能力，并保留三条线的入口位置。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(258_82%_97%),transparent_50%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(258_40%_22%/0.55),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -123,10 +123,10 @@ export default async function DashboardPage() {
 
             <div className="rounded-[26px] border border-primary/15 bg-white/60 p-5 shadow-[0_20px_60px_hsl(258_45%_30%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                这页只陈述当前已经进入 live catalog 的能力状态，不把尚未发布的线写成已经可读。
+                首页仅展示当前目录中的能力状态。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                当前 live catalog 里已有可读条目会直接显示在目录中；还没进入 live catalog 的线继续保留位置，但不提前承诺证据或运行入口。
+                未发布内容保留入口，不在此页展开。
               </p>
             </div>
           </div>
@@ -143,8 +143,8 @@ export default async function DashboardPage() {
                 <div className="mt-3 text-2xl font-semibold tracking-tight">{item.total}</div>
                 <div className="mt-2 text-sm leading-6 text-muted-foreground">
                   {item.track === "black-box"
-                    ? "当前 live catalog 仅包含已发布条目"
-                    : "尚未进入 live catalog"}
+                    ? "已发布条目"
+                    : "未发布"}
                 </div>
               </div>
             ))}
@@ -161,7 +161,7 @@ export default async function DashboardPage() {
       <SectionCard
         eyebrow="三线状态"
         title="三线目录状态"
-        description="固定展示 black-box、gray-box、white-box 三条线当前的目录数量和成熟度分布，即使某条线暂时还没有条目。"
+        description="展示三条线的目录数量和成熟度分布。"
       >
         <div className="grid gap-4 lg:grid-cols-3">
           {catalog.tracks.map((track) => (
@@ -187,9 +187,9 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
         <SectionCard
-          eyebrow="统一目录"
-          title="按 track 分组的 catalog 条目"
-          description="每条线都先展示当前成熟度，再列出已进入系统目录的能力项和已发布的最佳证据状态。"
+          eyebrow="目录详情"
+          title="按轨道分组的能力条目"
+          description="各条线的成熟度、能力项和最佳证据状态。"
         >
           <div className="space-y-4">
             {catalog.tracks.map((track) => (
@@ -249,8 +249,8 @@ export default async function DashboardPage() {
         <div className="space-y-6">
           <SectionCard
             eyebrow="当前重点"
-            title="三条线的当前解读"
-            description="用统一语言解释当前 live 状态，避免把未发布能力写得像已经上线。"
+            title="解读说明"
+            description="当前状态解读。"
           >
             <div className="space-y-3">
               {catalogActions.map((item) => (
@@ -267,19 +267,19 @@ export default async function DashboardPage() {
 
           <SectionCard
             eyebrow="下一步"
-            title="页面分工"
-            description="首页继续承担系统状态入口，单条 evidence 的细读留给 report。"
+            title="操作指引"
+            description="系统状态页查看整体状态，证据细节查看报告页。"
           >
             <div className="space-y-4">
               <ActionCard
                 index={1}
-                title="保持首页只讲 live 状态"
-                note="首页继续展示 track、availability 和已发布条目的目录状态，不在这里扩成单条 evidence 细读。"
+                title="系统状态页仅展示目录"
+                note="展示 track、availability 和已发布条目的状态，"
               />
               <ActionCard
                 index={2}
-                title="单条 evidence 继续走 report"
-                note="如果需要看某一条 evidence 的细节、workspace 和 summary，就继续进入 report，而不是在 dashboard 重复同一层内容。"
+                title="证据细节查看报告页"
+                note="单条 evidence 的详细信息、workspace 和 summary 在报告页查看。"
               />
             </div>
           </SectionCard>

@@ -7,31 +7,31 @@ import { fetchBestReconReport } from "@/lib/recon-report";
 
 const unavailableActions = [
   {
-    title: "稍后重试读取证据摘要",
-    note: "如果当前摘要源短暂不可用，系统恢复后会继续展示最新的已发布证据。",
+    title: "稍后重试",
+    note: "摘要恢复后可继续查看最新已发布证据。",
   },
   {
-    title: "改看最近一次已导出的证据副本",
-    note: "如果你手头已有这条线的上一次导出结果，可以暂时先基于那份证据继续沟通。",
+    title: "查看最近一次导出结果",
+    note: "如已持有上一版导出结果，可先据此核对。",
   },
   {
-    title: "等待最新摘要恢复后再更新结论",
-    note: "摘要恢复前，不要把临时口头判断升级为正式结论。",
+    title: "待摘要恢复后更新结论",
+    note: "摘要恢复前，不建议更新正式结论。",
   },
 ];
 
 const reportActions = [
   {
-    title: "先确认当前证据状态与运行模式",
-    note: "优先阅读当前状态、运行模式和 headline metrics，再决定这份证据是否适合继续引用。",
+    title: "先确认状态与运行模式",
+    note: "优先核对状态、运行模式和关键指标。",
   },
   {
-    title: "沿着当前 workspace 继续追踪同一份证据",
-    note: "如果需要继续深读或复核，围绕当前 workspace 和 summary 路径往下追，不要切到另一份未对齐的摘要。",
+    title: "沿当前 workspace 继续追踪",
+    note: "需要复核时，继续查看当前 workspace 和摘要路径。",
   },
   {
-    title: "把跨轨道判断留给系统状态页",
-    note: "这页只解释当前这份 evidence，本线之外的成熟度和入口状态继续回到系统状态页查看。",
+    title: "跨轨道信息回到系统状态页查看",
+    note: "其他轨道的入口和成熟度请在系统状态页查看。",
   },
 ];
 
@@ -42,14 +42,14 @@ export default async function ReportPage() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="研究报告"
-          description="当前页优先展示单条 evidence 深读；如果读取失败，就暂停引用这份 evidence，等待摘要恢复。"
+          title="证据报告"
+          description="查看当前证据摘要和关键指标。"
         />
 
         <SectionCard
           eyebrow="当前状态"
-          title="当前 evidence 暂不可用"
-          description="未能从平台后端读取当前最佳实验摘要。现在不应该继续引用演示结论，而应该先恢复真实数据链。"
+          title="当前证据暂不可用"
+          description="未能从平台后端读取当前摘要，请稍后重试。"
           className="overflow-hidden bg-[linear-gradient(135deg,hsl(28_94%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))]"
         >
           <div className="space-y-4">
@@ -60,10 +60,10 @@ export default async function ReportPage() {
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)]">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                真实摘要链断了，页面现在应该优先恢复数据入口，而不是继续输出结论性文案。
+                当前无法加载证据摘要。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                这意味着当前无法安全引用这份 evidence。最稳妥的做法是等待摘要恢复，再基于同一份已发布证据继续判断。
+                请在摘要恢复后再继续查看或引用当前证据。
               </p>
             </div>
           </div>
@@ -136,14 +136,14 @@ export default async function ReportPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="研究报告"
-        description="当前页承担单条 evidence 深读，把页面口径对齐到当前已发布的实验摘要。"
+        title="证据报告"
+        description="查看当前证据摘要和关键指标。"
       />
 
       <SectionCard
         eyebrow="执行摘要"
-        title={`当前选定 evidence 来自 ${evidence.workspace.name}`}
-        description="这页只解释当前选中的一条 evidence 摘要，不把系统范围内的其他能力或其他结论混进来。"
+        title={`当前证据来自 ${evidence.workspace.name}`}
+        description="展示当前证据摘要。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(36_95%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(36_70%_24%/0.45),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -156,10 +156,10 @@ export default async function ReportPage() {
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                这页展示的是当前已发布的单条 evidence 摘要，用来陈述事实证据，而不是代替研究结论之外的推断。
+                当前证据摘要
               </div>
               <p className="mt-3 max-w-[58ch] text-sm leading-7 text-muted-foreground">
-                当前证据的核心信息是状态、运行模式、论文方法与 headline metrics。更进一步的复核可以继续沿着同一份 workspace 和 summary 往下追踪。
+                状态、运行模式、论文方法与关键指标。
               </p>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default async function ReportPage() {
         <SectionCard
           eyebrow="证据链摘要"
           title="最佳证据摘要"
-          description="页面只保留当前最重要的三条事实，避免继续沿用旧的演示文案。"
+          description="当前最重要的三条事实。"
         >
           <div className="space-y-3">
             {evidenceSummary.map((item) => (
@@ -200,7 +200,7 @@ export default async function ReportPage() {
         <SectionCard
           eyebrow="研究对象"
           title="当前摘要信息"
-          description="这里展示的是实验摘要本身，而不是单图审计结论。"
+          description="实验摘要信息。"
         >
           <div className="space-y-3">
             {scopeDetails.map((item) => (
@@ -212,8 +212,8 @@ export default async function ReportPage() {
 
       <SectionCard
         eyebrow="下一步"
-        title="基于这份最佳证据继续推进"
-        description="后续动作统一围绕当前 best evidence 展开，避免不同页面和不同摘要源给出相互冲突的结论。"
+        title="后续操作"
+        description="围绕当前证据继续推进。"
       >
         <div className="space-y-3">
           {reportActions.map((item, index) => (
