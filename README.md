@@ -43,15 +43,14 @@ npm --prefix apps/web install
 npm run dev:web
 ```
 
-Temporary login variables for the frontend:
+Frontend gateway variables:
 
 ```powershell
 copy apps\web\.env.example apps\web\.env.local
 ```
 
-- `DIFFAUDIT_SHARED_USERNAME`: shared preview username
-- `DIFFAUDIT_SHARED_PASSWORD`: shared preview password
 - `DIFFAUDIT_SESSION_TOKEN`: opaque session cookie value
+- `DIFFAUDIT_PORTAL_URL`: Portal login origin, defaults to `http://localhost:3001`
 - `DIFFAUDIT_API_BASE_URL`: internal backend URL, defaults to `http://127.0.0.1:8780`
 
 ### Backend
@@ -119,14 +118,14 @@ Phase 2:
 - add auth / gateway layer
 - move long-running compute off the local workstation if needed
 
-## Temporary Preview Auth
+## Portal-Owned Login
 
-The current public preview uses a shared temporary login implemented in Next.js:
+The current public preview uses Portal as the only login owner:
 
-- `/login` issues an `HttpOnly` cookie after validating the shared credentials
-- proxy protection covers platform pages and the public `/api/v1/*` routes
-- public ingress should send all requests to the Next.js app
-- the private platform API behind that proxy is the `apps/api-go` gateway
+- Portal issues the shared `HttpOnly` session cookie
+- `apps/web` only validates the shared cookie and protects workbench routes
+- unauthenticated workbench access redirects to Portal `/login`
+- the private platform API behind that gateway remains `apps/api-go`
 
 ### Public Probe Boundary
 

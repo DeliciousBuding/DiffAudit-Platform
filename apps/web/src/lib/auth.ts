@@ -1,47 +1,43 @@
 export const SESSION_COOKIE_NAME = "diffaudit_session";
 
 type AuthEnv = {
-  DIFFAUDIT_SHARED_USERNAME?: string;
-  DIFFAUDIT_SHARED_PASSWORD?: string;
+  DIFFAUDIT_PORTAL_URL?: string;
   DIFFAUDIT_SESSION_TOKEN?: string;
 };
 
 export type AuthConfig = {
-  sharedUsername: string;
-  sharedPassword: string;
+  portalUrl: string;
   sessionToken: string;
 };
 
 export function readAuthConfig(env: AuthEnv = process.env as AuthEnv): AuthConfig {
   return {
-    sharedUsername: env.DIFFAUDIT_SHARED_USERNAME ?? "",
-    sharedPassword: env.DIFFAUDIT_SHARED_PASSWORD ?? "",
+    portalUrl: env.DIFFAUDIT_PORTAL_URL ?? "http://localhost:3001",
     sessionToken: env.DIFFAUDIT_SESSION_TOKEN ?? "",
   };
-}
-
-export function authConfigIsReady(config: AuthConfig): boolean {
-  return Boolean(
-    config.sharedUsername && config.sharedPassword && config.sessionToken,
-  );
-}
-
-export function credentialsAreValid(
-  config: AuthConfig,
-  credentials: { username: string; password: string },
-): boolean {
-  return (
-    authConfigIsReady(config) &&
-    credentials.username === config.sharedUsername &&
-    credentials.password === config.sharedPassword
-  );
 }
 
 export function sessionTokenIsValid(
   config: AuthConfig,
   token: string | undefined,
 ): boolean {
-  return authConfigIsReady(config) && Boolean(token) && token === config.sessionToken;
+  return Boolean(config.sessionToken) && Boolean(token) && token === config.sessionToken;
+}
+
+export function buildPortalLoginUrl(
+  config: AuthConfig,
+  requestUrl: string,
+  redirectPath: string,
+): string {
+  const portalUrl = new URL("/login", config.portalUrl);
+  const requestOrigin = new URL(requestUrl).origin;
+  const redirectTarget =
+    portalUrl.origin === requestOrigin
+      ? redirectPath
+      : `${requestOrigin}${redirectPath}`;
+
+  portalUrl.searchParams.set("redirectTo", redirectTarget);
+  return portalUrl.toString();
 }
 
 export function protectedPagePath(pathname: string): boolean {
