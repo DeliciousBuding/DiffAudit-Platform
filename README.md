@@ -12,8 +12,8 @@ This repo is intentionally separate from the research repo:
 ```text
 apps/
   web/      Next.js frontend
-  api/      legacy FastAPI stub
-  api-go/   Go backend gateway
+  api-go/   active Go backend gateway
+  api/      legacy FastAPI stub retained for historical reference
 packages/
   shared/   shared contracts and copyable prompts
 docs/       architecture and integration docs
@@ -61,6 +61,9 @@ cd <platform-repo>
 npm run dev:api
 ```
 
+`npm run dev:api` starts the active `apps/api-go` gateway. The legacy
+`apps/api` FastAPI stub is not part of the active runtime path.
+
 ### Local URLs
 
 - web: `http://localhost:3000`
@@ -83,8 +86,23 @@ npm run dev:api
 GitHub Actions checks:
 
 - Next.js lint
-- FastAPI lint
-- FastAPI tests
+- Go gateway tests
+- Go gateway build
+
+The legacy `apps/api` FastAPI stub is kept as a historical reference and is not
+the active release gate.
+
+## Deploy Handoff
+
+Deployment and runtime handoff notes live in `docs/public-runtime-handoff.md`.
+The executable ops checklist lives in `docs/public-runtime-runbook.md`.
+
+Use that document as the source of truth for:
+
+- active backend ownership
+- public edge probe expectations
+- private service probe commands
+- external dependencies that are not versioned in this repo
 
 ## Integration direction
 
@@ -107,5 +125,14 @@ The current public preview uses a shared temporary login implemented in Next.js:
 - `/login` issues an `HttpOnly` cookie after validating the shared credentials
 - proxy protection covers platform pages and the public `/api/v1/*` routes
 - public ingress should send all requests to the Next.js app
-- FastAPI stays on the private side and is consumed through the frontend proxy layer
+- the private platform API behind that proxy is the `apps/api-go` gateway
+
+### Public Probe Boundary
+
+- `/health` and `/api/v1/*` are application routes behind the shared-login
+  boundary and should not be treated as anonymous public probe endpoints
+- the shortest stable public canary path is `GET /login`, but it still depends
+  on external Cloudflare challenge policy
+- the stable service probes are private checks on the origin machine, not
+  anonymous internet checks
 

@@ -19,9 +19,30 @@ export type BestReconPayload = {
 
 export type ArtifactReplayJobPayload = {
   job_type: "recon_artifact_mainline";
+  contract_key: "black-box/recon/sd15-ddim";
   workspace_name: string;
-  artifact_dir: string;
-  method: "threshold";
+  runtime_profile?: string;
+  assets?: Record<string, unknown>;
+  job_inputs: {
+    artifact_dir: string;
+    method: "threshold";
+  };
+};
+
+export type GenericAuditJobPayload = {
+  job_type:
+    | "recon_artifact_mainline"
+    | "recon_runtime_mainline"
+    | "pia_runtime_mainline"
+    | "gsa_runtime_mainline";
+  contract_key:
+    | "black-box/recon/sd15-ddim"
+    | "gray-box/pia/cifar10-ddpm"
+    | "white-box/gsa/ddpm-cifar10";
+  workspace_name: string;
+  runtime_profile?: string;
+  assets?: Record<string, unknown>;
+  job_inputs: Record<string, unknown>;
 };
 
 export type EvidenceSourceSnapshot = {
@@ -120,8 +141,24 @@ export function buildArtifactReplayJobPayload(
 
   return {
     job_type: "recon_artifact_mainline",
+    contract_key: "black-box/recon/sd15-ddim",
     workspace_name: workspaceName,
-    artifact_dir: artifactDir,
-    method: "threshold",
+    runtime_profile: "local",
+    assets: {},
+    job_inputs: {
+      artifact_dir: artifactDir,
+      method: "threshold",
+    },
+  };
+}
+
+export function buildRuntimeMainlineJobPayload(
+  payload: GenericAuditJobPayload,
+): GenericAuditJobPayload {
+  return {
+    ...payload,
+    runtime_profile: payload.runtime_profile ?? "local",
+    assets: payload.assets ?? {},
+    job_inputs: payload.job_inputs ?? {},
   };
 }
