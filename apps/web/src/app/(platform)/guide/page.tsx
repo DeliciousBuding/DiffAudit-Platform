@@ -12,7 +12,7 @@ export default function GuidePage() {
     <div className="space-y-6">
       <PageHeader
         title="接入指南"
-        description="明确平台展示层、审计引擎与模型层之间的职责边界，并给出真实 API 联调的接口约定。"
+        description="说明平台展示层、审计引擎与模型层的职责边界，并给出 API 联调的接口约定。"
       />
 
       <SectionCard eyebrow="① 三层架构示意" title="三层架构示意">
@@ -30,9 +30,9 @@ export default function GuidePage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard
-          eyebrow="② 后端接口约定（给算法同学）"
+          eyebrow="② 后端接口约定"
           title="审计引擎 API"
-          description="算法同学只需要用 FastAPI 实现统一接口，前端即可直接联调。"
+          description="用 FastAPI 实现统一接口后，前端即可按约定联调。"
         >
           <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
 {`POST /api/audit
@@ -85,7 +85,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"])`}
       <SectionCard
         eyebrow="④ 部署方式"
         title="演示版部署方式"
-        description="演示 HTML 可以独立运行，也可以用简单静态服务启动；联调时填入后端地址并点击测试连接。"
+        description="演示版可直接打开，也可用静态服务启动。联调时填写后端地址并点击“测试连接”。"
       >
         <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
 {`# 演示模式可直接双击 HTML 打开
