@@ -137,3 +137,19 @@ GitHub Actions 当前会跑三条 gate：
 - 通过 PR 合并
 - `main` 开启分支保护
 - 代码所有权由 `CODEOWNERS` 统一约束
+
+## 八、Copilot Review 规则
+
+仓库已启用 Copilot code review。
+
+使用规则：
+
+- 默认把 Copilot review 当成自动第一轮代码审查
+- 高优先级关注 `apps/web/`、`apps/api-go/`、共享合同和 CI/lockfile 改动
+- 对前端重点看行为回归、性能、加载和数据流，不追求样式碎改
+- 对后端重点看代理逻辑、接口兼容、错误处理和环境假设
+- 对依赖升级重点看 root/workspace lockfile 是否一致、CI 是否保持全绿
+
+仓库级审查指令位于：
+
+- `.github/copilot-instructions.md`
