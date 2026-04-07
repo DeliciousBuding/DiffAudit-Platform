@@ -1,4 +1,4 @@
-import { AuditConsole } from "@/components/audit-console";
+import { AuditConsoleLoader } from "@/components/audit-console-loader";
 import { PageHeader } from "@/components/page-header";
 
 export default function AuditPage() {
@@ -8,7 +8,7 @@ export default function AuditPage() {
         title="图像成员推断检测"
         description="上传图像、配置参数、执行成员推断检测并查看结果。"
       />
-      <AuditConsole />
+      <AuditConsoleLoader />
     </div>
   );
 }

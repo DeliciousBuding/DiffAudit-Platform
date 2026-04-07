@@ -35,11 +35,11 @@ export default async function LoginPage({
             <div className="rounded-3xl border border-border bg-white/55 p-5 dark:bg-white/5">
               <div className="mono text-[11px] uppercase tracking-[0.14em] text-primary/80">Access mode</div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <StatusBadge tone="success">模拟模式运行中</StatusBadge>
-                <StatusBadge tone="info">后端未连接</StatusBadge>
+                <StatusBadge tone="info">演示模式</StatusBadge>
+                <StatusBadge tone="primary">未连接后端</StatusBadge>
               </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                当前入口支持直接浏览演示版前端；连接真实后端后，可替换 API 地址联调。
+                当前可直接浏览演示版；如需联调，请连接后端并替换 API 地址。
               </p>
             </div>
           </div>
