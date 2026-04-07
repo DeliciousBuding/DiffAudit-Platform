@@ -26,8 +26,10 @@ func NewServer(config Config) *Server {
 		client: &http.Client{},
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
+	mux.HandleFunc("GET /api/v1/catalog", server.handleProxyGet)
 	mux.HandleFunc("GET /api/v1/models", server.handleProxyGet)
 	mux.HandleFunc("GET /api/v1/experiments/recon/best", server.handleProxyGet)
+	mux.HandleFunc("GET /api/v1/experiments/{workspace}/summary", server.handleProxyGet)
 	mux.HandleFunc("GET /api/v1/audit/jobs", server.handleProxyGet)
 	mux.HandleFunc("POST /api/v1/audit/jobs", server.handleProxyPost)
 	mux.HandleFunc("GET /api/v1/audit/jobs/{jobID}", server.handleProxyGet)

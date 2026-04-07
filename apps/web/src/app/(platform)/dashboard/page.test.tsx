@@ -28,6 +28,34 @@ describe("DashboardPage", () => {
               best_summary_path: "D:/summary/recon.json",
               best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
             },
+            {
+              contract_key: "gray-box/pia/cifar10-ddpm",
+              track: "gray-box",
+              attack_family: "pia",
+              target_key: "cifar10-ddpm",
+              label: "PIA Runtime Mainline",
+              paper: "PIA",
+              availability: "ready",
+              evidence_level: "best-summary",
+              backend: null,
+              scheduler: null,
+              best_summary_path: "D:/summary/pia.json",
+              best_workspace: "pia-cifar10-runtime-mainline-20260407-cpu",
+            },
+            {
+              contract_key: "white-box/gsa/ddpm-cifar10",
+              track: "white-box",
+              attack_family: "gsa",
+              target_key: "ddpm-cifar10",
+              label: "GSA Runtime Mainline",
+              paper: "GSA",
+              availability: "partial",
+              evidence_level: "best-summary",
+              backend: null,
+              scheduler: null,
+              best_summary_path: "D:/summary/gsa.json",
+              best_workspace: "gsa-runtime-mainline-20260407-cpu",
+            },
           ]),
           {
             status: 200,
@@ -41,17 +69,20 @@ describe("DashboardPage", () => {
 
     const markup = renderToStaticMarkup(await DashboardPage());
 
-    expect(markup).toContain("三轨系统状态");
-    expect(markup).toContain("统一查看当前已经进入 live catalog 的能力状态");
+    expect(markup).toContain("系统状态");
+    expect(markup).toContain("统一查看当前目录中的能力状态");
     expect(markup).toContain("三线目录状态");
     expect(markup).toContain("black-box");
     expect(markup).toContain("gray-box");
     expect(markup).toContain("white-box");
     expect(markup).toContain("black-box/recon/sd15-ddim");
     expect(markup).toContain("best-summary");
-    expect(markup).toContain("当前无 catalog 条目");
-    expect(markup).toContain("当前 live catalog 仅包含已发布条目");
-    expect(markup).toContain("尚未进入 live catalog");
+    expect(markup).toContain("已发布条目");
+    expect(markup).toContain("未发布");
+    expect(markup).toContain("gray-box/pia/cifar10-ddpm");
+    expect(markup).toContain("white-box/gsa/ddpm-cifar10");
+    expect(markup).toContain("PIA Runtime Mainline");
+    expect(markup).toContain("GSA Runtime Mainline");
     expect(markup).not.toContain("准备态或 smoke 证据");
     expect(markup).not.toContain("黑盒特例逻辑");
     expect(markup).not.toContain("fan-out");
@@ -65,7 +96,7 @@ describe("DashboardPage", () => {
     const markup = renderToStaticMarkup(await DashboardPage());
 
     expect(markup).toContain("系统状态暂时不可用");
-    expect(markup).toContain("三线能力目录暂时无法加载");
+    expect(markup).toContain("暂时无法加载三条线的状态信息");
     expect(markup).not.toContain("/api/v1/catalog");
   });
 });
