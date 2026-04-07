@@ -16,10 +16,15 @@ describe("fetchWithTimeout", () => {
 
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
 
-    const promise = fetchWithTimeout("https://example.invalid", undefined, { timeoutMs: 30 });
+    // Attach a handler immediately to avoid an unhandled-rejection window.
+    const promise = fetchWithTimeout("https://example.invalid", undefined, { timeoutMs: 30 }).catch(
+      (error) => error as Error,
+    );
     await vi.advanceTimersByTimeAsync(35);
 
-    await expect(promise).rejects.toThrow("aborted");
+    const error = await promise;
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe("aborted");
     vi.useRealTimers();
   });
 
@@ -35,4 +40,3 @@ describe("fetchWithTimeout", () => {
     vi.useRealTimers();
   });
 });
-
