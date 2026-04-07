@@ -1,9 +1,22 @@
 import { renderToStaticMarkup } from "react-dom/server";
+<<<<<<< HEAD
+import { describe, expect, it } from "vitest";
+=======
 import { afterEach, describe, expect, it, vi } from "vitest";
+>>>>>>> origin/main
 
 import DashboardPage from "./page";
 
 describe("DashboardPage", () => {
+<<<<<<< HEAD
+  it("surfaces an operator-focused summary and follow-up sections", () => {
+    const markup = renderToStaticMarkup(<DashboardPage />);
+
+    expect(markup).toContain("执行摘要");
+    expect(markup).toContain("高风险样本 6，待复核 2");
+    expect(markup).toContain("覆盖模型与执行状态");
+    expect(markup).toContain("风险分布图例");
+=======
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -98,5 +111,6 @@ describe("DashboardPage", () => {
     expect(markup).toContain("系统状态暂时不可用");
     expect(markup).toContain("暂时无法加载三条线的状态信息");
     expect(markup).not.toContain("/api/v1/catalog");
+>>>>>>> origin/main
   });
 });
