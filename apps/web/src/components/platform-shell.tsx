@@ -113,7 +113,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
 
             <nav className="flex flex-1 flex-col gap-2 pt-5" aria-label="Main navigation">
               <span className="text-[14px] font-semibold tracking-[0.06em] text-primary/75">
-                导航
+                审计导航
               </span>
               {navItems.map((item) => {
                 const active = current.href === item.href;
@@ -121,10 +121,10 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex min-h-[50px] items-center gap-3 rounded-2xl border px-3.5 py-3 text-base font-semibold transition-colors duration-150 ${
+                    className={`flex min-h-[50px] items-center gap-3 rounded-2xl border px-3.5 py-3 text-base font-semibold transition-all duration-150 ${
                       active
                         ? "border-primary/20 bg-gradient-to-br from-primary/8 to-sky-500/6 text-primary"
-                        : "border-transparent text-muted-foreground hover:bg-white/50 hover:text-foreground dark:hover:bg-white/6"
+                        : "border-transparent text-muted-foreground hover:-translate-y-px hover:bg-white/50 hover:text-foreground dark:hover:bg-white/6"
                     }`}
                   >
                     <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -153,7 +153,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
                   href="https://github.com/DeliciousBuding/DiffAudit-Platform"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors duration-150 hover:bg-white/60 hover:text-foreground dark:hover:bg-white/10"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-all duration-150 hover:-translate-y-px hover:bg-white/60 hover:text-foreground dark:hover:bg-white/10"
                   title="GitHub"
                 >
                   <GithubIcon />
@@ -186,7 +186,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
               <div className="mono text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/80">
                 DiffAudit / {current.shortLabel}
               </div>
-              <div className="mt-2 text-sm text-muted-foreground">当前为模拟模式，后端未连接</div>
+              <div className="mt-2 text-sm text-muted-foreground">REDIFFUSE 前端展示层，当前以后端未连接的模拟模式运行</div>
             </div>
             <div className="flex items-center gap-2">
               <StatusBadge tone="primary">REDIFFUSE</StatusBadge>
@@ -208,7 +208,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-2 text-center text-[11px] font-bold transition-colors duration-150 ${
+                className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-2 text-center text-[11px] font-bold transition-all duration-150 ${
                   active
                     ? "border-primary/20 bg-white/80 text-foreground dark:bg-white/8"
                     : "border-transparent text-muted-foreground"

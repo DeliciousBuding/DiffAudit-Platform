@@ -12,7 +12,7 @@ export default function GuidePage() {
     <div className="space-y-6">
       <PageHeader
         title="接入指南"
-        description="平台展示层、审计引擎与模型层的职责划分，以及 API 联调接口约定。"
+        description="明确平台展示层、审计引擎与模型层之间的职责边界，并给出真实 API 联调的接口约定。"
       />
 
       <SectionCard eyebrow="① 三层架构示意" title="三层架构示意">
@@ -32,7 +32,7 @@ export default function GuidePage() {
         <SectionCard
           eyebrow="② 后端接口约定（给算法同学）"
           title="审计引擎 API"
-          description="用 FastAPI 实现统一接口，前端即可直接联调。"
+          description="算法同学只需要用 FastAPI 实现统一接口，前端即可直接联调。"
         >
           <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
 {`POST /api/audit
@@ -60,7 +60,7 @@ Content-Type: multipart/form-data
         <SectionCard
           eyebrow="③ 前端替换真实 API"
           title="前端联调说明"
-          description="联调时将 API 地址填入页面输入框，保持字段名一致即可。"
+          description="联调时把 API 地址填到页面输入框，保持字段名一致即可。"
         >
           <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
 {`async function callAPI(file, params) {
@@ -85,7 +85,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"])`}
       <SectionCard
         eyebrow="④ 部署方式"
         title="演示版部署方式"
-        description="可直接双击 HTML 运行演示，联调时填入后端地址并测试连接。"
+        description="演示 HTML 可以独立运行，也可以用简单静态服务启动；联调时填入后端地址并点击测试连接。"
       >
         <pre className="overflow-x-auto rounded-2xl border border-border bg-background/70 p-4 text-xs leading-6 text-muted-foreground">
 {`# 演示模式可直接双击 HTML 打开
