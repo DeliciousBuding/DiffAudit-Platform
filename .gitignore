@@ -32,6 +32,7 @@ pnpm-debug.log*
 # Build artifacts
 coverage/
 htmlcov/
+tmp/
 
 # Local worktrees
 .worktrees/

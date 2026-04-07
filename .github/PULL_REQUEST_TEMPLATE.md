@@ -12,9 +12,8 @@
 
 ## Verification
 
-- [ ] `npm --prefix apps/web run lint`
-- [ ] `uv run --directory apps/api ruff check .`
-- [ ] `uv run --directory apps/api pytest`
+- [ ] `python scripts/run_local_checks.py --fast`
+- [ ] `python scripts/run_local_checks.py`
 
 ## Notes
 

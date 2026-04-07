@@ -10,9 +10,15 @@
     "dev:web": "npm --prefix apps/web run dev",
     "build:web": "npm --prefix apps/web run build",
     "lint:web": "npm --prefix apps/web run lint",
+    "test:web": "npm --prefix apps/web run test",
     "dev:api": "go -C ./apps/api-go run ./cmd/platform-api --host 0.0.0.0 --port 8780",
     "test:api": "go -C ./apps/api-go test ./...",
+    "build:api": "go -C ./apps/api-go build ./cmd/platform-api",
     "lint:api": "gofmt -w apps/api-go",
-    "format:api": "gofmt -w apps/api-go"
+    "format:api": "gofmt -w apps/api-go",
+    "lint:api-python": "uv run --directory apps/api ruff check .",
+    "test:api-python": "uv run --directory apps/api pytest",
+    "check:fast": "python scripts/run_local_checks.py --fast",
+    "check:all": "python scripts/run_local_checks.py"
   }
 }
