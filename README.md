@@ -51,6 +51,7 @@ copy apps\web\.env.example apps\web\.env.local
 
 - `DIFFAUDIT_SESSION_TOKEN`: opaque session cookie value
 - `DIFFAUDIT_PORTAL_URL`: Portal login origin, defaults to `http://localhost:3001`
+- `DIFFAUDIT_PLATFORM_URL`: public workbench origin, defaults to `http://localhost:3000`
 - `DIFFAUDIT_API_BASE_URL`: internal backend URL, defaults to `http://127.0.0.1:8780`
 
 ### Backend

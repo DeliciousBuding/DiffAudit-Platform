@@ -31,6 +31,7 @@ describe("temporary auth config", () => {
     const config = readAuthConfig({
       DIFFAUDIT_SESSION_TOKEN: "session-token",
       DIFFAUDIT_PORTAL_URL: "http://localhost:3001",
+      DIFFAUDIT_PLATFORM_URL: "http://localhost:3000",
     });
 
     expect(
