@@ -71,8 +71,8 @@ describe("ReportPage", () => {
     expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
       "/api/v1/experiments/recon-runtime-mainline-ddim-public-100-step30/summary",
     );
-    expect(markup).toContain("单条 evidence 深读");
-    expect(markup).toContain("当前选定 evidence 来自");
+    expect(markup).toContain("证据报告");
+    expect(markup).toContain("查看当前证据摘要");
     expect(markup).toContain(
       "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
     );
@@ -124,8 +124,8 @@ describe("ReportPage", () => {
 
     const markup = renderToStaticMarkup(await ReportPage());
 
-    expect(markup).toContain("当前 evidence 暂不可用");
-    expect(markup).toContain("未能从平台后端读取当前最佳实验摘要");
+    expect(markup).toContain("当前证据暂不可用");
+    expect(markup).toContain("未能从平台后端读取当前摘要");
     expect(markup).not.toContain("8780");
     expect(markup).not.toContain("8765");
     expect(markup).not.toContain("/api/v1/experiments/recon/best");
