@@ -85,12 +85,13 @@ npm run dev:api
 
 GitHub Actions checks:
 
-- Next.js lint
-- Go gateway tests
-- Go gateway build
+- Next.js lint / test / build
+- Go gateway tests / build
+- legacy FastAPI stub ruff / pytest
 
 The legacy `apps/api` FastAPI stub is kept as a historical reference and is not
-the active release gate.
+the active release path, but it is still kept green as a maintained compatibility
+surface.
 
 ## Deploy Handoff
 
@@ -135,4 +136,3 @@ The current public preview uses a shared temporary login implemented in Next.js:
   on external Cloudflare challenge policy
 - the stable service probes are private checks on the origin machine, not
   anonymous internet checks
-

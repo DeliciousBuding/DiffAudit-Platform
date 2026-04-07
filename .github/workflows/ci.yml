@@ -21,6 +21,9 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - run: npm ci
       - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+
   api-go:
     runs-on: ubuntu-latest
     defaults:
@@ -34,3 +37,18 @@ jobs:
           cache: true
       - run: go test ./...
       - run: go build ./cmd/platform-api
+
+  api-python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --group dev
+      - run: uv run ruff check .
+      - run: uv run pytest
