@@ -108,7 +108,13 @@ export default async function ReportPage() {
       iconLabel: "TP",
       tone: "success" as const,
     },
-    { label: "运行模式", value: evidence.executionMode, sub: "best evidence mode", iconLabel: "MD", tone: "info" as const },
+    {
+      label: "运行模式",
+      value: evidence.executionMode,
+      sub: "best evidence mode",
+      iconLabel: "MD",
+      tone: "info" as const,
+    },
   ];
 
   const evidenceSummary = [

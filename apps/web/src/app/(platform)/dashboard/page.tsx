@@ -142,9 +142,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className="mt-3 text-2xl font-semibold tracking-tight">{item.total}</div>
                 <div className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {item.track === "black-box"
-                    ? "已发布条目"
-                    : "未发布"}
+                  {item.track === "black-box" ? "已发布条目" : "未发布"}
                 </div>
               </div>
             ))}
