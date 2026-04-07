@@ -1,22 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
-<<<<<<< HEAD
-import { describe, expect, it } from "vitest";
-=======
 import { afterEach, describe, expect, it, vi } from "vitest";
->>>>>>> origin/main
 
 import ReportPage from "./page";
 
 describe("ReportPage", () => {
-<<<<<<< HEAD
-  it("includes an executive summary and a remediation checklist", () => {
-    const markup = renderToStaticMarkup(<ReportPage />);
-
-    expect(markup).toContain("执行摘要");
-    expect(markup).toContain("证据链摘要");
-    expect(markup).toContain("处置建议清单");
-    expect(markup).toContain("需要法务复核");
-=======
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -35,8 +22,7 @@ describe("ReportPage", () => {
               label: "Stable Diffusion 1.5 DDIM Recon",
               availability: "ready",
               evidence_level: "best-summary",
-              best_workspace:
-                "recon-runtime-mainline-ddim-public-100-step30",
+              best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
             },
           ]),
           {
@@ -142,6 +128,5 @@ describe("ReportPage", () => {
     expect(markup).not.toContain("8780");
     expect(markup).not.toContain("8765");
     expect(markup).not.toContain("/api/v1/experiments/recon/best");
->>>>>>> origin/main
   });
 });

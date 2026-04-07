@@ -1,3 +1,5 @@
+export type RuntimeProfile = string | Record<string, unknown>;
+
 export type EvidenceSummaryPayload = {
   status?: string;
   paper?: string;
@@ -17,12 +19,19 @@ export type EvidenceSummaryPayload = {
   };
 };
 
-export type ArtifactReplayJobPayload = {
+export type JobSubmissionPayload = {
+  job_type: string;
+  contract_key: string;
+  workspace_name: string;
+  repo_root?: string;
+  runtime_profile?: RuntimeProfile;
+  assets?: Record<string, unknown>;
+  job_inputs: Record<string, unknown>;
+};
+
+export type ArtifactReplayJobPayload = JobSubmissionPayload & {
   job_type: "recon_artifact_mainline";
   contract_key: "black-box/recon/sd15-ddim";
-  workspace_name: string;
-  runtime_profile?: string;
-  assets?: Record<string, unknown>;
   job_inputs: {
     artifact_dir: string;
     method: "threshold";
@@ -40,7 +49,8 @@ export type GenericAuditJobPayload = {
     | "gray-box/pia/cifar10-ddpm"
     | "white-box/gsa/ddpm-cifar10";
   workspace_name: string;
-  runtime_profile?: string;
+  repo_root?: string;
+  runtime_profile?: RuntimeProfile;
   assets?: Record<string, unknown>;
   job_inputs: Record<string, unknown>;
 };
@@ -133,13 +143,18 @@ export function toEvidenceViewModel(
 export function buildArtifactReplayJobPayload(
   best: EvidenceSummaryPayload,
   workspaceName: string,
+  options?: {
+    runtimeProfile?: RuntimeProfile;
+    assets?: Record<string, unknown>;
+    repoRoot?: string;
+  },
 ): ArtifactReplayJobPayload {
   const artifactDir = best.artifact_paths?.score_artifact_dir;
   if (!artifactDir) {
     throw new Error("Best evidence does not expose score_artifact_dir");
   }
 
-  return {
+  const payload: ArtifactReplayJobPayload = {
     job_type: "recon_artifact_mainline",
     contract_key: "black-box/recon/sd15-ddim",
     workspace_name: workspaceName,
@@ -150,6 +165,18 @@ export function buildArtifactReplayJobPayload(
       method: "threshold",
     },
   };
+
+  if (options?.runtimeProfile) {
+    payload.runtime_profile = options.runtimeProfile;
+  }
+  if (options?.assets) {
+    payload.assets = options.assets;
+  }
+  if (options?.repoRoot) {
+    payload.repo_root = options.repoRoot;
+  }
+
+  return payload;
 }
 
 export function buildRuntimeMainlineJobPayload(
