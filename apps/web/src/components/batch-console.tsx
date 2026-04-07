@@ -76,7 +76,7 @@ export function BatchConsole() {
       <SectionCard
         eyebrow="Batch mode"
         title="REDIFFUSE 批量检测"
-        description="批量页用于组织多张图像的成员推断任务，方便对同批次样本进行统一比较和风险回顾。"
+        description="组织多张图像的成员推断任务，按批次统一比较和风险回顾。"
       >
         <div className="rounded-[28px] border border-dashed border-primary/25 bg-primary/6 px-6 py-10 text-center">
           <div className="text-base font-semibold">点击或拖拽多张图像到此处</div>

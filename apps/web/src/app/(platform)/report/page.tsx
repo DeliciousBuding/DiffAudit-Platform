@@ -20,15 +20,15 @@ const scopeDetails = [
 const evidenceSummary = [
   {
     title: "成员信号",
-    detail: "成员置信度 82%，已超过当前页面展示的高风险判断阈值。",
+    detail: "成员置信度 82%，超过高风险判断阈值。",
   },
   {
     title: "重建证据",
-    detail: "重建距离 0.043 且 SSIM 0.910，说明结果不仅是标签判断，还伴随较强的重建一致性。",
+    detail: "重建距离 0.043，SSIM 0.910，伴随较强的重建一致性。",
   },
   {
     title: "结论边界",
-    detail: "当前仍是演示模式，报告只能支持“高概率成员信号”而非最终法务结论。",
+    detail: '当前为演示模式，结论为"高概率成员信号"，非最终法务结论。',
   },
 ];
 
@@ -42,7 +42,7 @@ const complianceItems = [
   {
     title: "数据来源合规性",
     status: "需要法务复核",
-    note: "当前最主要的风险不是模型指标，而是来源链路无法闭环。",
+    note: "来源链路未闭环，当前风险集中在数据来源无法确认。",
     tone: "info" as const,
   },
   {
@@ -62,12 +62,12 @@ const actionChecklist = [
   {
     title: "对高风险样本发起人工复核",
     owner: "审计负责人",
-    note: "把当前结论从“演示可读”推进到“业务可复核”，避免单次推断直接下最终结论。",
+    note: "从演示结论推进到业务可复核状态，单次推断不作为最终结论。",
   },
   {
     title: "同步法务侧风险说明",
     owner: "法务",
-    note: "明确“成员信号”与“侵权结论”的边界，减少对模型指标的过度解读。",
+    note: '区分"成员信号"与"侵权结论"的边界。',
   },
 ];
 
@@ -76,13 +76,13 @@ export default function ReportPage() {
     <div className="space-y-6">
       <PageHeader
         title="合规报告"
-        description="把结论、证据链和处置建议整理成一页可读摘要，方便演示后直接进入复核或汇报。"
+        description="结论、证据链与处置建议。"
       />
 
       <SectionCard
         eyebrow="执行摘要"
-        title="当前样本表现出高概率成员信号，且需要法务复核数据来源"
-        description="这一页把原本分散在四块表格里的信息压缩成“结论是什么、依据是什么、接下来要做什么”。"
+        title="高概率成员信号，需法务复核数据来源"
+        description="结论、依据与后续动作。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(36_95%_94%),transparent_48%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(36_70%_24%/0.45),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -95,10 +95,10 @@ export default function ReportPage() {
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                报告已经足够支撑“先复核来源，再决定是否升级为正式风险结论”的管理动作。
+                报告支撑&quot;先复核来源，再决定是否升级为正式风险结论&quot;的管理动作。
               </div>
               <p className="mt-3 max-w-[58ch] text-sm leading-7 text-muted-foreground">
-                当前最重要的不是继续堆指标，而是把成员置信度、重建一致性和数据来源缺口连成一条完整叙事，让接手者能立刻知道该做什么。
+                成员置信度、重建一致性与数据来源缺口构成当前核心结论。
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function ReportPage() {
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
             <SummaryTile label="当前结论" value="成员信号强" sub="成员置信度 82%" />
             <SummaryTile label="关键风险" value="来源待核查" sub="影响法规判断" />
-            <SummaryTile label="推荐动作" value="先复核再定级" sub="避免把演示结果当最终结论" />
+            <SummaryTile label="推荐动作" value="先复核再定级" sub="演示结果非最终结论" />
           </div>
         </div>
       </SectionCard>
@@ -121,7 +121,7 @@ export default function ReportPage() {
         <SectionCard
           eyebrow="证据链摘要"
           title="证据链摘要"
-          description="把最关键的判断依据拆成三条，避免汇报时逐行解释表格。"
+          description="判断依据摘要。"
         >
           <div className="space-y-3">
             {evidenceSummary.map((item) => (
@@ -139,7 +139,7 @@ export default function ReportPage() {
         <SectionCard
           eyebrow="审计对象范围"
           title="审计对象信息"
-          description="保留必要事实字段，但把字号和层级抬高到适合直接阅读。"
+          description="审计对象与检测参数。"
         >
           <div className="space-y-3">
             {scopeDetails.map((item) => (
@@ -153,7 +153,7 @@ export default function ReportPage() {
         <SectionCard
           eyebrow="法规符合性评估"
           title="法规风险判断"
-          description="法规部分保留，但改成可读的风险卡片，而不是窄表格。"
+          description="处置建议。"
         >
           <div className="space-y-3">
             {complianceItems.map((item) => (
@@ -174,7 +174,7 @@ export default function ReportPage() {
         <SectionCard
           eyebrow="处置建议清单"
           title="处置建议清单"
-          description="把后续动作写成接手即执行的清单，而不是停留在概念性建议。"
+          description="后续动作清单。"
         >
           <div className="space-y-3">
             {actionChecklist.map((item, index) => (
