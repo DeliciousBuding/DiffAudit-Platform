@@ -17,10 +17,19 @@ export type BestReconPayload = {
   };
 };
 
-export type ArtifactReplayJobPayload = {
+export type JobSubmissionPayload = {
+  job_type: string;
+  contract_key: string;
+  workspace_name: string;
+  repo_root?: string;
+  runtime_profile?: Record<string, unknown>;
+  assets?: Record<string, unknown>;
+  job_inputs: Record<string, unknown>;
+};
+
+export type ArtifactReplayJobPayload = JobSubmissionPayload & {
   job_type: "recon_artifact_mainline";
   contract_key: "black-box/recon/sd15-ddim";
-  workspace_name: string;
   job_inputs: {
     artifact_dir: string;
     method: "threshold";
@@ -115,13 +124,18 @@ export function toEvidenceViewModel(
 export function buildArtifactReplayJobPayload(
   best: BestReconPayload,
   workspaceName: string,
+  options?: {
+    runtimeProfile?: Record<string, unknown>;
+    assets?: Record<string, unknown>;
+    repoRoot?: string;
+  },
 ): ArtifactReplayJobPayload {
   const artifactDir = best.artifact_paths?.score_artifact_dir;
   if (!artifactDir) {
     throw new Error("Best recon evidence does not expose score_artifact_dir");
   }
 
-  return {
+  const payload: ArtifactReplayJobPayload = {
     job_type: "recon_artifact_mainline",
     contract_key: "black-box/recon/sd15-ddim",
     workspace_name: workspaceName,
@@ -130,4 +144,16 @@ export function buildArtifactReplayJobPayload(
       method: "threshold",
     },
   };
+
+  if (options?.runtimeProfile) {
+    payload.runtime_profile = options.runtimeProfile;
+  }
+  if (options?.assets) {
+    payload.assets = options.assets;
+  }
+  if (options?.repoRoot) {
+    payload.repo_root = options.repoRoot;
+  }
+
+  return payload;
 }

@@ -67,7 +67,27 @@ func TestCatalogEndpointIsProxied(t *testing.T) {
 			t.Fatalf("unexpected path %s", request.URL.Path)
 		}
 		writeJSON(writer, http.StatusOK, []map[string]any{
-			{"contract_key": "black-box/recon/sd15-ddim"},
+			{
+				"contract_key": "black-box/recon/sd15-ddim",
+				"track":        "black-box",
+				"attack_family": "recon",
+				"target_key":   "sd15-ddim",
+				"availability": "ready",
+			},
+			{
+				"contract_key": "gray-box/pia/cifar10-ddpm",
+				"track":        "gray-box",
+				"attack_family": "pia",
+				"target_key":   "cifar10-ddpm",
+				"availability": "ready",
+			},
+			{
+				"contract_key": "white-box/gsa/ddpm-cifar10",
+				"track":        "white-box",
+				"attack_family": "gsa",
+				"target_key":   "ddpm-cifar10",
+				"availability": "partial",
+			},
 		})
 	}))
 	defer upstream.Close()
@@ -80,6 +100,31 @@ func TestCatalogEndpointIsProxied(t *testing.T) {
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+
+	var payload []map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+
+	expectedKeys := []string{
+		"black-box/recon/sd15-ddim",
+		"gray-box/pia/cifar10-ddpm",
+		"white-box/gsa/ddpm-cifar10",
+	}
+	if len(payload) != len(expectedKeys) {
+		t.Fatalf("expected %d catalog entries, got %d", len(expectedKeys), len(payload))
+	}
+
+	for _, key := range expectedKeys {
+		entry, ok := findEntryByContractKey(payload, key)
+		if !ok {
+			t.Fatalf("expected catalog entry for %s", key)
+		}
+		track, _ := entry["track"].(string)
+		if track == "" {
+			t.Fatalf("expected track preserved for %s", key)
+		}
 	}
 }
 
@@ -187,6 +232,20 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 		if payload["workspace_name"] != "api-job-001" {
 			t.Fatalf("unexpected payload %v", payload)
 		}
+		runtimeProfile, ok := payload["runtime_profile"].(map[string]any)
+		if !ok {
+			t.Fatalf("expected runtime_profile object, got %T", payload["runtime_profile"])
+		}
+		if runtimeProfile["mode"] != "profile-driven" {
+			t.Fatalf("unexpected runtime_profile %v", runtimeProfile)
+		}
+		assets, ok := payload["assets"].(map[string]any)
+		if !ok {
+			t.Fatalf("expected assets object, got %T", payload["assets"])
+		}
+		if assets["source"] != "catalog-test" {
+			t.Fatalf("unexpected assets payload %v", assets)
+		}
 		writeJSON(writer, http.StatusAccepted, map[string]any{
 			"job_id":         "job_123",
 			"status":         "queued",
@@ -196,15 +255,8 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
-	body, _ := json.Marshal(map[string]any{
-		"job_type":       "recon_artifact_mainline",
-		"contract_key":   "black-box/recon/sd15-ddim",
-		"workspace_name": "api-job-001",
-		"job_inputs": map[string]any{
-			"artifact_dir": "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
-			"method":       "threshold",
-		},
-	})
+	payload := jobPayloadFixture()
+	body, _ := json.Marshal(payload)
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
@@ -248,15 +300,7 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
-	body, _ := json.Marshal(map[string]any{
-		"job_type":       "recon_artifact_mainline",
-		"contract_key":   "black-box/recon/sd15-ddim",
-		"workspace_name": "api-job-001",
-		"job_inputs": map[string]any{
-			"artifact_dir": "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
-			"method":       "threshold",
-		},
-	})
+	body, _ := json.Marshal(jobPayloadFixture())
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
@@ -265,5 +309,34 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 
 	if recorder.Code != http.StatusConflict {
 		t.Fatalf("expected 409, got %d", recorder.Code)
+	}
+}
+
+func findEntryByContractKey(entries []map[string]any, key string) (map[string]any, bool) {
+	for _, entry := range entries {
+		entryKey, _ := entry["contract_key"].(string)
+		if entryKey == key {
+			return entry, true
+		}
+	}
+	return nil, false
+}
+
+func jobPayloadFixture() map[string]any {
+	return map[string]any{
+		"job_type":       "recon_artifact_mainline",
+		"contract_key":   "black-box/recon/sd15-ddim",
+		"workspace_name": "api-job-001",
+		"runtime_profile": map[string]any{
+			"mode":     "profile-driven",
+			"executor": "local",
+		},
+		"assets": map[string]any{
+			"source": "catalog-test",
+		},
+		"job_inputs": map[string]any{
+			"artifact_dir": "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+			"method":       "threshold",
+		},
 	}
 }
