@@ -16,20 +16,20 @@ const weeklyActivity = [
 
 const watchlistItems = [
   {
-    title: "建议优先复核 demo-member-004.png",
-    detail: "重建距离已低于告警阈值，且成员置信度连续两次超过 80%。",
+    title: "复核 demo-member-004.png",
+    detail: "重建距离低于告警阈值，成员置信度连续两次超过 80%。",
     tone: "warning" as const,
     tag: "高风险",
   },
   {
-    title: "确认最近 6 个高风险样本的数据来源",
-    detail: "当前报告仍标记为“来源待核查”，会直接影响法务结论。",
+    title: "确认 6 个高风险样本的数据来源",
+    detail: '当前报告标记为"来源待核查"，影响法务结论。',
     tone: "info" as const,
     tag: "待确认",
   },
   {
-    title: "补录一次影子模型对照检测",
-    detail: "用于区分真实成员信号与重建质量偏差，避免把演示数据当作结论。",
+    title: "补录影子模型对照检测",
+    detail: "区分真实成员信号与重建质量偏差。",
     tone: "primary" as const,
     tag: "建议",
   },
@@ -61,13 +61,13 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="审计仪表盘"
-        description="把检测数量、模型覆盖、待复核风险和近期输出集中到同一页，方便演示和联调时快速判断下一步。"
+        description="检测数量、模型覆盖、待复核风险与近期输出。"
       />
 
       <SectionCard
-        eyebrow="今日重点"
-        title="建议优先复核 2 个高风险样本并确认数据来源"
-        description="当前页面不再只展示统计数字，而是把今天最值得处理的事项直接放到首屏，避免演示时需要自己再解释重点。"
+        eyebrow="执行摘要"
+        title="高风险样本 6，待复核 2"
+        description="当前待处理事项概览。"
         className="overflow-hidden bg-[linear-gradient(135deg,hsl(258_82%_97%),transparent_50%),linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,transparent),color-mix(in_srgb,var(--card)_88%,transparent))] dark:bg-[linear-gradient(135deg,hsl(258_40%_22%/0.55),transparent_52%),linear-gradient(180deg,hsl(220_13%_15%/0.92),hsl(220_13%_14%/0.88))]"
       >
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
@@ -80,10 +80,10 @@ export default function DashboardPage() {
 
             <div className="rounded-[26px] border border-primary/15 bg-white/60 p-5 shadow-[0_20px_60px_hsl(258_45%_30%/0.08)] dark:bg-white/6">
               <div className="text-[30px] font-semibold leading-tight tracking-tight">
-                当前最强信号集中在最近两次成员推断复测，风险解释已经足够支撑一页汇报。
+                最近两次成员推断复测检出高风险信号。
               </div>
               <p className="mt-3 max-w-[60ch] text-sm leading-7 text-muted-foreground">
-                如果只演示一个结论，先讲“高风险样本需要复核数据来源”，再带出成员置信度、重建距离和法规结论，叙事会比纯图表更清楚。
+                成员置信度、重建距离与法规结论详见检测记录。
               </p>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
         <SectionCard
           eyebrow="过去 7 天检测活动"
           title="成员 / 非成员检测趋势"
-          description="保留趋势图，但把每日对比写成可直接读给观众的数字和说明。"
+          description="每日成员与非成员检测结果。"
         >
           <div className="space-y-4">
             {weeklyActivity.map((row) => (
@@ -139,7 +139,7 @@ export default function DashboardPage() {
           <SectionCard
             eyebrow="待处理风险"
             title="风险待办"
-            description="把“下一步做什么”明确写出来，方便演示和交接。"
+            description="当前需处理事项。"
           >
             <div className="space-y-3">
               {watchlistItems.map((item) => (
@@ -160,7 +160,7 @@ export default function DashboardPage() {
           <SectionCard
             eyebrow="运行概览"
             title="覆盖模型与执行状态"
-            description="模型覆盖和当前执行节奏放在一起，减少“统计很多但不知道怎么解读”的感觉。"
+            description="模型覆盖与执行节奏。"
           >
             <div className="space-y-4">
               {modelCoverage.map((item) => (
@@ -183,7 +183,7 @@ export default function DashboardPage() {
         <SectionCard
           eyebrow="风险热力图（模拟）"
           title="风险分布"
-          description="把色块说明直接贴在图上，避免只看到颜色但不知道代表什么。"
+          description="近期风险值分布。"
         >
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <span className="text-sm font-medium text-foreground">风险分布图例</span>
@@ -220,7 +220,7 @@ export default function DashboardPage() {
         <SectionCard
           eyebrow="最近检测记录"
           title="历史记录"
-          description="最近输出保留结果、置信度和处置优先级，方便直接引用到口头汇报或报告中。"
+          description="检测结果、置信度与处置优先级。"
         >
           <div className="space-y-3">
             {recentDetections.map((item, index) => (
