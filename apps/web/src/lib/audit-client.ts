@@ -1,5 +1,10 @@
-type BestReconPayload = {
+export type BestReconPayload = {
+  status?: string;
+  paper?: string;
+  method?: string;
+  mode?: string;
   workspace: string;
+  summary_path?: string;
   backend?: string | null;
   scheduler?: string | null;
   metrics?: {
@@ -14,9 +19,68 @@ type BestReconPayload = {
 
 export type ArtifactReplayJobPayload = {
   job_type: "recon_artifact_mainline";
+  contract_key: "black-box/recon/sd15-ddim";
   workspace_name: string;
-  artifact_dir: string;
-  method: "threshold";
+  runtime_profile?: string;
+  assets?: Record<string, unknown>;
+  job_inputs: {
+    artifact_dir: string;
+    method: "threshold";
+  };
+};
+
+export type GenericAuditJobPayload = {
+  job_type:
+    | "recon_artifact_mainline"
+    | "recon_runtime_mainline"
+    | "pia_runtime_mainline"
+    | "gsa_runtime_mainline";
+  contract_key:
+    | "black-box/recon/sd15-ddim"
+    | "gray-box/pia/cifar10-ddpm"
+    | "white-box/gsa/ddpm-cifar10";
+  workspace_name: string;
+  runtime_profile?: string;
+  assets?: Record<string, unknown>;
+  job_inputs: Record<string, unknown>;
+};
+
+export type EvidenceSourceSnapshot = {
+  statusLabel: string;
+  statusTone: "primary" | "success" | "warning" | "info";
+  workspaceName: string;
+  workspacePath: string;
+  paper: string;
+  method: string;
+  mode: string;
+  backendLabel: string;
+  aucLabel: string;
+  asrLabel: string;
+  tprLabel: string;
+  summaryPath: string;
+};
+
+export type EvidenceViewModel = {
+  status: {
+    label: string;
+    tone: EvidenceSourceSnapshot["statusTone"];
+  };
+  workspace: {
+    name: string;
+    path: string;
+  };
+  context: {
+    paper: string;
+    method: string;
+  };
+  executionMode: string;
+  backendLabel: string;
+  metrics: {
+    aucLabel: string;
+    asrLabel: string;
+    tprLabel: string;
+  };
+  summaryPath: string;
 };
 
 function formatMetric(value: number | null | undefined) {
@@ -39,6 +103,33 @@ export function summarizeBestRecon(best: BestReconPayload) {
   };
 }
 
+export function toEvidenceViewModel(
+  source: EvidenceSourceSnapshot,
+): EvidenceViewModel {
+  return {
+    status: {
+      label: source.statusLabel,
+      tone: source.statusTone,
+    },
+    workspace: {
+      name: source.workspaceName,
+      path: source.workspacePath,
+    },
+    context: {
+      paper: source.paper,
+      method: source.method,
+    },
+    executionMode: source.mode,
+    backendLabel: source.backendLabel,
+    metrics: {
+      aucLabel: source.aucLabel,
+      asrLabel: source.asrLabel,
+      tprLabel: source.tprLabel,
+    },
+    summaryPath: source.summaryPath,
+  };
+}
+
 export function buildArtifactReplayJobPayload(
   best: BestReconPayload,
   workspaceName: string,
@@ -50,8 +141,24 @@ export function buildArtifactReplayJobPayload(
 
   return {
     job_type: "recon_artifact_mainline",
+    contract_key: "black-box/recon/sd15-ddim",
     workspace_name: workspaceName,
-    artifact_dir: artifactDir,
-    method: "threshold",
+    runtime_profile: "local",
+    assets: {},
+    job_inputs: {
+      artifact_dir: artifactDir,
+      method: "threshold",
+    },
+  };
+}
+
+export function buildRuntimeMainlineJobPayload(
+  payload: GenericAuditJobPayload,
+): GenericAuditJobPayload {
+  return {
+    ...payload,
+    runtime_profile: payload.runtime_profile ?? "local",
+    assets: payload.assets ?? {},
+    job_inputs: payload.job_inputs ?? {},
   };
 }
