@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildArtifactReplayJobPayload,
   buildRuntimeMainlineJobPayload,
-  summarizeBestRecon,
+  summarizeEvidenceMetrics,
   toEvidenceViewModel,
 } from "./audit-client";
 
@@ -48,7 +48,7 @@ describe("audit client helpers", () => {
 
   it("summarizes backend, scheduler, and metrics for the audit page", () => {
     expect(
-      summarizeBestRecon({
+      summarizeEvidenceMetrics({
         backend: "stable_diffusion",
         scheduler: "ddim",
         metrics: {

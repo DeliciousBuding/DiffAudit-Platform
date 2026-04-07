@@ -3,7 +3,7 @@ import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { toEvidenceViewModel } from "@/lib/audit-client";
-import { fetchBestReconReport } from "@/lib/recon-report";
+import { fetchBestEvidenceSourceSnapshot } from "@/lib/evidence-report";
 
 const unavailableActions = [
   {
@@ -36,7 +36,7 @@ const reportActions = [
 ];
 
 export default async function ReportPage() {
-  const report = await fetchBestReconReport();
+  const report = await fetchBestEvidenceSourceSnapshot();
 
   if (!report) {
     return (
@@ -55,7 +55,7 @@ export default async function ReportPage() {
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <StatusBadge tone="warning">backend unavailable</StatusBadge>
-              <StatusBadge tone="info">waiting for recon summary</StatusBadge>
+              <StatusBadge tone="info">waiting for evidence summary</StatusBadge>
             </div>
 
             <div className="rounded-[26px] border border-[color:var(--warning-soft)] bg-white/60 p-5 shadow-[0_20px_60px_hsl(30_60%_28%/0.08)]">

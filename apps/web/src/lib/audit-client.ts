@@ -1,4 +1,4 @@
-export type BestReconPayload = {
+export type EvidenceSummaryPayload = {
   status?: string;
   paper?: string;
   method?: string;
@@ -90,7 +90,7 @@ function formatMetric(value: number | null | undefined) {
   return value.toFixed(3);
 }
 
-export function summarizeBestRecon(best: BestReconPayload) {
+export function summarizeEvidenceMetrics(best: Pick<EvidenceSummaryPayload, "backend" | "scheduler" | "metrics">) {
   const backendLabel = best.scheduler
     ? `${best.backend ?? "unknown"} / ${best.scheduler}`
     : `${best.backend ?? "unknown"}`;
@@ -131,12 +131,12 @@ export function toEvidenceViewModel(
 }
 
 export function buildArtifactReplayJobPayload(
-  best: BestReconPayload,
+  best: EvidenceSummaryPayload,
   workspaceName: string,
 ): ArtifactReplayJobPayload {
   const artifactDir = best.artifact_paths?.score_artifact_dir;
   if (!artifactDir) {
-    throw new Error("Best recon evidence does not expose score_artifact_dir");
+    throw new Error("Best evidence does not expose score_artifact_dir");
   }
 
   return {
