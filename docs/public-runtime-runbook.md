@@ -25,6 +25,9 @@ Use it to answer three questions quickly:
 - Live nginx upstreams:
   - `diffaudit_portal -> 127.0.0.1:3011`
   - `diffaudit_workbench -> 127.0.0.1:3000`
+- Critical nginx rewrite:
+  - `/portal-static/_next/*` must be rewritten to `/_next/*` before proxying to
+    Portal
 - `gz2` is not in the live path as of `2026-04-08`
 
 ## Phase 1: Public Canary
@@ -122,6 +125,8 @@ External-system checks:
 
 - confirm nginx is running
 - confirm nginx upstreams still point to `127.0.0.1:3011` and `127.0.0.1:3000`
+- confirm the `/portal-static/_next/*` location still rewrites to `/_next/*`
+  before proxying to Portal
 - confirm these systemd units are active:
   - `diffaudit-portal.service`
   - `diffaudit-platform-web.service`

@@ -21,13 +21,15 @@ Current request flow:
 2. Cloudflare forwards to `hk`
 3. `hk` nginx proxies `/`, `/login`, `/api/auth/*`, and `/portal-static/_next/*`
    to local `diffaudit-portal.service` on `127.0.0.1:3011`
-4. `hk` nginx proxies `/audit`, `/dashboard`, `/guide`, `/report`, `/batch`,
+4. the `/portal-static/_next/*` nginx location must rewrite the prefix back to
+   `/_next/*` before proxying, or Portal CSS and JS assets will 404
+5. `hk` nginx proxies `/audit`, `/dashboard`, `/guide`, `/report`, `/batch`,
    `/api/v1/*`, `/health`, and `/_next/*` to local
    `diffaudit-platform-web.service` on `127.0.0.1:3000`
-5. `Platform/apps/web` validates the shared `diffaudit_session` cookie and
+6. `Platform/apps/web` validates the shared `diffaudit_session` cookie and
    proxies `api/v1/*` requests to `diffaudit-local-api.service` on
    `127.0.0.1:8765`
-6. `Services/Local-API` serves the catalog and admitted experiment metadata
+7. `Services/Local-API` serves the catalog and admitted experiment metadata
    from its local SQLite registry
 
 The active public path no longer depends on `gz2`, `apps/api-go`, or Tailscale.
