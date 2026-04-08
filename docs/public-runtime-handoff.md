@@ -1,7 +1,7 @@
 # Public Runtime Handoff
 
 This document is the deployment and runtime handoff for the current public
-`DiffAudit-Platform` chain.
+`DiffAudit` chain.
 
 The shortest executable operator checklist lives in
 `docs/public-runtime-runbook.md`.
@@ -10,7 +10,8 @@ The shortest executable operator checklist lives in
 
 - Public domain: `https://diffaudit.vectorcontrol.tech`
 - Public edge: Cloudflare
-- Runtime host: `hk`
+- Edge host: `hk`
+- Runtime host: `gz2`
 - Public homepage and login owner: `Platform-Portal`
 - Public workbench shell: `Platform/apps/web`
 - Research-facing upstream behind the workbench shell: `Services/Local-API`
@@ -19,22 +20,38 @@ Current request flow:
 
 1. public request reaches Cloudflare
 2. Cloudflare forwards to `hk`
-3. `hk` nginx proxies `/`, `/login`, `/api/auth/*`, and `/portal-static/_next/*`
-   to local `diffaudit-portal.service` on `127.0.0.1:3011`
-4. the `/portal-static/_next/*` nginx location must rewrite the prefix back to
-   `/_next/*` before proxying, or Portal CSS and JS assets will 404
-5. `hk` nginx proxies `/audit`, `/dashboard`, `/guide`, `/report`, `/batch`,
-   `/api/v1/*`, `/health`, and `/_next/*` to local
-   `diffaudit-platform-web.service` on `127.0.0.1:3000`
-6. `Platform/apps/web` validates the shared `diffaudit_session` cookie and
-   proxies `api/v1/*` requests to `diffaudit-local-api.service` on
-   `127.0.0.1:8765`
-7. `Services/Local-API` serves the catalog and admitted experiment metadata
+3. `hk` does a single full-site proxy pass to `http://100.77.212.60`
+4. `gz2` nginx splits routes locally:
+   - `/`, `/login`, `/api/auth/*`, `/portal-static/_next/*` -> Portal on `127.0.0.1:3001`
+   - `/audit`, `/dashboard`, `/guide`, `/report`, `/batch`, `/api/v1/*`,
+     `/health`, `/_next/*` -> Platform on `127.0.0.1:3000`
+5. `Platform/apps/web` validates the shared `diffaudit_session` cookie and
+   proxies `api/v1/*` requests to Local-API on `127.0.0.1:8765`
+6. `Services/Local-API` serves the catalog and admitted experiment metadata
    from its local SQLite registry
 
-The active public path no longer depends on `gz2`, `apps/api-go`, or Tailscale.
-`gz2` was removed from the live chain on `2026-04-08` after it became
-unreachable on both Tailnet and public SSH.
+The active public path is now anchored on `gz2`. `hk` is only the TLS/public
+forwarding edge.
+
+## Current Runtime Owners On `gz2`
+
+- nginx config:
+  - `/etc/nginx/sites-available/diffaudit.vectorcontrol.tech`
+  - `/etc/nginx/sites-enabled/diffaudit.vectorcontrol.tech`
+- Portal service:
+  - `diffaudit-portal.service`
+  - working tree: `/home/ubuntu/projects/DiffAudit-Platform-Portal-deploy`
+  - listen: `127.0.0.1:3001`
+  - env: `/etc/diffaudit-portal.env`
+- Platform service:
+  - `diffaudit-platform-web.service`
+  - working tree: `/home/ubuntu/projects/DiffAudit-Platform-deploy-next`
+  - listen: `0.0.0.0:3000`
+  - env: `/etc/diffaudit-platform-web.env`
+- Local-API service:
+  - `diffaudit-local-api.service`
+  - working tree: `/home/ubuntu/projects/DiffAudit-Local-API-deploy`
+  - listen: `127.0.0.1:8765`
 
 ## Detectability Model
 
@@ -44,73 +61,19 @@ Current public auth and edge policy mean the following:
 - `/api/v1/*` is not an anonymous public uptime endpoint
 - browser-like public requests to `/` and `/login` should return `200`
 - anonymous bot-like `curl` probes may still be challenged by Cloudflare bot
-  heuristics even after the explicit custom WAF rule was disabled on
-  `2026-04-08`
+  heuristics
 
 As a result, anonymous `curl` probes to `/health` or `/api/v1/*` are currently
 unsupported as a reliability signal.
-
-## Shortest Stable Probe Plan
-
-Use a two-layer probe model.
-
-### 1. Public edge canary
-
-Purpose:
-confirm the public domain still reaches the platform shell.
-
-Paths:
-
-- `GET /`
-- `GET /login`
-
-Constraint:
-
-- use a browser-like user agent or a real browser session
-- do not treat challenge responses to default `curl` as an application outage
-
-The explicit host-level custom WAF challenge on
-`diffaudit.vectorcontrol.tech` was disabled on `2026-04-08`. If fully anonymous
-CLI canarying is required, record the exact Cloudflare bot/bypass rule that
-allows the monitoring source.
-
-### 2. Private origin probes
-
-Purpose:
-confirm the actual services behind the public edge.
-
-Run these on `hk`:
-
-```powershell
-curl http://127.0.0.1:3011/login
-curl http://127.0.0.1:3000/health
-curl http://127.0.0.1:8765/health
-```
-
-## Unversioned External Dependencies
-
-The following dependencies are real parts of the public chain but are not
-versioned in this repository:
-
-- Cloudflare DNS / bot / challenge policy
-- `hk` nginx configuration
-- `hk` systemd units:
-  - `diffaudit-portal.service`
-  - `diffaudit-platform-web.service`
-  - `diffaudit-local-api.service`
-- deployment environment files:
-  - `/etc/diffaudit-portal.env`
-  - `/etc/diffaudit-platform-web.env`
 
 ## Handoff Requirements
 
 Any deployment handoff must explicitly record:
 
-- the active local service ports on `hk`
-- the active `DIFFAUDIT_API_BASE_URL` value or its target host/port
-- whether Cloudflare monitoring bypass rules exist for the monitoring source
-- the exact `hk` nginx split-routing config
-- the exact `hk` systemd unit names for Portal, Platform, and Local-API
-- whether `gz2` has been restored or remains explicitly out of the live chain
+- the active local service ports on `gz2`
+- the active `DIFFAUDIT_API_BASE_URL` value on `gz2`
+- the exact `gz2` nginx split-routing config
+- the exact `gz2` systemd unit names for Portal, Platform, and Local-API
+- the fact that `hk` is now only a full-site forwarding edge
 
 If any of the above is unknown, the handoff is incomplete.
