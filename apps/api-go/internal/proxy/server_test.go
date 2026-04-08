@@ -68,25 +68,25 @@ func TestCatalogEndpointIsProxied(t *testing.T) {
 		}
 		writeJSON(writer, http.StatusOK, []map[string]any{
 			{
-				"contract_key": "black-box/recon/sd15-ddim",
-				"track":        "black-box",
+				"contract_key":  "black-box/recon/sd15-ddim",
+				"track":         "black-box",
 				"attack_family": "recon",
-				"target_key":   "sd15-ddim",
-				"availability": "ready",
+				"target_key":    "sd15-ddim",
+				"availability":  "ready",
 			},
 			{
-				"contract_key": "gray-box/pia/cifar10-ddpm",
-				"track":        "gray-box",
+				"contract_key":  "gray-box/pia/cifar10-ddpm",
+				"track":         "gray-box",
 				"attack_family": "pia",
-				"target_key":   "cifar10-ddpm",
-				"availability": "ready",
+				"target_key":    "cifar10-ddpm",
+				"availability":  "ready",
 			},
 			{
-				"contract_key": "white-box/gsa/ddpm-cifar10",
-				"track":        "white-box",
+				"contract_key":  "white-box/gsa/ddpm-cifar10",
+				"track":         "white-box",
 				"attack_family": "gsa",
-				"target_key":   "ddpm-cifar10",
-				"availability": "partial",
+				"target_key":    "ddpm-cifar10",
+				"availability":  "partial",
 			},
 		})
 	}))
@@ -128,6 +128,42 @@ func TestCatalogEndpointIsProxied(t *testing.T) {
 	}
 }
 
+func TestAttackDefenseTableEndpointIsProxied(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/v1/evidence/attack-defense-table" {
+			t.Fatalf("unexpected path %s", request.URL.Path)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"schema": "diffaudit.attack_defense_table.v1",
+			"rows": []map[string]any{
+				{
+					"track":   "gray-box",
+					"attack":  "PIA GPU512 baseline",
+					"defense": "provisional G-1 = stochastic-dropout",
+				},
+			},
+		})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/evidence/attack-defense-table", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["schema"] != "diffaudit.attack_defense_table.v1" {
+		t.Fatalf("unexpected schema %v", payload["schema"])
+	}
+}
+
 func TestBestReconEndpointIsProxied(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/api/v1/experiments/recon/best" {
@@ -166,8 +202,8 @@ func TestWorkspaceSummaryEndpointIsProxied(t *testing.T) {
 			t.Fatalf("unexpected path %s", request.URL.Path)
 		}
 		writeJSON(writer, http.StatusOK, map[string]any{
-			"track":   "gray-box",
-			"method":  "pia",
+			"track":     "gray-box",
+			"method":    "pia",
 			"workspace": "gray-box-pia-probe-001",
 		})
 	}))
@@ -303,11 +339,11 @@ func TestCreateGrayBoxJobEndpointIsProxied(t *testing.T) {
 
 	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
-		"job_type":       "pia_runtime_mainline",
-		"contract_key":   "gray-box/pia/cifar10-ddpm",
-		"workspace_name": "api-pia-001",
+		"job_type":        "pia_runtime_mainline",
+		"contract_key":    "gray-box/pia/cifar10-ddpm",
+		"workspace_name":  "api-pia-001",
 		"runtime_profile": "docker-default",
-		"assets": map[string]any{},
+		"assets":          map[string]any{},
 		"job_inputs": map[string]any{
 			"config": "D:/Code/DiffAudit/Project/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
 		},
@@ -358,8 +394,8 @@ func TestCreateWhiteBoxJobEndpointIsProxied(t *testing.T) {
 
 	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
-		"job_type":     "gsa_runtime_mainline",
-		"contract_key": "white-box/gsa/ddpm-cifar10",
+		"job_type":       "gsa_runtime_mainline",
+		"contract_key":   "white-box/gsa/ddpm-cifar10",
 		"workspace_name": "api-gsa-001",
 		"job_inputs": map[string]any{
 			"manifest_path": "workspaces/white-box/assets/gsa/manifests/cifar10-ddpm-mainline.json",

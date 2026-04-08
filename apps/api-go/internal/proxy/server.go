@@ -27,6 +27,7 @@ func NewServer(config Config) *Server {
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
 	mux.HandleFunc("GET /api/v1/catalog", server.handleProxyGet)
+	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleProxyGet)
 	mux.HandleFunc("GET /api/v1/models", server.handleProxyGet)
 	mux.HandleFunc("GET /api/v1/experiments/recon/best", server.handleProxyGet)
 	mux.HandleFunc("GET /api/v1/experiments/{workspace}/summary", server.handleProxyGet)

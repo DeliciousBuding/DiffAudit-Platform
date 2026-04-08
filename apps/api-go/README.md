@@ -35,6 +35,7 @@ If `8780` is already occupied too, the script exits with a clear warning instead
 
 - `GET /health`
 - `GET /api/v1/catalog`
+- `GET /api/v1/evidence/attack-defense-table`
 - `GET /api/v1/models`
 - `GET /api/v1/experiments/recon/best`
 - `GET /api/v1/experiments/{workspace}/summary`

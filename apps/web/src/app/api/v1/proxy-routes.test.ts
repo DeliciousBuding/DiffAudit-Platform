@@ -32,6 +32,14 @@ describe("platform api proxy routes", () => {
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/catalog");
   });
 
+  it("proxies attack-defense table requests to the backend", async () => {
+    const route = await import("./evidence/attack-defense-table/route");
+
+    await route.GET();
+
+    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/evidence/attack-defense-table");
+  });
+
   it("proxies workspace summary requests to the backend", async () => {
     const route = await import("./experiments/[workspace]/summary/route");
 
