@@ -9,9 +9,9 @@ describe("DashboardPage", () => {
   });
 
   it("renders the unified catalog shell from backend catalog entries", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
         new Response(
           JSON.stringify([
             {
@@ -27,6 +27,7 @@ describe("DashboardPage", () => {
               scheduler: "ddim",
               best_summary_path: "D:/summary/recon.json",
               best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
+              system_gap: "surface semantic limits cleanly",
             },
             {
               contract_key: "gray-box/pia/cifar10-ddpm",
@@ -41,6 +42,7 @@ describe("DashboardPage", () => {
               scheduler: null,
               best_summary_path: "D:/summary/pia.json",
               best_workspace: "pia-cifar10-runtime-mainline-20260407-cpu",
+              system_gap: "expose cost columns consistently",
             },
             {
               contract_key: "white-box/gsa/ddpm-cifar10",
@@ -55,6 +57,7 @@ describe("DashboardPage", () => {
               scheduler: null,
               best_summary_path: "D:/summary/gsa.json",
               best_workspace: "gsa-runtime-mainline-20260407-cpu",
+              system_gap: "expose defended W-1 beside GSA",
             },
           ]),
           {
@@ -64,8 +67,35 @@ describe("DashboardPage", () => {
             },
           },
         ),
-      ),
-    );
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            rows: [
+              {
+                track: "gray-box",
+                attack: "PIA GPU512 baseline",
+                defense: "provisional G-1 = stochastic-dropout",
+                model: "CIFAR-10 DDPM",
+                auc: 0.82938,
+                asr: 0.769531,
+                tpr_at_1pct_fpr: 0.023438,
+                quality_cost: "512 samples per split",
+                evidence_level: "runtime-mainline",
+                note: "current gray-box defended main result",
+              },
+            ],
+          }),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json",
+            },
+          },
+        ),
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
 
     const markup = renderToStaticMarkup(await DashboardPage());
 
@@ -83,6 +113,10 @@ describe("DashboardPage", () => {
     expect(markup).toContain("white-box/gsa/ddpm-cifar10");
     expect(markup).toContain("PIA Runtime Mainline");
     expect(markup).toContain("GSA Runtime Mainline");
+    expect(markup).toContain("当前 admitted 攻防主表");
+    expect(markup).toContain("PIA GPU512 baseline");
+    expect(markup).toContain("surface semantic limits cleanly");
+    expect(markup).toContain("Current gap");
     expect(markup).not.toContain("准备态或 smoke 证据");
     expect(markup).not.toContain("黑盒特例逻辑");
     expect(markup).not.toContain("fan-out");
@@ -98,5 +132,41 @@ describe("DashboardPage", () => {
     expect(markup).toContain("系统状态暂时不可用");
     expect(markup).toContain("暂时无法加载三条线的状态信息");
     expect(markup).not.toContain("/api/v1/catalog");
+  });
+
+  it("keeps the catalog page renderable when the attack-defense table is temporarily unavailable", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify([
+            {
+              contract_key: "black-box/recon/sd15-ddim",
+              track: "black-box",
+              attack_family: "recon",
+              target_key: "sd15-ddim",
+              label: "Stable Diffusion 1.5 DDIM Recon",
+              availability: "ready",
+              evidence_level: "best-summary",
+              best_workspace: "recon-runtime-mainline-ddim-public-100-step30",
+              system_gap: "surface semantic limits cleanly",
+            },
+          ]),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json",
+            },
+          },
+        ),
+      )
+      .mockResolvedValueOnce(new Response("{}", { status: 503 }));
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const markup = renderToStaticMarkup(await DashboardPage());
+
+    expect(markup).toContain("统一主表暂不可用");
+    expect(markup).toContain("Stable Diffusion 1.5 DDIM Recon");
   });
 });

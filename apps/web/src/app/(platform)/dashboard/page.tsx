@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
+import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard, type CatalogAvailability } from "@/lib/catalog";
 
 const catalogActions = [
@@ -32,7 +33,10 @@ const availabilityTone: Record<CatalogAvailability, "success" | "warning" | "inf
 };
 
 export default async function DashboardPage() {
-  const catalog = await fetchCatalogDashboard();
+  const [catalog, attackDefenseTable] = await Promise.all([
+    fetchCatalogDashboard(),
+    fetchAttackDefenseTable(),
+  ]);
 
   if (!catalog) {
     return (
@@ -157,6 +161,58 @@ export default async function DashboardPage() {
       </div>
 
       <SectionCard
+        eyebrow="主对比表"
+        title="当前 admitted 攻防主表"
+        description="系统直接读取研究仓 admitted attack-defense 总表，不再由前端自己拼主结论。"
+      >
+        {!attackDefenseTable ? (
+          <div className="rounded-[24px] border border-dashed border-border bg-white/35 p-4 text-sm leading-6 text-muted-foreground dark:bg-white/4">
+            统一主表暂不可用，稍后重试。
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid gap-3 md:grid-cols-3">
+              <TrackMetric label="rows" value={attackDefenseTable.stats.total} />
+              <TrackMetric label="defended" value={attackDefenseTable.stats.defended} />
+              <TrackMetric label="attack-only" value={attackDefenseTable.stats.undefended} />
+            </div>
+
+            <div className="space-y-3">
+              {attackDefenseTable.rows.map((row) => (
+                <div
+                  key={`${row.track}-${row.attack}-${row.defense}`}
+                  className="rounded-[24px] border border-border bg-white/45 p-4 dark:bg-white/5"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="mono text-xs text-muted-foreground">{row.track}</div>
+                      <div className="mt-1 text-sm font-semibold text-foreground">{row.attack}</div>
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        {row.defense === "none" ? "无防御对照" : row.defense}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <StatusBadge tone={trackTone[row.track] ?? "primary"}>{row.track}</StatusBadge>
+                      <StatusBadge tone="info">{row.evidenceLevel}</StatusBadge>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                    <CatalogDetail label="Model" value={row.model} />
+                    <CatalogDetail label="AUC / ASR" value={`${row.aucLabel} / ${row.asrLabel}`} />
+                    <CatalogDetail label="TPR @ 1% FPR" value={row.tprLabel} />
+                    <CatalogDetail label="Quality / Cost" value={row.qualityCost} />
+                  </div>
+
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{row.note}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard
         eyebrow="三线状态"
         title="三线目录状态"
         description="展示三条线的目录数量和成熟度分布。"
@@ -235,6 +291,7 @@ export default async function DashboardPage() {
                         <CatalogDetail label="Best evidence status" value={entry.evidenceLevel} />
                         <CatalogDetail label="Published workspace" value={entry.bestWorkspace} />
                         <CatalogDetail label="Runtime status" value={entry.runtimeLabel} />
+                        <CatalogDetail label="Current gap" value={entry.systemGap} />
                       </div>
                     </div>
                   ))

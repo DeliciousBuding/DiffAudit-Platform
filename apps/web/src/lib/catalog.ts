@@ -27,6 +27,7 @@ export type CatalogEntryPayload = {
   evidence_level?: string | null;
   best_summary_path?: string | null;
   best_workspace?: string | null;
+  system_gap?: string | null;
 };
 
 export type CatalogTrackSummary = {
@@ -49,6 +50,7 @@ export type CatalogEntryViewModel = {
   runtimeLabel: string;
   bestWorkspace: string;
   bestSummaryPath: string;
+  systemGap: string;
 };
 
 export type CatalogDashboardViewModel = {
@@ -93,6 +95,7 @@ function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
     runtimeLabel: formatRuntimeLabel(entry),
     bestWorkspace: entry.best_workspace ?? "pending workspace",
     bestSummaryPath: entry.best_summary_path ?? "pending summary",
+    systemGap: entry.system_gap ?? "当前没有额外系统缺口说明。",
   };
 }
 
@@ -135,6 +138,7 @@ function normalizeCatalogEntry(entry: unknown): CatalogEntryPayload | null {
       typeof candidate.best_summary_path === "string" ? candidate.best_summary_path : null,
     best_workspace:
       typeof candidate.best_workspace === "string" ? candidate.best_workspace : null,
+    system_gap: typeof candidate.system_gap === "string" ? candidate.system_gap : null,
   };
 }
 
