@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+  buildPortalLoginUrl,
   protectedApiPath,
   protectedPagePath,
   readAuthConfig,
@@ -20,14 +21,20 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/audit", request.url));
   }
 
+  if (pathname === "/login" && !hasSession) {
+    return NextResponse.redirect(
+      buildPortalLoginUrl(config, request.url, search ? `/audit${search}` : "/audit"),
+    );
+  }
+
   if (!hasSession && protectedApiPath(pathname)) {
     return NextResponse.json({ message: "Authentication required." }, { status: 401 });
   }
 
   if (!hasSession && protectedPagePath(pathname)) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirectTo", `${pathname}${search}`);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(
+      buildPortalLoginUrl(config, request.url, `${pathname}${search}`),
+    );
   }
 
   return NextResponse.next();

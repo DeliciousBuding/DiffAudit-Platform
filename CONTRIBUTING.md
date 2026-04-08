@@ -153,3 +153,7 @@ GitHub Actions 当前会跑三条 gate：
 仓库级审查指令位于：
 
 - `.github/copilot-instructions.md`
+
+根级 GitHub 设置基线见：
+
+- `docs/github-settings-baseline.md`
