@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   buildPortalLoginUrl,
+  DEFAULT_REDIRECT_PATH,
   protectedApiPath,
   protectedPagePath,
   readAuthConfig,
+  sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
   sessionTokenIsValid,
 } from "@/lib/auth";
@@ -23,7 +25,14 @@ export function proxy(request: NextRequest) {
 
   if (pathname === "/login" && !hasSession) {
     return NextResponse.redirect(
-      buildPortalLoginUrl(config, request.url, search ? `/audit${search}` : "/audit"),
+      buildPortalLoginUrl(
+        config,
+        request.url,
+        sanitizeRedirectPath(
+          request.nextUrl.searchParams.get("redirectTo"),
+          DEFAULT_REDIRECT_PATH,
+        ),
+      ),
     );
   }
 

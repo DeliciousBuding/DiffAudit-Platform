@@ -3,7 +3,7 @@ import path from "node:path";
 
 import type { NextConfig } from "next";
 
-function resolveTurbopackRoot(startDir: string): string {
+export function resolveTurbopackRoot(startDir: string): string {
   let currentDir = startDir;
   const filesystemRoot = path.parse(startDir).root;
 

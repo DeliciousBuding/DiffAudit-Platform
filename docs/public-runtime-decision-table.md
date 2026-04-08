@@ -7,7 +7,7 @@ This document is the hard launch decision table for the current public
 
 The live architecture is:
 
-- `Cloudflare -> hk -> gz2 nginx -> Portal/Platform/Local-API`
+- `Cloudflare -> hk -> gz2 nginx -> Portal/Platform -> Local-API(local workstation)`
 
 This is intentional because collaborators currently have `gz2` access, not `hk`
 access. The operational rule is:
@@ -24,7 +24,8 @@ access. The operational rule is:
 | `gz2` nginx split routing | `must-have` | Route ownership now lives on `gz2` | Do not call launch ready |
 | `gz2` `diffaudit-portal.service` runtime | `must-have` | The public homepage and login depend on it | Do not call launch ready |
 | `gz2` `diffaudit-platform-web.service` runtime | `must-have` | Logged-in workbench reads depend on it | Do not call launch ready |
-| `gz2` `diffaudit-local-api.service` runtime | `must-have` | Platform catalog and evidence reads depend on it | Do not call launch ready |
+| `gz2` outbound reachability to Local-API over Tailscale | `must-have` | Platform catalog and evidence reads depend on the workstation-hosted Local-API | Do not call launch ready |
+| `gz2` `diffaudit-local-api.service` stays masked | `must-have` | Local-API must not be actively hosted on the lightweight app server | Do not call launch ready |
 | Shared cookie contract between Portal and Platform | `must-have` | Login ownership moved to Portal; workbench auth depends on the shared cookie | Do not call launch ready |
 | Browser-like public access to `/` and `/login` | `must-have` | Public users need a working homepage and login entry | Do not call launch ready |
 | Monitoring-source bypass on Cloudflare | `observability-only` | Needed for stable CLI canarying | Can run with risk |
@@ -38,6 +39,6 @@ Before calling the system ready, confirm:
 2. `gz2` nginx still owns route splitting
 3. Portal login on `gz2` still emits the shared session cookie
 4. Platform on `gz2` still accepts that cookie
-5. Local-API on `gz2` still returns catalog data
+5. `gz2` still reaches the workstation-hosted Local-API and returns catalog data
 
 Without those confirmations, the system is not launch-ready.

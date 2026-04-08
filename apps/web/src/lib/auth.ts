@@ -1,4 +1,5 @@
 export const SESSION_COOKIE_NAME = "diffaudit_session";
+export const DEFAULT_REDIRECT_PATH = "/audit";
 
 type AuthEnv = {
   DIFFAUDIT_PORTAL_URL?: string;
@@ -27,6 +28,23 @@ export function sessionTokenIsValid(
   return Boolean(config.sessionToken) && Boolean(token) && token === config.sessionToken;
 }
 
+export function sanitizeRedirectPath(
+  redirectPath: string | null | undefined,
+  fallbackPath: string = DEFAULT_REDIRECT_PATH,
+): string {
+  if (!redirectPath) {
+    return fallbackPath;
+  }
+
+  const normalizedPath = redirectPath.trim();
+
+  if (!normalizedPath.startsWith("/") || normalizedPath.startsWith("//")) {
+    return fallbackPath;
+  }
+
+  return normalizedPath;
+}
+
 export function buildPortalLoginUrl(
   config: AuthConfig,
   requestUrl: string,
@@ -34,11 +52,12 @@ export function buildPortalLoginUrl(
 ): string {
   const portalUrl = new URL("/login", config.portalUrl);
   const requestOrigin = new URL(requestUrl).origin;
-  const platformOrigin = config.platformUrl;
+  const platformOrigin = new URL(config.platformUrl).origin;
+  const safeRedirectPath = sanitizeRedirectPath(redirectPath);
   const redirectTarget =
     portalUrl.origin === requestOrigin
-      ? redirectPath
-      : `${platformOrigin}${redirectPath}`;
+      ? safeRedirectPath
+      : new URL(safeRedirectPath, platformOrigin).toString();
 
   portalUrl.searchParams.set("redirectTo", redirectTarget);
   return portalUrl.toString();

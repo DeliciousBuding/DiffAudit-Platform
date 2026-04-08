@@ -15,6 +15,7 @@ The shortest executable operator checklist lives in
 - Public homepage and login owner: `Platform-Portal`
 - Public workbench shell: `Platform/apps/web`
 - Research-facing upstream behind the workbench shell: `Services/Local-API`
+- Active Local-API runtime owner: local workstation, not `gz2`
 
 Current request flow:
 
@@ -26,8 +27,11 @@ Current request flow:
    - `/audit`, `/dashboard`, `/guide`, `/report`, `/batch`, `/api/v1/*`,
      `/health`, `/_next/*` -> Platform on `127.0.0.1:3000`
 5. `Platform/apps/web` validates the shared `diffaudit_session` cookie and
-   proxies `api/v1/*` requests to Local-API on `127.0.0.1:8765`
-6. `Services/Local-API` serves the catalog and admitted experiment metadata
+   proxies `api/v1/*` requests to the configured `DIFFAUDIT_API_BASE_URL`
+6. the live `gz2` value of `DIFFAUDIT_API_BASE_URL` points to
+   `http://100.81.149.78:8765`, which is the Local-API running on the local
+   workstation over Tailscale
+7. `Services/Local-API` serves the catalog and admitted experiment metadata
    from its local SQLite registry
 
 The active public path is now anchored on `gz2`. `hk` is only the TLS/public
@@ -48,10 +52,10 @@ forwarding edge.
   - working tree: `/home/ubuntu/projects/DiffAudit-Platform-deploy-next`
   - listen: `0.0.0.0:3000`
   - env: `/etc/diffaudit-platform-web.env`
-- Local-API service:
-  - `diffaudit-local-api.service`
-  - working tree: `/home/ubuntu/projects/DiffAudit-Local-API-deploy`
-  - listen: `127.0.0.1:8765`
+- Local-API on `gz2`:
+  - `diffaudit-local-api.service` is masked and must stay inactive
+  - `/home/ubuntu/projects/diffaudit/backup/local-api-copy` is a cold backup only
+  - `gz2` reaches the active Local-API over Tailscale at `100.81.149.78:8765`
 
 ## Detectability Model
 
@@ -73,7 +77,8 @@ Any deployment handoff must explicitly record:
 - the active local service ports on `gz2`
 - the active `DIFFAUDIT_API_BASE_URL` value on `gz2`
 - the exact `gz2` nginx split-routing config
-- the exact `gz2` systemd unit names for Portal, Platform, and Local-API
+- the exact `gz2` systemd unit names for Portal and Platform
+- the fact that `diffaudit-local-api.service` is masked on `gz2`
 - the fact that `hk` is now only a full-site forwarding edge
 
 If any of the above is unknown, the handoff is incomplete.

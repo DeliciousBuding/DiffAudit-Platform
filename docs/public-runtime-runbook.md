@@ -18,11 +18,11 @@ Use it to answer three questions quickly:
 - `hk` role: full-site reverse proxy only
 - Portal app: `Platform-Portal` on `127.0.0.1:3001`
 - Workbench app: `Platform/apps/web` on `127.0.0.1:3000`
-- Local-API: `Services/Local-API` on `127.0.0.1:8765`
+- Live `DIFFAUDIT_API_BASE_URL` on `gz2`: `http://100.81.149.78:8765`
+- Active Local-API runtime: local workstation over Tailscale, not `gz2`
 - Live systemd units on `gz2`:
   - `diffaudit-portal.service`
   - `diffaudit-platform-web.service`
-  - `diffaudit-local-api.service`
 
 ## Phase 1: Public Canary
 
@@ -52,7 +52,8 @@ Run on `gz2`:
 curl -I http://127.0.0.1:3001/
 curl -I http://127.0.0.1:3001/login
 curl -I http://127.0.0.1:3000/audit
-curl http://127.0.0.1:8765/health
+systemctl status diffaudit-local-api.service --no-pager
+curl http://100.81.149.78:8765/health
 ```
 
 Expected:
@@ -60,7 +61,8 @@ Expected:
 - Portal root `200`
 - Portal login `200`
 - Platform `/audit` redirects to `/login` when unauthenticated
-- Local-API `/health` returns `200`
+- `diffaudit-local-api.service` is `masked` and `inactive (dead)` on `gz2`
+- remote Local-API `/health` returns `200`
 
 ## Phase 3: Auth Chain
 
@@ -92,6 +94,8 @@ Checks:
 - `/portal-static/_next/*` rewrites to `/_next/*` before proxying to Portal
 - `/` proxies to Portal
 - `/audit` and `/api/v1/*` proxy to Platform
+- `/etc/diffaudit-platform-web.env` points `DIFFAUDIT_API_BASE_URL` at the
+  workstation-hosted Local-API endpoint
 
 ## Phase 5: `hk` Edge Checks
 

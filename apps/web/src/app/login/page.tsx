@@ -1,7 +1,12 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { buildPortalLoginUrl, readAuthConfig } from "@/lib/auth";
+import {
+  buildPortalLoginUrl,
+  DEFAULT_REDIRECT_PATH,
+  readAuthConfig,
+  sanitizeRedirectPath,
+} from "@/lib/auth";
 
 export default async function LoginPage({
   searchParams,
@@ -18,7 +23,7 @@ export default async function LoginPage({
     buildPortalLoginUrl(
       config,
       `${proto}://${host}/login`,
-      redirectTo || "/audit",
+      sanitizeRedirectPath(redirectTo, DEFAULT_REDIRECT_PATH),
     ),
   );
 }
