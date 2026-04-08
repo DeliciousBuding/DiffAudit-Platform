@@ -1,47 +1,66 @@
 export const SESSION_COOKIE_NAME = "diffaudit_session";
+export const DEFAULT_REDIRECT_PATH = "/audit";
 
 type AuthEnv = {
-  DIFFAUDIT_SHARED_USERNAME?: string;
-  DIFFAUDIT_SHARED_PASSWORD?: string;
+  DIFFAUDIT_PORTAL_URL?: string;
+  DIFFAUDIT_PLATFORM_URL?: string;
   DIFFAUDIT_SESSION_TOKEN?: string;
 };
 
 export type AuthConfig = {
-  sharedUsername: string;
-  sharedPassword: string;
+  portalUrl: string;
+  platformUrl: string;
   sessionToken: string;
 };
 
 export function readAuthConfig(env: AuthEnv = process.env as AuthEnv): AuthConfig {
   return {
-    sharedUsername: env.DIFFAUDIT_SHARED_USERNAME ?? "",
-    sharedPassword: env.DIFFAUDIT_SHARED_PASSWORD ?? "",
+    portalUrl: env.DIFFAUDIT_PORTAL_URL ?? "http://localhost:3001",
+    platformUrl: env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000",
     sessionToken: env.DIFFAUDIT_SESSION_TOKEN ?? "",
   };
-}
-
-export function authConfigIsReady(config: AuthConfig): boolean {
-  return Boolean(
-    config.sharedUsername && config.sharedPassword && config.sessionToken,
-  );
-}
-
-export function credentialsAreValid(
-  config: AuthConfig,
-  credentials: { username: string; password: string },
-): boolean {
-  return (
-    authConfigIsReady(config) &&
-    credentials.username === config.sharedUsername &&
-    credentials.password === config.sharedPassword
-  );
 }
 
 export function sessionTokenIsValid(
   config: AuthConfig,
   token: string | undefined,
 ): boolean {
-  return authConfigIsReady(config) && Boolean(token) && token === config.sessionToken;
+  return Boolean(config.sessionToken) && Boolean(token) && token === config.sessionToken;
+}
+
+export function sanitizeRedirectPath(
+  redirectPath: string | null | undefined,
+  fallbackPath: string = DEFAULT_REDIRECT_PATH,
+): string {
+  if (!redirectPath) {
+    return fallbackPath;
+  }
+
+  const normalizedPath = redirectPath.trim();
+
+  if (!normalizedPath.startsWith("/") || normalizedPath.startsWith("//")) {
+    return fallbackPath;
+  }
+
+  return normalizedPath;
+}
+
+export function buildPortalLoginUrl(
+  config: AuthConfig,
+  requestUrl: string,
+  redirectPath: string,
+): string {
+  const portalUrl = new URL("/login", config.portalUrl);
+  const requestOrigin = new URL(requestUrl).origin;
+  const platformOrigin = new URL(config.platformUrl).origin;
+  const safeRedirectPath = sanitizeRedirectPath(redirectPath);
+  const redirectTarget =
+    portalUrl.origin === requestOrigin
+      ? safeRedirectPath
+      : new URL(safeRedirectPath, platformOrigin).toString();
+
+  portalUrl.searchParams.set("redirectTo", redirectTarget);
+  return portalUrl.toString();
 }
 
 export function protectedPagePath(pathname: string): boolean {
