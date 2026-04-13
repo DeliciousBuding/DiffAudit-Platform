@@ -3,7 +3,7 @@
 Copy and send this to an agent:
 
 ```text
-Clone the public repo `https://github.com/DeliciousBuding/DiffAudit-Platform.git`.
+Clone the repo `https://github.com/DeliciousBuding/DiffAudit-Platform.git` if you have access.
 
 Then:
 1. Read the root README.
