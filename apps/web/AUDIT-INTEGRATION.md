@@ -22,8 +22,8 @@ This file captures what we verified for the `WorkspaceAuditsPage` -> `CreateJobB
 ## Local dev prerequisites for workspace/audits
 
 1.  Register/login so that the Next.js middleware can set `diffaudit_session` before any `/workspace` or `/api/v1` call:
-    - `POST http://localhost:3000/api/auth/register` (body: `username`, `email`, `password`).
-    - `POST http://localhost:3000/api/auth/login` (body: `login`, `password`).
+   - `POST http://localhost:3000/api/auth/register` (body: `username`, `email`, `password`).
+    - `POST http://localhost:3000/api/auth/login` (body: `username`, `password`).
     - The backend responds with `diffaudit_session` cookie, which the browser needs for `/workspace` or `/api/v1/*` access.
 2.  Start the Local API dev proxy: `npm run dev:api` (defaults to `http://127.0.0.1:8780` talking to `http://127.0.0.1:8765`).
     - The `/api/v1/*` proxy routes in `Platform/apps/web` (see `src/lib/api-proxy.ts`) expect the Local API service to be reachable before `GET /api/v1/audit/job-template` or `POST /api/v1/audit/jobs` succeed.
