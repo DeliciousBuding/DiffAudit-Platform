@@ -12,11 +12,6 @@
 - Backend gateway: `Platform/apps/api-go`
 - Research-facing upstream: `Services/Local-API`
 
-补充边界：
-
-- 协作者默认不需要直接访问 `Research` 仓或本地归档目录
-- 上游 `Services/Local-API` 由 owner 维护；前端协作只需要知道它是数据来源
-
 当前请求链：
 
 1. public request reaches Cloudflare

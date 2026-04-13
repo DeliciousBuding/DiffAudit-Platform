@@ -15,13 +15,6 @@
 - GPU 实验
 - 本机飞书运维
 
-## 可见性边界
-
-- 协作者默认只可见 `Platform` 仓
-- 不要假设协作者能看到 `Research` 仓或本地 `Archive`
-- 需要私有上游、归档材料或 owner 本机信息时，必须明确标注为 owner-only context
-- 页面、组件、路由、文档和协作规则必须在不访问 `Research` / `Archive` 的前提下可理解、可开发
-
 ## 页面 IA
 
 - `/`

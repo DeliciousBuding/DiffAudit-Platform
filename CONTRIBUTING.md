@@ -18,12 +18,6 @@
 - `packages/`: 共享契约与提示
 - `docs/`: 当前有效文档
 
-## 协作可见性
-
-- 默认按“只看得到 `Platform` 仓”来写文档和提示
-- 不把 `Research`、本地 `Archive` 或 owner 本机目录写成协作前提
-- 如需私有上游信息，单独说明由仓库 owner 提供
-
 ## 最低验证
 
 ```powershell
