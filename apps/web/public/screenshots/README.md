@@ -5,6 +5,10 @@
 | `audits-recommended-running.png` | `/workspace/audits` showing the recommended contracts column paired with the existing running jobs grid. |
 | `audits-running-job.png` | Same page immediately after `Create job` reports success; the newly queued job and updated running jobs list are visible. |
 
+## Related recording
+
+For the `/workspace/audits` recording helper and its output, see `../recordings/README.md`.
+
 ## Repro steps
 
 1. Start the Local API runtime:
