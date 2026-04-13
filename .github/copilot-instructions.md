@@ -4,17 +4,17 @@ This repository is the product and integration layer for DiffAudit.
 
 Prioritize review comments on:
 
-- `apps/web/`, `apps/api-go/`, `apps/api/`, and shared contracts
+- `apps/web/`, `apps/api-go/`, and shared contracts
 - API compatibility, schema drift, auth boundaries, and runtime regressions
 - CI failures, dependency risks, and broken workspace or lockfile state
 - frontend performance regressions, navigation stalls, and loading-state bugs
 - places where platform code wrongly couples itself to research internals
+- missing Figma link, node id, or screenshot when the PR changes UI structure or visual language
 
 Do not spend review budget on:
 
 - trivial naming or formatting suggestions without runtime impact
 - generic framework advice that does not apply to the changed files
-- comments on legacy `apps/api/` unless the PR actually changes it
 
 When reviewing frontend changes:
 

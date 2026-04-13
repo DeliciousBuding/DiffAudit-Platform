@@ -23,6 +23,11 @@
 - `/workspace/reports`
 - `/workspace/settings`
 
+## Design Source
+
+- 主 Figma 文件：`DiffAudit`
+- 协作与 MCP 规则见 `docs/figma-workflow.md`
+
 ## Local Start
 
 前端：
