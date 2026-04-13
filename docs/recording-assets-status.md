@@ -11,7 +11,10 @@
 
 ## 2. 分支与推送状态（当前工作区）
 
-- `git status -sb` 在 `D:\Code\DiffAudit` 根目录报错：`fatal: not a git repository`。由于本地没有 `.git` 元数据，无法直接确认当前分支名或远端推送状态。请在实际 Platform 仓库根目录下再次运行 `git status -sb` / `git rev-parse --abbrev-ref HEAD` 以补全 branch 信息，并用 `git push` 检查远端是否同步。
+- 当前分支：`recording-helper`（在 `D:\Code\DiffAudit\Platform` 中通过 `git branch --show-current` 确认）。
+- 录屏相关目录 `apps/web/public/recordings` 在 `git status apps/web/public/recordings` 下保持 clean，说明当前录屏素材没有未提交的更改。
+- 远端仓库：`https://github.com/DeliciousBuding/DiffAudit-Platform.git`（`git remote -v` 输出）。
+- PR 入口：`https://github.com/DeliciousBuding/DiffAudit-Platform/pull/new/recording-helper`，目标为 `main`，请在提交说明中列出本文件与录屏一并交付。
 
 ## 3. PR 入口与提交流程
 
