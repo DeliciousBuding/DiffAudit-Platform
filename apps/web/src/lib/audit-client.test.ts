@@ -11,10 +11,10 @@ describe("audit client helpers", () => {
   it("builds a recon artifact replay payload from the best evidence", () => {
     const payload = buildArtifactReplayJobPayload(
       {
-        workspace: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        workspace: "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
         artifact_paths: {
           score_artifact_dir:
-            "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+            "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
         },
       },
       "audit-replay-001",
@@ -28,7 +28,7 @@ describe("audit client helpers", () => {
       assets: {},
       job_inputs: {
         artifact_dir:
-          "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+          "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
         method: "threshold",
       },
     });
@@ -38,7 +38,7 @@ describe("audit client helpers", () => {
     expect(() =>
       buildArtifactReplayJobPayload(
         {
-          workspace: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+          workspace: "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
           artifact_paths: {},
         },
         "audit-replay-001",
@@ -71,7 +71,7 @@ describe("audit client helpers", () => {
         statusLabel: "ready",
         statusTone: "success",
         workspaceName: "best evidence workspace",
-        workspacePath: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        workspacePath: "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
         paper: "diffaudit-2024",
         method: "threshold",
         mode: "blackbox",
@@ -88,7 +88,7 @@ describe("audit client helpers", () => {
       },
       workspace: {
         name: "best evidence workspace",
-        path: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        path: "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
       },
       context: {
         paper: "diffaudit-2024",
@@ -108,10 +108,10 @@ describe("audit client helpers", () => {
   it("attaches optional runtime profile, assets, and repo root metadata", () => {
     const payload = buildArtifactReplayJobPayload(
       {
-        workspace: "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+        workspace: "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
         artifact_paths: {
           score_artifact_dir:
-            "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+            "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
         },
       },
       "audit-replay-002",
@@ -123,7 +123,7 @@ describe("audit client helpers", () => {
         assets: {
           bucket: "pia-assets",
         },
-        repoRoot: "D:/Code/DiffAudit/Project",
+        repoRoot: "D:/Code/DiffAudit/Research",
       },
     );
 
@@ -131,7 +131,7 @@ describe("audit client helpers", () => {
       job_type: "recon_artifact_mainline",
       contract_key: "black-box/recon/sd15-ddim",
       workspace_name: "audit-replay-002",
-      repo_root: "D:/Code/DiffAudit/Project",
+      repo_root: "D:/Code/DiffAudit/Research",
       runtime_profile: {
         executor: "docker",
         mode: "profile-driven",
@@ -141,7 +141,7 @@ describe("audit client helpers", () => {
       },
       job_inputs: {
         artifact_dir:
-          "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
+          "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
         method: "threshold",
       },
     });
@@ -154,7 +154,7 @@ describe("audit client helpers", () => {
         contract_key: "gray-box/pia/cifar10-ddpm",
         workspace_name: "pia-runtime-001",
         job_inputs: {
-          config: "D:/Code/DiffAudit/Project/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
+          config: "D:/Code/DiffAudit/Research/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
         },
       }),
     ).toEqual({
@@ -164,7 +164,7 @@ describe("audit client helpers", () => {
       runtime_profile: "local",
       assets: {},
       job_inputs: {
-        config: "D:/Code/DiffAudit/Project/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
+        config: "D:/Code/DiffAudit/Research/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
       },
     });
   });

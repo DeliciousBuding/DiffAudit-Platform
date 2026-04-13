@@ -6,22 +6,21 @@ import { findActiveNavItem } from "./platform-shell";
 describe("platform shell helpers", () => {
   it("exposes icon metadata for every navigation item", () => {
     expect(navItems.map((item) => item.icon)).toEqual([
-      "image",
       "dashboard",
-      "stack",
+      "spark",
       "report",
-      "guide",
+      "settings",
     ]);
   });
 
   it("returns the matching nav item for an exact route", () => {
-    expect(findActiveNavItem("/audit")).toEqual(navItems[0]);
-    expect(findActiveNavItem("/dashboard")).toEqual(navItems[1]);
+    expect(findActiveNavItem("/workspace")).toEqual(navItems[0]);
+    expect(findActiveNavItem("/workspace/audits")).toEqual(navItems[1]);
   });
 
   it("matches nested routes to the longest compatible nav item", () => {
-    expect(findActiveNavItem("/guide/setup/api")).toEqual(navItems[4]);
-    expect(findActiveNavItem("/report/preview/123")).toEqual(navItems[3]);
+    expect(findActiveNavItem("/workspace/settings/team")).toEqual(navItems[3]);
+    expect(findActiveNavItem("/workspace/reports/preview/123")).toEqual(navItems[2]);
   });
 
   it("falls back to the first nav item when no route matches", () => {

@@ -14,7 +14,6 @@
 # Active backend
 /apps/api-go/ @DeliciousBuding
 
-# Legacy Python API stub and shared contracts
-/apps/api/ @DeliciousBuding
+# Shared contracts and scripts
 /packages/ @DeliciousBuding
 /scripts/ @DeliciousBuding

@@ -170,7 +170,7 @@ func TestBestReconEndpointIsProxied(t *testing.T) {
 			t.Fatalf("unexpected path %s", request.URL.Path)
 		}
 		writeJSON(writer, http.StatusOK, map[string]any{
-			"workspace": "../Project/experiments/recon-runtime-mainline-ddim-public-50-step10",
+			"workspace": "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
 			"metrics": map[string]any{
 				"auc": 0.866,
 			},
@@ -326,7 +326,7 @@ func TestCreateGrayBoxJobEndpointIsProxied(t *testing.T) {
 		if !ok {
 			t.Fatalf("expected job_inputs object, got %T", payload["job_inputs"])
 		}
-		if jobInputs["config"] != "D:/Code/DiffAudit/Project/tmp/configs/pia-cifar10-graybox-assets.local.yaml" {
+		if jobInputs["config"] != "D:/Code/DiffAudit/Research/tmp/configs/pia-cifar10-graybox-assets.local.yaml" {
 			t.Fatalf("unexpected job_inputs payload %v", jobInputs)
 		}
 		writeJSON(writer, http.StatusAccepted, map[string]any{
@@ -345,7 +345,7 @@ func TestCreateGrayBoxJobEndpointIsProxied(t *testing.T) {
 		"runtime_profile": "docker-default",
 		"assets":          map[string]any{},
 		"job_inputs": map[string]any{
-			"config": "D:/Code/DiffAudit/Project/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
+			"config": "D:/Code/DiffAudit/Research/tmp/configs/pia-cifar10-graybox-assets.local.yaml",
 		},
 	})
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))

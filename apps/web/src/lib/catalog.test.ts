@@ -266,7 +266,7 @@ describe("catalog helpers", () => {
     });
   });
 
-  it("accepts contract_key as the primary catalog identity and falls back from legacy key", () => {
+  it("accepts contract_key as the primary catalog identity and falls back from the previous key field", () => {
     expect(
       summarizeCatalogEntries([
         {

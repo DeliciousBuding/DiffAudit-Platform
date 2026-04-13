@@ -32,8 +32,6 @@ def main() -> None:
     run(["npm", "--prefix", "apps/web", "run", "lint"], repo_root)
     run(["npm", "--prefix", "apps/web", "run", "test"], repo_root)
     run(["go", "-C", "./apps/api-go", "test", "./..."], repo_root)
-    run(["uv", "run", "--directory", "apps/api", "ruff", "check", "."], repo_root)
-    run(["uv", "run", "--directory", "apps/api", "pytest"], repo_root)
 
     if not args.fast:
         build_dir = repo_root / "tmp" / "quality-gates"

@@ -3,14 +3,13 @@ export type NavItem = {
   title: string;
   subtitle: string;
   badge?: string;
-  icon: "image" | "dashboard" | "stack" | "report" | "guide";
+  icon: "spark" | "dashboard" | "report" | "settings";
   shortLabel: string;
 };
 
 export const navItems: NavItem[] = [
-  { href: "/audit", title: "图像审计", subtitle: "成员推断检测", icon: "image", shortLabel: "审计" },
-  { href: "/dashboard", title: "审计仪表盘", subtitle: "状态与指标", icon: "dashboard", shortLabel: "仪表盘" },
-  { href: "/batch", title: "批量检测", subtitle: "队列与任务", icon: "stack", shortLabel: "批量" },
-  { href: "/report", title: "合规报告", subtitle: "导出与解读", icon: "report", shortLabel: "报告" },
-  { href: "/guide", title: "接入指南", subtitle: "平台接入说明", badge: "API", icon: "guide", shortLabel: "指南" },
+  { href: "/workspace", title: "工作台", subtitle: "待办与关键指标", icon: "dashboard", shortLabel: "工作台" },
+  { href: "/workspace/audits", title: "审计流程", subtitle: "创建任务与查看结果", icon: "spark", shortLabel: "审计" },
+  { href: "/workspace/reports", title: "报告", subtitle: "结果汇总与导出", icon: "report", shortLabel: "报告" },
+  { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥与偏好", icon: "settings", shortLabel: "设置" },
 ];

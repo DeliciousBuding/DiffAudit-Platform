@@ -2,7 +2,7 @@
 
 ## 文档目标
 
-这份文档是 `Platform`、`Services/Local-API`、`Project` 三侧共享的统一三线契约。
+这份文档是 `Platform`、`Services/Local-API`、`Research` 三侧共享的统一三线契约。
 
 它只回答四件事：
 
@@ -17,12 +17,12 @@
 
 三仓职责固定如下：
 
-- `Project`
+- `Research`
   - 研究代码、实验执行、`summary.json`、实验 workspace
   - 三线证据的 source of truth
 - `Services/Local-API`
   - 本地 HTTP 控制面
-  - 读取 `Project` 证据、暴露只读接口、提交受控任务
+  - 读取 `Research` 证据、暴露只读接口、提交受控任务
 - `Platform`
   - 前端、平台网关、共享契约文档
   - 不复制研究执行逻辑，不重写研究结果
@@ -89,7 +89,7 @@
 1. `catalog_entry`
    - 描述某个 `contract_key` 现在是否存在、成熟度如何、最佳证据在哪里
 2. `evidence_summary`
-   - 描述某个实验 workspace 的事实结果，来自 `Project/experiments/*/summary.json`
+   - 描述某个实验 workspace 的事实结果，来自 `Research/experiments/*/summary.json`
 3. `audit_job`
    - 描述一次受控提交任务的控制面状态，来自 `Local-API` 的 jobs 目录和状态接口
 
@@ -310,8 +310,8 @@
 
 原因：
 
-- `Project/ROADMAP.md` 明确黑盒主线优先
-- `Project/experiments/blackbox-status/summary.json` 已经形成黑盒统一总表
+- `Research/ROADMAP.md` 明确黑盒主线优先
+- `Research/experiments/blackbox-status/summary.json` 已经形成黑盒统一总表
 - `Local-API` 已经实现 `recon` 最佳证据读取和受控 job 提交
 
 ### 灰盒
@@ -352,7 +352,7 @@
 必须完成：
 
 - `catalog` 明确输出 `contract_key`
-- `recon` 的最佳证据继续以 `Project/experiments/blackbox-status/summary.json` 为 source of truth
+- `recon` 的最佳证据继续以 `Research/experiments/blackbox-status/summary.json` 为 source of truth
 - 平台读取路径统一为 `catalog -> summary`
 
 ### Phase 2: 把灰盒纳入同一目录，不提前承诺可执行
@@ -397,7 +397,7 @@
 - 不在 `Platform` 复制研究代码或实验目录
 - 不为每条线各造一套 `best`、`run`、`result` 专用路由
 - 不继续扩展旧 stub 的 `model_key + audit_method + image_name` 合同
-- 不把旧 demo 页的“单图上传即统一审计”文案当作真实系统模型
+- 不把单图上传式文案当作真实系统模型
 
 ## 给后续 agent 的直接执行规则
 

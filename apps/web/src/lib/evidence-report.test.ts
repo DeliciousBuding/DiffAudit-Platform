@@ -40,9 +40,9 @@ describe("fetchBestEvidenceSourceSnapshot", () => {
           JSON.stringify({
             status: "ready",
             workspace:
-              "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
+              "D:\\Code\\DiffAudit\\Research\\experiments\\recon-runtime-mainline-ddim-public-100-step30",
             summary_path:
-              "D:\\Code\\DiffAudit\\Project\\experiments\\recon-runtime-mainline-ddim-public-100-step30\\summary.json",
+              "D:\\Code\\DiffAudit\\Research\\experiments\\recon-runtime-mainline-ddim-public-100-step30\\summary.json",
           }),
           { status: 200, headers: { "content-type": "application/json" } },
         ),
@@ -105,7 +105,7 @@ describe("fetchBestEvidenceSourceSnapshot", () => {
             backend: null,
             scheduler: null,
             workspace:
-              "D:\\Code\\DiffAudit\\Project\\experiments\\pia-cifar10-runtime-mainline-20260407-cpu",
+              "D:\\Code\\DiffAudit\\Research\\experiments\\pia-cifar10-runtime-mainline-20260407-cpu",
           }),
           { status: 200, headers: { "content-type": "application/json" } },
         ),

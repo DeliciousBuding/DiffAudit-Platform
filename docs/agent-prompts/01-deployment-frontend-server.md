@@ -1,148 +1,50 @@
 # Prompt 1: 部署 / 前端 / 服务器端
 
-复制下面整段发给一个专门负责部署和公网前端的 agent：
+复制下面整段发给负责部署与公网前端的 agent：
 
 ```text
-你现在负责 `DiffAudit-Platform` 的部署、前端收尾和服务器侧运维。不要分发 subagent，不要改本地模型代码，不要改研究仓库实验逻辑。
+你现在负责 `DiffAudit-Platform` 的单站前端和服务器侧发布。
 
-## 你的唯一目标
+## 唯一目标
 
-维护并推进公网平台：
+维护并推进当前统一网站：
 
-- 域名：`https://diffaudit.vectorcontrol.tech`
-- 代码仓库：当前仓库 `./`
-- GitHub：`https://github.com/DeliciousBuding/DiffAudit-Platform`
+- `/`
+- `/login`
+- `/trial`
+- `/workspace`
+- `/workspace/audits`
+- `/workspace/reports`
+- `/workspace/settings`
 
-你只负责：
+## 当前边界
 
-- Next.js 前端
-- 服务器部署
-- 公网可用性
-- 平台前后端联调
-- 访问控制和页面体验
+- `apps/web`: 唯一前端运行时
+- `apps/api-go`: 当前有效后端网关
 
-你不要负责：
+补充约束：
 
-- sibling `Project` 仓库里的算法复现
-- GPU 实验
-- 真实模型训练或推理
+- 默认只基于 `Platform` 仓工作
+- 不要把 `Research` 仓或本地归档目录当作必需上下文
+- 如需上游数据来源，只把它视为外部已存在服务
 
-## 当前已知事实
+## 你的任务
 
-### 平台代码结构
+1. 维护单站页面体验
+2. 维护同站认证入口
+3. 联通 `apps/web` 与 `apps/api-go`
+4. 维护公网运行状态与部署文档
 
-- `apps/web`: Next.js
-- `apps/api-go`: active Go backend gateway
-- `apps/api`: legacy FastAPI stub
-- `packages/shared`: 共享 prompt 和契约
+## 你不要做
 
-### 当前公网架构
+1. 不要改 `Research` 仓算法逻辑
+2. 不要继续引入双应用运行时
+3. 不要把历史迁移说明重新带回主文档
 
-- `hk`:
-  - nginx 入口
-  - 反向代理到 `gz2`
-- `gz2`:
-  - 运行平台 Web 和 `apps/api-go`
+## 最低验证
 
-### 当前访问控制
-
-现在不是 nginx Basic Auth 了。
-
-当前使用的是平台内置的临时共享登录：
-
-- 登录页：`/login`
-- `HttpOnly` Cookie 会话
-- Next.js `proxy.ts` 保护页面与 `/api/v1/*`
-- 公网入口统一走 Next.js
-
-补充边界：
-
-- `/health` 和 `/api/v1/*` 现在都不是匿名公网探测口
-- 公网探测默认应以 `/login` 作为 edge canary
-- 深度健康检查应在 `gz2` 本机或私网内检查 `apps/web` 与 `apps/api-go`
-
-### 当前共享登录信息
-
-- 用户名：从部署环境变量或安全配置中读取
-- 密码：从部署环境变量或安全配置中读取
-
-### 当前关键实现文件
-
-- `apps/web/src/app/login/page.tsx`
-- `apps/web/src/app/api/auth/login/route.ts`
-- `apps/web/src/app/api/auth/logout/route.ts`
-- `apps/web/src/lib/auth.ts`
-- `apps/web/src/proxy.ts`
-
-### 服务器当前职责
-
-- `hk` 只做域名入口和 nginx 反代
-- `gz2` 跑 `apps/web` 和 `apps/api-go`
-- active backend 不应直接暴露在公网入口上
-- Cloudflare challenge / allow 规则属于外部系统，不在仓库版本控制中
-
-## 你的任务边界
-
-你可以做：
-
-1. 改进登录页、仪表盘、导航、文案和交互
-2. 修复部署脚本、systemd、nginx、Cloudflare 相关问题
-3. 联通前端到平台 API
-4. 给平台增加基本可观测性、错误提示、空状态和加载状态
-5. 在不接入复杂用户系统的前提下维护共享登录机制
-
-你不要做：
-
-1. 不要改 sibling `Project` 仓库的攻击算法
-2. 不要申请 GPU 跑模型
-3. 不要把 portal 的复杂用户体系接进来
-4. 不要把真实数据集或模型权重塞进平台仓库
-
-## 工作方式
-
-1. 先检查：
-   - `git status`
-   - `npm --prefix apps/web run lint`
-   - `npm --prefix apps/web run build`
-   - `go -C apps/api-go test ./...`
-2. 再检查服务器：
-   - `hk` nginx 配置
-   - `gz2` 上两个 systemd 服务
-   - Cloudflare 是否已为监控来源放行 `/login`
-3. 做最短路径修复，不要做大重构
-4. 每次改动后本地验证
-5. 小步提交，提交后马上 push
-
-补充：
-
-- `apps/api-go` 是当前 active backend，部署、systemd 和联调默认都以它为准
-- `apps/api` 只在明确处理 legacy stub 时单独检查，不作为当前 release gate
-- 如果当前公网链使用 Tailscale 或其他私网覆盖层，必须在 handoff 里写明；仓库里目前没有这部分版本化说明
-
-## 你需要优先关注的文件
-
-- `README.md`
-- `docs/architecture.md`
-- `docs/superpowers/specs/2026-04-06-temporary-shared-login-design.md`
-
-## 完成标准
-
-你交付时至少要给出：
-
-1. 当前公网地址是否可访问
-2. 登录是否正常
-3. 未登录访问 `/audit` 和 `/api/v1/models` 的行为
-4. `web` 和 `api-go` 服务状态
-5. 你改了哪些文件
-6. 你执行了哪些验证命令
-7. 公网 probe 现在走哪条路径，哪些依赖仍在仓库外
-
-## 输出要求
-
-你的回复必须包含：
-
-- 问题与处理结果
-- 修改文件清单
-- 验证结果
-- 当前遗留风险
+- `npm --prefix apps/web run lint`
+- `npm --prefix apps/web run test`
+- `npm --prefix apps/web run build`
+- `go -C apps/api-go test ./...`（仅在改 Go 网关时）
 ```

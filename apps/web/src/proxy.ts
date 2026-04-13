@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  buildPortalLoginUrl,
+  buildLoginPath,
   DEFAULT_REDIRECT_PATH,
   protectedApiPath,
   protectedPagePath,
   readAuthConfig,
-  sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
   sessionTokenIsValid,
 } from "@/lib/auth";
@@ -20,20 +19,7 @@ export function proxy(request: NextRequest) {
   );
 
   if (pathname === "/login" && hasSession) {
-    return NextResponse.redirect(new URL("/audit", request.url));
-  }
-
-  if (pathname === "/login" && !hasSession) {
-    return NextResponse.redirect(
-      buildPortalLoginUrl(
-        config,
-        request.url,
-        sanitizeRedirectPath(
-          request.nextUrl.searchParams.get("redirectTo"),
-          DEFAULT_REDIRECT_PATH,
-        ),
-      ),
-    );
+    return NextResponse.redirect(new URL(DEFAULT_REDIRECT_PATH, request.url));
   }
 
   if (!hasSession && protectedApiPath(pathname)) {
@@ -42,7 +28,7 @@ export function proxy(request: NextRequest) {
 
   if (!hasSession && protectedPagePath(pathname)) {
     return NextResponse.redirect(
-      buildPortalLoginUrl(config, request.url, `${pathname}${search}`),
+      new URL(buildLoginPath(`${pathname}${search}`), request.url),
     );
   }
 
@@ -51,14 +37,8 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/",
     "/login",
-    "/audit/:path*",
-    "/dashboard/:path*",
-    "/guide/:path*",
-    "/report/:path*",
-    "/batch/:path*",
+    "/workspace/:path*",
     "/api/v1/:path*",
-    "/health",
   ],
 };

@@ -1,138 +1,80 @@
 # DiffAudit Platform
 
-Monorepo for the first platformized version of DiffAudit.
+`Platform` 是 DiffAudit 的唯一产品主线仓库。
 
-This repo is intentionally separate from the research repo:
+当前仓库承载：
 
-- sibling research repo `../Project`: algorithms, experiments, datasets, papers
-- this repo `./`: product shell, API layer, frontend, integration docs
+- 单站前端：`apps/web`
+- 当前 Go 网关：`apps/api-go`
+- 共享契约与提示：`packages/shared`
+- 部署、架构与协作文档：`docs`
 
-## Structure
+首页、登录、工作台、审计流程、报告和设置都收口在同一个 Next.js 网站里。
 
-```text
-apps/
-  web/      Next.js frontend
-  api-go/   active Go backend gateway
-  api/      legacy FastAPI stub retained for historical reference
-packages/
-  shared/   shared contracts and copyable prompts
-docs/       architecture and integration docs
-scripts/    helper scripts
-```
+协作边界：
 
-## First release scope
+- 日常协作默认只依赖 `Platform` 仓本身
+- 协作者不默认拥有 `Research` 或本地 `Archive` 的可见性
+- 任何需要私有上游或本地归档的信息，都不能写成前端协作前提
 
-The first release is a platform shell, not the final product.
+## Product Surface
 
-It focuses on:
+固定页面路径：
 
-- a stable frontend structure in Next.js
-- a small Go backend gateway
-- a minimal audit job contract
-- wiring to the existing research repo later
+- `/`
+- `/login`
+- `/trial`
+- `/workspace`
+- `/workspace/audits`
+- `/workspace/reports`
+- `/workspace/settings`
 
-The active platform backend now proxies to the research local API and does not run research jobs directly.
+## Local Start
 
-## Quick start
-
-### Frontend
+前端：
 
 ```powershell
-cd <platform-repo>
 npm --prefix apps/web install
-npm run dev:web
+npm --prefix apps/web run dev
 ```
 
-Frontend gateway variables:
+后端：
 
 ```powershell
-copy apps\web\.env.example apps\web\.env.local
-```
-
-- `DIFFAUDIT_SESSION_TOKEN`: opaque session cookie value
-- `DIFFAUDIT_PORTAL_URL`: Portal login origin, defaults to `http://localhost:3001`
-- `DIFFAUDIT_PLATFORM_URL`: public workbench origin, defaults to `http://localhost:3000`
-- `DIFFAUDIT_API_BASE_URL`: internal backend URL, defaults to `http://127.0.0.1:8780`
-
-### Backend
-
-```powershell
-cd <platform-repo>
 npm run dev:api
 ```
 
-`npm run dev:api` starts the active `apps/api-go` gateway. The legacy
-`apps/api` FastAPI stub is not part of the active runtime path.
+常用环境变量：
 
-### Local URLs
+- `DIFFAUDIT_SHARED_USERNAME`
+- `DIFFAUDIT_SHARED_PASSWORD`
+- `DIFFAUDIT_SESSION_TOKEN`
+- `DIFFAUDIT_PLATFORM_URL`
+- `DIFFAUDIT_API_BASE_URL`
 
-- web: `http://localhost:3000`
-- api: `http://localhost:8780`
+## Collaboration
 
-## Development rules
+默认协作流：
 
-- Keep the platform repo thin; do not copy algorithm code from the research repo.
-- Add new audit methods behind clear API contracts first.
-- Prefer stable wrappers over deep coupling to the research repo internals.
-- Keep the first production path focused on `Stable Diffusion + DDIM recon`.
-- `Platform` is a shared collaboration repo. Write docs and handoffs so they work for other people and agents, not just one machine.
-- Do not implement features directly in the shared root worktree.
-- Use dedicated git worktrees for all implementation tasks.
-- Treat the root worktree as integration-only.
-- See `AGENTS.md`, `docs/worktree-collaboration.md`, and `docs/merge-playbook.md`.
+1. 从 `main` 拉短分支
+2. 在当前工作树开发
+3. 跑本地验证
+4. push 分支
+5. 提 PR
+6. 1 个 review 后 squash merge 回 `main`
 
-## CI
+## Verification
 
-GitHub Actions checks:
+前端标准验证：
 
-- Next.js lint / test / build
-- Go gateway tests / build
-- legacy FastAPI stub ruff / pytest
+```powershell
+npm --prefix apps/web run test
+npm --prefix apps/web run lint
+npm --prefix apps/web run build
+```
 
-The legacy `apps/api` FastAPI stub is kept as a historical reference and is not
-the active release path, but it is still kept green as a maintained compatibility
-surface.
+如涉及 Go 网关，再补：
 
-## Deploy Handoff
-
-Deployment and runtime handoff notes live in `docs/public-runtime-handoff.md`.
-The executable ops checklist lives in `docs/public-runtime-runbook.md`.
-
-Use that document as the source of truth for:
-
-- active backend ownership
-- public edge probe expectations
-- private service probe commands
-- external dependencies that are not versioned in this repo
-
-## Integration direction
-
-Phase 1:
-
-- backend proxies minimal audit job endpoints
-- backend forwards to the local research-facing API service
-- frontend consumes job status and result payloads
-
-Phase 2:
-
-- add persistent job store
-- add auth / gateway layer
-- move long-running compute off the local workstation if needed
-
-## Portal-Owned Login
-
-The current public preview uses Portal as the only login owner:
-
-- Portal issues the shared `HttpOnly` session cookie
-- `apps/web` only validates the shared cookie and protects workbench routes
-- unauthenticated workbench access redirects to Portal `/login`
-- the private platform API behind that gateway remains `apps/api-go`
-
-### Public Probe Boundary
-
-- `/health` and `/api/v1/*` are application routes behind the shared-login
-  boundary and should not be treated as anonymous public probe endpoints
-- the shortest stable public canary path is `GET /login`, but it still depends
-  on external Cloudflare challenge policy
-- the stable service probes are private checks on the origin machine, not
-  anonymous internet checks
+```powershell
+go -C apps/api-go test ./...
+```
