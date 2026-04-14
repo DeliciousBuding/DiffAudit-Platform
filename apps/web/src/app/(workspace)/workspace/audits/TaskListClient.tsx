@@ -37,15 +37,8 @@ function statusTone(status: string): "info" | "success" | "warning" | "primary" 
   return "primary";
 }
 
-function statusLabel(status: string): string {
-  switch (status) {
-    case "queued": return "Queued";
-    case "running": return "Running";
-    case "completed": return "Completed";
-    case "failed": return "Failed";
-    case "cancelled": return "Cancelled";
-    default: return status;
-  }
+function statusLabel(status: string, labels: Record<string, string>): string {
+  return labels[status] ?? status;
 }
 
 function formatTime(iso: string, locale: Locale): string {
@@ -163,7 +156,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           <div key={job.job_id} className="px-3 py-2.5 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
-              <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status)}</StatusBadge>
+              <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
             </div>
             <div className="mono text-[10px] text-muted-foreground mb-1 truncate">
               {job.contract_key}
@@ -219,7 +212,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                 <span className="mono text-xs">{job.target_model ?? "--"}</span>
               </td>
               <td className="px-3 py-2">
-                <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status)}</StatusBadge>
+                <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
               </td>
               <td className="px-3 py-2">
                 <span className="mono text-xs text-muted-foreground">{formatTime(job.created_at, locale)}</span>
@@ -240,9 +233,9 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                       onClick={() => handleRetry(job)}
                       disabled={retryingJobId === job.job_id}
                       className="text-xs text-[var(--accent-amber)] hover:underline disabled:opacity-50"
-                      title="Retry this job"
+                      title={copy.retryTitle}
                     >
-                      {retryingJobId === job.job_id ? "Retrying..." : "Retry"}
+                      {retryingJobId === job.job_id ? copy.retrying : copy.retry}
                     </button>
                   )}
                 </div>

@@ -300,7 +300,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <ChartAucDistribution data={aucDistData} />
             ) : (
               <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
-                No AUC data available
+                {copy.sections.noAucData}
               </div>
             )}
           </div>
@@ -360,9 +360,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.model}</th>
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.track}</th>
-                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">AUC</th>
-                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">ASR</th>
-                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">TPR</th>
+                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.sections.tableHeaders.auc}</th>
+                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.sections.tableHeaders.asr}</th>
+                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.sections.tableHeaders.tpr}</th>
                   </tr>
                 </thead>
                 <tbody>

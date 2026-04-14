@@ -624,6 +624,11 @@ Go 端点:
 - **修复**: 新增 `jobDetail.eyebrow/title/description` + `jobDetail.statusLabels`（5 个状态） + `jobDetail.labels`（12 个字段），替换 JobDetailClient.tsx 和 page.tsx 全部硬编码
 - **文件**: `workspace-copy.ts`, `audits/[jobId]/page.tsx`, `audits/[jobId]/JobDetailClient.tsx`
 
+### P2: 残余硬编码英文修复（4.15 深度审计）
+- **问题**: TaskListClient.tsx 状态标签（"Queued/Running/Completed/Failed/Cancelled"）、重试按钮（"Retry"/"Retrying..."）、重试提示（"Retry this job"）；workspace/page.tsx 结果表 AUC/ASR/TPR 列标题、"No AUC data available" 空状态；CreateTaskClient.tsx "Submission failed" 错误回退
+- **修复**: 新增 `audits.statusLabels`（5 个状态双语）+ `audits.retry/retrying/retryTitle` + `workspace.sections.tableHeaders.auc/asr/tpr` + `workspace.sections.noAucData` + `createTask.labels.submissionFailed`，替换全部硬编码为 i18n 引用
+- **文件**: `workspace-copy.ts`, `TaskListClient.tsx`, `workspace/page.tsx`, `CreateTaskClient.tsx`
+
 ---
 
 ## 附：状态更新规则

@@ -159,7 +159,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       }, 1500);
     } catch (err) {
       setSubmitState("error");
-      setErrorMessage(err instanceof Error ? err.message : "Submission failed");
+      setErrorMessage(err instanceof Error ? err.message : labels.submissionFailed);
     }
   }, [form.attackType, form.selectedContractKey, form.rounds, form.batchSize, form.adaptiveSampling, router]);
 

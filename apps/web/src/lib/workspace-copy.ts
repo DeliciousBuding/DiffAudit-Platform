@@ -42,7 +42,11 @@ export const WORKSPACE_COPY: Record<
           attack: string;
           model: string;
           track: string;
+          auc: string;
+          asr: string;
+          tpr: string;
         };
+        noAucData: string;
       };
       riskInterpretations: {
         high: string;
@@ -81,6 +85,10 @@ export const WORKSPACE_COPY: Record<
       emptyResults: string;
       emptyTasks: string;
       emptyHistory: string;
+      retry: string;
+      retrying: string;
+      retryTitle: string;
+      statusLabels: Record<string, string>;
       filters: {
         statusAll: string;
         statusCompleted: string;
@@ -141,6 +149,7 @@ export const WORKSPACE_COPY: Record<
         adaptiveOn: string;
         adaptiveOff: string;
         estimatedSuffix: string;
+        submissionFailed: string;
         submitButton: string;
         submitting: string;
         successTitle: string;
@@ -322,7 +331,11 @@ export const WORKSPACE_COPY: Record<
           attack: "Attack",
           model: "Model",
           track: "Track",
+          auc: "AUC",
+          asr: "ASR",
+          tpr: "TPR",
         },
+        noAucData: "No AUC data available",
       },
       riskInterpretations: {
         high: "High attack AUC — the model likely memorized training data. Compare defense strategies.",
@@ -365,6 +378,16 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "No audit results yet.",
       emptyTasks: "No active tasks.",
       emptyHistory: "No task history yet.",
+      retry: "Retry",
+      retrying: "Retrying...",
+      retryTitle: "Retry this job",
+      statusLabels: {
+        queued: "Queued",
+        running: "Running",
+        completed: "Completed",
+        failed: "Failed",
+        cancelled: "Cancelled",
+      },
       filters: {
         statusAll: "All",
         statusCompleted: "Completed",
@@ -425,6 +448,7 @@ export const WORKSPACE_COPY: Record<
         adaptiveOn: "On",
         adaptiveOff: "Off",
         estimatedSuffix: "(estimated)",
+        submissionFailed: "Submission failed",
         submitButton: "Start audit",
         submitting: "Submitting...",
         successTitle: "Task created.",
@@ -729,7 +753,11 @@ export const WORKSPACE_COPY: Record<
           attack: "攻击方法",
           model: "目标模型",
           track: "攻击线",
+          auc: "AUC",
+          asr: "ASR",
+          tpr: "TPR",
         },
+        noAucData: "暂无 AUC 数据",
       },
       riskInterpretations: {
         high: "攻击 AUC 很高，模型很可能记住了训练数据。建议对比不同防御策略的效果。",
@@ -772,6 +800,16 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "还没有审计结果。",
       emptyTasks: "当前没有活跃任务。",
       emptyHistory: "还没有历史任务。",
+      retry: "重试",
+      retrying: "重试中...",
+      retryTitle: "重试此任务",
+      statusLabels: {
+        queued: "排队中",
+        running: "运行中",
+        completed: "已完成",
+        failed: "已失败",
+        cancelled: "已取消",
+      },
       filters: {
         statusAll: "全部",
         statusCompleted: "已完成",
@@ -832,6 +870,7 @@ export const WORKSPACE_COPY: Record<
         adaptiveOn: "开",
         adaptiveOff: "关",
         estimatedSuffix: "（预估）",
+        submissionFailed: "提交失败",
         submitButton: "开始审计",
         submitting: "提交中...",
         successTitle: "任务已创建。",
