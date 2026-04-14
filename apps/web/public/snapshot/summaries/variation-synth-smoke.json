@@ -1,0 +1,38 @@
+{
+  "status": "ready",
+  "track": "black-box",
+  "method": "variation",
+  "paper": "Towards_Black_Box_Diffusion_2024",
+  "mode": "synthetic-smoke",
+  "device": "cuda:0",
+  "workspace": "variation-synth-smoke",
+  "contract_key": "black-box/variation/sd15-ddim",
+  "checks": {
+    "runtime_assets_ready": true,
+    "synthetic_probe_ready": true
+  },
+  "headline_metrics": {
+    "auc": 1.0,
+    "asr": 1.0,
+    "tpr_at_1pct_fpr": null,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0
+  },
+  "dataset_info": {
+    "synthetic_member_count": 10,
+    "synthetic_non_member_count": 10
+  },
+  "model_info": {
+    "target_model": "sd15-ddim"
+  },
+  "execution_time": {
+    "total_seconds": 156,
+    "generation_seconds": 98,
+    "evaluation_seconds": 58
+  },
+  "notes": [
+    "Synthetic smoke test with perfect separation",
+    "Used for validating attack pipeline"
+  ]
+}

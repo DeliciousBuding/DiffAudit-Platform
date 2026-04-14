@@ -1,0 +1,35 @@
+{
+  "status": "ready",
+  "track": "black-box",
+  "method": "clid",
+  "paper": "CLiD_NeurIPS2024",
+  "mode": "artifact-summary",
+  "device": "cuda:0",
+  "workspace": "clid-artifact-summary",
+  "contract_key": "black-box/clid/sd15-ddim",
+  "checks": {
+    "runtime_assets_ready": true,
+    "all_artifacts_generated": true
+  },
+  "headline_metrics": {
+    "auc": 0.961286,
+    "asr": 0.8918,
+    "tpr_at_1pct_fpr": 0.4932,
+    "accuracy": 0.91,
+    "precision": 0.89,
+    "recall": 0.93
+  },
+  "dataset_info": {
+    "member_count": 100,
+    "non_member_count": 100
+  },
+  "model_info": {
+    "target_model": "sd15-ddim",
+    "contrastive_encoder": "clip-vit-large"
+  },
+  "execution_time": {
+    "total_seconds": 2341,
+    "encoding_seconds": 1876,
+    "evaluation_seconds": 465
+  }
+}

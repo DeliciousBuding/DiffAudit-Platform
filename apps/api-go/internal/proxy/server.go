@@ -9,11 +9,19 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
+)
+
+const (
+	defaultRuntimeTimeout = 5000 * time.Millisecond
+	maxRetries            = 3
+	retryDelay            = 1 * time.Second
 )
 
 type Config struct {
-	PublicDataDir     string
-	ControlAPIBaseURL string
+	PublicDataDir  string
+	RuntimeBaseURL string
+	DemoMode       bool
 }
 
 type Server struct {
@@ -27,10 +35,13 @@ func NewServer(config Config) *Server {
 	server := &Server{
 		config: config,
 		mux:    mux,
-		client: &http.Client{},
+		client: &http.Client{
+			Timeout: defaultRuntimeTimeout,
+		},
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
-	mux.HandleFunc("GET /api/v1/control/local-api", server.handleLocalAPIHealth)
+	mux.HandleFunc("GET /api/v1/control/runtime", server.handleRuntimeHealth)
+	mux.HandleFunc("GET /api/v1/control/local-api", server.handleRuntimeHealth)
 	mux.HandleFunc("GET /api/v1/catalog", server.handleSnapshotFile("catalog.json"))
 	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleSnapshotFile("attack-defense-table.json"))
 	mux.HandleFunc("GET /api/v1/models", server.handleSnapshotFile("models.json"))
@@ -54,24 +65,27 @@ func (s *Server) handleHealth(writer http.ResponseWriter, _ *http.Request) {
 		"status":               "ok",
 		"public_data_dir":      s.config.PublicDataDir,
 		"snapshot_available":   manifestAvailable,
-		"control_api_base_url": s.config.ControlAPIBaseURL,
+		"runtime_base_url":     s.config.RuntimeBaseURL,
+		"control_api_base_url": s.config.RuntimeBaseURL,
+		"demo_mode":            s.config.DemoMode,
 	})
 }
 
-func (s *Server) handleLocalAPIHealth(writer http.ResponseWriter, _ *http.Request) {
+func (s *Server) handleRuntimeHealth(writer http.ResponseWriter, _ *http.Request) {
 	payload := map[string]any{
 		"status":               "disconnected",
 		"connected":            false,
-		"control_api_base_url": s.config.ControlAPIBaseURL,
+		"runtime_base_url":     s.config.RuntimeBaseURL,
+		"control_api_base_url": s.config.RuntimeBaseURL,
 	}
 
-	if s.config.ControlAPIBaseURL == "" {
-		payload["detail"] = "control api base url is not configured"
+	if s.config.RuntimeBaseURL == "" {
+		payload["detail"] = "runtime base url is not configured"
 		writeJSON(writer, http.StatusOK, payload)
 		return
 	}
 
-	upstreamURL, err := url.JoinPath(s.config.ControlAPIBaseURL, "/health")
+	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, "/health")
 	if err != nil {
 		payload["detail"] = err.Error()
 		writeJSON(writer, http.StatusOK, payload)
@@ -85,7 +99,7 @@ func (s *Server) handleLocalAPIHealth(writer http.ResponseWriter, _ *http.Reques
 		return
 	}
 
-	response, err := s.client.Do(upstreamRequest)
+	response, err := s.doWithRetry(upstreamRequest, 1)
 	if err != nil {
 		payload["detail"] = err.Error()
 		writeJSON(writer, http.StatusOK, payload)
@@ -98,7 +112,7 @@ func (s *Server) handleLocalAPIHealth(writer http.ResponseWriter, _ *http.Reques
 		payload["status"] = "connected"
 		payload["connected"] = true
 	} else {
-		payload["detail"] = "local api health check failed"
+		payload["detail"] = "runtime health check failed"
 	}
 
 	writeJSON(writer, http.StatusOK, payload)
@@ -170,6 +184,13 @@ func (s *Server) handleControlPost(writer http.ResponseWriter, request *http.Req
 		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
 		return
 	}
+
+	// In demo mode, simulate job creation without calling runtime
+	if s.config.DemoMode && request.URL.Path == "/api/v1/audit/jobs" {
+		s.handleDemoJobCreation(writer, body)
+		return
+	}
+
 	s.forwardControl(writer, request, body)
 }
 
@@ -220,8 +241,8 @@ func (s *Server) snapshotExists(name string) bool {
 }
 
 func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Request, body []byte) {
-	if s.config.ControlAPIBaseURL == "" {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "control api base url is not configured"})
+	if s.config.RuntimeBaseURL == "" {
+		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "runtime base url is not configured"})
 		return
 	}
 
@@ -229,7 +250,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	if jobID := request.PathValue("jobID"); jobID != "" {
 		upstreamPath = strings.TrimSuffix(request.URL.Path, request.PathValue("jobID")) + jobID
 	}
-	upstreamURL, err := url.JoinPath(s.config.ControlAPIBaseURL, upstreamPath)
+	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, upstreamPath)
 	if err != nil {
 		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
 		return
@@ -245,9 +266,9 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	if contentType := request.Header.Get("Content-Type"); contentType != "" {
 		upstreamRequest.Header.Set("Content-Type", contentType)
 	}
-	response, err := s.client.Do(upstreamRequest)
+	response, err := s.doWithRetry(upstreamRequest, maxRetries)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		s.writeRuntimeError(writer, err)
 		return
 	}
 	defer response.Body.Close()
@@ -269,6 +290,21 @@ func writeJSON(writer http.ResponseWriter, statusCode int, payload any) {
 
 var errSnapshotUnavailable = errors.New("snapshot unavailable")
 
+func (s *Server) doWithRetry(request *http.Request, maxAttempts int) (*http.Response, error) {
+	var lastErr error
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		response, err := s.client.Do(request)
+		if err == nil {
+			return response, nil
+		}
+		lastErr = err
+		if attempt < maxAttempts {
+			time.Sleep(retryDelay)
+		}
+	}
+	return nil, lastErr
+}
+
 func normalizeWorkspaceKey(value string) string {
 	if value == "" {
 		return ""
@@ -282,4 +318,58 @@ func normalizeWorkspaceKey(value string) string {
 
 	parts := strings.Split(normalized, "/")
 	return parts[len(parts)-1]
+}
+
+func (s *Server) handleDemoJobCreation(writer http.ResponseWriter, body []byte) {
+	var payload map[string]any
+	if err := json.Unmarshal(body, &payload); err != nil {
+		writeJSON(writer, http.StatusBadRequest, map[string]any{"detail": "invalid request body"})
+		return
+	}
+
+	contractKey, _ := payload["contract_key"].(string)
+	workspaceName, _ := payload["workspace_name"].(string)
+	jobType, _ := payload["job_type"].(string)
+
+	if contractKey == "" || workspaceName == "" {
+		writeJSON(writer, http.StatusBadRequest, map[string]any{
+			"detail": "contract_key and workspace_name are required",
+		})
+		return
+	}
+
+	// Generate a demo job ID
+	jobID := "demo-job-" + time.Now().Format("20060102-150405")
+
+	writeJSON(writer, http.StatusAccepted, map[string]any{
+		"job_id":         jobID,
+		"status":         "queued",
+		"workspace_name": workspaceName,
+		"contract_key":   contractKey,
+		"job_type":       jobType,
+		"demo_mode":      true,
+		"message":        "Demo mode: job created successfully (not executed)",
+	})
+}
+
+func (s *Server) writeRuntimeError(writer http.ResponseWriter, err error) {
+	errorMessage := err.Error()
+	statusCode := http.StatusServiceUnavailable
+	hint := "Runtime server is unavailable. Please check if the runtime server is running."
+
+	// Check for timeout errors
+	if strings.Contains(errorMessage, "timeout") || strings.Contains(errorMessage, "deadline exceeded") {
+		hint = "Runtime server request timed out. The server may be overloaded or unreachable."
+	} else if strings.Contains(errorMessage, "connection refused") {
+		hint = "Cannot connect to runtime server. Please verify the runtime server is running and accessible."
+	} else if strings.Contains(errorMessage, "no such host") {
+		hint = "Runtime server hostname cannot be resolved. Please check the runtime base URL configuration."
+	}
+
+	writeJSON(writer, statusCode, map[string]any{
+		"detail":           errorMessage,
+		"runtime_base_url": s.config.RuntimeBaseURL,
+		"hint":             hint,
+		"demo_mode_tip":    "Consider enabling demo mode (DIFFAUDIT_DEMO_MODE=true) to use snapshot data without runtime server",
+	})
 }

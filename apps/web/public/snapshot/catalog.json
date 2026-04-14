@@ -1,0 +1,72 @@
+[
+  {
+    "contract_key": "black-box/recon/sd15-ddim",
+    "track": "black-box",
+    "attack_family": "recon",
+    "target_key": "sd15-ddim",
+    "availability": "ready",
+    "best_workspace": "recon-runtime-mainline-ddim-public-50-step10",
+    "best_evidence_mode": "runtime-mainline",
+    "headline_metrics": {
+      "auc": 0.866,
+      "asr": 0.51,
+      "tpr_at_1pct_fpr": 1.0
+    }
+  },
+  {
+    "contract_key": "black-box/clid/sd15-ddim",
+    "track": "black-box",
+    "attack_family": "clid",
+    "target_key": "sd15-ddim",
+    "availability": "ready",
+    "best_workspace": "clid-artifact-summary",
+    "best_evidence_mode": "artifact-summary",
+    "headline_metrics": {
+      "auc": 0.961,
+      "asr": 0.892,
+      "tpr_at_1pct_fpr": 0.493
+    }
+  },
+  {
+    "contract_key": "black-box/variation/sd15-ddim",
+    "track": "black-box",
+    "attack_family": "variation",
+    "target_key": "sd15-ddim",
+    "availability": "ready",
+    "best_workspace": "variation-synth-smoke",
+    "best_evidence_mode": "synthetic-smoke",
+    "headline_metrics": {
+      "auc": 1.0,
+      "asr": 1.0,
+      "tpr_at_1pct_fpr": null
+    }
+  },
+  {
+    "contract_key": "gray-box/pia/cifar10-ddpm",
+    "track": "gray-box",
+    "attack_family": "pia",
+    "target_key": "cifar10-ddpm",
+    "availability": "ready",
+    "best_workspace": "pia-runtime-smoke-gpu",
+    "best_evidence_mode": "runtime-smoke",
+    "headline_metrics": {
+      "auc": null,
+      "asr": null,
+      "tpr_at_1pct_fpr": null
+    }
+  },
+  {
+    "contract_key": "white-box/gsa/ddpm-cifar10",
+    "track": "white-box",
+    "attack_family": "gsa",
+    "target_key": "ddpm-cifar10",
+    "availability": "partial",
+    "best_workspace": "",
+    "best_evidence_mode": "",
+    "headline_metrics": {
+      "auc": null,
+      "asr": null,
+      "tpr_at_1pct_fpr": null
+    }
+  }
+]

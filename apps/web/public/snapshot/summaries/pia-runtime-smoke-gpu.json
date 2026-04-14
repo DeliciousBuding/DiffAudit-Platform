@@ -1,0 +1,45 @@
+{
+  "status": "ready",
+  "track": "gray-box",
+  "method": "pia",
+  "paper": "PIA_ICLR2024",
+  "mode": "runtime-smoke",
+  "device": "cuda",
+  "workspace": "pia-runtime-smoke-gpu",
+  "contract_key": "gray-box/pia/cifar10-ddpm",
+  "checks": {
+    "checkpoint": true,
+    "dataset_root": true,
+    "dataset_layout": true,
+    "member_split": true,
+    "components_loaded": true,
+    "model_loaded": true,
+    "attacker_instantiated": true,
+    "preview_forward": true,
+    "runtime_probe_ready": true,
+    "synthetic_assets_cleaned": true
+  },
+  "headline_metrics": {
+    "auc": null,
+    "asr": null,
+    "tpr_at_1pct_fpr": null
+  },
+  "assets": {
+    "dataset_name": "cifar10",
+    "attacker_name": "PIA",
+    "attack_num": 3,
+    "interval": 10
+  },
+  "model_info": {
+    "weights_key": "ema_model"
+  },
+  "execution_time": {
+    "total_seconds": 45,
+    "setup_seconds": 23,
+    "probe_seconds": 22
+  },
+  "notes": [
+    "Runtime smoke uses synthetic assets to verify config-driven PIA readiness",
+    "Synthetic assets are removed after the summary is written"
+  ]
+}

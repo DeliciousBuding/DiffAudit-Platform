@@ -1,0 +1,34 @@
+[
+  {
+    "key": "sd15-ddim",
+    "name": "Stable Diffusion 1.5 (DDIM)",
+    "type": "text-to-image",
+    "architecture": "latent-diffusion",
+    "scheduler": "ddim",
+    "status": "ready"
+  },
+  {
+    "key": "kandinsky-v22",
+    "name": "Kandinsky 2.2",
+    "type": "text-to-image",
+    "architecture": "latent-diffusion",
+    "scheduler": "ddpm",
+    "status": "ready"
+  },
+  {
+    "key": "cifar10-ddpm",
+    "name": "CIFAR-10 DDPM",
+    "type": "image-generation",
+    "architecture": "ddpm",
+    "scheduler": "ddpm",
+    "status": "ready"
+  },
+  {
+    "key": "ddpm-cifar10",
+    "name": "DDPM CIFAR-10",
+    "type": "image-generation",
+    "architecture": "ddpm",
+    "scheduler": "ddpm",
+    "status": "partial"
+  }
+]
