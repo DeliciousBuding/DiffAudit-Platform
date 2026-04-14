@@ -1,7 +1,9 @@
+import { headers } from "next/headers";
+
 import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard } from "@/lib/catalog";
-import { readServerLocale } from "@/lib/locale";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspacePage } from "@/components/workspace-page";
 import { CreateJobButton } from "@/components/create-job-button";
@@ -9,7 +11,7 @@ import { LiveJobsPanel } from "@/components/live-jobs-panel";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? await readServerLocale();
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
   const [catalog, table] = await Promise.all([
     fetchCatalogDashboard(),

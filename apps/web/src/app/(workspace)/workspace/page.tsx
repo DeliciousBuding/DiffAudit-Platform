@@ -1,7 +1,9 @@
+import { headers } from "next/headers";
+
 import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard } from "@/lib/catalog";
-import { readServerLocale } from "@/lib/locale";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspacePage } from "@/components/workspace-page";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -17,7 +19,7 @@ function Kpi({ label, value, note }: { label: string; value: string; note: strin
 }
 
 export default async function WorkspaceHomePage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? await readServerLocale();
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
   const [catalog, table] = await Promise.all([
     fetchCatalogDashboard(),

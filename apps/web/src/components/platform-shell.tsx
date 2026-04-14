@@ -1,13 +1,15 @@
+import { headers } from "next/headers";
+
 import { LanguagePicker } from "@/components/language-picker";
 import { LogoutButton } from "@/components/logout-button";
 import { PlatformNavDesktop, PlatformNavMobile } from "@/components/platform-nav.client";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { StatusBadge } from "@/components/status-badge";
-import { readServerLocale } from "@/lib/locale";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export async function PlatformShell({ children }: { children: React.ReactNode }) {
-  const locale = await readServerLocale();
+  const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
 
   return (

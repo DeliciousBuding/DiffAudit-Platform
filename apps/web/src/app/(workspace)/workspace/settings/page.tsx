@@ -1,9 +1,11 @@
-import { readServerLocale } from "@/lib/locale";
+import { headers } from "next/headers";
+
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspacePage } from "@/components/workspace-page";
 
 export default async function WorkspaceSettingsPage() {
-  const locale = await readServerLocale();
+  const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale].settings;
 
   return (

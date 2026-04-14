@@ -1,10 +1,14 @@
-import { readServerLocale } from "@/lib/locale";
+import { headers } from "next/headers";
+
 import { BrandMark } from "@/components/brand-mark";
 import { TrialForm } from "@/components/trial-form";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
+export const dynamic = "force-dynamic";
+
 export default async function TrialPage() {
-  const locale = await readServerLocale();
+  const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
 
   return (

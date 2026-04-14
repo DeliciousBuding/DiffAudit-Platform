@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,13 +8,14 @@ export const metadata: Metadata = {
   description: "Membership inference audit platform for diffusion models.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const locale = cookieStore.get("platform-locale-v2")?.value === "zh-CN" ? "zh-CN" : "en-US";
+  const locale = resolveLocaleFromHeaderStore(await headers());
 
   return (
     <html lang={locale === "zh-CN" ? "zh-CN" : "en"} className="h-full antialiased">

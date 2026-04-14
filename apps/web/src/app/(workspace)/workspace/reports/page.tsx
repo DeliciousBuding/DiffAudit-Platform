@@ -1,13 +1,15 @@
+import { headers } from "next/headers";
+
 import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard } from "@/lib/catalog";
-import { readServerLocale } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WorkspacePage } from "@/components/workspace-page";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export default async function WorkspaceReportsPage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? await readServerLocale();
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].reports;
   const [catalog, table] = await Promise.all([
     fetchCatalogDashboard(),

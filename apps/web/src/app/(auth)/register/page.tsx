@@ -1,10 +1,12 @@
+import { headers } from "next/headers";
+
 import { githubOAuthConfigured } from "@/lib/auth";
-import { readServerLocale } from "@/lib/locale";
 import { RegisterForm } from "@/components/register-form";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export default async function RegisterPage() {
-  const locale = await readServerLocale();
+  const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
   const oauthEnabled = githubOAuthConfigured();
 
