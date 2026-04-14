@@ -5,6 +5,9 @@ export const WORKSPACE_COPY: Record<
   {
     shell: {
       siteBadge: string;
+      localApiChecking: string;
+      localApiConnected: string;
+      localApiDisconnected: string;
       desktopNavAriaLabel: string;
       mobileNavAriaLabel: string;
       githubTitle: string;
@@ -136,6 +139,9 @@ export const WORKSPACE_COPY: Record<
   "en-US": {
     shell: {
       siteBadge: "Single-site workspace",
+      localApiChecking: "LocalAPI checking",
+      localApiConnected: "LocalAPI connected",
+      localApiDisconnected: "LocalAPI disconnected",
       desktopNavAriaLabel: "Workspace navigation",
       mobileNavAriaLabel: "Mobile navigation",
       githubTitle: "GitHub",
@@ -274,6 +280,9 @@ export const WORKSPACE_COPY: Record<
   "zh-CN": {
     shell: {
       siteBadge: "单站工作台",
+      localApiChecking: "LocalAPI 检查中",
+      localApiConnected: "LocalAPI 已连接",
+      localApiDisconnected: "LocalAPI 未连接",
       desktopNavAriaLabel: "工作台导航",
       mobileNavAriaLabel: "移动端导航",
       githubTitle: "GitHub",

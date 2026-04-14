@@ -4,6 +4,7 @@ import { LanguagePicker } from "@/components/language-picker";
 import { LogoutButton } from "@/components/logout-button";
 import { PlatformNavDesktop, PlatformNavMobile } from "@/components/platform-nav.client";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
+import { LocalAPIStatusBadge } from "@/components/local-api-status-badge";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -25,6 +26,7 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
 
           <div className="flex items-center gap-2">
             <StatusBadge tone="info">{copy.shell.siteBadge}</StatusBadge>
+            <LocalAPIStatusBadge locale={locale} />
             <LanguagePicker value={locale} reloadOnChange />
             <a
               href="https://github.com/DeliciousBuding/DiffAudit-Platform"

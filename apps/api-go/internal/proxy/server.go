@@ -30,6 +30,7 @@ func NewServer(config Config) *Server {
 		client: &http.Client{},
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
+	mux.HandleFunc("GET /api/v1/control/local-api", server.handleLocalAPIHealth)
 	mux.HandleFunc("GET /api/v1/catalog", server.handleSnapshotFile("catalog.json"))
 	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleSnapshotFile("attack-defense-table.json"))
 	mux.HandleFunc("GET /api/v1/models", server.handleSnapshotFile("models.json"))
@@ -55,6 +56,52 @@ func (s *Server) handleHealth(writer http.ResponseWriter, _ *http.Request) {
 		"snapshot_available":   manifestAvailable,
 		"control_api_base_url": s.config.ControlAPIBaseURL,
 	})
+}
+
+func (s *Server) handleLocalAPIHealth(writer http.ResponseWriter, _ *http.Request) {
+	payload := map[string]any{
+		"status":               "disconnected",
+		"connected":            false,
+		"control_api_base_url": s.config.ControlAPIBaseURL,
+	}
+
+	if s.config.ControlAPIBaseURL == "" {
+		payload["detail"] = "control api base url is not configured"
+		writeJSON(writer, http.StatusOK, payload)
+		return
+	}
+
+	upstreamURL, err := url.JoinPath(s.config.ControlAPIBaseURL, "/health")
+	if err != nil {
+		payload["detail"] = err.Error()
+		writeJSON(writer, http.StatusOK, payload)
+		return
+	}
+
+	upstreamRequest, err := http.NewRequest(http.MethodGet, upstreamURL, nil)
+	if err != nil {
+		payload["detail"] = err.Error()
+		writeJSON(writer, http.StatusOK, payload)
+		return
+	}
+
+	response, err := s.client.Do(upstreamRequest)
+	if err != nil {
+		payload["detail"] = err.Error()
+		writeJSON(writer, http.StatusOK, payload)
+		return
+	}
+	defer response.Body.Close()
+
+	payload["upstream_status"] = response.StatusCode
+	if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusMultipleChoices {
+		payload["status"] = "connected"
+		payload["connected"] = true
+	} else {
+		payload["detail"] = "local api health check failed"
+	}
+
+	writeJSON(writer, http.StatusOK, payload)
 }
 
 func (s *Server) handleSnapshotFile(name string) http.HandlerFunc {

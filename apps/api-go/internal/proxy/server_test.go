@@ -33,6 +33,68 @@ func TestHealthEndpoint(t *testing.T) {
 	}
 }
 
+func TestLocalAPIHealthEndpointConnected(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/health" {
+			t.Fatalf("unexpected path %s", request.URL.Path)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{"status": "ok"})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/local-api", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["connected"] != true {
+		t.Fatalf("expected connected=true, got %v", payload["connected"])
+	}
+	if payload["status"] != "connected" {
+		t.Fatalf("expected connected status, got %v", payload["status"])
+	}
+}
+
+func TestLocalAPIHealthEndpointDisconnected(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		http.Error(writer, "upstream unavailable", http.StatusServiceUnavailable)
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/local-api", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["connected"] != false {
+		t.Fatalf("expected connected=false, got %v", payload["connected"])
+	}
+	if payload["status"] != "disconnected" {
+		t.Fatalf("expected disconnected status, got %v", payload["status"])
+	}
+	if payload["upstream_status"] != float64(http.StatusServiceUnavailable) {
+		t.Fatalf("expected upstream_status 503, got %v", payload["upstream_status"])
+	}
+}
+
 func TestModelsEndpointUsesSnapshotData(t *testing.T) {
 	dataDir := writeSnapshotBundle(t, snapshotBundle{
 		models: []map[string]any{
