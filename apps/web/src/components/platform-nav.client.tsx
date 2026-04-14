@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";
-import { navItems } from "@/lib/navigation";
+import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
 
-export function PlatformNavDesktop() {
+export function PlatformNavDesktop({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
+  const items = getNavItems(locale);
   const current = findActiveNavItem(pathname);
 
   return (
     <nav className="workspace-nav" aria-label="Workspace navigation">
-      {navItems.map((item) => {
+      {items.map((item) => {
         const active = current.href === item.href;
         return (
           <Link
@@ -33,8 +35,9 @@ export function PlatformNavDesktop() {
   );
 }
 
-export function PlatformNavMobile() {
+export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
+  const items = getNavItems(locale);
   const current = findActiveNavItem(pathname);
 
   return (
@@ -42,7 +45,7 @@ export function PlatformNavMobile() {
       className="fixed bottom-4 left-4 right-4 z-40 hidden grid-cols-4 gap-2 rounded-[24px] border border-border bg-white/92 p-2 shadow-[0_20px_60px_rgba(18,19,23,0.12)] backdrop-blur-[20px] max-lg:grid"
       aria-label="Mobile navigation"
     >
-      {navItems.map((item) => {
+      {items.map((item) => {
         const active = current.href === item.href;
         return (
           <Link
@@ -65,4 +68,3 @@ export function PlatformNavMobile() {
     </nav>
   );
 }
-

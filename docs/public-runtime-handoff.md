@@ -17,6 +17,8 @@
 1. public request reaches Cloudflare
 2. Cloudflare forwards to `hk`
 3. `hk` forwards the full site to `gz2`
+   - current upstream target is `http://100.77.212.60`
+   - this hop depends on tailnet ACL allowing `hk -> gz2 tcp:80`
 4. `gz2` runs one web service for `/`, `/login`, `/trial`, `/workspace*`, `/api/auth/*`
 5. `Platform/apps/web` proxies `api/v1/*` requests to `DIFFAUDIT_API_BASE_URL`
 6. `Services/Local-API` serves catalog and admitted experiment metadata

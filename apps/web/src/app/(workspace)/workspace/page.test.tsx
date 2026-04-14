@@ -8,7 +8,7 @@ describe("WorkspaceHomePage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders todo, recent audits, and key metrics from backend data", async () => {
+  it("renders zh-CN copy with backend data", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -53,22 +53,25 @@ describe("WorkspaceHomePage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceHomePage());
+    const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("个人待办、最近审计和关键指标在同一个工作台里闭环");
-    expect(markup).toContain("个人待办");
-    expect(markup).toContain("最近审计");
+    expect(markup).toContain("待办、审计结果和关键指标。");
+    expect(markup).toContain("当前待办");
+    expect(markup).toContain("最近结果");
     expect(markup).toContain("PIA GPU512 baseline");
     expect(markup).toContain("Live contracts");
     expect(markup).toContain("Defended rows");
   });
 
-  it("remains renderable when backend data is unavailable", async () => {
+  it("renders en-US copy when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await WorkspaceHomePage());
+    const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "en-US" }));
 
-    expect(markup).toContain("当前未读取到最近审计结果");
+    expect(markup).toContain("Tasks, audit results, and key metrics.");
+    expect(markup).toContain("Current tasks");
+    expect(markup).toContain("Recent results");
+    expect(markup).toContain("No audit results yet. Create a job in the audits page.");
     expect(markup).toContain("Live contracts");
   });
 });

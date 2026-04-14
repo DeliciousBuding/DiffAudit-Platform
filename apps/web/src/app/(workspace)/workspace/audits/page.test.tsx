@@ -8,7 +8,7 @@ describe("WorkspaceAuditsPage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders live jobs and contract context instead of old console copy", async () => {
+  it("renders zh-CN copy with live jobs", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -74,18 +74,18 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceAuditsPage());
+    const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("创建任务、查看运行状态，并在同一页里查看结果。");
+    expect(markup).toContain("创建任务、跟踪运行、查看结果。");
+    expect(markup).toContain("推荐合同项");
+    expect(markup).toContain("运行中任务");
     expect(markup).toContain("job_123");
     expect(markup).toContain("audit-replay-001");
     expect(markup).toContain("running");
     expect(markup).toContain("gray-box/pia/cifar10-ddpm");
-    expect(markup).not.toContain("正在加载检测控制台");
-    expect(markup).not.toContain("后端 API 端点");
   });
 
-  it("renders empty-state guidance when jobs are unavailable", async () => {
+  it("renders en-US empty states when jobs are unavailable", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -113,9 +113,11 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceAuditsPage());
+    const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "en-US" }));
 
-    expect(markup).toContain("当前还没有可展示的运行任务。");
-    expect(markup).toContain("创建首条审计任务");
+    expect(markup).toContain("Create jobs, track runs, review results.");
+    expect(markup).toContain("No running jobs.");
+    expect(markup).toContain("Recommended contracts");
+    expect(markup).toContain("No audit results yet.");
   });
 });

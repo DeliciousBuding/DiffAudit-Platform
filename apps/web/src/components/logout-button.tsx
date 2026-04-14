@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export function LogoutButton() {
+export function LogoutButton({ label = "Sign out" }: { label?: string }) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -19,7 +19,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       className="inline-flex items-center justify-center rounded-xl border border-border bg-white/55 px-3.5 py-2 text-xs font-semibold text-muted-foreground transition hover:-translate-y-px hover:text-foreground dark:bg-white/5"
     >
-      退出共享会话
+      {label}
     </button>
   );
 }

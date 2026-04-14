@@ -1,7 +1,12 @@
+import { readServerLocale } from "@/lib/locale";
 import { BrandMark } from "@/components/brand-mark";
 import { TrialForm } from "@/components/trial-form";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-export default function TrialPage() {
+export default async function TrialPage() {
+  const locale = await readServerLocale();
+  const copy = WORKSPACE_COPY[locale];
+
   return (
     <main className="site-shell">
       <header className="site-header">
@@ -13,14 +18,14 @@ export default function TrialPage() {
       <section className="container py-12 md:py-20">
         <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
           <div className="workspace-highlight">
-            <div className="caption">申请试用</div>
-            <h1 className="mt-3 text-[34px] font-[450] leading-tight">让团队先用统一工作台跑通一条审计闭环。</h1>
+            <div className="caption">{copy.trialPage.eyebrow}</div>
+            <h1 className="mt-3 text-[34px] font-[450] leading-tight">{copy.trialPage.title}</h1>
             <p className="mt-4 max-w-[48ch] text-sm leading-7 text-muted-foreground">
-              告诉我们你的模型类型、团队角色和当前风险关注点。我们会基于这些信息安排试用与后续接入。
+              {copy.trialPage.description}
             </p>
           </div>
 
-          <TrialForm />
+          <TrialForm copy={copy.trialForm} />
         </div>
       </section>
     </main>

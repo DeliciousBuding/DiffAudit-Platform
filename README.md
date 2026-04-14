@@ -47,9 +47,17 @@ npm run dev:api
 
 - `DIFFAUDIT_SHARED_USERNAME`
 - `DIFFAUDIT_SHARED_PASSWORD`
-- `DIFFAUDIT_SESSION_TOKEN`
 - `DIFFAUDIT_PLATFORM_URL`
 - `DIFFAUDIT_API_BASE_URL`
+- `DIFFAUDIT_DB_PATH`
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+
+说明：
+
+- `DIFFAUDIT_SHARED_USERNAME` / `DIFFAUDIT_SHARED_PASSWORD` 现在用于首个共享账号引导。
+- 当 SQLite 用户库为空时，登录接口会自动把这对共享账号写入用户表，便于公网首启或替换旧运行时时平滑过渡。
+- 会话已经不再依赖固定的 `DIFFAUDIT_SESSION_TOKEN`。
 
 ## Collaboration
 
