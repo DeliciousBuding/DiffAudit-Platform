@@ -29,9 +29,11 @@ type RegisterPageCopy = {
 export function RegisterForm({
   copy,
   pageCopy,
+  oauthEnabled,
 }: {
   copy: RegisterFormCopy;
   pageCopy: RegisterPageCopy;
+  oauthEnabled: boolean;
 }) {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -94,12 +96,14 @@ export function RegisterForm({
         </button>
       </form>
 
-      <div className="grid gap-4">
-        <div className="auth-divider">{pageCopy.oauthDivider}</div>
-        <a href="/api/auth/github" className="auth-provider-button">
-          {pageCopy.github}
-        </a>
-      </div>
+      {oauthEnabled ? (
+        <div className="grid gap-4">
+          <div className="auth-divider">{pageCopy.oauthDivider}</div>
+          <a href="/api/auth/github" className="auth-provider-button">
+            {pageCopy.github}
+          </a>
+        </div>
+      ) : null}
 
       {error ? (
         <p className="text-sm text-[#bf2f2f]">{error}</p>

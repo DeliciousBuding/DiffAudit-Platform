@@ -37,6 +37,17 @@ export function buildLoginPath(redirectPath: string): string {
   return `${url.pathname}${url.search}`;
 }
 
+type GitHubOAuthEnv = {
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
+};
+
+export function githubOAuthConfigured(
+  env: GitHubOAuthEnv = process.env as GitHubOAuthEnv,
+): boolean {
+  return Boolean(env.GITHUB_CLIENT_ID?.trim() && env.GITHUB_CLIENT_SECRET?.trim());
+}
+
 type LegacySharedAuthEnv = {
   DIFFAUDIT_SHARED_USERNAME?: string;
   DIFFAUDIT_SHARED_PASSWORD?: string;

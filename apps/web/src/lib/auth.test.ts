@@ -9,6 +9,7 @@ import {
   authPagePath,
   ensureLegacySharedUser,
   buildLoginPath,
+  githubOAuthConfigured,
   protectedApiPath,
   protectedPagePath,
   sanitizeRedirectPath,
@@ -66,6 +67,17 @@ describe("auth route helpers", () => {
     expect(protectedPagePath("/trial")).toBe(false);
     expect(protectedPagePath("/workspace")).toBe(true);
     expect(protectedPagePath("/workspace/reports/preview")).toBe(true);
+  });
+
+  it("only enables github oauth when both credentials are present", () => {
+    expect(githubOAuthConfigured({})).toBe(false);
+    expect(githubOAuthConfigured({ GITHUB_CLIENT_ID: "client-only" })).toBe(false);
+    expect(
+      githubOAuthConfigured({
+        GITHUB_CLIENT_ID: "client-id",
+        GITHUB_CLIENT_SECRET: "client-secret",
+      }),
+    ).toBe(true);
   });
 
   it("bootstraps the legacy shared account into the sqlite user store", async () => {

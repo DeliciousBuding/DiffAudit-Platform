@@ -1,4 +1,4 @@
-import { sanitizeRedirectPath } from "@/lib/auth";
+import { githubOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
 import { readServerLocale } from "@/lib/locale";
 import { LoginForm } from "@/components/login-form";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -11,6 +11,7 @@ export default async function LoginPage({
   const { redirectTo } = await searchParams;
   const locale = await readServerLocale();
   const copy = WORKSPACE_COPY[locale];
+  const oauthEnabled = githubOAuthConfigured();
 
   return (
     <div className="mx-auto grid max-w-[960px] gap-8 lg:grid-cols-[0.92fr_1.08fr]">
@@ -28,6 +29,7 @@ export default async function LoginPage({
             redirectTo={sanitizeRedirectPath(redirectTo)}
             copy={copy.loginForm}
             pageCopy={copy.loginPage}
+            oauthEnabled={oauthEnabled}
           />
         </div>
       </div>
