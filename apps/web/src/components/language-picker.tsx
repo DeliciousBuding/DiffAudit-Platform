@@ -48,6 +48,10 @@ export function getStoredLocale() {
   return resolveStoredLocale();
 }
 
+export function setStoredLocale(locale: Locale) {
+  persistLocale(locale);
+}
+
 function persistLocale(locale: Locale) {
   try {
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);

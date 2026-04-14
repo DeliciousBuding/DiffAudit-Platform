@@ -4,14 +4,20 @@ import { useEffect, useState, useCallback } from "react";
 
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
-import { type Locale } from "@/components/language-picker";
+import { type Locale, setStoredLocale, getStoredLocale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { useTheme } from "@/hooks/use-theme";
 
 const STORAGE_KEYS = {
   DEMO_MODE: "platform-demo-mode-v1",
   DEFAULT_ROUNDS: "platform-default-rounds-v1",
   DEFAULT_BATCH_SIZE: "platform-default-batch-size-v1",
+  RUNTIME_HOST: "platform-runtime-host-v1",
+  RUNTIME_PORT: "platform-runtime-port-v1",
+  THEME: "platform-theme-v1",
 } as const;
+
+type ThemeMode = "light" | "dark" | "system";
 
 interface SettingsClientProps {
   locale: Locale;
@@ -24,8 +30,18 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
   const [demoMode, setDemoMode] = useState(false);
   const [defaultRounds, setDefaultRounds] = useState("10");
   const [defaultBatchSize, setDefaultBatchSize] = useState("32");
-  const [savedMsg, setSavedMsg] = useState(false);
+  const [savedMsg, setSavedMsg] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(initialUsername ?? null);
+
+  // Preferences
+  const [currentLocale, setCurrentLocale] = useState<Locale>(locale);
+  const [theme, setTheme] = useState<ThemeMode>("light");
+
+  // Runtime config
+  const [runtimeHost, setRuntimeHost] = useState("http://127.0.0.1");
+  const [runtimePort, setRuntimePort] = useState("8765");
+  const [runtimeTesting, setRuntimeTesting] = useState(false);
+  const [runtimeConnected, setRuntimeConnected] = useState<boolean | null>(null);
 
   // Load from localStorage
   useEffect(() => {
@@ -40,6 +56,30 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     try {
       const batch = window.localStorage.getItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE);
       if (batch) setDefaultBatchSize(batch);
+    } catch {}
+    try {
+      const host = window.localStorage.getItem(STORAGE_KEYS.RUNTIME_HOST);
+      if (host) setRuntimeHost(host);
+    } catch {}
+    try {
+      const port = window.localStorage.getItem(STORAGE_KEYS.RUNTIME_PORT);
+      if (port) setRuntimePort(port);
+    } catch {}
+    try {
+      const savedLocale = getStoredLocale();
+      setCurrentLocale(savedLocale);
+    } catch {}
+    try {
+      const savedTheme = window.localStorage.getItem(STORAGE_KEYS.THEME) as ThemeMode | null;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        const resolved = savedTheme === "system"
+          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+          : savedTheme;
+        document.documentElement.setAttribute("data-theme", resolved);
+        document.documentElement.classList.toggle("dark", resolved === "dark");
+        document.documentElement.style.colorScheme = resolved;
+      }
     } catch {}
   }, []);
 
@@ -74,10 +114,10 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     };
   }, [initialUsername]);
 
-  const showSaved = useCallback(() => {
-    setSavedMsg(true);
-    window.setTimeout(() => setSavedMsg(false), 2000);
-  }, []);
+  const showSaved = useCallback((section?: string) => {
+    setSavedMsg(section ?? copy.auditConfig.saved);
+    window.setTimeout(() => setSavedMsg(null), 2000);
+  }, [copy.auditConfig.saved]);
 
   function handleDemoModeToggle(checked: boolean) {
     setDemoMode(checked);
@@ -97,6 +137,68 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     setDefaultBatchSize(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, value);
+    } catch {}
+  }
+
+  function handleLocaleChange(newLocale: Locale) {
+    setCurrentLocale(newLocale);
+    try {
+      setStoredLocale(newLocale);
+    } catch {}
+    showSaved(copy.preferences.language);
+  }
+
+  function handleThemeChange(newTheme: ThemeMode) {
+    setTheme(newTheme);
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
+      const resolved = newTheme === "system"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : newTheme;
+      document.documentElement.setAttribute("data-theme", resolved);
+      document.documentElement.classList.toggle("dark", resolved === "dark");
+      document.documentElement.style.colorScheme = resolved;
+
+      // Listen for OS theme changes when "system" is selected
+      if (newTheme === "system") {
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        const handler = (e: MediaQueryListEvent) => {
+          const next = e.matches ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", next);
+          document.documentElement.classList.toggle("dark", next === "dark");
+          document.documentElement.style.colorScheme = next;
+        };
+        mq.addEventListener("change", handler);
+      }
+    } catch {}
+    showSaved(copy.preferences.theme);
+  }
+
+  async function handleTestRuntime() {
+    setRuntimeTesting(true);
+    setRuntimeConnected(null);
+    try {
+      const url = `${runtimeHost}:${runtimePort}/health`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      setRuntimeConnected(res.ok);
+    } catch {
+      setRuntimeConnected(false);
+    } finally {
+      setRuntimeTesting(false);
+    }
+  }
+
+  function handleSaveRuntimeHost(value: string) {
+    setRuntimeHost(value);
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, value);
+    } catch {}
+  }
+
+  function handleSaveRuntimePort(value: string) {
+    setRuntimePort(value);
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, value);
     } catch {}
   }
 
@@ -141,7 +243,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
                 aria-label={`${copy.systemStatus.demoMode}: ${demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}`}
               >
                 <span
-                  className={`inline-block h-3.5 w-3.5 translate-x-1 rounded-full bg-white shadow transition-transform ${
+                  className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
                     demoMode ? "translate-x-[1.125rem]" : "translate-x-1"
                   }`}
                 />
@@ -156,7 +258,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditConfig.title}
             </h2>
-            {savedMsg && (
+            {savedMsg === copy.auditConfig.saved && (
               <span className="text-[10px] text-[color:var(--success)]">
                 {copy.auditConfig.saved}
               </span>
@@ -171,10 +273,8 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
               <input
                 type="number"
                 value={defaultRounds}
-                onChange={(e) => {
-                  handleRoundsChange(e.target.value);
-                  showSaved();
-                }}
+                onChange={(e) => handleRoundsChange(e.target.value)}
+                onBlur={() => showSaved(copy.auditConfig.defaultRounds)}
                 min={1}
                 max={1000}
                 className="settings-input"
@@ -189,10 +289,8 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
               <input
                 type="number"
                 value={defaultBatchSize}
-                onChange={(e) => {
-                  handleBatchSizeChange(e.target.value);
-                  showSaved();
-                }}
+                onChange={(e) => handleBatchSizeChange(e.target.value)}
+                onBlur={() => showSaved(copy.auditConfig.defaultBatchSize)}
                 min={1}
                 max={1024}
                 className="settings-input"
@@ -201,7 +299,207 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
           </div>
         </section>
 
-        {/* Account */}
+        {/* Preferences — 2.2.1 */}
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.preferences.title}
+            </h2>
+          </div>
+          <div className="p-3 space-y-4">
+            {/* Language selector */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                {copy.preferences.language}
+              </label>
+              <p className="text-[10px] text-muted-foreground">{copy.preferences.languageNote}</p>
+              <div className="flex gap-1">
+                {(["zh-CN", "en-US"] as Locale[]).map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => handleLocaleChange(l)}
+                    className={`flex-1 rounded px-3 py-1.5 text-xs transition-colors ${
+                      currentLocale === l
+                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
+                        : "text-muted-foreground hover:bg-muted/30"
+                    }`}
+                  >
+                    {l === "zh-CN" ? "中文" : "English"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Theme selector */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                {copy.preferences.theme}
+              </label>
+              <div className="flex gap-1">
+                {([
+                  { key: "light" as const, label: copy.preferences.themeLight },
+                  { key: "dark" as const, label: copy.preferences.themeDark },
+                  { key: "system" as const, label: copy.preferences.themeSystem },
+                ]).map((t) => (
+                  <button
+                    key={t.key}
+                    onClick={() => handleThemeChange(t.key)}
+                    className={`flex-1 rounded px-3 py-1.5 text-xs transition-colors ${
+                      theme === t.key
+                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
+                        : "text-muted-foreground hover:bg-muted/30"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Runtime Connection — 2.2.2 */}
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.runtimeConfig.title}
+            </h2>
+            {savedMsg === copy.runtimeConfig.saved && (
+              <span className="text-[10px] text-[color:var(--success)]">
+                {copy.runtimeConfig.saved}
+              </span>
+            )}
+          </div>
+          <div className="p-3 space-y-3">
+            {/* Host */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                {copy.runtimeConfig.host}
+              </label>
+              <input
+                type="text"
+                value={runtimeHost}
+                onChange={(e) => handleSaveRuntimeHost(e.target.value)}
+                placeholder={copy.runtimeConfig.hostPlaceholder}
+                className="settings-input mono"
+              />
+            </div>
+
+            {/* Port */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                {copy.runtimeConfig.port}
+              </label>
+              <input
+                type="text"
+                value={runtimePort}
+                onChange={(e) => handleSaveRuntimePort(e.target.value)}
+                className="settings-input mono"
+              />
+            </div>
+
+            {/* Test connection */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleTestRuntime}
+                disabled={runtimeTesting}
+                className="flex-1 rounded-md bg-[color:var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 transition-colors"
+              >
+                {runtimeTesting ? copy.runtimeConfig.testing : copy.runtimeConfig.testConnection}
+              </button>
+              {runtimeConnected === true && (
+                <span className="text-[10px] text-[color:var(--success)]">{copy.runtimeConfig.connected}</span>
+              )}
+              {runtimeConnected === false && (
+                <span className="text-[10px] text-[color:var(--warning)]">{copy.runtimeConfig.disconnected}</span>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Audit Templates — 2.2.3 */}
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.auditTemplates.title}
+            </h2>
+          </div>
+          <div className="p-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              {copy.auditTemplates.description}
+            </p>
+            <button
+              onClick={() => {
+                try {
+                  const template = {
+                    rounds: defaultRounds,
+                    batchSize: defaultBatchSize,
+                    createdAt: new Date().toISOString(),
+                  };
+                  window.localStorage.setItem(
+                    "platform-audit-template-default",
+                    JSON.stringify(template)
+                  );
+                  showSaved(copy.auditTemplates.saved);
+                } catch {}
+              }}
+              className="w-full rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-colors"
+            >
+              {copy.auditTemplates.saveCurrent}
+            </button>
+          </div>
+        </section>
+
+        {/* About System — Day 4: use cases + system boundary */}
+        <section className="border border-border bg-card lg:col-span-2">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.aboutSystem.title}
+            </h2>
+          </div>
+          <div className="p-3 space-y-4">
+            {/* Use cases */}
+            <div>
+              <h3 className="text-xs font-medium mb-2">{copy.aboutSystem.useCases}</h3>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {copy.aboutSystem.useCaseItems.map((item) => (
+                  <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
+                    <div className="text-xs font-medium">{item.title}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* System boundary */}
+            <div>
+              <h3 className="text-xs font-medium mb-1.5">{copy.aboutSystem.systemBoundary}</h3>
+              <p className="text-[10px] text-muted-foreground leading-relaxed border-l-2 border-[var(--accent-blue)] pl-2">
+                {copy.aboutSystem.boundaryNote}
+              </p>
+            </div>
+
+            {/* Framework */}
+            <div>
+              <h3 className="text-xs font-medium mb-2">{copy.aboutSystem.framework}</h3>
+              <div className="flex gap-2">
+                {copy.aboutSystem.frameworkItems.map((item, i) => (
+                  <div key={item.tier} className="flex-1 rounded border border-border px-2.5 py-2">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className={`inline-block h-1.5 w-1.5 rounded-full ${
+                        i === 0 ? "bg-[var(--accent-blue)]" : i === 1 ? "bg-[var(--warning)]" : "bg-[var(--accent-coral)]"
+                      }`} />
+                      <span className="text-xs font-medium">{item.tier}</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground leading-relaxed">{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Account — 2.2.4 */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -209,7 +507,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
             </h2>
           </div>
           <div className="p-3">
-            {/* Username */}
+            {/* Username with avatar */}
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">{copy.account.username}</span>
               {username ? (

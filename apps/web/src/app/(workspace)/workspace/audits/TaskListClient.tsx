@@ -29,10 +29,11 @@ interface TaskListClientProps {
   locale: Locale;
 }
 
-function statusTone(status: string): "info" | "success" | "warning" | "primary" {
+function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
   if (status === "completed") return "success";
   if (status === "failed") return "warning";
   if (status === "running") return "info";
+  if (status === "cancelled") return "neutral";
   return "primary";
 }
 
@@ -42,6 +43,7 @@ function statusLabel(status: string): string {
     case "running": return "Running";
     case "completed": return "Completed";
     case "failed": return "Failed";
+    case "cancelled": return "Cancelled";
     default: return status;
   }
 }
@@ -79,6 +81,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
 
   const [jobs, setJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -94,7 +97,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           const filtered =
             mode === "active"
               ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
-              : allJobs.filter((j) => j.status === "completed" || j.status === "failed");
+              : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
           setJobs(filtered);
         }
       } catch {
@@ -116,6 +119,25 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
 
     return () => controller.abort();
   }, [mode]);
+
+  async function handleRetry(job: JobRecord) {
+    setRetryingJobId(job.job_id);
+    try {
+      await fetch("/api/v1/audit/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contract_key: job.contract_key,
+          workspace_name: job.workspace_name,
+          job_type: job.job_type,
+        }),
+      });
+    } catch {
+      // Ignore — user can try again
+    } finally {
+      setRetryingJobId(null);
+    }
+  }
 
   if (loading) {
     return (
@@ -206,12 +228,24 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                 {formatDuration(job.created_at, job.updated_at)}
               </td>
               <td className="px-3 py-2 text-right">
-                <Link
-                  href="/workspace/reports"
-                  className="text-xs text-[var(--accent-blue)] hover:underline"
-                >
-                  {tableCopy.action}
-                </Link>
+                <div className="flex items-center justify-end gap-2">
+                  <Link
+                    href={`/workspace/audits/${job.job_id}`}
+                    className="text-xs text-[var(--accent-blue)] hover:underline"
+                  >
+                    {tableCopy.action}
+                  </Link>
+                  {job.status === "failed" && (
+                    <button
+                      onClick={() => handleRetry(job)}
+                      disabled={retryingJobId === job.job_id}
+                      className="text-xs text-[var(--accent-amber)] hover:underline disabled:opacity-50"
+                      title="Retry this job"
+                    >
+                      {retryingJobId === job.job_id ? "Retrying..." : "Retry"}
+                    </button>
+                  )}
+                </div>
               </td>
             </tr>
           ))}

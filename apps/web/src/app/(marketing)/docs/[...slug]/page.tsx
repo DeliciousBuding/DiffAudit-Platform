@@ -1,12 +1,16 @@
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
+import { DocsHome } from "../docs-home";
 import { SESSION_COOKIE_NAME, validateSession } from "@/lib/auth";
-import { getDocsContent } from "./docs-data";
+import { getDocsContent } from "../docs-data";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { headers } from "next/headers";
 
-export default async function DocsPage() {
+export default async function DocsSlugPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
+  const slugPath = slug.join("/");
+
   const cookieStore = await cookies();
   const loggedIn = validateSession(cookieStore.get(SESSION_COOKIE_NAME)?.value) !== null;
 
@@ -14,7 +18,11 @@ export default async function DocsPage() {
   const locale = resolveLocaleFromHeaderStore(headerStore);
 
   const content = getDocsContent(locale);
-  const firstSlug = content.pages[0]?.slug ?? "quick-start";
+  const page = content.pages.find((p) => p.slug === slugPath);
 
-  redirect(`/docs/${firstSlug}`);
+  if (!page) {
+    notFound();
+  }
+
+  return <DocsHome loggedIn={loggedIn} initialSlug={page.slug} />;
 }

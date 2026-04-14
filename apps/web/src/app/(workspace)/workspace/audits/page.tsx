@@ -24,7 +24,7 @@ export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale 
           </div>
           <Link
             href="/workspace/audits/new"
-            className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#1f5ce0] shrink-0"
+            className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] shrink-0"
           >
             <span className="text-sm leading-none">+</span>
             {copy.createTaskButton}

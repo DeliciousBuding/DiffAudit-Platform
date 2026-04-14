@@ -27,6 +27,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: resolveTurbopackRoot(__dirname),
   },
+  // 3.3.2: Production optimizations
+  experimental: {
+    optimizePackageImports: ["recharts", "lucide-react"],
+  },
+  // 3.3.4: Image optimization (if images are added later)
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
 };
 
 export default nextConfig;

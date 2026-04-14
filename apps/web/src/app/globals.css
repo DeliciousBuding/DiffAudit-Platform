@@ -1,9 +1,24 @@
+/* 3.3.5: Font optimization — system fonts first, Google Fonts as fallback */
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@8..144,-10..0,25..150,400..500,0..100&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD,ROND@40..48,300,0..1,0,50&display=swap");
 @import "tailwindcss";
 
 :root {
+  --font-sans-fallback: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
+  --font-mono-fallback: "SF Mono", "Fira Code", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  --color-bg-primary: var(--palette-grey-0);
+  --color-bg-secondary: var(--palette-grey-10);
+  --color-bg-active: rgba(47, 109, 246, 0.12);
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-text-primary: var(--palette-grey-1200);
+  --color-text-secondary: var(--palette-grey-800);
+  --color-text-muted: rgba(0, 0, 0, 0.45);
+  --color-border-subtle: rgba(0, 0, 0, 0.08);
+  --color-accent-green: var(--success);
+  --color-accent-coral: var(--accent-coral);
+  --color-accent-amber: var(--warning);
+  --color-accent-blue: var(--accent-blue);
   --palette-grey-900: #2f3034;
   --palette-grey-800: #45474d;
   --palette-grey-50: #e6eaf0;
@@ -12,6 +27,7 @@
   --palette-grey-0: #ffffff;
   --palette-grey-1200: #121317;
   --accent-blue: #2f6df6;
+  --accent-blue-hover: #1f5ce0;
   --accent-coral: #ff5f46;
   --background: var(--palette-grey-0);
   --foreground: var(--palette-grey-1200);
@@ -96,7 +112,7 @@ html {
 body {
   min-height: 100vh;
   color: var(--foreground);
-  font-family: "Google Sans Flex", sans-serif;
+  font-family: "Google Sans Flex", var(--font-sans-fallback);
   font-weight: 400;
   font-optical-sizing: auto;
   background:
@@ -125,7 +141,7 @@ select {
 }
 
 .mono {
-  font-family: "Google Sans Code", monospace;
+  font-family: "Google Sans Code", var(--font-mono-fallback);
 }
 
 .surface-card {
@@ -664,7 +680,7 @@ select {
 
 .landing-main-header {
   margin: 0;
-  font-family: "Google Sans Flex", "Google Sans", sans-serif;
+  font-family: "Google Sans Flex", "Google Sans", var(--font-sans-fallback);
   font-size: var(--landing-main-text-size);
   line-height: var(--landing-main-text-line-height);
   letter-spacing: var(--landing-main-text-letter-spacing);
@@ -697,7 +713,7 @@ select {
   align-items: center;
   border: 1px solid transparent;
   border-radius: 9999px;
-  font-family: "Google Sans Flex", sans-serif;
+  font-family: "Google Sans Flex", var(--font-sans-fallback);
   cursor: pointer;
   display: inline-flex;
   padding: 10px 24px;
@@ -1145,7 +1161,7 @@ tbody tr:hover td {
 
 /* ===== Button base ===== */
 button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]) {
-  font-family: "Google Sans Flex", sans-serif;
+  font-family: "Google Sans Flex", var(--font-sans-fallback);
   font-size: 14px;
   font-weight: 450;
   border-radius: 16px;
@@ -1237,17 +1253,6 @@ button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([c
   }
 }
 
-/* ===== Micro-interaction animations ===== */
-
-/* Button hover: subtle scale + shadow lift */
-button:not(.language-option):not(.workspace-sidebar-link):hover {
-  transform: scale(1.02);
-}
-
-button:not(.language-option):not(.workspace-sidebar-link):active {
-  transform: scale(0.98);
-}
-
 /* Table row hover: accent blue left border bar */
 .table-row-hover {
   border-left: 2px solid transparent;
@@ -1256,7 +1261,546 @@ button:not(.language-option):not(.workspace-sidebar-link):active {
     background-color 140ms ease;
 }
 
-.table-row-hover:hover {
-  border-left-color: var(--accent-blue);
-  background: rgba(47, 109, 246, 0.04) !important;
+/* ===== Dark Mode variables — 3.1 ===== */
+
+html[data-theme="dark"],
+html.dark {
+  --palette-grey-0: #1e1e20;
+  --palette-grey-10: #2a2a2d;
+  --palette-grey-20: #323236;
+  --palette-grey-50: #3e3e44;
+  --palette-grey-800: #9ca0aa;
+  --palette-grey-900: #b8bcc4;
+  --palette-grey-1200: #e8eaed;
+
+  --accent-blue: #5b8ef9;
+  --accent-coral: #ff7a64;
+
+  --background: var(--palette-grey-0);
+  --foreground: var(--palette-grey-1200);
+  --card: rgba(42, 42, 45, 0.82);
+  --card-foreground: var(--palette-grey-1200);
+  --primary: var(--palette-grey-1200);
+  --primary-foreground: var(--palette-grey-0);
+  --secondary: var(--palette-grey-10);
+  --secondary-foreground: var(--palette-grey-1200);
+  --muted: var(--palette-grey-10);
+  --muted-foreground: var(--palette-grey-800);
+  --accent: rgba(91, 142, 249, 0.15);
+  --accent-foreground: var(--palette-grey-1200);
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(91, 142, 249, 0.3);
+  --success: #3dd59a;
+  --success-soft: rgba(61, 213, 154, 0.15);
+  --warning: #e8a84c;
+  --warning-soft: rgba(232, 168, 76, 0.15);
+  --info: #5b8ef9;
+  --info-soft: rgba(91, 142, 249, 0.15);
+  --risk-high: #ff7a64;
+  --risk-high-bg: rgba(255, 122, 100, 0.15);
+  --risk-medium: #e8a84c;
+  --risk-medium-bg: rgba(232, 168, 76, 0.15);
+  --risk-low: #3dd59a;
+  --risk-low-bg: rgba(61, 213, 154, 0.15);
+}
+
+html[data-theme="dark"] body,
+html.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(91, 142, 249, 0.08), transparent 28%),
+    radial-gradient(circle at 86% 12%, rgba(255, 122, 100, 0.05), transparent 22%),
+    linear-gradient(180deg, #1e1e20 0%, #18181a 100%);
+}
+
+html[data-theme="dark"] .site-header,
+html.dark .site-header,
+html[data-theme="dark"] .workspace-header,
+html.dark .workspace-header {
+  background: rgba(30, 30, 32, 0.84);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .surface-card,
+html.dark .surface-card {
+  background: linear-gradient(180deg, rgba(42, 42, 45, 0.82), rgba(42, 42, 45, 0.66));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 80px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .header,
+html.dark .header {
+  background: rgba(30, 30, 32, 0.85);
+}
+
+html[data-theme="dark"] .header.dropdown-open,
+html.dark .header.dropdown-open {
+  background: #1e1e20;
+}
+
+html[data-theme="dark"] .dropdown-panel,
+html.dark .dropdown-panel {
+  background: #2a2a2d;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .dropdown-title,
+html.dark .dropdown-title {
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .dropdown-info,
+html.dark .dropdown-info {
+  color: var(--palette-grey-800);
+}
+
+html[data-theme="dark"] .subnav-link,
+html.dark .subnav-link {
+  background: rgba(42, 42, 45, 0.52);
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .subnav-link:hover,
+html.dark .subnav-link:hover {
+  background: var(--palette-grey-10);
+}
+
+html[data-theme="dark"] .language-trigger,
+html.dark .language-trigger {
+  background: rgba(42, 42, 45, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="dark"] .language-trigger:hover,
+html.dark .language-trigger:hover {
+  background: rgba(42, 42, 45, 0.92);
+  border-color: rgba(91, 142, 249, 0.16);
+}
+
+html[data-theme="dark"] .language-menu,
+html.dark .language-menu {
+  background: rgba(42, 42, 45, 0.94);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .language-option-label,
+html.dark .language-option-label {
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .language-option-check,
+html.dark .language-option-check {
+  color: var(--accent-blue);
+}
+
+html[data-theme="dark"] .language-trigger-label,
+html.dark .language-trigger-label {
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .language-trigger-chevron,
+html.dark .language-trigger-chevron {
+  color: var(--palette-grey-800);
+}
+
+html[data-theme="dark"] .portal-shell,
+html.dark .portal-shell {
+  background: var(--palette-grey-0);
+}
+
+html[data-theme="dark"] .hero-button-primary,
+html.dark .hero-button-primary {
+  background: var(--palette-grey-1200);
+  color: var(--palette-grey-0);
+}
+
+html[data-theme="dark"] .hero-button-primary:hover,
+html.dark .hero-button-primary:hover {
+  background: var(--palette-grey-900);
+}
+
+html[data-theme="dark"] .hero-button-secondary,
+html.dark .hero-button-secondary {
+  color: var(--palette-grey-1200);
+  background: rgba(62, 62, 68, 0.3);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .hero-button-secondary:hover,
+html.dark .hero-button-secondary:hover {
+  background: var(--palette-grey-10);
+}
+
+html[data-theme="dark"] .landing-main-header,
+html.dark .landing-main-header {
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .login-panel,
+html.dark .login-panel {
+  background: rgba(42, 42, 45, 0.84);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .auth-provider-button,
+html.dark .auth-provider-button {
+  background: rgba(42, 42, 45, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .auth-provider-button:hover,
+html.dark .auth-provider-button:hover {
+  background: rgba(42, 42, 45, 0.94);
+  border-color: rgba(91, 142, 249, 0.14);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="dark"] .auth-inline-link,
+html.dark .auth-inline-link {
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .portal-input,
+html.dark .portal-input {
+  background: rgba(42, 42, 45, 0.88);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .settings-input,
+html.dark .settings-input {
+  background: rgba(42, 42, 45, 0.88);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .workspace-kpi,
+html.dark .workspace-kpi {
+  background: rgba(42, 42, 45, 0.78);
+}
+
+html[data-theme="dark"] .workspace-highlight,
+html.dark .workspace-highlight {
+  background:
+    radial-gradient(circle at top left, rgba(91, 142, 249, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(42, 42, 45, 0.84), rgba(42, 42, 45, 0.68));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .workspace-topbar,
+html.dark .workspace-topbar {
+  background: rgba(30, 30, 32, 0.92);
+}
+
+html[data-theme="dark"] tbody tr:hover,
+html.dark tbody tr:hover {
+  background: var(--palette-grey-10);
+}
+
+html[data-theme="dark"] button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):hover,
+html.dark button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):hover {
+  background: var(--palette-grey-10);
+}
+
+html[data-theme="dark"] button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):active,
+html.dark button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):active {
+  background: var(--palette-grey-20);
+}
+
+/* ===== Dark mode component overrides ===== */
+
+html[data-theme="dark"] .border-border,
+html.dark .border-border {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .bg-muted\/30,
+html.dark .bg-muted\/30 {
+  background-color: rgba(42, 42, 45, 0.3);
+}
+
+html[data-theme="dark"] .bg-muted\/20,
+html.dark .bg-muted\/20 {
+  background-color: rgba(42, 42, 45, 0.2);
+}
+
+html[data-theme="dark"] .bg-muted\/10,
+html.dark .bg-muted\/10 {
+  background-color: rgba(42, 42, 45, 0.1);
+}
+
+html[data-theme="dark"] .bg-card,
+html.dark .bg-card {
+  background-color: rgba(42, 42, 45, 0.82);
+}
+
+html[data-theme="dark"] .bg-background,
+html.dark .bg-background {
+  background-color: var(--palette-grey-0);
+}
+
+html[data-theme="dark"] .bg-\[var\(--color-bg-primary\)\],
+html.dark .bg-\[var\(--color-bg-primary\)\] {
+  background-color: var(--palette-grey-0);
+}
+
+html[data-theme="dark"] .bg-\[var\(--color-bg-secondary\)\],
+html.dark .bg-\[var\(--color-bg-secondary\)\] {
+  background-color: var(--palette-grey-10);
+}
+
+html[data-theme="dark"] .bg-\[var\(--color-bg-active\)\],
+html.dark .bg-\[var\(--color-bg-active\)\] {
+  background-color: rgba(91, 142, 249, 0.15);
+}
+
+html[data-theme="dark"] .bg-\[var\(--color-bg-hover\)\],
+html.dark .bg-\[var\(--color-bg-hover\)\] {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .text-\[var\(--color-text-primary\)\],
+html.dark .text-\[var\(--color-text-primary\)\] {
+  color: var(--palette-grey-1200);
+}
+
+html[data-theme="dark"] .text-\[var\(--color-text-secondary\)\],
+html.dark .text-\[var\(--color-text-secondary\)\] {
+  color: var(--palette-grey-800);
+}
+
+html[data-theme="dark"] .text-\[var\(--color-text-muted\)\],
+html.dark .text-\[var\(--color-text-muted\)\] {
+  color: rgba(156, 160, 170, 0.8);
+}
+
+html[data-theme="dark"] .border-\[var\(--color-border-subtle\)\],
+html.dark .border-\[var\(--color-border-subtle\)\] {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ===== View Transition for dark mode ===== */
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* ===== Sprint 4.1: Unified design scales ===== */
+
+/* Spacing scale (4.1.6) */
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+}
+
+/* Border radius scale (4.1.7) */
+:root {
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+}
+
+/* Shadow scale (4.1.8) */
+:root {
+  --shadow-sm: 0 1px 2px rgba(18, 19, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(18, 19, 23, 0.06);
+  --shadow-lg: 0 8px 24px rgba(18, 19, 23, 0.08);
+  --shadow-xl: 0 16px 48px rgba(18, 19, 23, 0.12);
+}
+
+/* Unified workspace input (replaces portal-input/settings-input for workspace pages) */
+.workspace-input {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--input);
+  background: var(--palette-grey-0);
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 450;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.workspace-input:focus {
+  border-color: rgba(47, 109, 246, 0.52);
+  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.08);
+}
+
+html[data-theme="dark"] .workspace-input,
+html.dark .workspace-input {
+  background: var(--palette-grey-10);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Unified section card (DESIGN.md §11.1) */
+.section-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+}
+
+.section-card > .section-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  background-opacity: 0.2;
+  padding: 8px 12px;
+}
+
+.section-card > .section-body {
+  padding: 12px;
+}
+
+/* KPI card (DESIGN.md §11.2) */
+.kpi-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+}
+
+.kpi-card .kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.kpi-card .kpi-value {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.kpi-card .kpi-note {
+  font-size: 10px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+/* Table standard (DESIGN.md §11.3) */
+.table-standard {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table-standard thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  background-opacity: 0.3;
+}
+
+.table-standard tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(33, 34, 38, 0.06);
+  vertical-align: middle;
+}
+
+.table-standard tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-standard tbody tr:hover {
+  background: rgba(47, 109, 246, 0.04);
+}
+
+/* Button base reset — replaces the catch-all selector */
+.btn-reset {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  cursor: pointer;
+}
+
+/* ===== Sprint 4.2: Motion tokens ===== */
+
+/* Transition tokens (4.2.7) — DESIGN.md §12: crisp, short, quiet */
+:root {
+  --duration-fast: 100ms;
+  --duration-normal: 140ms;
+  --duration-slow: 200ms;
+  --easing-standard: ease;
+  --easing-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modal entrance animation (4.2.6) */
+@keyframes modal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-content-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Button micro-interaction (4.2.2) — replace the global catch-all with token-based version */
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset) {
+  font-family: "Google Sans Flex", var(--font-sans-fallback);
+  font-size: 14px;
+  font-weight: 450;
+  border-radius: var(--radius-xl);
+  border: 1px solid transparent;
+  padding: 9px 18px;
+  transition:
+    background-color var(--duration-normal) var(--easing-standard),
+    border-color var(--duration-normal) var(--easing-standard),
+    box-shadow var(--duration-normal) var(--easing-standard),
+    transform var(--duration-fast) var(--easing-standard);
+  cursor: pointer;
+}
+
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):hover {
+  background: var(--palette-grey-10);
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):active {
+  transform: translateY(0);
+  background: var(--palette-grey-20);
+}
+
+/* Micro-animation: button scale (replaces the previous scale-based rule) */
+button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):hover {
+  transform: scale(1.02);
+}
+
+button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):active {
+  transform: scale(0.98);
+}
+
+/* Skeleton pulse refinement (4.2.4) — smoother than Tailwind default */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: skeleton-pulse 2s var(--easing-standard) infinite;
 }

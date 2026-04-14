@@ -37,6 +37,12 @@ export const WORKSPACE_COPY: Record<
         tasks: string;
         recentResults: string;
         riskOverview: string;
+        tableHeaders: {
+          risk: string;
+          attack: string;
+          model: string;
+          track: string;
+        };
       };
       riskInterpretations: {
         high: string;
@@ -132,6 +138,9 @@ export const WORKSPACE_COPY: Record<
         reviewBatchSize: string;
         reviewAdaptiveSampling: string;
         reviewEstTime: string;
+        adaptiveOn: string;
+        adaptiveOff: string;
+        estimatedSuffix: string;
         submitButton: string;
         submitting: string;
         successTitle: string;
@@ -139,6 +148,28 @@ export const WORKSPACE_COPY: Record<
         goToTasks: string;
         disabled: string;
       };
+      recommendedConfig: {
+        blackBoxTitle: string; blackBoxRounds: string; blackBoxBatch: string; blackBoxAdaptive: string;
+        grayBoxTitle: string; grayBoxRounds: string; grayBoxBatch: string; grayBoxAdaptive: string;
+        whiteBoxTitle: string; whiteBoxRounds: string; whiteBoxBatch: string; whiteBoxAdaptive: string;
+      };
+    };
+    jobDetail: {
+      eyebrow: string; title: string; description: string;
+      backToAudits: string; cancelJob: string; cancelling: string; confirmCancel: string;
+      keepRunning: string; cancelTitle: string; cancelBody: string; nextStepsTitle: string;
+      nextSteps: Record<"completed" | "failed" | "cancelled", string[]>;
+      statusLabels: Record<string, string>;
+      labels: {
+        contractKey: string; workspace: string; type: string; targetModel: string;
+        created: string; duration: string; updated: string; error: string;
+        stdoutTail: string; stderrTail: string; lines: string;
+        noLogOutput: string; jobNotFound: string; loadFailed: string; apiUnreachable: string;
+      };
+    };
+    emptyWorkspace: {
+      title: string; description: string; cta: string;
+      steps: Array<{ step: string; title: string; desc: string }>;
     };
     reports: {
       eyebrow: string;
@@ -147,10 +178,30 @@ export const WORKSPACE_COPY: Record<
       sections: {
         auditResults: string;
         coverageGaps: string;
+        aucDistribution: string;
+        rocCurve: string;
+        riskDistribution: string;
+        attackComparison: string;
+        highRiskGaps: string;
       };
       exportSummary: string;
       emptyResults: string;
       emptyGaps: string;
+      chartDimensions: string[];
+      tableHeaders: {
+        attack: string;
+        defense: string;
+        model: string;
+        track: string;
+        evidence: string;
+        auc: string;
+        asr: string;
+        tpr: string;
+        contractKey: string;
+        label: string;
+        systemGap: string;
+        workspace: string;
+      };
     };
     settings: {
       eyebrow: string;
@@ -160,6 +211,10 @@ export const WORKSPACE_COPY: Record<
       systemStatus: { title: string; runtime: string; demoMode: string; demoOn: string; demoOff: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string };
       account: { title: string; username: string; logout: string };
+      preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
+      runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
+      auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string };
+      aboutSystem: { title: string; useCases: string; useCaseItems: { title: string; desc: string }[]; systemBoundary: string; boundaryNote: string; framework: string; frameworkItems: { tier: string; desc: string }[] };
       errorPage: { title: string; description: string; retry: string; goHome: string };
       notFound: { title: string; description: string; goHome: string };
     };
@@ -239,50 +294,56 @@ export const WORKSPACE_COPY: Record<
       signOut: "Sign out",
     },
     nav: [
-      { href: "/workspace", title: "Workspace", subtitle: "Tasks and metrics", shortLabel: "Home" },
+      { href: "/workspace", title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
       { href: "/workspace/audits", title: "Audits", subtitle: "Create jobs and review runs", shortLabel: "Audits" },
       { href: "/workspace/reports", title: "Reports", subtitle: "Summaries and exports", shortLabel: "Reports" },
       { href: "/workspace/settings", title: "Settings", subtitle: "Team, keys, and preferences", shortLabel: "Settings" },
     ],
     workspace: {
       eyebrow: "Workspace",
-      title: "Tasks, audit results, and key metrics.",
-      description: "The workspace home aggregates current tasks, recent results, and system status.",
+      title: "See what your model is leaking.",
+      description: "Your workspace aggregates current audit tasks, recent results, and system status at a glance.",
       kpis: {
-        liveContractsLabel: "Live contracts",
-        liveContractsNote: "Available contracts in the catalog.",
-        defendedRowsLabel: "Defended rows",
-        defendedRowsNote: "Result rows with defense comparisons.",
-        avgAucLabel: "Avg. Attack AUC",
-        avgAucNote: "Mean AUC across all evaluated rows",
-        defenseEvaluatedLabel: "Defense Evaluated",
-        defenseEvaluatedNote: "total audit results",
+        liveContractsLabel: "Auditable contracts",
+        liveContractsNote: "Number of audit contracts currently available.",
+        defendedRowsLabel: "Defended results",
+        defendedRowsNote: "Result rows with defense comparisons included.",
+        avgAucLabel: "Avg. attack AUC",
+        avgAucNote: "Mean attack AUC across all audit results — higher means greater leakage risk.",
+        defenseEvaluatedLabel: "Defenses evaluated",
+        defenseEvaluatedNote: "Total number of completed audit results.",
       },
       sections: {
-        tasks: "Current tasks",
+        tasks: "Active tasks",
         recentResults: "Recent results",
         riskOverview: "Risk distribution",
+        tableHeaders: {
+          risk: "Risk",
+          attack: "Attack",
+          model: "Model",
+          track: "Track",
+        },
       },
       riskInterpretations: {
-        high: "Member signal remains strong. Review defense comparison.",
-        medium: "Partial signal leakage. Consider additional defenses.",
-        low: "Attack near random guessing. Privacy protection effective.",
+        high: "High attack AUC — the model likely memorized training data. Compare defense strategies.",
+        medium: "Partial signal detected — privacy protection is not yet sufficient.",
+        low: "Attack is near random guessing — current privacy measures are effective.",
       },
       todoItems: [
         "Review parameters and data sources for the current audit run.",
-        "Check the latest admitted results and decide whether to export a report.",
+        "Check the latest audit results and decide whether to export a report.",
         "Update team settings, keys, and personal preferences.",
       ],
-      emptyResults: "No audit results yet. Create a job in the audits page.",
+      emptyResults: "No audit results yet — create a task to get started.",
     },
     audits: {
       eyebrow: "Audits",
-      title: "Create tasks, track runs, review results.",
-      description: "Monitor running jobs and review task history. Create new audit tasks to get started.",
+      title: "Create tasks, track progress, review results.",
+      description: "Create new audit tasks, monitor running jobs, and review audit history.",
       createTaskButton: "Create task",
       sections: {
-        activeTasks: "Active tasks",
-        taskHistory: "Task history",
+        activeTasks: "Running tasks",
+        taskHistory: "History",
       },
       taskTable: {
         name: "Task",
@@ -297,10 +358,10 @@ export const WORKSPACE_COPY: Record<
       recommendedWorkspace: "Recommended workspace",
       createJob: "Create job",
       updatedAt: "Updated",
-      jobsRefreshNote: "Running jobs refresh after the page loads.",
-      jobsUnavailable: "Control plane unavailable. Live jobs will return after the gateway reconnects.",
-      emptyContracts: "No contracts available. Check the catalog data source.",
-      emptyJobs: "No running jobs.",
+      jobsRefreshNote: "Running jobs refresh automatically after page load.",
+      jobsUnavailable: "Control plane temporarily unreachable. Live jobs will return when the gateway reconnects.",
+      emptyContracts: "No audit contracts available.",
+      emptyJobs: "No tasks running right now.",
       emptyResults: "No audit results yet.",
       emptyTasks: "No active tasks.",
       emptyHistory: "No task history yet.",
@@ -319,13 +380,13 @@ export const WORKSPACE_COPY: Record<
     },
     createTask: {
       eyebrow: "New task",
-      title: "Create an audit task.",
-      description: "Select attack type, target model, and configure parameters to launch a new audit job.",
+      title: "Create a new audit task.",
+      description: "Choose an attack method, pick a target model, set parameters, and launch the audit.",
       backToTasks: "Back to tasks",
       steps: {
         step1Label: "1",
-        step1Title: "Attack type",
-        step1Desc: "Choose the attack methodology.",
+        step1Title: "Attack method",
+        step1Desc: "Which attack methodology would you like to use?",
         step2Label: "2",
         step2Title: "Target model",
         step2Desc: "Select the model to audit.",
@@ -338,14 +399,14 @@ export const WORKSPACE_COPY: Record<
       },
       attackTypes: {
         blackBoxTitle: "Black-box / Recon",
-        blackBoxDesc: "Membership inference using score-based reconstruction. No access to model internals.",
-        blackBoxNote: "Recommended for initial risk assessment.",
+        blackBoxDesc: "Infer membership from output scores alone — no model internals needed. Best starting point for quick risk assessment.",
+        blackBoxNote: "Recommended as the starting point.",
         grayBoxTitle: "Gray-box / PIA",
-        grayBoxDesc: "Privacy inference attack with partial model knowledge. Leverages intermediate representations.",
-        grayBoxNote: "Stronger signal when gradient access is available.",
+        grayBoxDesc: "Launch privacy inference attacks using intermediate layer representations. Stronger signal when you can access model features.",
+        grayBoxNote: "Stronger signal with intermediate feature access.",
         whiteBoxTitle: "White-box / GSA",
-        whiteBoxDesc: "Gradient-structure attack with full model access. Maximum inference power.",
-        whiteBoxNote: "Requires full model weights and gradients.",
+        whiteBoxDesc: "Full access to model weights and gradients — the most powerful attack method. Uncovers the most隐蔽 privacy leaks.",
+        whiteBoxNote: "Requires full model weights and gradient access.",
       },
       labels: {
         selectModel: "Target model",
@@ -353,42 +414,142 @@ export const WORKSPACE_COPY: Record<
         rounds: "Attack rounds",
         batchSize: "Batch size",
         adaptiveSampling: "Adaptive sampling",
-        adaptiveSamplingNote: "Dynamically adjust sampling based on intermediate results.",
-        reviewSummary: "Review the task configuration before submitting.",
-        reviewAttackType: "Attack type",
+        adaptiveSamplingNote: "Dynamically adjust sampling strategy based on intermediate results to save compute.",
+        reviewSummary: "Last chance to review before submitting.",
+        reviewAttackType: "Attack method",
         reviewModel: "Target model",
         reviewRounds: "Rounds",
         reviewBatchSize: "Batch size",
         reviewAdaptiveSampling: "Adaptive sampling",
         reviewEstTime: "Estimated time",
-        submitButton: "Submit task",
+        adaptiveOn: "On",
+        adaptiveOff: "Off",
+        estimatedSuffix: "(estimated)",
+        submitButton: "Start audit",
         submitting: "Submitting...",
-        successTitle: "Task created successfully.",
-        successBody: "Your audit job has been queued. You will be redirected to the task list.",
+        successTitle: "Task created.",
+        successBody: "Your audit job has been queued. Redirecting to the task list.",
         goToTasks: "Go to task list",
         disabled: "Not available",
       },
+      recommendedConfig: {
+        blackBoxTitle: "Recommended: Black-box Attack",
+        blackBoxRounds: "10 rounds (sufficient for stable signal)",
+        blackBoxBatch: "Batch 32 (balances speed and coverage)",
+        blackBoxAdaptive: "Enable adaptive sampling (skips low-confidence samples)",
+        grayBoxTitle: "Recommended: Gray-box Attack",
+        grayBoxRounds: "15 rounds (intermediate-layer attacks need more rounds)",
+        grayBoxBatch: "Batch 16 (feature extraction is compute-heavy)",
+        grayBoxAdaptive: "Enable adaptive sampling (adjusts by feature similarity)",
+        whiteBoxTitle: "Recommended: White-box Attack",
+        whiteBoxRounds: "20 rounds (gradient attacks need full convergence)",
+        whiteBoxBatch: "Batch 8 (gradient computation is expensive)",
+        whiteBoxAdaptive: "Enable adaptive sampling (adjusts by gradient magnitude)",
+      },
+    },
+    jobDetail: {
+      eyebrow: "Job Detail",
+      title: "Audit Job",
+      description: "View status, logs, and details for this audit job.",
+      backToAudits: "Back to audits",
+      cancelJob: "Cancel job",
+      cancelling: "Cancelling...",
+      confirmCancel: "Confirm cancel",
+      keepRunning: "Keep running",
+      cancelTitle: "Cancel audit job",
+      cancelBody: "Are you sure you want to cancel this audit job? This action cannot be undone.",
+      nextStepsTitle: "Suggested next steps",
+      statusLabels: {
+        queued: "Queued",
+        running: "Running",
+        completed: "Completed",
+        failed: "Failed",
+        cancelled: "Cancelled",
+      },
+      labels: {
+        contractKey: "Contract key",
+        workspace: "Workspace",
+        type: "Type",
+        targetModel: "Target model",
+        created: "Created",
+        duration: "Duration",
+        updated: "Updated",
+        error: "Error",
+        stdoutTail: "stdout (tail)",
+        stderrTail: "stderr (tail)",
+        lines: "lines",
+        noLogOutput: "No log output available for this job.",
+        jobNotFound: "Job not found.",
+        loadFailed: "Failed to load job",
+        apiUnreachable: "Unable to reach the API.",
+      },
+      nextSteps: {
+        completed: [
+          "Run a defense comparison experiment to see if you can reduce leakage.",
+          "Create a task with a different attack method to cross-validate results.",
+          "Export a PDF report to document your findings.",
+        ],
+        failed: [
+          "Check the error log above for the root cause.",
+          "Retry the task with fewer attack rounds or a smaller batch size.",
+          "Verify that the Runtime service is running and accessible.",
+        ],
+        cancelled: [
+          "Resume the audit by creating a new task with the same configuration.",
+          "Consider reducing the attack rounds if you cancelled due to time constraints.",
+        ],
+      },
+    },
+    emptyWorkspace: {
+      title: "还没有审计结果。",
+      description: "DiffAudit helps you discover privacy risks in machine learning models through three attack lines: black-box, gray-box, and white-box.",
+      cta: "Create your first audit task",
+      steps: [
+        { step: "1", title: "选择攻击方式", desc: "黑盒（推荐起点）、灰盒或白盒。" },
+        { step: "2", title: "选择目标模型", desc: "从合同目录中挑选要审计的模型。" },
+        { step: "3", title: "等待结果", desc: "提交后系统会自动运行审计，完成后在这里展示。" },
+      ],
     },
     reports: {
       eyebrow: "Reports",
-      title: "Result summaries, coverage gaps, and report exports.",
-      description: "The reports page aggregates audit results, identifies coverage gaps, and supports exports.",
+      title: "Audit results and coverage gaps.",
+      description: "Aggregate audit results and identify weak spots in your model's defenses.",
       sections: {
         auditResults: "Audit results",
         coverageGaps: "Coverage gaps",
+        aucDistribution: "AUC Score Distribution",
+        rocCurve: "ROC Curve",
+        riskDistribution: "Risk Distribution",
+        attackComparison: "Attack Comparison",
+        highRiskGaps: "high-risk gaps (AUC >= 0.7)",
       },
-      exportSummary: "Export report summary",
+      chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
+      exportSummary: "Export report",
       emptyResults: "No audit results yet.",
       emptyGaps: "No coverage gap data.",
+      tableHeaders: {
+        attack: "Attack",
+        defense: "Defense",
+        model: "Model",
+        track: "Track",
+        evidence: "Evidence",
+        auc: "AUC",
+        asr: "ASR",
+        tpr: "TPR",
+        contractKey: "Contract Key",
+        label: "Label",
+        systemGap: "System Gap",
+        workspace: "Workspace",
+      },
     },
     settings: {
       eyebrow: "Settings",
       title: "Team, keys, and preferences.",
-      description: "The settings page manages team members, API keys, and workspace preferences.",
+      description: "Manage team settings, runtime connection, and local preferences.",
       sections: [
-        { title: "Team members", copy: "Manage team name, roles, and the default workspace scope." },
-        { title: "API keys", copy: "Keep service endpoints, API keys, and access boundaries in one place." },
-        { title: "Preferences", copy: "Save language, page defaults, and report presentation preferences." },
+        { title: "Team members", copy: "Manage team name, collaboration roles, and default workspace scope." },
+        { title: "API keys", copy: "Centralize service endpoints, API keys, and access boundaries." },
+        { title: "Preferences", copy: "Save default language, page preferences, and report presentation." },
       ],
       systemStatus: {
         title: "System status",
@@ -408,9 +569,54 @@ export const WORKSPACE_COPY: Record<
         username: "Current user",
         logout: "Sign out",
       },
+      preferences: {
+        title: "Preferences",
+        language: "Language",
+        languageNote: "Choose your preferred display language.",
+        theme: "Theme",
+        themeLight: "Light",
+        themeDark: "Dark",
+        themeSystem: "System",
+      },
+      runtimeConfig: {
+        title: "Runtime Connection",
+        host: "Host",
+        hostPlaceholder: "http://127.0.0.1",
+        port: "Port",
+        testConnection: "Test",
+        testing: "Testing...",
+        connected: "Connected",
+        disconnected: "Disconnected",
+        saved: "Saved",
+      },
+      auditTemplates: {
+        title: "Audit Templates",
+        description: "Save your frequently-used parameters as templates for quick task creation.",
+        saveCurrent: "Save current defaults as template",
+        saved: "Saved",
+        noTemplates: "No saved templates yet.",
+      },
+      aboutSystem: {
+        title: "About the System",
+        useCases: "Use Cases",
+        useCaseItems: [
+          { title: "Pre-deployment privacy assessment", desc: "Audit diffusion models before production launch to identify member inference risks." },
+          { title: "Data compliance review", desc: "Provide quantitative evidence (AUC/ASR/TPR) for privacy audits and regulatory reviews." },
+          { title: "Enterprise model governance", desc: "Quantify privacy risk across different access levels (black-box / gray-box / white-box)." },
+          { title: "Defense effectiveness evaluation", desc: "Compare attack success rates with and without defenses to measure mitigation impact." },
+        ],
+        systemBoundary: "System Boundary",
+        boundaryNote: "DiffAudit is a privacy risk audit platform, not a defense system. It discovers, quantifies, and visualizes risks — it does not eliminate them.",
+        framework: "Three-tier Audit Framework",
+        frameworkItems: [
+          { tier: "Black-box", desc: "Lowest privilege — detects whether membership privacy leakage exists." },
+          { tier: "Gray-box", desc: "Partial access — quantifies risk intensity and evaluates defense effectiveness." },
+          { tier: "White-box", desc: "Full access — characterizes risk upper bound and evaluates strongest defenses." },
+        ],
+      },
       errorPage: {
         title: "Something went wrong",
-        description: "An unexpected error occurred. You can try again or return to the workspace.",
+        description: "An unexpected error occurred. Please retry or return to the workspace.",
         retry: "Retry",
         goHome: "Return to workspace",
       },
@@ -495,49 +701,55 @@ export const WORKSPACE_COPY: Record<
       signOut: "退出登录",
     },
     nav: [
-      { href: "/workspace", title: "工作台", subtitle: "待办与关键指标", shortLabel: "工作台" },
-      { href: "/workspace/audits", title: "审计流程", subtitle: "创建任务与查看结果", shortLabel: "审计" },
+      { href: "/workspace", title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
+      { href: "/workspace/audits", title: "审计流程", subtitle: "创建审计任务，查看运行结果", shortLabel: "审计" },
       { href: "/workspace/reports", title: "报告", subtitle: "结果汇总与导出", shortLabel: "报告" },
-      { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥与偏好", shortLabel: "设置" },
+      { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥和偏好设置", shortLabel: "设置" },
     ],
     workspace: {
       eyebrow: "工作台",
-      title: "待办、审计结果和关键指标。",
-      description: "工作台首页汇总当前任务、最近结果和系统状态。",
+      title: "看看你的模型泄露了什么。",
+      description: "这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态。",
       kpis: {
-        liveContractsLabel: "活跃合同",
-        liveContractsNote: "Catalog 中可用的合同项数量。",
-        defendedRowsLabel: "已防御行",
-        defendedRowsNote: "包含防御对照的结果行数。",
+        liveContractsLabel: "可审计合同",
+        liveContractsNote: "当前可用的审计合同数。",
+        defendedRowsLabel: "已防御结果",
+        defendedRowsNote: "包含防御对照的审计结果行数。",
         avgAucLabel: "平均攻击 AUC",
-        avgAucNote: "所有评估行的 AUC 均值",
-        defenseEvaluatedLabel: "防御评估",
-        defenseEvaluatedNote: "总审计结果数",
+        avgAucNote: "所有审计结果的攻击 AUC 均值，越高说明泄露风险越大。",
+        defenseEvaluatedLabel: "已评估防御",
+        defenseEvaluatedNote: "已完成审计的结果总数。",
       },
       sections: {
-        tasks: "当前待办",
+        tasks: "当前任务",
         recentResults: "最近结果",
         riskOverview: "风险分布",
+        tableHeaders: {
+          risk: "风险",
+          attack: "攻击方法",
+          model: "目标模型",
+          track: "攻击线",
+        },
       },
       riskInterpretations: {
-        high: "成员推断信号仍然较强，建议对比防御效果。",
-        medium: "存在部分信号泄露，建议增加防御策略。",
-        low: "攻击接近随机猜测，隐私保护有效。",
+        high: "攻击 AUC 很高，模型很可能记住了训练数据。建议对比不同防御策略的效果。",
+        medium: "检测到部分信号泄露，说明隐私保护还不够充分。",
+        low: "攻击接近随机猜测，当前的隐私保护机制有效。",
       },
       todoItems: [
-        "检查本轮审计任务的参数与数据源。",
-        "查看最新 admitted 结果，确认是否需要导出报告。",
-        "同步团队设置、密钥与个人偏好。",
+        "检查本轮审计任务的参数和数据源。",
+        "查看最新的审计结果，确认是否需要导出报告。",
+        "更新团队设置、密钥和个人偏好。",
       ],
-      emptyResults: "暂无审计结果。前往审计页创建任务。",
+      emptyResults: "还没有审计结果，去创建一个任务试试。",
     },
     audits: {
       eyebrow: "审计流程",
-      title: "创建任务、跟踪运行、查看结果。",
-      description: "监控运行中的任务，查看历史任务。创建新的审计任务以开始。",
+      title: "创建任务，跟踪进度，查看结果。",
+      description: "在这里创建新的审计任务，监控运行中的任务，查看历史审计记录。",
       createTaskButton: "创建任务",
       sections: {
-        activeTasks: "活跃任务",
+        activeTasks: "运行中的任务",
         taskHistory: "历史任务",
       },
       taskTable: {
@@ -553,13 +765,13 @@ export const WORKSPACE_COPY: Record<
       recommendedWorkspace: "推荐 workspace",
       createJob: "创建任务",
       updatedAt: "最近更新",
-      jobsRefreshNote: "运行中任务将在页面载入后刷新。",
+      jobsRefreshNote: "运行中的任务会在页面载入后自动刷新。",
       jobsUnavailable: "控制面暂时不可达。网关恢复后会重新显示实时任务。",
-      emptyContracts: "暂无可用合同项。检查 catalog 数据源。",
-      emptyJobs: "暂无运行中任务。",
-      emptyResults: "暂无审计结果。",
-      emptyTasks: "暂无活跃任务。",
-      emptyHistory: "暂无历史任务。",
+      emptyContracts: "暂无可用的审计合同项。",
+      emptyJobs: "当前没有运行中的任务。",
+      emptyResults: "还没有审计结果。",
+      emptyTasks: "当前没有活跃任务。",
+      emptyHistory: "还没有历史任务。",
       filters: {
         statusAll: "全部",
         statusCompleted: "已完成",
@@ -575,33 +787,33 @@ export const WORKSPACE_COPY: Record<
     },
     createTask: {
       eyebrow: "新建任务",
-      title: "创建审计任务。",
-      description: "选择攻击类型、目标模型和配置参数以启动新的审计任务。",
+      title: "创建一个新的审计任务。",
+      description: "选择攻击方式、目标模型，设置参数后启动审计。",
       backToTasks: "返回任务列表",
       steps: {
         step1Label: "1",
-        step1Title: "攻击类型",
-        step1Desc: "选择攻击方法。",
+        step1Title: "攻击方式",
+        step1Desc: "你想用哪种攻击方法来审计？",
         step2Label: "2",
         step2Title: "目标模型",
         step2Desc: "选择要审计的模型。",
         step3Label: "3",
-        step3Title: "参数配置",
-        step3Desc: "配置任务参数。",
+        step3Title: "参数设置",
+        step3Desc: "设置任务的运行参数。",
         step4Label: "4",
         step4Title: "确认提交",
-        step4Desc: "确认后提交任务。",
+        step4Desc: "确认配置无误后提交任务。",
       },
       attackTypes: {
         blackBoxTitle: "黑盒 / Recon",
-        blackBoxDesc: "基于分数重建的成员推断攻击，无需访问模型内部。",
-        blackBoxNote: "推荐用于初步风险评估。",
+        blackBoxDesc: "通过输出分数反推模型是否记住了某条数据。不需要任何模型内部信息，最适合快速评估。",
+        blackBoxNote: "推荐作为首次评估的起点。",
         grayBoxTitle: "灰盒 / PIA",
-        grayBoxDesc: "具有部分模型知识的隐私推断攻击，利用中间表示。",
-        grayBoxNote: "当可获取梯度时信号更强。",
+        grayBoxDesc: "利用模型中间层的表示信息发起攻击。如果你能拿到中间特征，效果会更好。",
+        grayBoxNote: "可获取中间特征时信号更强。",
         whiteBoxTitle: "白盒 / GSA",
-        whiteBoxDesc: "具有完整模型访问权限的梯度结构攻击，最强推断能力。",
-        whiteBoxNote: "需要完整的模型权重和梯度。",
+        whiteBoxDesc: "完全访问模型权重和梯度，是最强的攻击方式。能发现最隐蔽的隐私泄露。",
+        whiteBoxNote: "需要完整的模型权重和梯度信息。",
       },
       labels: {
         selectModel: "目标模型",
@@ -609,38 +821,138 @@ export const WORKSPACE_COPY: Record<
         rounds: "攻击轮次",
         batchSize: "批次大小",
         adaptiveSampling: "自适应采样",
-        adaptiveSamplingNote: "根据中间结果动态调整采样。",
-        reviewSummary: "提交前确认任务配置。",
-        reviewAttackType: "攻击类型",
+        adaptiveSamplingNote: "根据中间结果动态调整采样策略，节省计算资源。",
+        reviewSummary: "提交前最后确认一下配置。",
+        reviewAttackType: "攻击方式",
         reviewModel: "目标模型",
         reviewRounds: "轮次",
         reviewBatchSize: "批次大小",
         reviewAdaptiveSampling: "自适应采样",
         reviewEstTime: "预计耗时",
-        submitButton: "提交任务",
+        adaptiveOn: "开",
+        adaptiveOff: "关",
+        estimatedSuffix: "（预估）",
+        submitButton: "开始审计",
         submitting: "提交中...",
-        successTitle: "任务创建成功。",
-        successBody: "审计任务已加入队列，即将跳转到任务列表。",
+        successTitle: "任务已创建。",
+        successBody: "审计任务已加入队列，正在跳转到任务列表。",
         goToTasks: "前往任务列表",
-        disabled: "不可用",
+        disabled: "暂不可用",
       },
+      recommendedConfig: {
+        blackBoxTitle: "黑盒攻击推荐配置",
+        blackBoxRounds: "10 轮（足够获取稳定信号）",
+        blackBoxBatch: "批量 32（平衡速度和覆盖率）",
+        blackBoxAdaptive: "开启自适应采样（自动跳过低置信度样本）",
+        grayBoxTitle: "灰盒攻击推荐配置",
+        grayBoxRounds: "15 轮（中间层攻击需要更多轮次）",
+        grayBoxBatch: "批量 16（特征提取计算量较大）",
+        grayBoxAdaptive: "开启自适应采样（根据特征相似度动态调整）",
+        whiteBoxTitle: "白盒攻击推荐配置",
+        whiteBoxRounds: "20 轮（梯度攻击需要充分收敛）",
+        whiteBoxBatch: "批量 8（梯度计算开销大）",
+        whiteBoxAdaptive: "开启自适应采样（根据梯度幅值调整采样）",
+      },
+    },
+    jobDetail: {
+      eyebrow: "任务详情",
+      title: "审计任务",
+      description: "查看任务状态、运行日志和详细信息。",
+      backToAudits: "返回任务列表",
+      cancelJob: "取消任务",
+      cancelling: "取消中...",
+      confirmCancel: "确认取消",
+      keepRunning: "继续运行",
+      cancelTitle: "取消审计任务",
+      cancelBody: "确定要取消这个审计任务吗？此操作不可撤销。",
+      nextStepsTitle: "建议的下一步",
+      statusLabels: {
+        queued: "排队中",
+        running: "运行中",
+        completed: "已完成",
+        failed: "失败",
+        cancelled: "已取消",
+      },
+      labels: {
+        contractKey: "合约标识",
+        workspace: "工作区",
+        type: "任务类型",
+        targetModel: "目标模型",
+        created: "创建时间",
+        duration: "耗时",
+        updated: "更新时间",
+        error: "错误信息",
+        stdoutTail: "标准输出 (尾部)",
+        stderrTail: "标准错误 (尾部)",
+        lines: "行",
+        noLogOutput: "该任务暂无日志输出。",
+        jobNotFound: "任务不存在。",
+        loadFailed: "加载任务失败",
+        apiUnreachable: "无法连接到 API 服务。",
+      },
+      nextSteps: {
+        completed: [
+          "运行防御对照实验，看看是否能降低泄露风险。",
+          "用不同的攻击方式创建一个新任务，交叉验证结果。",
+          "导出 PDF 报告，记录你的审计发现。",
+        ],
+        failed: [
+          "检查上面的错误日志，确认失败原因。",
+          "减少攻击轮次或缩小批次大小后重试。",
+          "确认 Runtime 服务正在运行且可以访问。",
+        ],
+        cancelled: [
+          "用相同的配置重新创建审计任务。",
+          "如果是因为时间原因取消的，可以考虑减少攻击轮次。",
+        ],
+      },
+    },
+    emptyWorkspace: {
+      title: "还没有审计结果。",
+      description: "DiffAudit 通过三条攻击线（黑盒、灰盒、白盒）帮助你发现机器学习模型中的隐私风险。",
+      cta: "创建第一个审计任务",
+      steps: [
+        { step: "1", title: "选择攻击方式", desc: "黑盒（推荐起点）、灰盒或白盒。" },
+        { step: "2", title: "选择目标模型", desc: "从合同目录中挑选要审计的模型。" },
+        { step: "3", title: "等待结果", desc: "提交后系统会自动运行审计，完成后在这里展示。" },
+      ],
     },
     reports: {
       eyebrow: "报告",
-      title: "结果汇总、覆盖缺口与报告导出。",
-      description: "报告页汇总审计结果、识别覆盖缺口并支持导出。",
+      title: "审计结果和覆盖缺口。",
+      description: "这里汇总了所有审计结果，帮你发现模型防御的薄弱环节。",
       sections: {
         auditResults: "审计结果",
         coverageGaps: "覆盖缺口",
+        aucDistribution: "AUC 分数分布",
+        rocCurve: "ROC 曲线",
+        riskDistribution: "风险分布",
+        attackComparison: "攻击效果对比",
+        highRiskGaps: "个高风险缺口 (AUC >= 0.7)",
       },
-      exportSummary: "导出报告摘要",
-      emptyResults: "暂无审计结果。",
+      chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
+      exportSummary: "导出报告",
+      emptyResults: "还没有审计结果。",
       emptyGaps: "暂无覆盖缺口数据。",
+      tableHeaders: {
+        attack: "攻击方法",
+        defense: "防御方法",
+        model: "目标模型",
+        track: "攻击线",
+        evidence: "证据等级",
+        auc: "AUC",
+        asr: "ASR",
+        tpr: "TPR",
+        contractKey: "合约标识",
+        label: "名称",
+        systemGap: "系统缺口",
+        workspace: "工作区",
+      },
     },
     settings: {
       eyebrow: "设置",
       title: "团队、密钥和个人偏好。",
-      description: "设置页管理团队成员、API 密钥和工作台偏好。",
+      description: "管理团队设置、运行时连接和本地偏好。",
       sections: [
         { title: "团队成员", copy: "管理团队名称、协作角色和默认工作区范围。" },
         { title: "API 密钥", copy: "集中维护服务地址、API 密钥和访问边界。" },
@@ -654,9 +966,9 @@ export const WORKSPACE_COPY: Record<
         demoOff: "关闭",
       },
       auditConfig: {
-        title: "审计默认配置",
+        title: "审计默认值",
         defaultRounds: "默认攻击轮次",
-        defaultBatchSize: "默认 batch size",
+        defaultBatchSize: "默认批次大小",
         saved: "已保存",
       },
       account: {
@@ -664,9 +976,54 @@ export const WORKSPACE_COPY: Record<
         username: "当前用户",
         logout: "退出登录",
       },
+      preferences: {
+        title: "偏好设置",
+        language: "显示语言",
+        languageNote: "选择你偏好的界面语言。",
+        theme: "主题",
+        themeLight: "浅色",
+        themeDark: "深色",
+        themeSystem: "跟随系统",
+      },
+      runtimeConfig: {
+        title: "Runtime 连接",
+        host: "主机地址",
+        hostPlaceholder: "http://127.0.0.1",
+        port: "端口",
+        testConnection: "测试连接",
+        testing: "测试中...",
+        connected: "已连接",
+        disconnected: "未连接",
+        saved: "已保存",
+      },
+      auditTemplates: {
+        title: "审计模板",
+        description: "将常用的审计参数保存为模板，创建任务时快速选用。",
+        saveCurrent: "保存当前默认值为模板",
+        saved: "已保存",
+        noTemplates: "还没有保存的模板。",
+      },
+      aboutSystem: {
+        title: "关于系统",
+        useCases: "应用场景",
+        useCaseItems: [
+          { title: "模型上线前的隐私评估", desc: "在模型上线前进行审计，识别成员推断风险。" },
+          { title: "数据合规审查的技术支撑", desc: "为隐私审计和合规审查提供量化证据（AUC/ASR/TPR）。" },
+          { title: "企业模型治理的风险量化", desc: "量化不同访问权限等级（黑盒/灰盒/白盒）下的隐私风险。" },
+          { title: "防御效果评估对比", desc: "对比防御前后的攻击成功率，评估缓解措施的有效性。" },
+        ],
+        systemBoundary: "系统边界",
+        boundaryNote: "DiffAudit 是隐私风险审计平台，不是防御系统。它发现、量化和可视化风险，但不消除风险。",
+        framework: "三层审计框架",
+        frameworkItems: [
+          { tier: "黑盒", desc: "最低权限 — 检测是否存在成员隐私泄露风险。" },
+          { tier: "灰盒", desc: "部分权限 — 量化风险强度并评估防御效果。" },
+          { tier: "白盒", desc: "完全权限 — 刻画风险上界并评估最强防御措施。" },
+        ],
+      },
       errorPage: {
         title: "出错了",
-        description: "发生了意外错误。你可以重试或返回工作台。",
+        description: "发生了意外错误，请稍后重试，或返回工作台。",
         retry: "重试",
         goHome: "返回工作台",
       },

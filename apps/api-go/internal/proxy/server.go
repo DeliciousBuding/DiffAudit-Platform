@@ -22,22 +22,25 @@ type Config struct {
 	PublicDataDir  string
 	RuntimeBaseURL string
 	DemoMode       bool
+	CORS           CORSConfig
 }
 
 type Server struct {
-	config Config
-	mux    *http.ServeMux
-	client *http.Client
+	config   Config
+	mux      *http.ServeMux
+	client   *http.Client
+	cacheDir string // snapshot cache for 5.1.3
 }
 
 func NewServer(config Config) *Server {
 	mux := http.NewServeMux()
 	server := &Server{
-		config: config,
-		mux:    mux,
+		config:   config,
+		mux:      mux,
 		client: &http.Client{
 			Timeout: defaultRuntimeTimeout,
 		},
+		cacheDir: config.PublicDataDir,
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
 	mux.HandleFunc("GET /api/v1/control/runtime", server.handleRuntimeHealth)
@@ -50,11 +53,16 @@ func NewServer(config Config) *Server {
 	mux.HandleFunc("GET /api/v1/audit/jobs", server.handleControlGet)
 	mux.HandleFunc("POST /api/v1/audit/jobs", server.handleControlPost)
 	mux.HandleFunc("GET /api/v1/audit/jobs/{jobID}", server.handleControlGet)
+	mux.HandleFunc("DELETE /api/v1/audit/jobs/{jobID}", server.handleControlDelete)
 	return server
 }
 
 func (s *Server) Handler() http.Handler {
 	return s.mux
+}
+
+func (s *Server) GetConfig() Config {
+	return s.config
 }
 
 func (s *Server) handleHealth(writer http.ResponseWriter, _ *http.Request) {
@@ -284,6 +292,18 @@ func (s *Server) snapshotExists(name string) bool {
 	return err == nil
 }
 
+func (s *Server) handleControlDelete(writer http.ResponseWriter, request *http.Request) {
+	if s.config.DemoMode {
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"status":    "cancelled",
+			"demo_mode": true,
+			"message":   "Demo mode: job cancellation not available",
+		})
+		return
+	}
+	s.forwardControlWithMethod(writer, request, http.MethodDelete)
+}
+
 func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Request, body []byte) {
 	if s.config.RuntimeBaseURL == "" {
 		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "runtime base url is not configured"})
@@ -311,6 +331,49 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 		upstreamRequest.Header.Set("Content-Type", contentType)
 	}
 	response, err := s.doWithRetry(upstreamRequest, maxRetries)
+	if err != nil {
+		// 5.1.3: Runtime unavailable → serve cached snapshot if available
+		if s.serveCacheFallback(writer, request, upstreamPath) {
+			return
+		}
+		s.writeRuntimeError(writer, err)
+		return
+	}
+	defer response.Body.Close()
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		return
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(response.StatusCode)
+	_, _ = writer.Write(responseBody)
+}
+
+func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *http.Request, method string) {
+	if s.config.RuntimeBaseURL == "" {
+		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "runtime base url is not configured"})
+		return
+	}
+
+	upstreamPath := request.URL.Path
+	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, upstreamPath)
+	if err != nil {
+		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		return
+	}
+	if query := request.URL.RawQuery; query != "" {
+		upstreamURL = upstreamURL + "?" + query
+	}
+	upstreamRequest, err := http.NewRequest(method, upstreamURL, nil)
+	if err != nil {
+		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		return
+	}
+	if contentType := request.Header.Get("Content-Type"); contentType != "" {
+		upstreamRequest.Header.Set("Content-Type", contentType)
+	}
+	response, err := s.client.Do(upstreamRequest)
 	if err != nil {
 		s.writeRuntimeError(writer, err)
 		return
@@ -433,4 +496,49 @@ func (s *Server) writeRuntimeError(writer http.ResponseWriter, err error) {
 		"hint":             hint,
 		"demo_mode_tip":    "Consider enabling demo mode (DIFFAUDIT_DEMO_MODE=true) to use snapshot data without runtime server",
 	})
+}
+
+// serveCacheFallback serves cached snapshot data when the runtime is unavailable.
+// Maps request paths to snapshot filenames and serves the cached copy.
+func (s *Server) serveCacheFallback(writer http.ResponseWriter, request *http.Request, path string) bool {
+	if s.cacheDir == "" {
+		return false
+	}
+
+	// Map API paths to cached snapshot files
+	var snapshotFile string
+	switch {
+	case strings.HasSuffix(path, "/audit/jobs") || path == "/api/v1/audit/jobs":
+		snapshotFile = "audit-jobs.json"
+	case strings.HasPrefix(path, "/api/v1/audit/jobs/"):
+		jobID := request.PathValue("jobID")
+		if jobID != "" {
+			snapshotFile = "jobs/" + jobID + ".json"
+		}
+	case path == "/api/v1/audit/job-template":
+		snapshotFile = "audit-job-template.json"
+	default:
+		// Try to match by path suffix
+		parts := strings.Split(strings.TrimPrefix(path, "/api/v1/"), "/")
+		if len(parts) >= 2 {
+			snapshotFile = strings.Join(parts, "-") + ".json"
+		}
+	}
+
+	if snapshotFile == "" {
+		return false
+	}
+
+	cachePath := filepath.Join(s.cacheDir, "cache", snapshotFile)
+	bytes, err := os.ReadFile(cachePath)
+	if err != nil {
+		return false
+	}
+
+	// Serve the cached data with a warning header
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("X-Data-Source", "cache")
+	writer.WriteHeader(http.StatusOK)
+	_, _ = writer.Write(bytes)
+	return true
 }

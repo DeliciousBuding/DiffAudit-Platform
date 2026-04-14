@@ -269,6 +269,33 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   );
                 })}
               </div>
+              {/* Recommended configuration — 7.2.1 */}
+              {form.attackType && (
+                <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                    <div className="space-y-1">
+                      <div className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--accent-blue)]">
+                        {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxTitle : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxTitle : copy.recommendedConfig.whiteBoxTitle}
+                      </div>
+                      <ul className="space-y-0.5">
+                        <li className="text-xs text-muted-foreground">
+                          {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxRounds : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxRounds : copy.recommendedConfig.whiteBoxRounds}
+                        </li>
+                        <li className="text-xs text-muted-foreground">
+                          {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxBatch : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxBatch : copy.recommendedConfig.whiteBoxBatch}
+                        </li>
+                        <li className="text-xs text-muted-foreground">
+                          {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxAdaptive : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxAdaptive : copy.recommendedConfig.whiteBoxAdaptive}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -404,7 +431,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(4)}
-                  className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#1f5ce0]"
+                  className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
                 >
                   {copy.steps.step4Title} &rarr;
                 </button>
@@ -456,7 +483,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     {labels.reviewAdaptiveSampling}
                   </span>
                   <span className="text-xs">
-                    {form.adaptiveSampling ? "On" : "Off"}
+                    {form.adaptiveSampling ? labels.adaptiveOn : labels.adaptiveOff}
                   </span>
                 </div>
                 <div className="flex items-center justify-between pt-1 border-t border-border">
@@ -464,7 +491,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     {labels.reviewEstTime}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    ~{form.rounds * 2}s (estimated)
+                    ~{form.rounds * 2}s {labels.estimatedSuffix}
                   </span>
                 </div>
               </div>
@@ -499,7 +526,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitState === "submitting"}
-                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#1f5ce0] disabled:opacity-70"
+                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-70"
                   >
                     {submitState === "submitting" ? labels.submitting : labels.submitButton}
                   </button>

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"diffaudit/platform-api-go/internal/proxy"
 )
@@ -16,6 +17,7 @@ type runtimeConfig struct {
 	PublicDataDir  string
 	RuntimeBaseURL string
 	DemoMode       bool
+	CORSOrigins    string
 }
 
 const (
@@ -54,6 +56,11 @@ func parseConfig(args []string) (runtimeConfig, error) {
 		envOrDefault("false", "DIFFAUDIT_DEMO_MODE") == "true",
 		"enable demo mode (use snapshot data, simulate job creation)",
 	)
+	corsOrigins := flagSet.String(
+		"cors-allowed-origins",
+		envOrDefault("", "DIFFAUDIT_CORS_ALLOWED_ORIGINS"),
+		"comma-separated list of allowed CORS origins (empty = allow all)",
+	)
 	if err := flagSet.Parse(args); err != nil {
 		return runtimeConfig{}, err
 	}
@@ -72,6 +79,7 @@ func parseConfig(args []string) (runtimeConfig, error) {
 		PublicDataDir:  *publicDataDir,
 		RuntimeBaseURL: resolvedRuntimeBaseURL,
 		DemoMode:       *demoMode,
+		CORSOrigins:    *corsOrigins,
 	}, nil
 }
 
@@ -80,13 +88,34 @@ func main() {
 	if err != nil {
 		os.Exit(2)
 	}
+
+	var allowedOrigins []string
+	if config.CORSOrigins != "" {
+		for _, origin := range strings.Split(config.CORSOrigins, ",") {
+			trimmed := strings.TrimSpace(origin)
+			if trimmed != "" {
+				allowedOrigins = append(allowedOrigins, trimmed)
+			}
+		}
+	}
+
 	server := proxy.NewServer(proxy.Config{
 		PublicDataDir:  config.PublicDataDir,
 		RuntimeBaseURL: config.RuntimeBaseURL,
 		DemoMode:       config.DemoMode,
+		CORS: proxy.CORSConfig{
+			AllowedOrigins: allowedOrigins,
+			Methods:        []string{"GET", "POST", "DELETE", "OPTIONS"},
+			Headers:        []string{"Content-Type", "Authorization", "X-Request-ID"},
+		},
 	})
+
+	handler := server.Handler()
+	handler = proxy.CORSMiddleware(server.GetConfig().CORS)(handler)
+	handler = proxy.NewStructuredLogger()(handler)
+
 	address := fmt.Sprintf("%s:%s", config.Host, config.Port)
-	if err := http.ListenAndServe(address, server.Handler()); err != nil {
+	if err := http.ListenAndServe(address, handler); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

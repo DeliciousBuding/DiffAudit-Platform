@@ -21,6 +21,11 @@ export type DocsSection = {
     href: string;
     cta: string;
   }>;
+  codeBlocks?: Array<{
+    language: string;
+    title?: string;
+    code: string;
+  }>;
 };
 
 export type DocsPage = {
@@ -286,6 +291,20 @@ function zhContent(): DocsContent {
             paragraphs: [
               "这些接口覆盖了目录读取、任务创建、任务列表、实验汇总和证据表查询。",
             ],
+            codeBlocks: [
+              {
+                language: "bash",
+                title: "查询可审计模型目录",
+                code: `curl -s http://localhost:8780/api/v1/catalog | jq '.tracks[].entries[].contractKey'`,
+              },
+              {
+                language: "bash",
+                title: "创建审计任务",
+                code: `curl -s -X POST http://localhost:8780/api/v1/audit/jobs \\
+  -H 'Content-Type: application/json' \\
+  -d '{"contract_key":"recon-sd15","workspace_name":"default","job_type":"recon"}'`,
+              },
+            ],
             table: {
               columns: ["方法", "路径", "说明"],
               rows: [
@@ -541,6 +560,20 @@ function enContent(): DocsContent {
             title: "Critical path endpoints",
             paragraphs: [
               "These endpoints cover catalog discovery, job creation, job review, experiment summaries, and evidence lookup.",
+            ],
+            codeBlocks: [
+              {
+                language: "bash",
+                title: "Query the auditable model catalog",
+                code: `curl -s http://localhost:8780/api/v1/catalog | jq '.tracks[].entries[].contractKey'`,
+              },
+              {
+                language: "bash",
+                title: "Create an audit job",
+                code: `curl -s -X POST http://localhost:8780/api/v1/audit/jobs \\
+  -H 'Content-Type: application/json' \\
+  -d '{"contract_key":"recon-sd15","workspace_name":"default","job_type":"recon"}'`,
+              },
             ],
             table: {
               columns: ["Method", "Path", "Description"],

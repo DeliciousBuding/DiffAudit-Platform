@@ -31,9 +31,10 @@ D:\Code\DiffAudit\Runtime-Server\    ← 运行时服务
 ## 设计约束
 
 - **DESIGN.md** 是唯一的 design contract（`apps/web/DESIGN.md`）。所有前端改动遵守这套视觉语言。
-- **Claude Code Docs** 是重点参考对象（`Archive/legacy-projects/docs-reference/`），学习其信息架构和布局模式（navbar + tabs + left file tree + content + TOC），但用 DiffAudit 的深色审计风格。
+- **Claude Code Docs** 是重点参考对象（`Archive/legacy-projects/docs-reference/`），学习其信息架构和布局模式（navbar + tabs + left file tree + content + TOC），但用 DiffAudit 的设计审计风格。
 - "Audit-First, Not Marketing-First"。
 - 中英双语支持，中文文案自然流畅（不是英文直译）。
+- 不得改动hero文案
 
 ## 技术栈
 
