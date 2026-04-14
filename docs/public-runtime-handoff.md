@@ -10,7 +10,7 @@
 - Runtime host: `gz2`
 - Public app owner: `Platform/apps/web`
 - Backend gateway: `Platform/apps/api-go`
-- Control-plane upstream: `Services/Local-API`
+- Control-plane upstream: `Services/Local-API`（Runtime）
 
 当前请求链：
 
@@ -22,7 +22,7 @@
 4. `gz2` runs one web service for `/`, `/login`, `/trial`, `/workspace*`, `/api/auth/*`
 5. `Platform/apps/web` points `DIFFAUDIT_API_BASE_URL` to local `apps/api-go`
 6. `Platform/apps/api-go` serves snapshot-backed read routes from `apps/api-go/data/public/*`
-7. `Platform/apps/api-go` forwards only audit control-plane routes to `Services/Local-API`
+7. `Platform/apps/api-go` forwards only audit control-plane routes to `Services/Local-API`（Runtime）
    - current active control-plane owner is `DELICIOUS233` (`100.81.149.78`)
    - this hop depends on tailnet ACL allowing `gz2 -> d233 tcp:8765`
 
@@ -40,10 +40,10 @@
   - `diffaudit-platform-api.service`
   - listen: `127.0.0.1:8780`
   - public snapshot root: `apps/api-go/data/public`
-- Local-API:
+- Runtime:
   - active owner remains outside `gz2`
   - current owner is `DELICIOUS233` on `0.0.0.0:8765`
-  - `DIFFAUDIT_CONTROL_API_BASE_URL=http://100.81.149.78:8765`
+  - `DIFFAUDIT_RUNTIME_BASE_URL=http://100.81.149.78:8765`
   - `DIFFAUDIT_API_BASE_URL` on `web` must point to `http://127.0.0.1:8780`
 
 ## Handoff Requirements

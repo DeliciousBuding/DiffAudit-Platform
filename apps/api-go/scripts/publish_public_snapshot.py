@@ -16,9 +16,14 @@ from urllib.request import Request, urlopen
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Publish public snapshot data for apps/api-go.")
     parser.add_argument(
-        "--control-api-base-url",
+        "--runtime-base-url",
         default="http://127.0.0.1:8765",
-        help="Base URL for the live Local-API control plane.",
+        help="Base URL for the live Runtime control plane.",
+    )
+    parser.add_argument(
+        "--control-api-base-url",
+        default=None,
+        help="Deprecated alias for --runtime-base-url.",
     )
     parser.add_argument(
         "--output-dir",
@@ -84,7 +89,7 @@ def collect_summaries(base_url: str, catalog: list[dict[str, Any]]) -> tuple[lis
 
 def main() -> int:
     args = parse_args()
-    base_url = args.control_api_base_url
+    base_url = args.control_api_base_url or args.runtime_base_url
     output_dir = Path(args.output_dir)
     summaries_dir = output_dir / "summaries"
 

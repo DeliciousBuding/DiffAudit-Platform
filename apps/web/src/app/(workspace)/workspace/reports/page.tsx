@@ -5,8 +5,9 @@ import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard } from "@/lib/catalog";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
-import { WorkspacePage } from "@/components/workspace-page";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { ExportReportButton } from "@/components/export-report-button";
+import type { ReportExportRow } from "@/lib/risk-report";
 
 export default async function WorkspaceReportsPage({ locale }: { locale?: Locale } = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
@@ -17,61 +18,126 @@ export default async function WorkspaceReportsPage({ locale }: { locale?: Locale
   ]);
 
   const rows = table?.rows ?? [];
-  const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 4) ?? [];
+  const exportRows: ReportExportRow[] = rows.map((r) => ({
+    track: r.track,
+    attack: r.attack,
+    defense: r.defense,
+    model: r.model,
+    aucLabel: r.aucLabel,
+    asrLabel: r.asrLabel,
+    tprLabel: r.tprLabel,
+    evidenceLevel: r.evidenceLevel,
+  }));
+  const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 6) ?? [];
+  const localeCode = resolvedLocale === "zh-CN" ? "zh-CN" : "en";
 
   return (
-    <WorkspacePage eyebrow={copy.eyebrow} title={copy.title} description={copy.description}>
-      <div className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-        <section className="surface-card p-6">
-          <div className="caption">{copy.sections.auditResults}</div>
-          <div className="mt-5 space-y-4">
-            {rows.length > 0 ? (
-              rows.map((row) => (
-                <article key={`${row.track}-${row.attack}-${row.defense}`} className="rounded-[22px] border border-border bg-white/55 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="text-base font-medium">{row.attack}</div>
-                      <p className="mt-1 text-sm text-muted-foreground">{row.model}</p>
-                    </div>
-                    <StatusBadge tone="info">{row.evidenceLevel}</StatusBadge>
-                  </div>
-                  <div className="mt-4 grid gap-3 md:grid-cols-3">
-                    <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">AUC {row.aucLabel}</div>
-                    <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">ASR {row.asrLabel}</div>
-                    <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">TPR {row.tprLabel}</div>
-                  </div>
-                </article>
-              ))
-            ) : (
-              <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                {copy.emptyResults}
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="surface-card p-6">
-          <div className="caption">{copy.sections.coverageGaps}</div>
-          <div className="mt-5 space-y-4">
-            {contracts.length > 0 ? (
-              contracts.map((entry) => (
-                <article key={entry.contractKey} className="rounded-[22px] border border-border bg-white/55 p-4">
-                  <div className="mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{entry.contractKey}</div>
-                  <div className="mt-2 text-base font-medium">{entry.label}</div>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{entry.systemGap}</p>
-                </article>
-              ))
-            ) : (
-              <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                {copy.emptyGaps}
-              </div>
-            )}
-            <button type="button" className="portal-pill portal-pill-primary w-full">
-              {copy.exportSummary}
-            </button>
-          </div>
-        </section>
+    <div className="space-y-4">
+      {/* Page header */}
+      <div className="flex items-start justify-between border-b border-border pb-3">
+        <div>
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
+          <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
+        </div>
+        <ExportReportButton
+          rows={exportRows}
+          label={copy.exportSummary}
+          locale={localeCode}
+        />
       </div>
-    </WorkspacePage>
+
+      <section className="border border-border bg-card">
+        <div className="border-b border-border bg-muted/20 px-3 py-2">
+          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {copy.sections.auditResults}
+          </h2>
+        </div>
+        <div className="overflow-auto max-h-[440px]">
+          {rows.length > 0 ? (
+            <table className="w-full border-collapse text-xs">
+              <thead className="sticky top-0 bg-muted/30">
+                <tr className="border-b border-border">
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Attack</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Defense</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Model</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Track</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Evidence</th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">AUC</th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">ASR</th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">TPR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, index) => (
+                  <tr
+                    key={`${row.track}-${row.attack}-${row.defense}`}
+                    className={`border-b border-border transition-colors hover:bg-muted/30 ${
+                      index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                    }`}
+                  >
+                    <td className="px-3 py-2 font-medium">{row.attack}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{row.defense}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
+                    <td className="px-3 py-2">
+                      <StatusBadge tone="info">{row.track}</StatusBadge>
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">{row.evidenceLevel}</td>
+                    <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
+                    <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
+                    <td className="mono px-3 py-2 text-right">{row.tprLabel}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+              {copy.emptyResults}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="border border-border bg-card">
+        <div className="border-b border-border bg-muted/20 px-3 py-2">
+          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {copy.sections.coverageGaps}
+          </h2>
+        </div>
+        <div className="overflow-auto">
+          {contracts.length > 0 ? (
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Contract Key</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Label</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">System Gap</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Workspace</th>
+                </tr>
+              </thead>
+              <tbody>
+                {contracts.map((entry, index) => (
+                  <tr
+                    key={entry.contractKey}
+                    className={`border-b border-border transition-colors hover:bg-muted/30 ${
+                      index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                    }`}
+                  >
+                    <td className="mono px-3 py-2 text-[10px] text-muted-foreground">{entry.contractKey}</td>
+                    <td className="px-3 py-2 font-medium">{entry.label}</td>
+                    <td className="px-3 py-2 text-muted-foreground max-w-xs">{entry.systemGap}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{entry.bestWorkspace}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+              {copy.emptyGaps}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }

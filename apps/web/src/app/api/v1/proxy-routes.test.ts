@@ -62,11 +62,11 @@ describe("platform api proxy routes", () => {
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/audit/jobs");
   });
 
-  it("proxies local api control health requests to the backend", async () => {
-    const route = await import("./control/local-api/route");
+  it("proxies runtime control health requests to the backend", async () => {
+    const route = await import("./control/runtime/route");
 
     await route.GET();
 
-    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/control/local-api");
+    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/control/runtime");
   });
 });

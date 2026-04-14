@@ -7,5 +7,9 @@ export default function WorkspaceLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <PlatformShell>{children}</PlatformShell>;
+  return (
+    <PlatformShell>
+      {children}
+    </PlatformShell>
+  );
 }

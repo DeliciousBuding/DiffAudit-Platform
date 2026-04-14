@@ -18,7 +18,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </div>
       </header>
 
-      <section className="container py-12 md:py-20">
+      <section className="container py-12 md:py-20 mt-8">
         {children}
       </section>
     </main>

@@ -5,15 +5,14 @@ import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard } from "@/lib/catalog";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
-import { WorkspacePage } from "@/components/workspace-page";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-function Kpi({ label, value, note }: { label: string; value: string; note: string }) {
+function KpiCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="workspace-kpi">
-      <div className="workspace-kpi-label">{label}</div>
-      <div className="workspace-kpi-value">{value}</div>
-      <p className="mt-3 text-sm leading-7 text-muted-foreground">{note}</p>
+    <div className="border border-border bg-card p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-1.5 text-2xl font-semibold leading-none">{value}</div>
+      <p className="mt-1 text-[10px] text-muted-foreground leading-tight">{note}</p>
     </div>
   );
 }
@@ -28,59 +27,102 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
 
   const activeContracts = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
-  const recentRows = table?.rows.slice(0, 3) ?? [];
+  const recentRows = table?.rows.slice(0, 10) ?? [];
+
+  const aucValues = (table?.rows ?? [])
+    .map((r) => parseFloat(r.aucLabel))
+    .filter((v): v is number => !isNaN(v));
+  const avgAuc = aucValues.length > 0
+    ? (aucValues.reduce((a, b) => a + b, 0) / aucValues.length).toFixed(3)
+    : "n/a";
+  const totalRows = table?.stats.total ?? 0;
 
   return (
-    <WorkspacePage
-      eyebrow={copy.eyebrow}
-      title={copy.title}
-      description={copy.description}
-      aside={
-        <>
-          <Kpi label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} />
-          <Kpi label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} />
-        </>
-      }
-    >
-      <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="surface-card p-6">
-          <div className="caption">{copy.sections.tasks}</div>
-          <div className="mt-5 space-y-4">
-            {copy.todoItems.map((item, index) => (
-              <div key={item} className="flex items-start gap-3 rounded-[22px] border border-border bg-white/55 p-4">
-                <span className="mono inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs">
-                  {index + 1}
-                </span>
-                <p className="text-sm leading-7">{item}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+    <div className="space-y-4">
+      {/* Page header */}
+      <div className="border-b border-border pb-3">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
+        <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
+      </div>
 
-        <section className="surface-card p-6">
-          <div className="caption">{copy.sections.recentResults}</div>
-          <div className="mt-5 space-y-4">
+      {/* KPI row */}
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <KpiCard label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} />
+        <KpiCard label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} />
+        <KpiCard label="Avg. Attack AUC" value={avgAuc} note="Mean AUC across all evaluated rows" />
+        <KpiCard label="Defense Evaluated" value={String(defendedRows)} note={`${totalRows} total audit results`} />
+      </div>
+
+      {/* Main content grid */}
+      <div className="grid gap-3 lg:grid-cols-3">
+        {/* Recent results table */}
+        <section className="lg:col-span-2 border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.recentResults}
+            </h2>
+          </div>
+          <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
-              recentRows.map((row) => (
-                <article key={`${row.track}-${row.attack}-${row.defense}`} className="rounded-[22px] border border-border bg-white/55 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="text-base font-medium">{row.attack}</div>
-                      <p className="mt-1 text-sm text-muted-foreground">{row.model}</p>
-                    </div>
-                    <StatusBadge tone="info">{row.track}</StatusBadge>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{row.note}</p>
-                </article>
-              ))
+              <table className="w-full border-collapse text-xs">
+                <thead className="sticky top-0 bg-muted/30">
+                  <tr className="border-b border-border">
+                    <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Attack</th>
+                    <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Model</th>
+                    <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Track</th>
+                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">AUC</th>
+                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">ASR</th>
+                    <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">TPR</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentRows.map((row, index) => (
+                    <tr
+                      key={`${row.track}-${row.attack}-${row.defense}`}
+                      className={`border-b border-border transition-colors hover:bg-muted/30 ${
+                        index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                      }`}
+                    >
+                      <td className="px-3 py-2 font-medium">{row.attack}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
+                      <td className="px-3 py-2">
+                        <StatusBadge tone="info">{row.track}</StatusBadge>
+                      </td>
+                      <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
+                      <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
+                      <td className="mono px-3 py-2 text-right">{row.tprLabel}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             ) : (
-              <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
+              <div className="px-3 py-4 text-xs text-muted-foreground text-center">
                 {copy.emptyResults}
               </div>
             )}
           </div>
         </section>
+
+        {/* Tasks panel */}
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.tasks}
+            </h2>
+          </div>
+          <div className="p-3 space-y-0">
+            {copy.todoItems.map((item, index) => (
+              <div key={item} className="flex items-start gap-2 border-b border-border py-2 last:border-0">
+                <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[9px] font-semibold rounded-sm">
+                  {index + 1}
+                </span>
+                <p className="text-xs leading-relaxed text-muted-foreground">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
-    </WorkspacePage>
+    </div>
   );
 }

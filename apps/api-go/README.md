@@ -5,9 +5,9 @@ Primary backend gateway for the platform shell.
 This service now has two responsibilities:
 
 - serve snapshot-backed public read endpoints for the workspace
-- proxy audit control-plane calls to the live `Local-API`
+- proxy audit control-plane calls to the live `Runtime`
 
-Default control-plane upstream:
+Default Runtime upstream:
 
 - `http://127.0.0.1:8765`
 
@@ -30,7 +30,7 @@ powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Platform\apps\api-go\
   -ListenHost 127.0.0.1 `
   -ListenPort 8780 `
   -PublicDataDir D:\Code\DiffAudit\Platform\apps\api-go\data\public `
-  -ControlAPIBaseURL http://127.0.0.1:8765
+  -RuntimeBaseURL http://127.0.0.1:8765
 ```
 
 Default listen port is `8780` so the gateway does not collide with the unrelated local service already occupying `8000` on this workstation.
@@ -41,7 +41,7 @@ Refresh the public snapshot bundle before a public deploy:
 
 ```powershell
 py -3 D:\Code\DiffAudit\Platform\apps\api-go\scripts\publish_public_snapshot.py `
-  --control-api-base-url http://127.0.0.1:8765 `
+  --runtime-base-url http://127.0.0.1:8765 `
   --output-dir D:\Code\DiffAudit\Platform\apps\api-go\data\public
 ```
 
@@ -63,7 +63,7 @@ Live control-plane routes:
 - `GET /api/v1/audit/jobs/{job_id}`
 - `GET /api/v1/audit/job-template`
 
-Job creation bodies are passed through unchanged and should follow the Local-API
+Job creation bodies are passed through unchanged and should follow the Runtime
 contract, including the required `contract_key`. Contract-specific payload
 fields should live under `job_inputs`; `runtime_profile` and `assets` may also
 be present for docker-first execution flows. The gateway does not interpret
@@ -79,5 +79,5 @@ This service is a platform gateway only.
 - It does not run research jobs directly.
 - It does not shell out to Python during public requests.
 - It serves workspace read models from the committed/deployed snapshot bundle.
-- It forwards only audit control-plane calls to the live `Local-API`.
+- It forwards only audit control-plane calls to the live `Runtime`.
 

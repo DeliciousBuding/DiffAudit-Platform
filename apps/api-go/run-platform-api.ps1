@@ -2,7 +2,8 @@ param(
     [string]$ListenHost = "127.0.0.1",
     [string]$ListenPort = "8780",
     [string]$PublicDataDir,
-    [string]$ControlAPIBaseURL = "http://127.0.0.1:8765"
+    [Alias("ControlAPIBaseURL")]
+    [string]$RuntimeBaseURL = "http://127.0.0.1:8765"
 )
 
 $ErrorActionPreference = "Stop"
@@ -29,7 +30,7 @@ try {
         --host $ListenHost `
         --port $ListenPort `
         --public-data-dir $PublicDataDir `
-        --control-api-base-url $ControlAPIBaseURL
+        --runtime-base-url $RuntimeBaseURL
 }
 finally {
     Pop-Location

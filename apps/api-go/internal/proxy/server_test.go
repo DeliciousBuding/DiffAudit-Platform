@@ -12,7 +12,7 @@ import (
 
 func TestHealthEndpoint(t *testing.T) {
 	server := NewServer(Config{
-		ControlAPIBaseURL: "http://127.0.0.1:8765",
+		RuntimeBaseURL: "http://127.0.0.1:8765",
 	})
 
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
@@ -33,7 +33,7 @@ func TestHealthEndpoint(t *testing.T) {
 	}
 }
 
-func TestLocalAPIHealthEndpointConnected(t *testing.T) {
+func TestRuntimeHealthEndpointConnected(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/health" {
 			t.Fatalf("unexpected path %s", request.URL.Path)
@@ -42,8 +42,8 @@ func TestLocalAPIHealthEndpointConnected(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
-	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/local-api", nil)
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/runtime", nil)
 	recorder := httptest.NewRecorder()
 
 	server.Handler().ServeHTTP(recorder, request)
@@ -64,14 +64,14 @@ func TestLocalAPIHealthEndpointConnected(t *testing.T) {
 	}
 }
 
-func TestLocalAPIHealthEndpointDisconnected(t *testing.T) {
+func TestRuntimeHealthEndpointDisconnected(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, "upstream unavailable", http.StatusServiceUnavailable)
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
-	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/local-api", nil)
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/runtime", nil)
 	recorder := httptest.NewRecorder()
 
 	server.Handler().ServeHTTP(recorder, request)
@@ -109,8 +109,8 @@ func TestModelsEndpointUsesSnapshotData(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{
-		PublicDataDir:     dataDir,
-		ControlAPIBaseURL: upstream.URL,
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
 	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/models", nil)
 	recorder := httptest.NewRecorder()
@@ -162,8 +162,8 @@ func TestCatalogEndpointUsesSnapshotData(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{
-		PublicDataDir:     dataDir,
-		ControlAPIBaseURL: upstream.URL,
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
 	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/catalog", nil)
 	recorder := httptest.NewRecorder()
@@ -220,8 +220,8 @@ func TestAttackDefenseTableEndpointUsesSnapshotData(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{
-		PublicDataDir:     dataDir,
-		ControlAPIBaseURL: upstream.URL,
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
 	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/evidence/attack-defense-table", nil)
 	recorder := httptest.NewRecorder()
@@ -244,11 +244,11 @@ func TestBestReconEndpointUsesSnapshotSummary(t *testing.T) {
 	dataDir := writeSnapshotBundle(t, snapshotBundle{
 		catalog: []map[string]any{
 			{
-				"contract_key":  "black-box/recon/sd15-ddim",
-				"track":         "black-box",
-				"attack_family": "recon",
-				"target_key":    "sd15-ddim",
-				"availability":  "ready",
+				"contract_key":   "black-box/recon/sd15-ddim",
+				"track":          "black-box",
+				"attack_family":  "recon",
+				"target_key":     "sd15-ddim",
+				"availability":   "ready",
 				"best_workspace": "D:\\Code\\DiffAudit\\Research\\experiments\\recon-runtime-mainline-ddim-public-50-step10",
 			},
 		},
@@ -268,8 +268,8 @@ func TestBestReconEndpointUsesSnapshotSummary(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{
-		PublicDataDir:     dataDir,
-		ControlAPIBaseURL: upstream.URL,
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
 	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/experiments/recon/best", nil)
 	recorder := httptest.NewRecorder()
@@ -305,8 +305,8 @@ func TestWorkspaceSummaryEndpointUsesSnapshotData(t *testing.T) {
 	defer upstream.Close()
 
 	server := NewServer(Config{
-		PublicDataDir:     dataDir,
-		ControlAPIBaseURL: upstream.URL,
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
 	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/experiments/gray-box-pia-probe-001/summary", nil)
 	recorder := httptest.NewRecorder()
@@ -347,7 +347,7 @@ func TestJobsListEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
 	recorder := httptest.NewRecorder()
 
@@ -373,7 +373,7 @@ func TestJobTemplateEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/job-template?contract_key=black-box/recon/sd15-ddim", nil)
 	recorder := httptest.NewRecorder()
 
@@ -431,7 +431,7 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	payload := jobPayloadFixture()
 	body, _ := json.Marshal(payload)
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
@@ -478,7 +478,7 @@ func TestCreateGrayBoxJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
 		"job_type":        "pia_runtime_mainline",
 		"contract_key":    "gray-box/pia/cifar10-ddpm",
@@ -533,7 +533,7 @@ func TestCreateWhiteBoxJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
 		"job_type":       "gsa_runtime_mainline",
 		"contract_key":   "white-box/gsa/ddpm-cifar10",
@@ -565,7 +565,7 @@ func TestGetJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs/job_123", nil)
 	recorder := httptest.NewRecorder()
 
@@ -584,7 +584,7 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ControlAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	body, _ := json.Marshal(jobPayloadFixture())
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
