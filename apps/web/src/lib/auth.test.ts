@@ -1,32 +1,54 @@
-import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   DEFAULT_REDIRECT_PATH,
+  authPagePath,
+  ensureLegacySharedUser,
   buildLoginPath,
+  githubOAuthConfigured,
+  protectedApiPath,
   protectedPagePath,
-  readAuthConfig,
   sanitizeRedirectPath,
-  sessionTokenIsValid,
+  verifyCredentials,
 } from "./auth";
+import { resetDbForTests } from "./db";
 
-describe("single-app auth config", () => {
-  it("accepts the configured session token only", () => {
-    const config = readAuthConfig({
-      DIFFAUDIT_SESSION_TOKEN: "session-token",
-    });
+let tempDir = "";
 
-    expect(sessionTokenIsValid(config, "session-token")).toBe(true);
-    expect(sessionTokenIsValid(config, "other-token")).toBe(false);
+beforeEach(() => {
+  tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "diffaudit-auth-"));
+  process.env.DIFFAUDIT_DB_PATH = path.join(tempDir, "diffaudit.db");
+  delete process.env.DIFFAUDIT_SHARED_USERNAME;
+  delete process.env.DIFFAUDIT_SHARED_PASSWORD;
+  resetDbForTests();
+});
+
+afterEach(() => {
+  resetDbForTests();
+  delete process.env.DIFFAUDIT_DB_PATH;
+  delete process.env.DIFFAUDIT_SHARED_USERNAME;
+  delete process.env.DIFFAUDIT_SHARED_PASSWORD;
+  fs.rmSync(tempDir, { recursive: true, force: true });
+});
+
+describe("auth route helpers", () => {
+  it("defaults to the workspace home after sign-in", () => {
+    expect(DEFAULT_REDIRECT_PATH).toBe("/workspace");
   });
 
-  it("defaults to the workspace home after sign-in", () => {
-    const config = readAuthConfig({
-      DIFFAUDIT_SESSION_TOKEN: "session-token",
-      DIFFAUDIT_PLATFORM_URL: "https://diffaudit.vectorcontrol.tech",
-    });
+  it("marks only auth entry pages as auth routes", () => {
+    expect(authPagePath("/login")).toBe(true);
+    expect(authPagePath("/register")).toBe(true);
+    expect(authPagePath("/trial")).toBe(false);
+  });
 
-    expect(config.platformUrl).toBe("https://diffaudit.vectorcontrol.tech");
-    expect(DEFAULT_REDIRECT_PATH).toBe("/workspace");
+  it("protects only the API v1 routes", () => {
+    expect(protectedApiPath("/api/v1/jobs")).toBe(true);
+    expect(protectedApiPath("/api/auth/login")).toBe(false);
   });
 
   it("builds a same-origin login path for protected workspace routes", () => {
@@ -45,5 +67,43 @@ describe("single-app auth config", () => {
     expect(protectedPagePath("/trial")).toBe(false);
     expect(protectedPagePath("/workspace")).toBe(true);
     expect(protectedPagePath("/workspace/reports/preview")).toBe(true);
+  });
+
+  it("only enables github oauth when both credentials are present", () => {
+    expect(githubOAuthConfigured({})).toBe(false);
+    expect(githubOAuthConfigured({ GITHUB_CLIENT_ID: "client-only" })).toBe(false);
+    expect(
+      githubOAuthConfigured({
+        GITHUB_CLIENT_ID: "client-id",
+        GITHUB_CLIENT_SECRET: "client-secret",
+      }),
+    ).toBe(true);
+  });
+
+  it("bootstraps the legacy shared account into the sqlite user store", async () => {
+    process.env.DIFFAUDIT_SHARED_USERNAME = "diffaudit-review";
+    process.env.DIFFAUDIT_SHARED_PASSWORD = "DiffAuditTemp!2026";
+
+    await ensureLegacySharedUser();
+
+    await expect(
+      verifyCredentials("diffaudit-review", "DiffAuditTemp!2026"),
+    ).resolves.toMatchObject({ username: "diffaudit-review" });
+  });
+
+  it("updates the bootstrapped shared account when the env password changes", async () => {
+    process.env.DIFFAUDIT_SHARED_USERNAME = "diffaudit-review";
+    process.env.DIFFAUDIT_SHARED_PASSWORD = "DiffAuditTemp!2026";
+    await ensureLegacySharedUser();
+
+    process.env.DIFFAUDIT_SHARED_PASSWORD = "DiffAuditTemp!2027";
+    await ensureLegacySharedUser();
+
+    await expect(
+      verifyCredentials("diffaudit-review", "DiffAuditTemp!2026"),
+    ).resolves.toBeNull();
+    await expect(
+      verifyCredentials("diffaudit-review", "DiffAuditTemp!2027"),
+    ).resolves.toMatchObject({ username: "diffaudit-review" });
   });
 });

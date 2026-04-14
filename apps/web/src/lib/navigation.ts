@@ -1,3 +1,6 @@
+import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
 export type NavItem = {
   href: string;
   title: string;
@@ -7,9 +10,13 @@ export type NavItem = {
   shortLabel: string;
 };
 
-export const navItems: NavItem[] = [
-  { href: "/workspace", title: "工作台", subtitle: "待办与关键指标", icon: "dashboard", shortLabel: "工作台" },
-  { href: "/workspace/audits", title: "审计流程", subtitle: "创建任务与查看结果", icon: "spark", shortLabel: "审计" },
-  { href: "/workspace/reports", title: "报告", subtitle: "结果汇总与导出", icon: "report", shortLabel: "报告" },
-  { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥与偏好", icon: "settings", shortLabel: "设置" },
-];
+const NAV_ICONS: Array<NavItem["icon"]> = ["dashboard", "spark", "report", "settings"];
+
+export function getNavItems(locale: Locale): NavItem[] {
+  return WORKSPACE_COPY[locale].nav.map((item, i) => ({
+    ...item,
+    icon: NAV_ICONS[i],
+  }));
+}
+
+export const navItems: NavItem[] = getNavItems("en-US");

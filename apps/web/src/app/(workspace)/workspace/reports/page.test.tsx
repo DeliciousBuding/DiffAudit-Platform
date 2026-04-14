@@ -8,7 +8,7 @@ describe("WorkspaceReportsPage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders admitted results and contract gaps from backend data", async () => {
+  it("renders zh-CN copy with backend data", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -53,20 +53,24 @@ describe("WorkspaceReportsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceReportsPage());
+    const markup = renderToStaticMarkup(await WorkspaceReportsPage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("结果汇总、当前系统缺口和导出动作都在这里");
+    expect(markup).toContain("结果汇总、覆盖缺口与报告导出。");
+    expect(markup).toContain("审计结果");
+    expect(markup).toContain("覆盖缺口");
     expect(markup).toContain("recon DDIM public-100 step30");
     expect(markup).toContain("surface semantic limits cleanly");
-    expect(markup).toContain("导出当前报告摘要");
+    expect(markup).toContain("导出报告摘要");
   });
 
-  it("shows graceful empty states when backend data is unavailable", async () => {
+  it("renders en-US empty states when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await WorkspaceReportsPage());
+    const markup = renderToStaticMarkup(await WorkspaceReportsPage({ locale: "en-US" }));
 
-    expect(markup).toContain("当前无法读取 admitted 主表");
-    expect(markup).toContain("暂无 contract gap 可展示");
+    expect(markup).toContain("Result summaries, coverage gaps, and report exports.");
+    expect(markup).toContain("No audit results yet.");
+    expect(markup).toContain("No coverage gap data.");
+    expect(markup).toContain("Export report summary");
   });
 });

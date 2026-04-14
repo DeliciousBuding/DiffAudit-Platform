@@ -1,10 +1,16 @@
+import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchAuditJobs } from "@/lib/audit-jobs";
 import { fetchCatalogDashboard } from "@/lib/catalog";
+import { readServerLocale } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspacePage } from "@/components/workspace-page";
+import { CreateJobButton } from "@/components/create-job-button";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-export default async function WorkspaceAuditsPage() {
+export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale } = {}) {
+  const resolvedLocale = locale ?? await readServerLocale();
+  const copy = WORKSPACE_COPY[resolvedLocale].audits;
   const [catalog, table, jobs] = await Promise.all([
     fetchCatalogDashboard(),
     fetchAttackDefenseTable(),
@@ -16,14 +22,10 @@ export default async function WorkspaceAuditsPage() {
   const recentRows = table?.rows.slice(0, 3) ?? [];
 
   return (
-    <WorkspacePage
-      eyebrow="Audits"
-      title="创建任务、查看运行状态，并在同一页里查看结果。"
-      description="审计流程页围绕 live contract、任务队列和结果摘要组织，不再保留演示控制台。"
-    >
+    <WorkspacePage eyebrow={copy.eyebrow} title={copy.title} description={copy.description}>
       <div className="grid gap-5 lg:grid-cols-[0.96fr_1.04fr]">
         <section className="surface-card p-6">
-          <div className="caption">创建首条审计任务</div>
+          <div className="caption">{copy.sections.recommendedContracts}</div>
           <div className="mt-5 space-y-4">
             {recommendedContracts.length > 0 ? (
               recommendedContracts.map((entry) => (
@@ -54,23 +56,21 @@ export default async function WorkspaceAuditsPage() {
                     {entry.systemGap}
                   </p>
                   <div className="mt-4 flex items-center justify-between gap-3 rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
-                    <span>推荐 workspace：{entry.bestWorkspace}</span>
-                    <button type="button" className="portal-pill portal-pill-primary">
-                      创建任务
-                    </button>
+                    <span>{copy.recommendedWorkspace}: {entry.bestWorkspace}</span>
+                    <CreateJobButton contractKey={entry.contractKey} label={copy.createJob} />
                   </div>
                 </article>
               ))
             ) : (
               <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                当前还没有可创建的 contract，请先检查 catalog 数据源。
+                {copy.emptyContracts}
               </div>
             )}
           </div>
         </section>
 
         <section className="surface-card p-6">
-          <div className="caption">当前运行任务</div>
+          <div className="caption">{copy.sections.runningJobs}</div>
           <div className="mt-5 space-y-4">
             {jobs && jobs.length > 0 ? (
               jobs.map((job) => (
@@ -92,7 +92,7 @@ export default async function WorkspaceAuditsPage() {
                       {job.contractKey}
                     </div>
                     <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
-                      最近更新 {job.updatedAtLabel}
+                      {copy.updatedAt} {job.updatedAtLabel}
                     </div>
                   </div>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground">
@@ -102,7 +102,7 @@ export default async function WorkspaceAuditsPage() {
               ))
             ) : (
               <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                当前还没有可展示的运行任务。
+                {copy.emptyJobs}
               </div>
             )}
           </div>
@@ -110,7 +110,7 @@ export default async function WorkspaceAuditsPage() {
       </div>
 
       <section className="surface-card mt-5 p-6">
-        <div className="caption">结果摘要</div>
+        <div className="caption">{copy.sections.recentResults}</div>
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
           {recentRows.length > 0 ? (
             recentRows.map((row) => (
@@ -132,7 +132,7 @@ export default async function WorkspaceAuditsPage() {
             ))
           ) : (
             <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground lg:col-span-3">
-              当前无法读取结果摘要，请稍后再试。
+              {copy.emptyResults}
             </div>
           )}
         </div>

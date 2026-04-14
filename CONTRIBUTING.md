@@ -18,6 +18,12 @@
 - `packages/`: 共享契约与提示
 - `docs/`: 当前有效文档
 
+## Figma
+
+- 主设计文件与协作规则见 `docs/figma-workflow.md`
+- 涉及 UI、布局、导航、视觉样式时，在 PR 里补 Figma 链接、节点 id 或截图
+- 不单独维护长期 Figma capture 分支，设计同步跟随当前 feature branch
+
 ## 最低验证
 
 ```powershell
