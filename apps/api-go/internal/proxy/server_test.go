@@ -243,6 +243,32 @@ func TestJobsListEndpointIsProxied(t *testing.T) {
 	}
 }
 
+func TestJobTemplateEndpointIsProxied(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/v1/audit/job-template" {
+			t.Fatalf("unexpected path %s", request.URL.Path)
+		}
+		if request.URL.RawQuery != "contract_key=black-box/recon/sd15-ddim" {
+			t.Fatalf("unexpected query %s", request.URL.RawQuery)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"contract_key": "black-box/recon/sd15-ddim",
+			"job_type":     "recon_artifact_mainline",
+		})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/job-template?contract_key=black-box/recon/sd15-ddim", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+}
+
 func TestCreateJobEndpointIsProxied(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodPost {

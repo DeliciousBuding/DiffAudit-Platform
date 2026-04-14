@@ -1,9 +1,14 @@
+import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
 import { fetchCatalogDashboard } from "@/lib/catalog";
+import { readServerLocale } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspacePage } from "@/components/workspace-page";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-export default async function WorkspaceReportsPage() {
+export default async function WorkspaceReportsPage({ locale }: { locale?: Locale } = {}) {
+  const resolvedLocale = locale ?? await readServerLocale();
+  const copy = WORKSPACE_COPY[resolvedLocale].reports;
   const [catalog, table] = await Promise.all([
     fetchCatalogDashboard(),
     fetchAttackDefenseTable(),
@@ -13,14 +18,10 @@ export default async function WorkspaceReportsPage() {
   const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 4) ?? [];
 
   return (
-    <WorkspacePage
-      eyebrow="Reports"
-      title="结果汇总、当前系统缺口和导出动作都在这里。"
-      description="报告页围绕 admitted 主表、当前 contract gap 和导出动作组织结果视图。"
-    >
+    <WorkspacePage eyebrow={copy.eyebrow} title={copy.title} description={copy.description}>
       <div className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
         <section className="surface-card p-6">
-          <div className="caption">结果汇总</div>
+          <div className="caption">{copy.sections.auditResults}</div>
           <div className="mt-5 space-y-4">
             {rows.length > 0 ? (
               rows.map((row) => (
@@ -41,14 +42,14 @@ export default async function WorkspaceReportsPage() {
               ))
             ) : (
               <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                当前无法读取 admitted 主表，请稍后重试。
+                {copy.emptyResults}
               </div>
             )}
           </div>
         </section>
 
         <section className="surface-card p-6">
-          <div className="caption">当前 gap 与导出</div>
+          <div className="caption">{copy.sections.coverageGaps}</div>
           <div className="mt-5 space-y-4">
             {contracts.length > 0 ? (
               contracts.map((entry) => (
@@ -60,11 +61,11 @@ export default async function WorkspaceReportsPage() {
               ))
             ) : (
               <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                暂无 contract gap 可展示。
+                {copy.emptyGaps}
               </div>
             )}
             <button type="button" className="portal-pill portal-pill-primary w-full">
-              导出当前报告摘要
+              {copy.exportSummary}
             </button>
           </div>
         </section>

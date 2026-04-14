@@ -1,16 +1,39 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+type LoginFormCopy = {
+  username: string;
+  password: string;
+  passwordPlaceholder: string;
+  submit: string;
+  pending: string;
+  hint: string;
+  error: string;
+};
+
+type LoginPageCopy = {
+  oauthDivider: string;
+  registerLink: string;
+  registerCta: string;
+  github: string;
+};
 
 export function LoginForm({
-  usernameHint,
   redirectTo,
+  copy,
+  pageCopy,
+  oauthEnabled,
 }: {
-  usernameHint: string;
   redirectTo: string;
+  copy: LoginFormCopy;
+  pageCopy: LoginPageCopy;
+  oauthEnabled: boolean;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
@@ -29,7 +52,7 @@ export function LoginForm({
 
     if (!response.ok) {
       const payload = (await response.json().catch(() => null)) as { message?: string } | null;
-      setError(payload?.message ?? "登录失败，请检查共享账户信息。");
+      setError(payload?.message ?? copy.error);
       setPending(false);
       return;
     }
@@ -39,54 +62,74 @@ export function LoginForm({
     router.refresh();
   }
 
+  const oauthError = searchParams.get("error");
+
   return (
-    <form className="grid gap-5" onSubmit={handleSubmit}>
-      <div className="grid gap-2">
-        <label className="caption" htmlFor="shared-username">
-          共享账号
-        </label>
-        <input
-          id="shared-username"
-          className="portal-input h-[58px]"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-          autoComplete="username"
-          placeholder={usernameHint}
-          required
-        />
-      </div>
+    <div className="grid gap-5">
+      <form className="grid gap-5" onSubmit={handleSubmit}>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="login-username">
+            {copy.username}
+          </label>
+          <input
+            id="login-username"
+            className="portal-input h-[58px]"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            autoComplete="username"
+            placeholder={copy.username}
+            required
+          />
+        </div>
 
-      <div className="grid gap-2">
-        <label className="caption" htmlFor="shared-password">
-          共享密码
-        </label>
-        <input
-          id="shared-password"
-          type="password"
-          className="portal-input h-[58px]"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="current-password"
-          placeholder="输入共享密码"
-          required
-        />
-      </div>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="login-password">
+            {copy.password}
+          </label>
+          <input
+            id="login-password"
+            type="password"
+            className="portal-input h-[58px]"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
+            placeholder={copy.passwordPlaceholder}
+            required
+          />
+        </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55"
-      >
-        {pending ? "登录中..." : "进入工作台"}
-      </button>
+        <button
+          type="submit"
+          disabled={pending}
+          className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55"
+        >
+          {pending ? copy.pending : copy.submit}
+        </button>
+      </form>
+
+      {oauthEnabled ? (
+        <div className="grid gap-4">
+          <div className="auth-divider">{pageCopy.oauthDivider}</div>
+          <a href="/api/auth/github" className="auth-provider-button">
+            {pageCopy.github}
+          </a>
+        </div>
+      ) : null}
 
       {error ? (
         <p className="text-sm text-[#bf2f2f]">{error}</p>
+      ) : oauthError ? (
+        <p className="text-sm text-[#bf2f2f]">{copy.error}</p>
       ) : (
-        <p className="text-sm leading-7 text-muted-foreground">
-          登录后将直接进入统一工作台。
-        </p>
+        <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
       )}
-    </form>
+
+      <p className="text-sm leading-7 text-muted-foreground">
+        {pageCopy.registerLink} {" "}
+        <Link href="/register" className="auth-inline-link">
+          {pageCopy.registerCta}
+        </Link>
+      </p>
+    </div>
   );
 }

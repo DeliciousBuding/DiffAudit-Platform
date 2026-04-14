@@ -13,9 +13,13 @@
 ## Verification
 
 - [ ] `python scripts/run_local_checks.py --fast`
-- [ ] `python scripts/run_local_checks.py`
+
+## Figma
+
+- Figma file link:
+- Node / page:
+- Screenshot attached: yes / no
 
 ## Notes
 
 - Risk / follow-up items
-- Screenshots or sample payloads when relevant
