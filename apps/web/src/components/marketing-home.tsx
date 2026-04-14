@@ -248,7 +248,7 @@ const HOME_COPY: Record<
       },
     },
     hero: {
-      title: ["模型上线之前", "审清它的训练记忆。"],
+      title: ["让隐私风险无处可藏", "让合规分析有迹可循"],
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",
       secondaryCta: "查看能力范围",

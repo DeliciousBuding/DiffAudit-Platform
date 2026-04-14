@@ -50,11 +50,21 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      createTaskButton: string;
       sections: {
-        recommendedContracts: string;
-        runningJobs: string;
-        recentResults: string;
+        activeTasks: string;
+        taskHistory: string;
       };
+      taskTable: {
+        name: string;
+        model: string;
+        type: string;
+        status: string;
+        created: string;
+        duration: string;
+        action: string;
+      };
+      createTask: string;
       recommendedWorkspace: string;
       createJob: string;
       updatedAt: string;
@@ -63,6 +73,8 @@ export const WORKSPACE_COPY: Record<
       emptyContracts: string;
       emptyJobs: string;
       emptyResults: string;
+      emptyTasks: string;
+      emptyHistory: string;
       filters: {
         statusAll: string;
         statusCompleted: string;
@@ -74,6 +86,58 @@ export const WORKSPACE_COPY: Record<
         trackWhiteBox: string;
         searchPlaceholder: string;
         activeFilters: string;
+      };
+    };
+    createTask: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      backToTasks: string;
+      steps: {
+        step1Label: string;
+        step1Title: string;
+        step1Desc: string;
+        step2Label: string;
+        step2Title: string;
+        step2Desc: string;
+        step3Label: string;
+        step3Title: string;
+        step3Desc: string;
+        step4Label: string;
+        step4Title: string;
+        step4Desc: string;
+      };
+      attackTypes: {
+        blackBoxTitle: string;
+        blackBoxDesc: string;
+        blackBoxNote: string;
+        grayBoxTitle: string;
+        grayBoxDesc: string;
+        grayBoxNote: string;
+        whiteBoxTitle: string;
+        whiteBoxDesc: string;
+        whiteBoxNote: string;
+      };
+      labels: {
+        selectModel: string;
+        modelPlaceholder: string;
+        rounds: string;
+        batchSize: string;
+        adaptiveSampling: string;
+        adaptiveSamplingNote: string;
+        reviewSummary: string;
+        reviewAttackType: string;
+        reviewModel: string;
+        reviewRounds: string;
+        reviewBatchSize: string;
+        reviewAdaptiveSampling: string;
+        reviewEstTime: string;
+        submitButton: string;
+        submitting: string;
+        successTitle: string;
+        successBody: string;
+        goToTasks: string;
+        disabled: string;
       };
     };
     reports: {
@@ -213,13 +277,23 @@ export const WORKSPACE_COPY: Record<
     },
     audits: {
       eyebrow: "Audits",
-      title: "Create jobs, track runs, review results.",
-      description: "The audit flow organizes around contracts, job queue, and result summaries.",
+      title: "Create tasks, track runs, review results.",
+      description: "Monitor running jobs and review task history. Create new audit tasks to get started.",
+      createTaskButton: "Create task",
       sections: {
-        recommendedContracts: "Recommended contracts",
-        runningJobs: "Running jobs",
-        recentResults: "Recent results",
+        activeTasks: "Active tasks",
+        taskHistory: "Task history",
       },
+      taskTable: {
+        name: "Task",
+        model: "Model",
+        type: "Type",
+        status: "Status",
+        created: "Created",
+        duration: "Duration",
+        action: "Action",
+      },
+      createTask: "Create task",
       recommendedWorkspace: "Recommended workspace",
       createJob: "Create job",
       updatedAt: "Updated",
@@ -228,6 +302,8 @@ export const WORKSPACE_COPY: Record<
       emptyContracts: "No contracts available. Check the catalog data source.",
       emptyJobs: "No running jobs.",
       emptyResults: "No audit results yet.",
+      emptyTasks: "No active tasks.",
+      emptyHistory: "No task history yet.",
       filters: {
         statusAll: "All",
         statusCompleted: "Completed",
@@ -239,6 +315,58 @@ export const WORKSPACE_COPY: Record<
         trackWhiteBox: "White-box/GSA",
         searchPlaceholder: "Search contract key or job ID",
         activeFilters: "active",
+      },
+    },
+    createTask: {
+      eyebrow: "New task",
+      title: "Create an audit task.",
+      description: "Select attack type, target model, and configure parameters to launch a new audit job.",
+      backToTasks: "Back to tasks",
+      steps: {
+        step1Label: "1",
+        step1Title: "Attack type",
+        step1Desc: "Choose the attack methodology.",
+        step2Label: "2",
+        step2Title: "Target model",
+        step2Desc: "Select the model to audit.",
+        step3Label: "3",
+        step3Title: "Parameters",
+        step3Desc: "Configure job parameters.",
+        step4Label: "4",
+        step4Title: "Review",
+        step4Desc: "Confirm and submit.",
+      },
+      attackTypes: {
+        blackBoxTitle: "Black-box / Recon",
+        blackBoxDesc: "Membership inference using score-based reconstruction. No access to model internals.",
+        blackBoxNote: "Recommended for initial risk assessment.",
+        grayBoxTitle: "Gray-box / PIA",
+        grayBoxDesc: "Privacy inference attack with partial model knowledge. Leverages intermediate representations.",
+        grayBoxNote: "Stronger signal when gradient access is available.",
+        whiteBoxTitle: "White-box / GSA",
+        whiteBoxDesc: "Gradient-structure attack with full model access. Maximum inference power.",
+        whiteBoxNote: "Requires full model weights and gradients.",
+      },
+      labels: {
+        selectModel: "Target model",
+        modelPlaceholder: "Select a model from catalog",
+        rounds: "Attack rounds",
+        batchSize: "Batch size",
+        adaptiveSampling: "Adaptive sampling",
+        adaptiveSamplingNote: "Dynamically adjust sampling based on intermediate results.",
+        reviewSummary: "Review the task configuration before submitting.",
+        reviewAttackType: "Attack type",
+        reviewModel: "Target model",
+        reviewRounds: "Rounds",
+        reviewBatchSize: "Batch size",
+        reviewAdaptiveSampling: "Adaptive sampling",
+        reviewEstTime: "Estimated time",
+        submitButton: "Submit task",
+        submitting: "Submitting...",
+        successTitle: "Task created successfully.",
+        successBody: "Your audit job has been queued. You will be redirected to the task list.",
+        goToTasks: "Go to task list",
+        disabled: "Not available",
       },
     },
     reports: {
@@ -406,12 +534,22 @@ export const WORKSPACE_COPY: Record<
     audits: {
       eyebrow: "审计流程",
       title: "创建任务、跟踪运行、查看结果。",
-      description: "审计流程页围绕合同项、任务队列和结果摘要组织。",
+      description: "监控运行中的任务，查看历史任务。创建新的审计任务以开始。",
+      createTaskButton: "创建任务",
       sections: {
-        recommendedContracts: "推荐合同项",
-        runningJobs: "运行中任务",
-        recentResults: "最近结果",
+        activeTasks: "活跃任务",
+        taskHistory: "历史任务",
       },
+      taskTable: {
+        name: "任务",
+        model: "模型",
+        type: "类型",
+        status: "状态",
+        created: "创建时间",
+        duration: "耗时",
+        action: "操作",
+      },
+      createTask: "创建任务",
       recommendedWorkspace: "推荐 workspace",
       createJob: "创建任务",
       updatedAt: "最近更新",
@@ -420,6 +558,8 @@ export const WORKSPACE_COPY: Record<
       emptyContracts: "暂无可用合同项。检查 catalog 数据源。",
       emptyJobs: "暂无运行中任务。",
       emptyResults: "暂无审计结果。",
+      emptyTasks: "暂无活跃任务。",
+      emptyHistory: "暂无历史任务。",
       filters: {
         statusAll: "全部",
         statusCompleted: "已完成",
@@ -431,6 +571,58 @@ export const WORKSPACE_COPY: Record<
         trackWhiteBox: "白盒/GSA",
         searchPlaceholder: "搜索合同项或任务 ID",
         activeFilters: "个筛选",
+      },
+    },
+    createTask: {
+      eyebrow: "新建任务",
+      title: "创建审计任务。",
+      description: "选择攻击类型、目标模型和配置参数以启动新的审计任务。",
+      backToTasks: "返回任务列表",
+      steps: {
+        step1Label: "1",
+        step1Title: "攻击类型",
+        step1Desc: "选择攻击方法。",
+        step2Label: "2",
+        step2Title: "目标模型",
+        step2Desc: "选择要审计的模型。",
+        step3Label: "3",
+        step3Title: "参数配置",
+        step3Desc: "配置任务参数。",
+        step4Label: "4",
+        step4Title: "确认提交",
+        step4Desc: "确认后提交任务。",
+      },
+      attackTypes: {
+        blackBoxTitle: "黑盒 / Recon",
+        blackBoxDesc: "基于分数重建的成员推断攻击，无需访问模型内部。",
+        blackBoxNote: "推荐用于初步风险评估。",
+        grayBoxTitle: "灰盒 / PIA",
+        grayBoxDesc: "具有部分模型知识的隐私推断攻击，利用中间表示。",
+        grayBoxNote: "当可获取梯度时信号更强。",
+        whiteBoxTitle: "白盒 / GSA",
+        whiteBoxDesc: "具有完整模型访问权限的梯度结构攻击，最强推断能力。",
+        whiteBoxNote: "需要完整的模型权重和梯度。",
+      },
+      labels: {
+        selectModel: "目标模型",
+        modelPlaceholder: "从目录中选择模型",
+        rounds: "攻击轮次",
+        batchSize: "批次大小",
+        adaptiveSampling: "自适应采样",
+        adaptiveSamplingNote: "根据中间结果动态调整采样。",
+        reviewSummary: "提交前确认任务配置。",
+        reviewAttackType: "攻击类型",
+        reviewModel: "目标模型",
+        reviewRounds: "轮次",
+        reviewBatchSize: "批次大小",
+        reviewAdaptiveSampling: "自适应采样",
+        reviewEstTime: "预计耗时",
+        submitButton: "提交任务",
+        submitting: "提交中...",
+        successTitle: "任务创建成功。",
+        successBody: "审计任务已加入队列，即将跳转到任务列表。",
+        goToTasks: "前往任务列表",
+        disabled: "不可用",
       },
     },
     reports: {
