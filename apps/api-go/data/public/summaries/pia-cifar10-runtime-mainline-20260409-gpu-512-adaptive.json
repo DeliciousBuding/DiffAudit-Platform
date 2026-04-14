@@ -1,0 +1,150 @@
+{
+  "artifact_paths": {
+    "adaptive_scores": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\adaptive-scores.json",
+    "scores": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\scores.json",
+    "summary": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\summary.json"
+  },
+  "attack_family": "pia",
+  "backend": null,
+  "contract_key": "gray-box/pia/cifar10-ddpm",
+  "method": "pia",
+  "metrics": {
+    "asr": 0.786133,
+    "auc": 0.841339,
+    "member_score_mean": -12.561312,
+    "nonmember_score_mean": -32.127502,
+    "threshold": -19.268509,
+    "tpr_at_0_1pct_fpr": 0.011719,
+    "tpr_at_1pct_fpr": 0.058594
+  },
+  "mode": "runtime-mainline",
+  "paper": "PIA_ICLR2024",
+  "raw": {
+    "adaptive_check": {
+      "aggregation": "mean",
+      "enabled": true,
+      "metrics": {
+        "asr": 0.786133,
+        "auc": 0.841339,
+        "member_score_mean": -12.561312,
+        "nonmember_score_mean": -32.127502,
+        "threshold": -19.268509,
+        "tpr_at_0_1pct_fpr": 0.011719,
+        "tpr_at_1pct_fpr": 0.058594
+      },
+      "query_repeats": 3,
+      "score_std": {
+        "member_mean": 0,
+        "nonmember_mean": 0
+      },
+      "status": "completed"
+    },
+    "artifact_paths": {
+      "adaptive_scores": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\adaptive-scores.json",
+      "scores": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\scores.json",
+      "summary": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\summary.json"
+    },
+    "asset_grade": "single-machine-real-asset",
+    "checks": {
+      "adaptive_scores_generated": true,
+      "checkpoint": true,
+      "dataset_layout": true,
+      "dataset_root": true,
+      "member_scores_generated": true,
+      "member_split": true,
+      "nonmember_scores_generated": true,
+      "runtime_probe_ready": true
+    },
+    "contract_stage": "target",
+    "cost": {
+      "adaptive_query_repeats": 3,
+      "attack_num": 30,
+      "batch_size": 8,
+      "device": "cuda:0",
+      "execution_mode": "single-device-serial",
+      "interval": 10,
+      "model_queries_per_sample": 31,
+      "queries_per_sample": 30,
+      "sample_count_per_split": 512,
+      "wall_clock_seconds": 212.993833
+    },
+    "defense": {
+      "dropout_activation_schedule": "off",
+      "enabled": false,
+      "late_step_threshold": 150,
+      "name": "none"
+    },
+    "defense_stage": "baseline",
+    "device": "cuda:0",
+    "evidence_level": "runtime-mainline",
+    "method": "pia",
+    "metrics": {
+      "asr": 0.786133,
+      "auc": 0.841339,
+      "member_score_mean": -12.561312,
+      "nonmember_score_mean": -32.127502,
+      "threshold": -19.268509,
+      "tpr_at_0_1pct_fpr": 0.011719,
+      "tpr_at_1pct_fpr": 0.058594
+    },
+    "mode": "runtime-mainline",
+    "notes": [
+      "Runtime mainline executes the current PIA DDPM path on canonical real assets.",
+      "Current evidence is suitable for a local baseline and must not be overstated as benchmark-ready."
+    ],
+    "paper": "PIA_ICLR2024",
+    "provenance_status": "workspace-verified",
+    "quality": {
+      "metrics": {
+        "fid": {
+          "feature_space": "rgb-channel-moments",
+          "official": false,
+          "value": 0.014127
+        },
+        "inception_score": {
+          "official": false,
+          "reason": "no classifier-backed surrogate quality model is wired into the current PIA runtime path",
+          "status": "not_computed",
+          "value": null
+        },
+        "lpips": {
+          "backbone": "none",
+          "distance": "root-mean-square",
+          "official": false,
+          "value": 0.188377
+        }
+      },
+      "notes": [
+        "Quality metrics are surrogate diagnostics over runtime batches, not paper-grade image generation metrics.",
+        "FID uses rgb-channel-moment features and LPIPS uses RMS image drift against the chosen reference batch."
+      ],
+      "official": false,
+      "reference": "input_batch",
+      "suite": "pia-runtime-surrogate-v1"
+    },
+    "runtime": {
+      "attack_num": 30,
+      "batch_size": 8,
+      "dataset_root": "D:/Code/DiffAudit/Research/workspaces/gray-box/assets/pia/datasets",
+      "elapsed_seconds": 212.993824,
+      "interval": 10,
+      "max_samples": 512,
+      "member_split_root": "external\\PIA\\DDPM",
+      "model_dir": "D:/Code/DiffAudit/Research/workspaces/gray-box/assets/pia/checkpoints/cifar10_ddpm",
+      "num_samples": 512,
+      "repo_root": "external\\PIA",
+      "weights_key": "ema_model"
+    },
+    "sample_count_per_split": 512,
+    "status": "ready",
+    "track": "gray-box",
+    "workspace": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive",
+    "workspace_name": "pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive"
+  },
+  "scheduler": null,
+  "status": "ready",
+  "summary_path": "D:\\Code\\DiffAudit\\Research\\workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive\\summary.json",
+  "target_key": "cifar10-ddpm",
+  "track": "gray-box",
+  "workspace": "workspaces\\gray-box\\runs\\pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive"
+}

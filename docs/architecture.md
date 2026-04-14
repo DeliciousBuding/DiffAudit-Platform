@@ -32,6 +32,42 @@
 1. 发现能力：知道当前三线有哪些可展示、可读取、可执行的合同项
 2. 消费证据：读取最佳证据或任务状态，而不是自己解释实验目录
 
+## Public Read Plane vs Control Plane
+
+公网运行时必须把“展示态”和“控制态”分开。
+
+### Public read plane
+
+- owner: `Platform/apps/api-go`
+- source: `apps/api-go/data/public/*`
+- consumer pages:
+  - `/workspace`
+  - `/workspace/reports`
+  - `/workspace/settings`
+  - `/workspace/audits` 的推荐合同项与最近结果区
+
+约束：
+
+- 展示态默认只读 `gz2` 本地 snapshot
+- 公网请求路径里不再把 `Local-API` 当成展示页实时读源
+- snapshot 缺失时应返回明确 `503 snapshot unavailable`，而不是静默回退到 live `Local-API`
+
+### Control plane
+
+- owner: `Services/Local-API`
+- public entry: `Platform/apps/api-go`
+- live routes:
+  - `GET /api/v1/audit/job-template`
+  - `GET /api/v1/audit/jobs`
+  - `POST /api/v1/audit/jobs`
+  - `GET /api/v1/audit/jobs/{job_id}`
+
+约束：
+
+- 只有审计控制面动作才允许连接 `Local-API`
+- `apps/web` 不应直接跨机连接 `Local-API`
+- 控制面失败可以让 jobs 区块报错，但不能拖垮工作台展示页首包
+
 ## 第一性原理约束
 
 统一三线不等于把三条线伪装成“已经一样可运行”。

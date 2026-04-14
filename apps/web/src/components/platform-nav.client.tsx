@@ -21,6 +21,7 @@ export function PlatformNavDesktop({ locale = "en-US" }: { locale?: Locale }) {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             aria-current={active ? "page" : undefined}
             className={`workspace-nav-link ${active ? "is-active" : ""}`}
           >
@@ -51,6 +52,7 @@ export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             aria-current={active ? "page" : undefined}
             className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-2 text-center text-[11px] font-bold transition-all duration-150 ${
               active

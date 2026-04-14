@@ -1,12 +1,17 @@
 param(
     [string]$ListenHost = "127.0.0.1",
     [string]$ListenPort = "8780",
-    [string]$ResearchAPIBaseURL = "http://127.0.0.1:8765"
+    [string]$PublicDataDir,
+    [string]$ControlAPIBaseURL = "http://127.0.0.1:8765"
 )
 
 $ErrorActionPreference = "Stop"
 
 $serviceRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+if (-not $PublicDataDir) {
+    $PublicDataDir = Join-Path $serviceRoot "data\public"
+}
 
 $existing = Get-NetTCPConnection -LocalPort ([int]$ListenPort) -ErrorAction SilentlyContinue |
     Where-Object { $_.State -eq "Listen" }
@@ -23,7 +28,8 @@ try {
     go run ./cmd/platform-api `
         --host $ListenHost `
         --port $ListenPort `
-        --research-api-base-url $ResearchAPIBaseURL
+        --public-data-dir $PublicDataDir `
+        --control-api-base-url $ControlAPIBaseURL
 }
 finally {
     Pop-Location

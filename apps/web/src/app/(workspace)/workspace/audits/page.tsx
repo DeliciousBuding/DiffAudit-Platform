@@ -1,20 +1,19 @@
 import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
-import { fetchAuditJobs } from "@/lib/audit-jobs";
 import { fetchCatalogDashboard } from "@/lib/catalog";
 import { readServerLocale } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspacePage } from "@/components/workspace-page";
 import { CreateJobButton } from "@/components/create-job-button";
+import { LiveJobsPanel } from "@/components/live-jobs-panel";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale } = {}) {
   const resolvedLocale = locale ?? await readServerLocale();
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
-  const [catalog, table, jobs] = await Promise.all([
+  const [catalog, table] = await Promise.all([
     fetchCatalogDashboard(),
     fetchAttackDefenseTable(),
-    fetchAuditJobs(),
   ]);
 
   const recommendedContracts =
@@ -71,40 +70,8 @@ export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale 
 
         <section className="surface-card p-6">
           <div className="caption">{copy.sections.runningJobs}</div>
-          <div className="mt-5 space-y-4">
-            {jobs && jobs.length > 0 ? (
-              jobs.map((job) => (
-                <article
-                  key={job.jobId}
-                  className="rounded-[22px] border border-border bg-white/55 p-4"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="text-base font-medium">{job.jobId}</div>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {job.workspaceName}
-                      </p>
-                    </div>
-                    <StatusBadge tone={job.statusTone}>{job.status}</StatusBadge>
-                  </div>
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
-                      {job.contractKey}
-                    </div>
-                    <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
-                      {copy.updatedAt} {job.updatedAtLabel}
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                    {job.error || job.summaryPath}
-                  </p>
-                </article>
-              ))
-            ) : (
-              <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-                {copy.emptyJobs}
-              </div>
-            )}
+          <div className="mt-5">
+            <LiveJobsPanel locale={resolvedLocale} />
           </div>
         </section>
       </div>

@@ -45,6 +45,8 @@ export const WORKSPACE_COPY: Record<
       recommendedWorkspace: string;
       createJob: string;
       updatedAt: string;
+      jobsRefreshNote: string;
+      jobsUnavailable: string;
       emptyContracts: string;
       emptyJobs: string;
       emptyResults: string;
@@ -178,6 +180,8 @@ export const WORKSPACE_COPY: Record<
       recommendedWorkspace: "Recommended workspace",
       createJob: "Create job",
       updatedAt: "Updated",
+      jobsRefreshNote: "Running jobs refresh after the page loads.",
+      jobsUnavailable: "Control plane unavailable. Live jobs will return after the gateway reconnects.",
       emptyContracts: "No contracts available. Check the catalog data source.",
       emptyJobs: "No running jobs.",
       emptyResults: "No audit results yet.",
@@ -314,6 +318,8 @@ export const WORKSPACE_COPY: Record<
       recommendedWorkspace: "推荐 workspace",
       createJob: "创建任务",
       updatedAt: "最近更新",
+      jobsRefreshNote: "运行中任务将在页面载入后刷新。",
+      jobsUnavailable: "控制面暂时不可达。网关恢复后会重新显示实时任务。",
       emptyContracts: "暂无可用合同项。检查 catalog 数据源。",
       emptyJobs: "暂无运行中任务。",
       emptyResults: "暂无审计结果。",

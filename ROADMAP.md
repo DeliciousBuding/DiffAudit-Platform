@@ -15,6 +15,19 @@
 
 ## 2026 Q2 重点
 
+### 0. 公网运行面收口
+
+- 把公网读路径固定为：
+  - `apps/web -> apps/api-go -> gz2 snapshot`
+- 把 `Local-API` 收回控制面：
+  - `job-template`
+  - `jobs list`
+  - `create job`
+  - `job detail`
+- 工作台默认展示页不再依赖跨机 `Local-API` 在线
+- 完成 `apps/api-go/data/public` 的 snapshot 发布流程与运行手册
+- 让 `apps/api-go` 在公网运行时真正归位，而不是只留在仓库和文档里
+
 ### 1. 首页与品牌
 
 - 把首页文案稳定在中英双语结构里，后续补齐英文精修稿
