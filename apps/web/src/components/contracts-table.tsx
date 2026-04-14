@@ -30,8 +30,8 @@ export function ContractsTable({ contracts, locale }: ContractsTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-xs">
-        <thead>
-          <tr className="border-b border-border bg-muted/30">
+        <thead className="sticky top-0 bg-muted/30">
+          <tr className="border-b border-border">
             <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Contract</th>
             <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Status</th>
             <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">System Gap</th>
@@ -43,12 +43,12 @@ export function ContractsTable({ contracts, locale }: ContractsTableProps) {
           {contracts.map((entry, index) => (
             <tr
               key={entry.contractKey}
-              className={`border-b border-border transition-colors hover:bg-muted/30 ${
+              className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
                 index % 2 === 0 ? "bg-background" : "bg-muted/10"
               }`}
             >
               <td className="px-3 py-2">
-                <div className="font-medium text-sm">{entry.label}</div>
+                <div className="font-medium">{entry.label}</div>
                 <div className="mono mt-0.5 text-[10px] text-muted-foreground">{entry.contractKey}</div>
               </td>
               <td className="px-3 py-2">

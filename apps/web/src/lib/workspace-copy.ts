@@ -28,10 +28,20 @@ export const WORKSPACE_COPY: Record<
         liveContractsNote: string;
         defendedRowsLabel: string;
         defendedRowsNote: string;
+        avgAucLabel: string;
+        avgAucNote: string;
+        defenseEvaluatedLabel: string;
+        defenseEvaluatedNote: string;
       };
       sections: {
         tasks: string;
         recentResults: string;
+        riskOverview: string;
+      };
+      riskInterpretations: {
+        high: string;
+        medium: string;
+        low: string;
       };
       todoItems: string[];
       emptyResults: string;
@@ -71,6 +81,11 @@ export const WORKSPACE_COPY: Record<
       title: string;
       description: string;
       sections: Array<{ title: string; copy: string }>;
+      systemStatus: { title: string; runtime: string; demoMode: string; demoOn: string; demoOff: string };
+      auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string };
+      account: { title: string; username: string; logout: string };
+      errorPage: { title: string; description: string; retry: string; goHome: string };
+      notFound: { title: string; description: string; goHome: string };
     };
     loginPage: {
       eyebrow: string;
@@ -162,10 +177,20 @@ export const WORKSPACE_COPY: Record<
         liveContractsNote: "Available contracts in the catalog.",
         defendedRowsLabel: "Defended rows",
         defendedRowsNote: "Result rows with defense comparisons.",
+        avgAucLabel: "Avg. Attack AUC",
+        avgAucNote: "Mean AUC across all evaluated rows",
+        defenseEvaluatedLabel: "Defense Evaluated",
+        defenseEvaluatedNote: "total audit results",
       },
       sections: {
         tasks: "Current tasks",
         recentResults: "Recent results",
+        riskOverview: "Risk distribution",
+      },
+      riskInterpretations: {
+        high: "Member signal remains strong. Review defense comparison.",
+        medium: "Partial signal leakage. Consider additional defenses.",
+        low: "Attack near random guessing. Privacy protection effective.",
       },
       todoItems: [
         "Review parameters and data sources for the current audit run.",
@@ -213,6 +238,35 @@ export const WORKSPACE_COPY: Record<
         { title: "API keys", copy: "Keep service endpoints, API keys, and access boundaries in one place." },
         { title: "Preferences", copy: "Save language, page defaults, and report presentation preferences." },
       ],
+      systemStatus: {
+        title: "System status",
+        runtime: "Runtime connection",
+        demoMode: "Demo mode",
+        demoOn: "On",
+        demoOff: "Off",
+      },
+      auditConfig: {
+        title: "Audit defaults",
+        defaultRounds: "Default attack rounds",
+        defaultBatchSize: "Default batch size",
+        saved: "Saved",
+      },
+      account: {
+        title: "Account",
+        username: "Current user",
+        logout: "Sign out",
+      },
+      errorPage: {
+        title: "Something went wrong",
+        description: "An unexpected error occurred. You can try again or return to the workspace.",
+        retry: "Retry",
+        goHome: "Return to workspace",
+      },
+      notFound: {
+        title: "Page not found",
+        description: "The page you are looking for does not exist or has been moved.",
+        goHome: "Return to workspace",
+      },
     },
     loginPage: {
       eyebrow: "Sign in",
@@ -295,14 +349,18 @@ export const WORKSPACE_COPY: Record<
       { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥与偏好", shortLabel: "设置" },
     ],
     workspace: {
-      eyebrow: "Workspace",
+      eyebrow: "工作台",
       title: "待办、审计结果和关键指标。",
       description: "工作台首页汇总当前任务、最近结果和系统状态。",
       kpis: {
-        liveContractsLabel: "Live contracts",
+        liveContractsLabel: "活跃合同",
         liveContractsNote: "Catalog 中可用的合同项数量。",
-        defendedRowsLabel: "Defended rows",
+        defendedRowsLabel: "已防御行",
         defendedRowsNote: "包含防御对照的结果行数。",
+        avgAucLabel: "平均攻击 AUC",
+        avgAucNote: "所有评估行的 AUC 均值",
+        defenseEvaluatedLabel: "防御评估",
+        defenseEvaluatedNote: "总审计结果数",
       },
       sections: {
         tasks: "当前待办",
@@ -316,7 +374,7 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "暂无审计结果。前往审计页创建任务。",
     },
     audits: {
-      eyebrow: "Audits",
+      eyebrow: "审计流程",
       title: "创建任务、跟踪运行、查看结果。",
       description: "审计流程页围绕合同项、任务队列和结果摘要组织。",
       sections: {
@@ -334,7 +392,7 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "暂无审计结果。",
     },
     reports: {
-      eyebrow: "Reports",
+      eyebrow: "报告",
       title: "结果汇总、覆盖缺口与报告导出。",
       description: "报告页汇总审计结果、识别覆盖缺口并支持导出。",
       sections: {
@@ -346,7 +404,7 @@ export const WORKSPACE_COPY: Record<
       emptyGaps: "暂无覆盖缺口数据。",
     },
     settings: {
-      eyebrow: "Settings",
+      eyebrow: "设置",
       title: "团队、密钥和个人偏好。",
       description: "设置页管理团队成员、API 密钥和工作台偏好。",
       sections: [
@@ -354,6 +412,35 @@ export const WORKSPACE_COPY: Record<
         { title: "API 密钥", copy: "集中维护服务地址、API 密钥和访问边界。" },
         { title: "工作台偏好", copy: "保存默认语言、页面偏好和报告展示方式。" },
       ],
+      systemStatus: {
+        title: "系统状态",
+        runtime: "Runtime 连接",
+        demoMode: "演示模式",
+        demoOn: "开启",
+        demoOff: "关闭",
+      },
+      auditConfig: {
+        title: "审计默认配置",
+        defaultRounds: "默认攻击轮次",
+        defaultBatchSize: "默认 batch size",
+        saved: "已保存",
+      },
+      account: {
+        title: "账户",
+        username: "当前用户",
+        logout: "退出登录",
+      },
+      errorPage: {
+        title: "出错了",
+        description: "发生了意外错误。你可以重试或返回工作台。",
+        retry: "重试",
+        goHome: "返回工作台",
+      },
+      notFound: {
+        title: "页面未找到",
+        description: "你访问的页面不存在或已被移动。",
+        goHome: "返回工作台",
+      },
     },
     loginPage: {
       eyebrow: "登录",

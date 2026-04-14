@@ -59,8 +59,8 @@ describe("WorkspaceHomePage", () => {
     expect(markup).toContain("当前待办");
     expect(markup).toContain("最近结果");
     expect(markup).toContain("PIA GPU512 baseline");
-    expect(markup).toContain("Live contracts");
-    expect(markup).toContain("Defended rows");
+    expect(markup).toContain("活跃合同");
+    expect(markup).toContain("已防御行");
   });
 
   it("renders en-US copy when backend data is unavailable", async () => {

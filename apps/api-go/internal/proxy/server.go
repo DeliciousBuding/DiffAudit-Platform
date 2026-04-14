@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	defaultRuntimeTimeout = 5000 * time.Millisecond
+	defaultRuntimeTimeout = 15000 * time.Millisecond
 	maxRetries            = 3
 	retryDelay            = 1 * time.Second
 )
@@ -174,6 +174,10 @@ func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Requ
 }
 
 func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Request) {
+	if s.config.DemoMode {
+		s.handleDemoControlGet(writer, request)
+		return
+	}
 	s.forwardControl(writer, request, nil)
 }
 
@@ -191,6 +195,47 @@ func (s *Server) handleControlPost(writer http.ResponseWriter, request *http.Req
 	}
 
 	s.forwardControl(writer, request, body)
+}
+
+func (s *Server) handleDemoControlGet(writer http.ResponseWriter, request *http.Request) {
+	path := request.URL.Path
+
+	switch {
+	// GET /api/v1/audit/job-template
+	case path == "/api/v1/audit/job-template" || strings.HasSuffix(path, "/job-template"):
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"contract_key": "black-box/recon/sd15-ddim",
+			"job_type":     "attack",
+			"parameters": map[string]any{
+				"num_steps":      50,
+				"guidance_scale": 7.5,
+			},
+			"demo_mode": true,
+		})
+
+	// GET /api/v1/audit/jobs/{jobID}
+	case strings.Contains(path, "/jobs/") && !strings.HasSuffix(path, "/jobs"):
+		jobID := request.PathValue("jobID")
+		if jobID == "" {
+			// Fallback: extract from path
+			parts := strings.Split(strings.TrimSuffix(path, "/"), "/")
+			jobID = parts[len(parts)-1]
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"job_id":       jobID,
+			"status":       "completed",
+			"demo_mode":    true,
+			"result":       "Demo mode: job result placeholder",
+		})
+
+	// GET /api/v1/audit/jobs
+	default:
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"jobs":      []any{},
+			"total":     0,
+			"demo_mode": true,
+		})
+	}
 }
 
 func (s *Server) serveSnapshot(writer http.ResponseWriter, path string) {
@@ -297,11 +342,28 @@ func (s *Server) doWithRetry(request *http.Request, maxAttempts int) (*http.Resp
 			return response, nil
 		}
 		lastErr = err
-		if attempt < maxAttempts {
-			time.Sleep(retryDelay)
+
+		// Only retry on transient network errors, not for successful responses or client errors.
+		// Retry is safe for GET (idempotent) and for transient failures (timeout, connection reset).
+		isRetryable := isRetryableError(err)
+		if !isRetryable || attempt >= maxAttempts {
+			break
 		}
+		time.Sleep(retryDelay)
 	}
 	return nil, lastErr
+}
+
+// isRetryableError returns true for transient network errors that are safe to retry.
+func isRetryableError(err error) bool {
+	errStr := err.Error()
+	return strings.Contains(errStr, "timeout") ||
+		strings.Contains(errStr, "deadline exceeded") ||
+		strings.Contains(errStr, "connection reset") ||
+		strings.Contains(errStr, "connection refused") ||
+		strings.Contains(errStr, "no such host") ||
+		strings.Contains(errStr, "server misbehaving") ||
+		strings.Contains(errStr, "unexpected EOF")
 }
 
 func normalizeWorkspaceKey(value string) string {

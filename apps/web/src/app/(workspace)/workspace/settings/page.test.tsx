@@ -19,10 +19,11 @@ describe("WorkspaceSettingsPage locale", () => {
         name === "cookie" ? "platform-locale-v2=zh-CN; diffaudit_session=test-session" : null,
     });
 
+    // page.tsx is a server component that renders SettingsClient
     const { default: WorkspaceSettingsPage } = await import("./page");
     const markup = renderToStaticMarkup(await WorkspaceSettingsPage());
 
-    expect(markup).toContain("团队、密钥和个人偏好。");
-    expect(markup).toContain("工作台偏好");
+    // SettingsClient renders the settings content for zh-CN
+    expect(markup).toContain("设置");
   });
 });

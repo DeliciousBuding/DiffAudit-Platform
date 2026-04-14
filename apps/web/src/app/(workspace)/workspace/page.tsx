@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 
 import { type Locale } from "@/components/language-picker";
@@ -6,10 +7,11 @@ import { fetchCatalogDashboard } from "@/lib/catalog";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
 
 function KpiCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="border border-border bg-card p-3">
+    <div className="rounded-lg border border-border bg-card p-3">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-1.5 text-2xl font-semibold leading-none">{value}</div>
       <p className="mt-1 text-[10px] text-muted-foreground leading-tight">{note}</p>
@@ -17,9 +19,9 @@ function KpiCard({ label, value, note }: { label: string; value: string; note: s
   );
 }
 
-export default async function WorkspaceHomePage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
-  const copy = WORKSPACE_COPY[resolvedLocale].workspace;
+/** Async server component that fetches and renders the KPI + table data */
+async function WorkspaceData({ locale }: { locale: Locale }) {
+  const copy = WORKSPACE_COPY[locale].workspace;
   const [catalog, table] = await Promise.all([
     fetchCatalogDashboard(),
     fetchAttackDefenseTable(),
@@ -38,20 +40,13 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
   const totalRows = table?.stats.total ?? 0;
 
   return (
-    <div className="space-y-4">
-      {/* Page header */}
-      <div className="border-b border-border pb-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-        <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
-      </div>
-
+    <>
       {/* KPI row */}
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <KpiCard label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} />
         <KpiCard label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} />
-        <KpiCard label="Avg. Attack AUC" value={avgAuc} note="Mean AUC across all evaluated rows" />
-        <KpiCard label="Defense Evaluated" value={String(defendedRows)} note={`${totalRows} total audit results`} />
+        <KpiCard label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} />
+        <KpiCard label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
       </div>
 
       {/* Main content grid */}
@@ -80,7 +75,7 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
                   {recentRows.map((row, index) => (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}`}
-                      className={`border-b border-border transition-colors hover:bg-muted/30 ${
+                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
                         index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
                     >
@@ -111,7 +106,7 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
               {copy.sections.tasks}
             </h2>
           </div>
-          <div className="p-3 space-y-0">
+          <div className="p-3">
             {copy.todoItems.map((item, index) => (
               <div key={item} className="flex items-start gap-2 border-b border-border py-2 last:border-0">
                 <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[9px] font-semibold rounded-sm">
@@ -123,6 +118,42 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
           </div>
         </section>
       </div>
+    </>
+  );
+}
+
+export default async function WorkspaceHomePage({ locale }: { locale?: Locale } = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+  const copy = WORKSPACE_COPY[resolvedLocale].workspace;
+
+  return (
+    <div className="space-y-4">
+      {/* Page header */}
+      <div className="border-b border-border pb-3">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
+        <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
+      </div>
+
+      <Suspense fallback={
+        <>
+          <KpiRowSkeleton />
+          <div className="grid gap-3 lg:grid-cols-3">
+            <div className="lg:col-span-2 border border-border bg-card">
+              <TableSkeleton rows={10} cols={6} />
+            </div>
+            <div className="border border-border bg-card">
+              <div className="p-3 space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-4 animate-pulse rounded bg-muted/30" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      }>
+        <WorkspaceData locale={resolvedLocale} />
+      </Suspense>
     </div>
   );
 }

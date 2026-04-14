@@ -45,9 +45,10 @@ function statusTone(status: string): AuditJobViewModel["statusTone"] {
   return "primary";
 }
 
-function formatUpdatedAt(value: string | null | undefined) {
+function formatUpdatedAt(value: string | null | undefined, locale: Locale) {
   if (!value) {
-    return "刚刚更新";
+    const copy = WORKSPACE_COPY[locale].audits;
+    return copy.updatedAt;
   }
 
   const date = new Date(value);
@@ -55,17 +56,18 @@ function formatUpdatedAt(value: string | null | undefined) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("zh-CN", {
+  const tag = locale === "zh-CN" ? "zh-CN" : "en-US";
+  return new Intl.DateTimeFormat(tag, {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "Asia/Hong_Kong",
   }).format(date);
 }
 
-function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[] {
+function summarizeAuditJobs(jobs: AuditJobPayload[], locale: Locale): AuditJobViewModel[] {
+  const copy = WORKSPACE_COPY[locale].audits;
   const normalized = jobs
     .flatMap((job) => {
       if (
@@ -96,9 +98,9 @@ function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[] {
       status: job.status,
       statusTone: statusTone(job.status),
       contractKey: job.contract_key,
-      workspaceName: job.workspace_name ?? "pending workspace",
-      updatedAtLabel: formatUpdatedAt(job.updated_at),
-      summaryPath: job.summary_path ?? "运行完成后会显示 summary 路径。",
+      workspaceName: job.workspace_name ?? copy.recommendedWorkspace,
+      updatedAtLabel: formatUpdatedAt(job.updated_at, locale),
+      summaryPath: job.summary_path ?? copy.updatedAt,
       error: job.error ?? "",
     }));
 
@@ -126,7 +128,7 @@ export function JobsList({ locale = "en-US" }: { locale?: Locale }) {
         }
 
         if (!cancelled) {
-          const jobs = summarizeAuditJobs(payload as AuditJobPayload[]);
+          const jobs = summarizeAuditJobs(payload as AuditJobPayload[], locale);
           setState({ kind: "ready", jobs });
 
           // Auto-stop polling when all jobs are completed or failed
@@ -149,8 +151,7 @@ export function JobsList({ locale = "en-US" }: { locale?: Locale }) {
       cancelled = true;
       if (intervalId) clearInterval(intervalId);
     };
-  }, []);
-
+  }, [locale]);
   if (state.kind === "loading") {
     return (
       <div className="px-3 py-4 text-xs text-muted-foreground text-center">

@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 
+import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
 type AuditToolbarProps = {
   onRefresh?: () => void;
-  locale?: string;
+  locale?: Locale;
 };
 
-export function AuditToolbar({ onRefresh }: AuditToolbarProps) {
+export function AuditToolbar({ onRefresh, locale = "en-US" }: AuditToolbarProps) {
+  const copy = WORKSPACE_COPY[locale].audits;
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -20,7 +24,7 @@ export function AuditToolbar({ onRefresh }: AuditToolbarProps) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-border bg-muted/20 px-4 py-2.5">
       <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-foreground">审计控制台</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</span>
         <div className="h-4 w-px bg-border" />
         <div className="flex items-center gap-2">
           <button
@@ -30,13 +34,13 @@ export function AuditToolbar({ onRefresh }: AuditToolbarProps) {
             className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-2.5 py-1 text-xs font-medium transition-colors hover:bg-muted/40 disabled:opacity-50"
           >
             <span className={isRefreshing ? "animate-spin" : ""}>↻</span>
-            刷新
+            {copy.updatedAt}
           </button>
         </div>
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="inline-flex h-2 w-2 rounded-full bg-success animate-pulse" />
-        实时监控
+        <span className="inline-flex h-1.5 w-1.5 rounded-full bg-info animate-pulse" />
+        {copy.jobsRefreshNote}
       </div>
     </div>
   );
