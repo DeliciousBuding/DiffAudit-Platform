@@ -2,6 +2,8 @@
 
 `Platform` 是 DiffAudit 的唯一产品主线仓库。
 
+公网地址：`https://diffaudit.vectorcontrol.tech/`
+
 当前仓库承载：
 
 - 单站前端：`apps/web`
