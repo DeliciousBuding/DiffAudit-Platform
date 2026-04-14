@@ -4,7 +4,7 @@ export type RiskLevel = "high" | "medium" | "low";
 
 export function classifyRisk(auc: number): RiskLevel {
   if (auc > 0.85) return "high";
-  if (auc > 0.65) return "medium";
+  if (auc >= 0.65) return "medium";
   return "low";
 }
 

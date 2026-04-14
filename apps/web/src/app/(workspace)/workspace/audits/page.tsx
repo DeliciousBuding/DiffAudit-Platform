@@ -9,6 +9,7 @@ import { ContractsTable } from "@/components/contracts-table";
 import { JobsList } from "@/components/jobs-list";
 import { ResultsTable } from "@/components/results-table";
 import { AuditToolbar } from "@/components/audit-toolbar";
+import { AuditFilters, type AuditFilterState } from "@/components/audit-filters";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";
 
@@ -66,9 +67,10 @@ export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale 
         <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
       </div>
 
-      {/* Toolbar */}
+      {/* Toolbar + Filters */}
       <div className="border border-border bg-card">
         <AuditToolbar locale={resolvedLocale} />
+        <AuditFilters locale={resolvedLocale} />
       </div>
 
       {/* Content grid */}

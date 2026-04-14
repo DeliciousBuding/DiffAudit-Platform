@@ -63,6 +63,18 @@ export const WORKSPACE_COPY: Record<
       emptyContracts: string;
       emptyJobs: string;
       emptyResults: string;
+      filters: {
+        statusAll: string;
+        statusCompleted: string;
+        statusFailed: string;
+        statusRunning: string;
+        trackAll: string;
+        trackBlackBox: string;
+        trackGrayBox: string;
+        trackWhiteBox: string;
+        searchPlaceholder: string;
+        activeFilters: string;
+      };
     };
     reports: {
       eyebrow: string;
@@ -216,6 +228,18 @@ export const WORKSPACE_COPY: Record<
       emptyContracts: "No contracts available. Check the catalog data source.",
       emptyJobs: "No running jobs.",
       emptyResults: "No audit results yet.",
+      filters: {
+        statusAll: "All",
+        statusCompleted: "Completed",
+        statusFailed: "Failed",
+        statusRunning: "Running",
+        trackAll: "All tracks",
+        trackBlackBox: "Black-box/Recon",
+        trackGrayBox: "Gray-box/PIA",
+        trackWhiteBox: "White-box/GSA",
+        searchPlaceholder: "Search contract key or job ID",
+        activeFilters: "active",
+      },
     },
     reports: {
       eyebrow: "Reports",
@@ -365,6 +389,12 @@ export const WORKSPACE_COPY: Record<
       sections: {
         tasks: "当前待办",
         recentResults: "最近结果",
+        riskOverview: "风险分布",
+      },
+      riskInterpretations: {
+        high: "成员推断信号仍然较强，建议对比防御效果。",
+        medium: "存在部分信号泄露，建议增加防御策略。",
+        low: "攻击接近随机猜测，隐私保护有效。",
       },
       todoItems: [
         "检查本轮审计任务的参数与数据源。",
@@ -390,6 +420,18 @@ export const WORKSPACE_COPY: Record<
       emptyContracts: "暂无可用合同项。检查 catalog 数据源。",
       emptyJobs: "暂无运行中任务。",
       emptyResults: "暂无审计结果。",
+      filters: {
+        statusAll: "全部",
+        statusCompleted: "已完成",
+        statusFailed: "已失败",
+        statusRunning: "运行中",
+        trackAll: "全部轨道",
+        trackBlackBox: "黑盒/Recon",
+        trackGrayBox: "灰盒/PIA",
+        trackWhiteBox: "白盒/GSA",
+        searchPlaceholder: "搜索合同项或任务 ID",
+        activeFilters: "个筛选",
+      },
     },
     reports: {
       eyebrow: "报告",

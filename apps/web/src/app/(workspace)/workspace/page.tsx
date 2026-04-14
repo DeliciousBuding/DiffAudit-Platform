@@ -8,6 +8,7 @@ import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
+import { classifyRisk } from "@/lib/risk-report";
 
 function KpiCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
@@ -39,6 +40,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     : "n/a";
   const totalRows = table?.stats.total ?? 0;
 
+  const riskCounts = { high: 0, medium: 0, low: 0 };
+  for (const row of table?.rows ?? []) {
+    const auc = parseFloat(row.aucLabel);
+    if (!isNaN(auc)) {
+      riskCounts[classifyRisk(auc)]++;
+    }
+  }
+  const totalRisk = riskCounts.high + riskCounts.medium + riskCounts.low;
+
   return (
     <>
       {/* KPI row */}
@@ -48,6 +58,39 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <KpiCard label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} />
         <KpiCard label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
       </div>
+
+      {/* Risk distribution */}
+      {totalRisk > 0 && (
+        <div className="grid gap-3 grid-cols-3">
+          <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[#ff5f46]">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              High risk
+            </div>
+            <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
+            <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              {copy.riskInterpretations.high}
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[#b67619]">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Medium risk
+            </div>
+            <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
+            <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              {copy.riskInterpretations.medium}
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[#157a52]">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Low risk
+            </div>
+            <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
+            <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              {copy.riskInterpretations.low}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main content grid */}
       <div className="grid gap-3 lg:grid-cols-3">
