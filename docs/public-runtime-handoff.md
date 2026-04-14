@@ -10,7 +10,7 @@
 - Runtime host: `gz2`
 - Public app owner: `Platform/apps/web`
 - Backend gateway: `Platform/apps/api-go`
-- Control-plane upstream: `Services/Local-API`（Runtime）
+- Control-plane upstream: `Runtime-Server`（Runtime）
 
 当前请求链：
 
@@ -22,7 +22,7 @@
 4. `gz2` runs one web service for `/`, `/login`, `/trial`, `/workspace*`, `/api/auth/*`
 5. `Platform/apps/web` points `DIFFAUDIT_API_BASE_URL` to local `apps/api-go`
 6. `Platform/apps/api-go` serves snapshot-backed read routes from `apps/api-go/data/public/*`
-7. `Platform/apps/api-go` forwards only audit control-plane routes to `Services/Local-API`（Runtime）
+7. `Platform/apps/api-go` forwards only audit control-plane routes to `Runtime-Server`（Runtime）
    - current active control-plane owner is `DELICIOUS233` (`100.81.149.78`)
    - this hop depends on tailnet ACL allowing `gz2 -> d233 tcp:8765`
 

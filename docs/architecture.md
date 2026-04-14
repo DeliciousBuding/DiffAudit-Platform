@@ -2,7 +2,7 @@
 
 ## 文档目标
 
-这份文档是 `Platform`、`Services/Local-API`（Runtime 主线，目录名待迁移）与 `Research` 三侧共享的统一三线契约。
+这份文档是 `Platform`、`Runtime-Server`（Runtime 主线）与 `Research` 三侧共享的统一三线契约。
 
 它只回答四件事：
 
@@ -20,7 +20,7 @@
 - `Research`
   - 研究代码、实验执行、`summary.json`、实验 workspace
   - 三线证据的 source of truth
-- `Services/Local-API`（Runtime）
+- `Runtime-Server`
   - 本地 HTTP 控制面
   - 读取 `Research` 证据、暴露只读接口、提交受控任务
 - `Platform`
@@ -54,7 +54,7 @@
 
 ### Control plane
 
-- owner: `Services/Local-API`（Runtime）
+- owner: `Runtime-Server`
 - public entry: `Platform/apps/api-go`
 - live routes:
   - `GET /api/v1/audit/job-template`

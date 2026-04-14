@@ -4,7 +4,7 @@
 
 1. `Platform/apps/web` 是唯一前端运行时
 2. `Platform/apps/api-go` 是当前平台网关
-3. `Services/Local-API` 只承担控制面，不再是展示态读源
+3. `Runtime-Server` 只承担控制面，不再是展示态读源
 
 | Check | Priority | Why |
 | --- | --- | --- |
@@ -13,4 +13,4 @@
 | `/login` works | must-have | 统一认证入口 |
 | `/workspace` works after auth | must-have | 核心工作台入口 |
 | `apps/api-go/data/public/*` present | must-have | 工作台展示态默认读本地 snapshot |
-| `Local-API` reachable | control-only | 只影响 jobs / create job / job-template |
+| `Runtime Server` reachable | control-only | 只影响 jobs / create job / job-template |

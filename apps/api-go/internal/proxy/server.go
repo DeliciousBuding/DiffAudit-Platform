@@ -41,7 +41,6 @@ func NewServer(config Config) *Server {
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
 	mux.HandleFunc("GET /api/v1/control/runtime", server.handleRuntimeHealth)
-	mux.HandleFunc("GET /api/v1/control/local-api", server.handleRuntimeHealth)
 	mux.HandleFunc("GET /api/v1/catalog", server.handleSnapshotFile("catalog.json"))
 	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleSnapshotFile("attack-defense-table.json"))
 	mux.HandleFunc("GET /api/v1/models", server.handleSnapshotFile("models.json"))
