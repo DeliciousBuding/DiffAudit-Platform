@@ -47,3 +47,24 @@ curl -H "Cookie: diffaudit_session=<token>" http://127.0.0.1:3000/api/v1/catalog
 - 登录返回 `Set-Cookie: diffaudit_session=...`
 - 认证后 `/workspace` 返回 `200`
 - 认证后 `/api/v1/catalog` 返回 catalog JSON
+
+## Phase 4: Local-API Upstream
+
+当前默认上游：
+
+- `DIFFAUDIT_API_BASE_URL=http://100.81.149.78:8765`
+- owner: `DELICIOUS233`
+- service must listen on `0.0.0.0:8765`
+- tailnet ACL must allow `gz2 -> d233 tcp:8765`
+
+检查命令：
+
+```powershell
+ssh gz2 "curl -s -D - http://100.81.149.78:8765/health"
+ssh gz2 "curl -s -D - http://100.81.149.78:8765/api/v1/catalog"
+```
+
+预期：
+
+- `/health` 返回 `200`
+- `/api/v1/catalog` 返回 `200` 与 catalog JSON

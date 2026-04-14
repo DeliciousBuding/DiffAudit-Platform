@@ -34,6 +34,12 @@
 - 部署口径、GitHub 规则、运行说明：`docs`、根级文档、`.github`
 - 共享 Agent 提示与协作口径：`packages/shared`
 
+## Design Source
+
+- 主设计文件使用 Figma `DiffAudit`
+- Figma 页面捕获、MCP 使用和 PR 对齐规则见 `docs/figma-workflow.md`
+- 设计探索不单独维护长期 capture 分支，直接跟随当前 feature branch
+
 ## 默认协作流
 
 1. 从 `main` 拉短分支

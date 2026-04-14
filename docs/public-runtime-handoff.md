@@ -17,9 +17,13 @@
 1. public request reaches Cloudflare
 2. Cloudflare forwards to `hk`
 3. `hk` forwards the full site to `gz2`
+   - current upstream target is `http://100.77.212.60`
+   - this hop depends on tailnet ACL allowing `hk -> gz2 tcp:80`
 4. `gz2` runs one web service for `/`, `/login`, `/trial`, `/workspace*`, `/api/auth/*`
 5. `Platform/apps/web` proxies `api/v1/*` requests to `DIFFAUDIT_API_BASE_URL`
 6. `Services/Local-API` serves catalog and admitted experiment metadata
+   - current active upstream owner is `DELICIOUS233` (`100.81.149.78`)
+   - this hop depends on tailnet ACL allowing `gz2 -> d233 tcp:8765`
 
 ## Current Runtime Owners On `gz2`
 
@@ -33,7 +37,8 @@
   - env: `/etc/diffaudit-platform-web.env`
 - Local-API:
   - active owner remains outside `gz2`
-  - `DIFFAUDIT_API_BASE_URL` points to the active upstream
+  - current owner is `DELICIOUS233` on `0.0.0.0:8765`
+  - `DIFFAUDIT_API_BASE_URL=http://100.81.149.78:8765`
 
 ## Handoff Requirements
 
