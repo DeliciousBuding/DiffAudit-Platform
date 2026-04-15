@@ -74,6 +74,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
 
   const [jobs, setJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -92,9 +93,14 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
               ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
               : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
           setJobs(filtered);
+          setError(null);
+        } else {
+          setError(copy.jobsUnavailable);
         }
-      } catch {
-        // Ignore fetch errors (abort, network)
+      } catch (err) {
+        if (err instanceof Error && err.name !== "AbortError") {
+          setError(copy.jobsUnavailable);
+        }
       } finally {
         setLoading(false);
       }
@@ -136,6 +142,20 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     return (
       <div className="px-3 py-4 text-xs text-muted-foreground text-center">
         {copy.jobsRefreshNote}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-3 py-4 text-center">
+        <div className="text-xs text-[color:var(--warning)] mb-2">{error}</div>
+        <button
+          onClick={() => window.location.reload()}
+          className="text-xs text-[color:var(--accent-blue)] hover:underline"
+        >
+          {copy.retry || "Retry"}
+        </button>
       </div>
     );
   }

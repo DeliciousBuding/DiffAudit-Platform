@@ -75,6 +75,15 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [stepTransitioning, setStepTransitioning] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    };
+  }, []);
 
   // Filter models by selected attack type track
   const filteredModels = useMemo(() => {
@@ -91,7 +100,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   const setStep = useCallback((step: number) => {
     setStepTransitioning(true);
     setForm((prev) => ({ ...prev, step }));
-    setTimeout(() => setStepTransitioning(false), 300);
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    transitionTimerRef.current = setTimeout(() => setStepTransitioning(false), 300);
   }, []);
 
   const selectAttackType = useCallback((type: AttackType) => {
@@ -104,7 +114,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       step: 2,
     }));
     // Simulate catalog loading time
-    setTimeout(() => {
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    transitionTimerRef.current = setTimeout(() => {
       setCatalogLoading(false);
       setStepTransitioning(false);
     }, 300);
@@ -113,7 +124,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   const selectModel = useCallback((contractKey: string) => {
     setStepTransitioning(true);
     setForm((prev) => ({ ...prev, selectedContractKey: contractKey, step: 3 }));
-    setTimeout(() => setStepTransitioning(false), 300);
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    transitionTimerRef.current = setTimeout(() => setStepTransitioning(false), 300);
   }, []);
 
   const handleSubmit = useCallback(async () => {
