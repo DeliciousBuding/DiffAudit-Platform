@@ -249,44 +249,46 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
       )}
 
-      {/* Empty workspace guidance — 7.2.3 */}
+      {/* Empty workspace guidance — Task 3.1 optimized */}
       {isEmpty ? (
-        <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20">
-              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4M12 8h.01" />
+        <section className="border-2 border-[color:var(--accent-blue)]/40 bg-gradient-to-br from-[color:var(--accent-blue)]/8 to-[color:var(--accent-blue)]/3 rounded-xl p-6 shadow-sm">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/15 mb-4">
+              <svg viewBox="0 0 24 24" className="h-6 w-6 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-semibold mb-1">{localeData.emptyWorkspace.title}</h3>
-              <p className="text-xs text-muted-foreground mb-3">{localeData.emptyWorkspace.description}</p>
-              {/* 3-step guide */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                {localeData.emptyWorkspace.steps.map((step) => (
-                  <div key={step.step} className="flex items-start gap-2">
-                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20 text-[10px] font-semibold text-[color:var(--accent-blue)]">
-                      {step.step}
-                    </span>
-                    <div>
-                      <div className="text-sm font-medium">{step.title}</div>
-                      <div className="text-xs text-muted-foreground">{step.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* CTA */}
-              <a
-                href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
-              >
-                {localeData.emptyWorkspace.cta}
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
+            <h3 className="text-lg font-semibold mb-2 text-foreground">{localeData.emptyWorkspace.title}</h3>
+            <p className="text-sm text-muted-foreground mb-6 max-w-xl">{localeData.emptyWorkspace.description}</p>
+
+            {/* 3-step guide with enhanced visual hierarchy */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 w-full">
+              {localeData.emptyWorkspace.steps.map((step, idx) => (
+                <div key={step.step} className="relative flex flex-col items-center text-center p-4 rounded-lg bg-card/50 border border-border/50 hover:border-[color:var(--accent-blue)]/30 transition-colors">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--accent-blue)] text-sm font-bold text-white mb-3 shadow-sm">
+                    {step.step}
+                  </span>
+                  <div className="text-sm font-semibold mb-1.5 text-foreground">{step.title}</div>
+                  <div className="text-xs text-muted-foreground leading-relaxed">{step.desc}</div>
+                  {idx < 2 && (
+                    <svg viewBox="0 0 24 24" className="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/30" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  )}
+                </div>
+              ))}
             </div>
+
+            {/* Enhanced CTA button */}
+            <a
+              href="/workspace/audits/new"
+              className="inline-flex items-center gap-2 rounded-lg border-2 border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg hover:scale-105 hover:bg-[color:var(--accent-blue)]/90"
+            >
+              {localeData.emptyWorkspace.cta}
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
           </div>
         </section>
       ) : (
