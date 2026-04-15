@@ -14,9 +14,9 @@ This file captures what we verified for the `WorkspaceAuditsPage` -> `CreateJobB
 
 ## Local verification steps
 
-1.  Bring up the Local API service; see `Services/Local-API/LOCAL-INTEGRATION.md` for the exact command and the `job-template -> create job -> jobs` commands we executed on 2026-04-14.
+1.  Bring up the Runtime Server; see `Runtime-Server/LOCAL-INTEGRATION.md` for the exact command and the `job-template -> create job -> jobs` commands we executed on 2026-04-14.
 2.  Start the Next.js dev server in `Platform/apps/web` via `npm run dev`.
-3.  Open `http://localhost:3000/workspace/audits`, click the `Create job` button on any recommended contract, and observe the success message (it mirrors the `job_id` recorded by Local API).
+3.  Open `http://localhost:3000/workspace/audits`, click the `Create job` button on any recommended contract, and observe the success message (it mirrors the `job_id` recorded by Runtime Server).
 4.  Alternatively, rerun the CLI commands from step 1 so you can confirm that a new job appears in the `/api/v1/audit/jobs` response; that response is exactly what the `running jobs` cards consume.
 
 ## Local dev prerequisites for workspace/audits
@@ -25,8 +25,8 @@ This file captures what we verified for the `WorkspaceAuditsPage` -> `CreateJobB
    - `POST http://localhost:3000/api/auth/register` (body: `username`, `email`, `password`).
     - `POST http://localhost:3000/api/auth/login` (body: `username`, `password`).
     - The backend responds with `diffaudit_session` cookie, which the browser needs for `/workspace` or `/api/v1/*` access.
-2.  Start the Local API dev proxy: `npm run dev:api` (defaults to `http://127.0.0.1:8780` talking to `http://127.0.0.1:8765`).
-    - The `/api/v1/*` proxy routes in `Platform/apps/web` (see `src/lib/api-proxy.ts`) expect the Local API service to be reachable before `GET /api/v1/audit/job-template` or `POST /api/v1/audit/jobs` succeed.
+2.  Start the Runtime Server dev proxy: `npm run dev:api` (defaults to `http://127.0.0.1:8780` talking to `http://127.0.0.1:8765`).
+    - The `/api/v1/*` proxy routes in `Platform/apps/web` (see `src/lib/api-proxy.ts`) expect the Runtime Server to be reachable before `GET /api/v1/audit/job-template` or `POST /api/v1/audit/jobs` succeed.
     - Without `npm run dev:api`, the web dev server responds with `500 fetch failed` even when a valid session cookie is present.
 3.  Open `http://localhost:3000/workspace/audits`, confirm the `running jobs` grid populates, and use `Create job` to fire off `audit/job-template` and `/audit/jobs` in sequence.
 

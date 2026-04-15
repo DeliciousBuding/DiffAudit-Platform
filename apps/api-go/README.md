@@ -2,15 +2,20 @@
 
 Primary backend gateway for the platform shell.
 
-This service proxies platform API calls to the local research control plane service.
+This service now has two responsibilities:
 
-Default upstream:
+- serve snapshot-backed public read endpoints for the workspace
+- proxy audit control-plane calls to the live `Runtime`
+
+Default Runtime upstream:
 
 - `http://127.0.0.1:8765`
 
-## Run
+Default public snapshot directory:
 
-Start the local research control plane first.
+- `./data/public`
+
+## Run
 
 Then start the platform gateway on its default port:
 
@@ -24,14 +29,25 @@ Equivalent explicit form:
 powershell -ExecutionPolicy Bypass -File D:\Code\DiffAudit\Platform\apps\api-go\run-platform-api.ps1 `
   -ListenHost 127.0.0.1 `
   -ListenPort 8780 `
-  -ResearchAPIBaseURL http://127.0.0.1:8765
+  -PublicDataDir D:\Code\DiffAudit\Platform\apps\api-go\data\public `
+  -RuntimeBaseURL http://127.0.0.1:8765
 ```
 
 Default listen port is `8780` so the gateway does not collide with the unrelated local service already occupying `8000` on this workstation.
 
 If `8780` is already occupied too, the script exits with a clear warning instead of silently fighting another local service.
 
+Refresh the public snapshot bundle before a public deploy:
+
+```powershell
+py -3 D:\Code\DiffAudit\Platform\apps\api-go\scripts\publish_public_snapshot.py `
+  --runtime-base-url http://127.0.0.1:8765 `
+  --output-dir D:\Code\DiffAudit\Platform\apps\api-go\data\public
+```
+
 ## Covered Routes
+
+Snapshot-backed read routes:
 
 - `GET /health`
 - `GET /api/v1/catalog`
@@ -39,21 +55,29 @@ If `8780` is already occupied too, the script exits with a clear warning instead
 - `GET /api/v1/models`
 - `GET /api/v1/experiments/recon/best`
 - `GET /api/v1/experiments/{workspace}/summary`
+
+Live control-plane routes:
+
 - `GET /api/v1/audit/jobs`
 - `POST /api/v1/audit/jobs`
 - `GET /api/v1/audit/jobs/{job_id}`
+- `GET /api/v1/audit/job-template`
 
-Job creation bodies are passed through unchanged and should follow the Local-API
+Job creation bodies are passed through unchanged and should follow the Runtime
 contract, including the required `contract_key`. Contract-specific payload
 fields should live under `job_inputs`; `runtime_profile` and `assets` may also
 be present for docker-first execution flows. The gateway does not interpret
 method-specific fields and forwards them unchanged.
+
+Snapshot-backed read routes must not fall back to the live control plane. If the
+snapshot bundle is missing, these routes return `503 snapshot unavailable`.
 
 ## Boundary
 
 This service is a platform gateway only.
 
 - It does not run research jobs directly.
-- It does not shell out to Python.
-- It forwards to the research local API, which then manages job execution.
+- It does not shell out to Python during public requests.
+- It serves workspace read models from the committed/deployed snapshot bundle.
+- It forwards only audit control-plane calls to the live `Runtime`.
 

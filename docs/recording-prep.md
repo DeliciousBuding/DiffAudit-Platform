@@ -4,14 +4,14 @@ This checklist captures the exact startup, login, and navigation sequence that w
 
 ## 1. Startup order
 
-1. Launch the Local API service so the `/api/v1/*` proxy endpoints are backed by a predictable runtime:
+1. Launch the Runtime Server service so the `/api/v1/*` proxy endpoints are backed by a predictable runtime:
    ```powershell
-   .\Services\Local-API\run-local-api.ps1 -WorkspaceRoot D:\Code\DiffAudit
+   .\Runtime-Server\run-local-api.ps1 -WorkspaceRoot D:\Code\DiffAudit
    ```
    Keep this window open; the service listens on `127.0.0.1:8765`.
 2. In a separate shell rooted at `D:\Code\DiffAudit\Platform`, start the api proxy and the web server:
    ```powershell
-   npm run dev:api        # keeps /api/v1/* routed to Local API
+   npm run dev:api        # keeps /api/v1/* routed to Runtime Server
    npm run dev:web        # hosts the Next.js app on http://localhost:3000
    ```
    Start the proxy first so any page refresh immediately finds the backend.
@@ -40,7 +40,7 @@ This checklist captures the exact startup, login, and navigation sequence that w
 
 1. Open `http://localhost:3000/workspace/audits` in the browser that you will record.
 2. Wait until the recommended contracts column and the running jobs grid both render (they fetch catalog + `/api/v1/audit/jobs` before painting).
-3. If the running jobs list is empty, rerun the Local API `curl` sequence documented in `Services/Local-API/LOCAL-INTEGRATION.md` to queue a job template so the grid always shows an active record.
+3. If the running jobs list is empty, rerun the Runtime Server `curl` sequence documented in `Runtime-Server/LOCAL-INTEGRATION.md` to queue a job template so the grid always shows an active record.
 4. Click `Create job` on one of the recommended contract cards and hold the success toast in frame long enough for the new job to appear in the `running jobs` grid.
 5. Optionally, rerun `curl` against `/api/v1/audit/jobs` to show the backend’s JSON response before zooming back into the UI.
 
@@ -63,7 +63,7 @@ This checklist captures the exact startup, login, and navigation sequence that w
 3. Screen recording (choose your tool but follow this checklist):
    - Start recording after the `/workspace/audits` page is fully hydrated.
    - Capture the recommended-contract column, then pan to the running jobs grid, and finally click `Create job` (do not edit any copy).
-   - Keep the Local API and Next.js server windows visible if you want to prove the backend is healthy.
+   - Keep the Runtime Server and Next.js server windows visible if you want to prove the backend is healthy.
    - Suggested ffmpeg command for Windows (adjust resolution/title as needed):
      ```cmd
      ffmpeg -f gdigrab -framerate 30 -i desktop -video_size 1280x720 -y recordings/audits-demo.mp4

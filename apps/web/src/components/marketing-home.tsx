@@ -10,6 +10,7 @@ import {
   type Locale,
 } from "@/components/language-picker";
 import { ParticleField } from "@/components/particle-field";
+import { UserAvatar } from "@/components/user-avatar";
 
 type NavLink = {
   title: string;
@@ -44,6 +45,7 @@ const HOME_COPY: Record<
       coverage: NavItem;
       flow: NavItem;
       workbench: NavItem;
+      docs: NavItem;
     };
     hero: {
       title: [string, string];
@@ -214,9 +216,40 @@ const HOME_COPY: Record<
           ],
         },
       },
+      docs: {
+        id: "docs",
+        label: "文档",
+        href: "/docs",
+        dropdown: {
+          title: "文档",
+          description: "架构、API 参考和使用指南。",
+          links: [
+            {
+              title: "快速开始",
+              description: "三步完成首次审计。",
+              href: "/docs",
+            },
+            {
+              title: "架构",
+              description: "Platform → Runtime-Server → Runner 三层架构。",
+              href: "/docs#architecture",
+            },
+            {
+              title: "API 参考",
+              description: "核心 REST API 端点说明。",
+              href: "/docs#api",
+            },
+            {
+              title: "攻击线路",
+              description: "黑盒、灰盒、白盒三条审计线路。",
+              href: "/docs#attacks",
+            },
+          ],
+        },
+      },
     },
     hero: {
-      title: ["模型上线之前", "审清它的训练记忆。"],
+      title: ["让隐私风险无处可藏", "让合规分析有迹可循"],
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",
       secondaryCta: "查看能力范围",
@@ -407,6 +440,37 @@ const HOME_COPY: Record<
           ],
         },
       },
+      docs: {
+        id: "docs",
+        label: "Docs",
+        href: "/docs",
+        dropdown: {
+          title: "Documentation",
+          description: "Architecture, API reference, and usage guides.",
+          links: [
+            {
+              title: "Quick Start",
+              description: "Complete your first audit in three steps.",
+              href: "/docs",
+            },
+            {
+              title: "Architecture",
+              description: "Platform, Runtime-Server, and Python Runners.",
+              href: "/docs#architecture",
+            },
+            {
+              title: "API Reference",
+              description: "Core REST API endpoint descriptions.",
+              href: "/docs#api",
+            },
+            {
+              title: "Attack Lines",
+              description: "Black-box, Gray-box, and White-box audit tracks.",
+              href: "/docs#attacks",
+            },
+          ],
+        },
+      },
     },
     hero: {
       title: ["Audit diffusion models", "before they reach production."],
@@ -545,6 +609,7 @@ export function MarketingHome({
         })),
       },
     },
+    copy.nav.docs,
   ];
 
   const hasOpenDropdown = openNav !== null;
@@ -601,9 +666,12 @@ export function MarketingHome({
           <div className="flex items-center gap-3">
             <LanguagePicker value={locale} onChange={setLocale} />
             {loggedIn ? (
-              <Link href={workbenchUrl} className="portal-pill-sm portal-pill-sm-primary">
-                {copy.header.openWorkspace}
-              </Link>
+              <>
+                <Link href={workbenchUrl} className="portal-pill-sm portal-pill-sm-primary hidden sm:inline-flex">
+                  {copy.header.openWorkspace}
+                </Link>
+                <UserAvatar />
+              </>
             ) : (
               <Link href="/login" className="portal-pill-sm portal-pill-sm-primary">
                 {copy.header.signIn}

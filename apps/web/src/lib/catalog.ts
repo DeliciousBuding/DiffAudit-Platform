@@ -1,4 +1,5 @@
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
+import { DEMO_CATALOG_ENTRIES } from "@/lib/demo-snapshot";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
@@ -77,7 +78,7 @@ function backendBaseUrl() {
 
 function formatRuntimeLabel(entry: CatalogEntryPayload) {
   if (!entry.backend) {
-    return "unassigned backend";
+    return "unassigned runtime";
   }
 
   return entry.scheduler ? `${entry.backend} / ${entry.scheduler}` : entry.backend;
@@ -95,7 +96,7 @@ function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
     runtimeLabel: formatRuntimeLabel(entry),
     bestWorkspace: entry.best_workspace ?? "pending workspace",
     bestSummaryPath: entry.best_summary_path ?? "pending summary",
-    systemGap: entry.system_gap ?? "当前没有额外系统缺口说明。",
+    systemGap: entry.system_gap ?? "pending system gap explanation",
   };
 }
 
@@ -193,7 +194,23 @@ export function summarizeCatalogEntries(
   };
 }
 
+/** Check if Demo Mode is enabled via cookie */
+async function isDemoModeEnabled(): Promise<boolean> {
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    return cookieStore.get("platform-demo-mode")?.value === "1";
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchCatalogDashboard(): Promise<CatalogDashboardViewModel | null> {
+  // Demo Mode: return snapshot data without calling Runtime
+  if (await isDemoModeEnabled()) {
+    return summarizeCatalogEntries(DEMO_CATALOG_ENTRIES);
+  }
+
   const url = new URL("/api/v1/catalog", backendBaseUrl());
 
   try {

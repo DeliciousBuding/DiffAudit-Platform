@@ -44,7 +44,9 @@ function migrate() {
   db.exec(SCHEMA_SQL);
   db.close();
 
-  console.log(`Database initialized at ${DB_PATH}`);
+  if (process.env.NODE_ENV === "development") {
+    console.log(`Database initialized at ${DB_PATH}`);
+  }
 }
 
 migrate();

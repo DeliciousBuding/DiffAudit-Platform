@@ -2,7 +2,7 @@
 
 ## 文档目标
 
-这份文档是 `Platform`、`Services/Local-API`、`Research` 三侧共享的统一三线契约。
+这份文档是 `Platform`、`Runtime-Server`（Runtime 主线）与 `Research` 三侧共享的统一三线契约。
 
 它只回答四件事：
 
@@ -20,7 +20,7 @@
 - `Research`
   - 研究代码、实验执行、`summary.json`、实验 workspace
   - 三线证据的 source of truth
-- `Services/Local-API`
+- `Runtime-Server`
   - 本地 HTTP 控制面
   - 读取 `Research` 证据、暴露只读接口、提交受控任务
 - `Platform`
@@ -31,6 +31,42 @@
 
 1. 发现能力：知道当前三线有哪些可展示、可读取、可执行的合同项
 2. 消费证据：读取最佳证据或任务状态，而不是自己解释实验目录
+
+## Public Read Plane vs Control Plane
+
+公网运行时必须把“展示态”和“控制态”分开。
+
+### Public read plane
+
+- owner: `Platform/apps/api-go`
+- source: `apps/api-go/data/public/*`
+- consumer pages:
+  - `/workspace`
+  - `/workspace/reports`
+  - `/workspace/settings`
+  - `/workspace/audits` 的推荐合同项与最近结果区
+
+约束：
+
+- 展示态默认只读 `gz2` 本地 snapshot
+- 公网请求路径里不再把 `Runtime` 当成展示页实时读源
+- snapshot 缺失时应返回明确 `503 snapshot unavailable`，而不是静默回退到 live `Runtime`
+
+### Control plane
+
+- owner: `Runtime-Server`
+- public entry: `Platform/apps/api-go`
+- live routes:
+  - `GET /api/v1/audit/job-template`
+  - `GET /api/v1/audit/jobs`
+  - `POST /api/v1/audit/jobs`
+  - `GET /api/v1/audit/jobs/{job_id}`
+
+约束：
+
+- 只有审计控制面动作才允许连接 `Runtime`
+- `apps/web` 不应直接跨机连接 `Runtime`
+- 控制面失败可以让 jobs 区块报错，但不能拖垮工作台展示页首包
 
 ## 第一性原理约束
 
@@ -91,7 +127,7 @@
 2. `evidence_summary`
    - 描述某个实验 workspace 的事实结果，来自 `Research/experiments/*/summary.json`
 3. `audit_job`
-   - 描述一次受控提交任务的控制面状态，来自 `Local-API` 的 jobs 目录和状态接口
+   - 描述一次受控提交任务的控制面状态，来自 `Runtime` 的 jobs 目录和状态接口
 
 不要再把“最佳证据摘要”和“任务执行记录”混成一个对象。
 
@@ -312,7 +348,7 @@
 
 - `Research/ROADMAP.md` 明确黑盒主线优先
 - `Research/experiments/blackbox-status/summary.json` 已经形成黑盒统一总表
-- `Local-API` 已经实现 `recon` 最佳证据读取和受控 job 提交
+- `Runtime` 已经实现 `recon` 最佳证据读取和受控 job 提交
 
 ### 灰盒
 

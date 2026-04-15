@@ -1,9 +1,13 @@
+import { headers } from "next/headers";
+
 import { LanguagePicker } from "@/components/language-picker";
 import { BrandMark } from "@/components/brand-mark";
-import { readServerLocale } from "@/lib/locale";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+
+export const dynamic = "force-dynamic";
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
-  const locale = await readServerLocale();
+  const locale = resolveLocaleFromHeaderStore(await headers());
 
   return (
     <main className="site-shell">
@@ -14,7 +18,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </div>
       </header>
 
-      <section className="container py-12 md:py-20">
+      <section className="container py-12 md:py-20 mt-12 md:mt-16">
         {children}
       </section>
     </main>

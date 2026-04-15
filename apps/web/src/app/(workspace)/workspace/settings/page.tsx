@@ -1,26 +1,22 @@
-import { readServerLocale } from "@/lib/locale";
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { WorkspacePage } from "@/components/workspace-page";
+import { headers } from "next/headers";
+
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { validateSession, SESSION_COOKIE_NAME } from "@/lib/auth";
+import { SettingsClient } from "./SettingsClient";
 
 export default async function WorkspaceSettingsPage() {
-  const locale = await readServerLocale();
-  const copy = WORKSPACE_COPY[locale].settings;
+  const locale = resolveLocaleFromHeaderStore(await headers());
 
-  return (
-    <WorkspacePage
-      eyebrow={copy.eyebrow}
-      title={copy.title}
-      description={copy.description}
-    >
-      <div className="grid gap-5 lg:grid-cols-3">
-        {copy.sections.map((section) => (
-          <section key={section.title} className="surface-card p-6">
-            <div className="caption">{section.title}</div>
-            <h2 className="mt-3 text-[24px] font-[450] leading-tight">{section.title}</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">{section.copy}</p>
-          </section>
-        ))}
-      </div>
-    </WorkspacePage>
-  );
+  // Try to get username from session cookie (server-side, httpOnly cookie is readable here)
+  const headerStore = await headers();
+  const cookieHeader = headerStore.get("cookie");
+  const sessionToken = cookieHeader
+    ?.split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${SESSION_COOKIE_NAME}=`))
+    ?.split("=")[1];
+
+  const session = sessionToken ? validateSession(sessionToken) : null;
+
+  return <SettingsClient locale={locale} initialUsername={session?.username ?? null} />;
 }

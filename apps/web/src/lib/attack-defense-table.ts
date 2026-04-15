@@ -1,4 +1,6 @@
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
+import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
+import { DEMO_ATTACK_DEFENSE_ROWS } from "@/lib/demo-snapshot";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
@@ -27,6 +29,7 @@ export type AttackDefenseRowViewModel = {
   qualityCost: string;
   evidenceLevel: string;
   note: string;
+  riskLevel: RiskLevel;
 };
 
 export type AttackDefenseTableViewModel = {
@@ -98,14 +101,31 @@ export function summarizeAttackDefenseTable(rows: AttackDefenseRowPayload[]) {
       aucLabel: formatMetric(row.auc),
       asrLabel: formatMetric(row.asr),
       tprLabel: formatMetric(row.tpr_at_1pct_fpr),
-      qualityCost: row.quality_cost ?? "未提供运行成本说明。",
+      qualityCost: row.quality_cost ?? "No cost information provided.",
       evidenceLevel: row.evidence_level ?? "unknown",
-      note: row.note ?? "未提供补充说明。",
+      note: row.note ?? "No additional notes.",
+      riskLevel: classifyRisk(row.auc ?? 0),
     })),
   } satisfies AttackDefenseTableViewModel;
 }
 
+/** Check if Demo Mode is enabled via cookie */
+async function isDemoModeEnabled(): Promise<boolean> {
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    return cookieStore.get("platform-demo-mode")?.value === "1";
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchAttackDefenseTable(): Promise<AttackDefenseTableViewModel | null> {
+  // Demo Mode: return snapshot data without calling Runtime
+  if (await isDemoModeEnabled()) {
+    return summarizeAttackDefenseTable(DEMO_ATTACK_DEFENSE_ROWS);
+  }
+
   const url = new URL("/api/v1/evidence/attack-defense-table", backendBaseUrl());
 
   try {

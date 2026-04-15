@@ -42,7 +42,7 @@ export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
 
   return (
     <nav
-      className="fixed bottom-4 left-4 right-4 z-40 hidden grid-cols-4 gap-2 rounded-[24px] border border-border bg-white/92 p-2 shadow-[0_20px_60px_rgba(18,19,23,0.12)] backdrop-blur-[20px] max-lg:grid"
+      className="fixed bottom-4 left-4 right-4 z-40 hidden grid-cols-4 gap-2 rounded-[24px] border border-border bg-[var(--color-bg-primary)]/92 p-2 shadow-[0_20px_60px_rgba(18,19,23,0.12)] backdrop-blur-[20px] max-lg:grid"
       aria-label="Mobile navigation"
     >
       {items.map((item) => {
@@ -52,13 +52,13 @@ export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-2 text-center text-[11px] font-bold transition-all duration-150 ${
+            className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-lg border p-2 text-center text-[11px] font-bold transition-all duration-150 ${
               active
                 ? "border-primary/20 bg-accent text-foreground"
                 : "border-transparent text-muted-foreground"
             }`}
           >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-foreground">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-foreground">
               <NavIcon icon={item.icon} />
             </span>
             <span className="text-[12px]">{item.shortLabel}</span>

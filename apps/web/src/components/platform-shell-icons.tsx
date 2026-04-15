@@ -1,7 +1,7 @@
 import { BrandMark as SiteBrandMark } from "@/components/brand-mark";
 
 export function BrandMark() {
-  return <SiteBrandMark compact />;
+  return <SiteBrandMark compact href="/" prefetch={false} />;
 }
 
 export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" }) {

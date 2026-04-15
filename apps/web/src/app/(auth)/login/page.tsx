@@ -1,6 +1,8 @@
+import { headers } from "next/headers";
+
 import { githubOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
-import { readServerLocale } from "@/lib/locale";
 import { LoginForm } from "@/components/login-form";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export default async function LoginPage({
@@ -9,7 +11,7 @@ export default async function LoginPage({
   searchParams: Promise<{ redirectTo?: string }>;
 }) {
   const { redirectTo } = await searchParams;
-  const locale = await readServerLocale();
+  const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
   const oauthEnabled = githubOAuthConfigured();
 

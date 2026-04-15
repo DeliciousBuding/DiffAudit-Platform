@@ -108,14 +108,14 @@ export function CreateJobButton({ contractKey, label }: CreateJobButtonProps) {
     }
   };
 
-  const messageClass = status === "error" ? "text-xs text-red-500" : "text-xs text-muted-foreground";
+  const messageClass = status === "error" ? "text-xs text-[color:var(--warning)]" : "text-xs text-muted-foreground";
 
   return (
     <div className="flex flex-col items-end gap-1">
       <button
         type="button"
         onClick={handleClick}
-        className="portal-pill portal-pill-primary disabled:opacity-50 disabled:cursor-wait"
+        className="inline-flex items-center justify-center rounded border border-primary bg-primary px-3 py-1 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-wait"
         disabled={status === "loading"}
       >
         {label}

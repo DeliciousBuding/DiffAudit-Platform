@@ -1,0 +1,162 @@
+{
+  "dataset": "CIFAR-10",
+  "model_family": "DDPM",
+  "rows": [
+    {
+      "asr": 0.51,
+      "attack": "recon DDIM public-100 step30",
+      "auc": 0.849,
+      "defense": "none",
+      "evidence_level": "runtime-mainline",
+      "model": "Stable Diffusion v1.5 + DDIM",
+      "note": "current black-box main evidence",
+      "quality_cost": "100 public samples per split; DDIM step30; artifact-mainline ready; cuda runtime",
+      "source": "experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+      "tpr_at_0_1pct_fpr": null,
+      "tpr_at_1pct_fpr": 1,
+      "track": "black-box"
+    },
+    {
+      "adaptive_check": {
+        "aggregation": "mean",
+        "metrics": {
+          "asr": 0.786133,
+          "auc": 0.841339,
+          "tpr_at_0_1pct_fpr": 0.011719,
+          "tpr_at_1pct_fpr": 0.058594
+        },
+        "query_repeats": 3,
+        "status": "completed"
+      },
+      "asr": 0.786133,
+      "attack": "PIA GPU512 baseline",
+      "auc": 0.841339,
+      "cost": {
+        "adaptive_query_repeats": 3,
+        "attack_num": 30,
+        "batch_size": 8,
+        "device": "cuda:0",
+        "execution_mode": "single-device-serial",
+        "interval": 10,
+        "model_queries_per_sample": 31,
+        "queries_per_sample": 30,
+        "sample_count_per_split": 512,
+        "wall_clock_seconds": 212.993833
+      },
+      "defense": "none",
+      "defense_stage": "baseline",
+      "evidence_level": "runtime-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "current gray-box baseline reference; score is derived from epsilon-trajectory consistency under the official PIA DDPM attacker",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": 0.014127,
+          "inception_score": null,
+          "lpips": 0.188377
+        },
+        "official": false,
+        "reference": "input_batch",
+        "suite": "pia-runtime-surrogate-v1"
+      },
+      "quality_cost": "attack_num=30; interval=10; batch_size=8; 512 samples per split; single GPU serial; adaptive repeats=3; wall-clock=212.993833s",
+      "source": "workspaces/gray-box/runs/pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive/summary.json",
+      "tpr_at_0_1pct_fpr": 0.011719,
+      "tpr_at_1pct_fpr": 0.058594,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "aggregation": "mean",
+        "metrics": {
+          "asr": 0.767578,
+          "auc": 0.828075,
+          "tpr_at_0_1pct_fpr": 0.009766,
+          "tpr_at_1pct_fpr": 0.052734
+        },
+        "query_repeats": 3,
+        "status": "completed"
+      },
+      "asr": 0.767578,
+      "attack": "PIA GPU512 baseline",
+      "auc": 0.828075,
+      "cost": {
+        "adaptive_query_repeats": 3,
+        "attack_num": 30,
+        "batch_size": 8,
+        "device": "cuda:0",
+        "execution_mode": "single-device-serial",
+        "interval": 10,
+        "model_queries_per_sample": 31,
+        "queries_per_sample": 30,
+        "sample_count_per_split": 512,
+        "wall_clock_seconds": 223.128438
+      },
+      "defense": "provisional G-1 = stochastic-dropout (all_steps)",
+      "defense_stage": "adaptive-reviewed-provisional-g1",
+      "evidence_level": "runtime-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "current gray-box defended main result after repeated-query review; all_steps remains stronger than late_steps_only while keeping surrogate quality drift small",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": 0.000266,
+          "inception_score": null,
+          "lpips": 0.035881
+        },
+        "official": false,
+        "reference": "baseline_surrogate",
+        "suite": "pia-runtime-surrogate-v1"
+      },
+      "quality_cost": "attack_num=30; interval=10; batch_size=8; 512 samples per split; single GPU serial; adaptive repeats=3; wall-clock=223.128438s",
+      "source": "workspaces/gray-box/runs/pia-cifar10-runtime-mainline-dropout-defense-20260409-gpu-512-allsteps-adaptive/summary.json",
+      "tpr_at_0_1pct_fpr": 0.009766,
+      "tpr_at_1pct_fpr": 0.052734,
+      "track": "gray-box"
+    },
+    {
+      "asr": 0.9895,
+      "attack": "GSA 1k-3shadow",
+      "auc": 0.998192,
+      "defense": "none",
+      "evidence_level": "runtime-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "current white-box attack main evidence promoted from epoch300 rerun1 under the same 1k-3shadow protocol",
+      "quality_cost": "target_eval_size=2000; shadow_train_size=4200; 3 shadows; cuda",
+      "source": "workspaces/white-box/runs/gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1/summary.json",
+      "tpr_at_0_1pct_fpr": 0.432,
+      "tpr_at_1pct_fpr": 0.987,
+      "track": "white-box"
+    },
+    {
+      "asr": 0.4985,
+      "attack": "GSA 1k-3shadow",
+      "auc": 0.488783,
+      "defense": "W-1 strong-v3 full-scale",
+      "evidence_level": "runtime-smoke",
+      "model": "DPDM / Diffusion-DP",
+      "note": "current white-box defended main result",
+      "quality_cost": "target_eval_size=2000; shadow_train_size=6000; classifier=logistic-regression-1d",
+      "source": "workspaces/white-box/runs/dpdm-w1-multi-shadow-comparator-targetmember-strongv3-3shadow-full-rerun8-20260408/summary.json",
+      "tpr_at_0_1pct_fpr": 0,
+      "tpr_at_1pct_fpr": 0.009,
+      "track": "white-box"
+    },
+    {
+      "asr": 0.496,
+      "attack": "GSA 1k-3shadow",
+      "auc": 0.490813,
+      "defense": "W-1 strong-v2 full-scale",
+      "evidence_level": "runtime-smoke",
+      "model": "DPDM / Diffusion-DP",
+      "note": "defended reference rung kept for comparison",
+      "quality_cost": "target_eval_size=2000; shadow_train_size=6000; classifier=logistic-regression-1d",
+      "source": "workspaces/white-box/runs/dpdm-w1-multi-shadow-comparator-targetmember-strongv2-3shadow-full-20260408/summary.json",
+      "tpr_at_0_1pct_fpr": 0,
+      "tpr_at_1pct_fpr": 0.006,
+      "track": "white-box"
+    }
+  ],
+  "schema": "diffaudit.attack_defense_table.v1",
+  "updated_at": "2026-04-09T17:05:00+08:00"
+}

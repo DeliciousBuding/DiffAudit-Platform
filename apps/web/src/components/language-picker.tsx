@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const LOCALE_STORAGE_KEY = "platform-locale-v2";
 
@@ -10,6 +11,18 @@ const LOCALE_OPTIONS: Array<{ value: Locale; label: string; short: string }> = [
   { value: "en-US", label: "English", short: "EN" },
   { value: "zh-CN", label: "简体中文", short: "中" },
 ];
+
+export function resolveActiveLocale({
+  value,
+  internalLocale,
+  pendingLocale,
+}: {
+  value?: Locale;
+  internalLocale: Locale;
+  pendingLocale?: Locale | null;
+}): Locale {
+  return pendingLocale ?? value ?? internalLocale;
+}
 
 function resolveStoredLocale(): Locale {
   if (typeof window === "undefined") {
@@ -35,6 +48,19 @@ export function getStoredLocale() {
   return resolveStoredLocale();
 }
 
+export function setStoredLocale(locale: Locale) {
+  persistLocale(locale);
+}
+
+function persistLocale(locale: Locale) {
+  try {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+    document.cookie = `${LOCALE_STORAGE_KEY}=${locale}; path=/; max-age=31536000; samesite=lax`;
+  } catch {
+    // Ignore storage failures and keep the UI responsive.
+  }
+}
+
 export function LanguagePicker({
   value,
   onChange,
@@ -44,9 +70,11 @@ export function LanguagePicker({
   onChange?: (locale: Locale) => void;
   reloadOnChange?: boolean;
 }) {
+  const router = useRouter();
   const [internalLocale, setInternalLocale] = useState<Locale>("en-US");
+  const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const locale = value ?? internalLocale;
+  const locale = resolveActiveLocale({ value, internalLocale, pendingLocale });
 
   useEffect(() => {
     const stored = resolveStoredLocale();
@@ -55,6 +83,16 @@ export function LanguagePicker({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = locale === "zh-CN" ? "zh-CN" : "en-US";
+  }, [locale]);
+
+  useEffect(() => {
+    if (value !== undefined && pendingLocale === value) {
+      setPendingLocale(null);
+    }
+  }, [pendingLocale, value]);
 
   const currentOption = LOCALE_OPTIONS.find((opt) => opt.value === locale) || LOCALE_OPTIONS[0];
 
@@ -68,19 +106,16 @@ export function LanguagePicker({
       setInternalLocale(nextLocale);
     }
 
+    setPendingLocale(nextLocale);
     onChange?.(nextLocale);
-
-    try {
-      window.localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale);
-      document.cookie = `${LOCALE_STORAGE_KEY}=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
-    } catch {
-      // Ignore storage failures and keep the UI responsive.
-    }
+    persistLocale(nextLocale);
 
     setIsOpen(false);
 
     if (reloadOnChange) {
-      window.location.reload();
+      startTransition(() => {
+        router.refresh();
+      });
     }
   }
 

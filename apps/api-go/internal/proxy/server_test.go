@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestHealthEndpoint(t *testing.T) {
 	server := NewServer(Config{
-		ResearchAPIBaseURL: "http://127.0.0.1:8765",
+		RuntimeBaseURL: "http://127.0.0.1:8765",
 	})
 
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
@@ -31,19 +33,85 @@ func TestHealthEndpoint(t *testing.T) {
 	}
 }
 
-func TestModelsEndpointIsProxied(t *testing.T) {
+func TestRuntimeHealthEndpointConnected(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.URL.Path != "/api/v1/models" {
+		if request.URL.Path != "/health" {
 			t.Fatalf("unexpected path %s", request.URL.Path)
 		}
-		writeJSON(writer, http.StatusOK, []map[string]any{
-			{"key": "sd15-ddim"},
-			{"key": "kandinsky-v22"},
-		})
+		writeJSON(writer, http.StatusOK, map[string]any{"status": "ok"})
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/runtime", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["connected"] != true {
+		t.Fatalf("expected connected=true, got %v", payload["connected"])
+	}
+	if payload["status"] != "connected" {
+		t.Fatalf("expected connected status, got %v", payload["status"])
+	}
+}
+
+func TestRuntimeHealthEndpointDisconnected(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		http.Error(writer, "upstream unavailable", http.StatusServiceUnavailable)
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/runtime", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["connected"] != false {
+		t.Fatalf("expected connected=false, got %v", payload["connected"])
+	}
+	if payload["status"] != "disconnected" {
+		t.Fatalf("expected disconnected status, got %v", payload["status"])
+	}
+	if payload["upstream_status"] != float64(http.StatusServiceUnavailable) {
+		t.Fatalf("expected upstream_status 503, got %v", payload["upstream_status"])
+	}
+}
+
+func TestModelsEndpointUsesSnapshotData(t *testing.T) {
+	dataDir := writeSnapshotBundle(t, snapshotBundle{
+		models: []map[string]any{
+			{"key": "sd15-ddim"},
+			{"key": "kandinsky-v22"},
+		},
+	})
+
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		t.Fatalf("snapshot-backed route should not hit control upstream: %s", request.URL.Path)
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
+	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/models", nil)
 	recorder := httptest.NewRecorder()
 
@@ -61,12 +129,9 @@ func TestModelsEndpointIsProxied(t *testing.T) {
 	}
 }
 
-func TestCatalogEndpointIsProxied(t *testing.T) {
-	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.URL.Path != "/api/v1/catalog" {
-			t.Fatalf("unexpected path %s", request.URL.Path)
-		}
-		writeJSON(writer, http.StatusOK, []map[string]any{
+func TestCatalogEndpointUsesSnapshotData(t *testing.T) {
+	dataDir := writeSnapshotBundle(t, snapshotBundle{
+		catalog: []map[string]any{
 			{
 				"contract_key":  "black-box/recon/sd15-ddim",
 				"track":         "black-box",
@@ -88,11 +153,18 @@ func TestCatalogEndpointIsProxied(t *testing.T) {
 				"target_key":    "ddpm-cifar10",
 				"availability":  "partial",
 			},
-		})
+		},
+	})
+
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		t.Fatalf("snapshot-backed route should not hit control upstream: %s", request.URL.Path)
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
+	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/catalog", nil)
 	recorder := httptest.NewRecorder()
 
@@ -128,12 +200,9 @@ func TestCatalogEndpointIsProxied(t *testing.T) {
 	}
 }
 
-func TestAttackDefenseTableEndpointIsProxied(t *testing.T) {
-	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.URL.Path != "/api/v1/evidence/attack-defense-table" {
-			t.Fatalf("unexpected path %s", request.URL.Path)
-		}
-		writeJSON(writer, http.StatusOK, map[string]any{
+func TestAttackDefenseTableEndpointUsesSnapshotData(t *testing.T) {
+	dataDir := writeSnapshotBundle(t, snapshotBundle{
+		attackDefenseTable: map[string]any{
 			"schema": "diffaudit.attack_defense_table.v1",
 			"rows": []map[string]any{
 				{
@@ -142,11 +211,18 @@ func TestAttackDefenseTableEndpointIsProxied(t *testing.T) {
 					"defense": "provisional G-1 = stochastic-dropout",
 				},
 			},
-		})
+		},
+	})
+
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		t.Fatalf("snapshot-backed route should not hit control upstream: %s", request.URL.Path)
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
+	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/evidence/attack-defense-table", nil)
 	recorder := httptest.NewRecorder()
 
@@ -164,21 +240,37 @@ func TestAttackDefenseTableEndpointIsProxied(t *testing.T) {
 	}
 }
 
-func TestBestReconEndpointIsProxied(t *testing.T) {
-	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.URL.Path != "/api/v1/experiments/recon/best" {
-			t.Fatalf("unexpected path %s", request.URL.Path)
-		}
-		writeJSON(writer, http.StatusOK, map[string]any{
-			"workspace": "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
-			"metrics": map[string]any{
-				"auc": 0.866,
+func TestBestReconEndpointUsesSnapshotSummary(t *testing.T) {
+	dataDir := writeSnapshotBundle(t, snapshotBundle{
+		catalog: []map[string]any{
+			{
+				"contract_key":   "black-box/recon/sd15-ddim",
+				"track":          "black-box",
+				"attack_family":  "recon",
+				"target_key":     "sd15-ddim",
+				"availability":   "ready",
+				"best_workspace": "D:\\Code\\DiffAudit\\Research\\experiments\\recon-runtime-mainline-ddim-public-50-step10",
 			},
-		})
+		},
+		summaries: map[string]map[string]any{
+			"recon-runtime-mainline-ddim-public-50-step10": {
+				"workspace": "../Research/experiments/recon-runtime-mainline-ddim-public-50-step10",
+				"metrics": map[string]any{
+					"auc": 0.866,
+				},
+			},
+		},
+	})
+
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		t.Fatalf("snapshot-backed route should not hit control upstream: %s", request.URL.Path)
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
+	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/experiments/recon/best", nil)
 	recorder := httptest.NewRecorder()
 
@@ -196,20 +288,26 @@ func TestBestReconEndpointIsProxied(t *testing.T) {
 	}
 }
 
-func TestWorkspaceSummaryEndpointIsProxied(t *testing.T) {
+func TestWorkspaceSummaryEndpointUsesSnapshotData(t *testing.T) {
+	dataDir := writeSnapshotBundle(t, snapshotBundle{
+		summaries: map[string]map[string]any{
+			"gray-box-pia-probe-001": {
+				"track":     "gray-box",
+				"method":    "pia",
+				"workspace": "gray-box-pia-probe-001",
+			},
+		},
+	})
+
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.URL.Path != "/api/v1/experiments/gray-box-pia-probe-001/summary" {
-			t.Fatalf("unexpected path %s", request.URL.Path)
-		}
-		writeJSON(writer, http.StatusOK, map[string]any{
-			"track":     "gray-box",
-			"method":    "pia",
-			"workspace": "gray-box-pia-probe-001",
-		})
+		t.Fatalf("snapshot-backed route should not hit control upstream: %s", request.URL.Path)
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{
+		PublicDataDir:  dataDir,
+		RuntimeBaseURL: upstream.URL,
+	})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/experiments/gray-box-pia-probe-001/summary", nil)
 	recorder := httptest.NewRecorder()
 
@@ -217,6 +315,23 @@ func TestWorkspaceSummaryEndpointIsProxied(t *testing.T) {
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+}
+
+func TestSnapshotBackedRouteReturns503WhenSnapshotMissing(t *testing.T) {
+	server := NewServer(Config{
+		PublicDataDir: filepath.Join(t.TempDir(), "missing"),
+	})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/catalog", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503, got %d", recorder.Code)
+	}
+	if !bytes.Contains(recorder.Body.Bytes(), []byte("snapshot unavailable")) {
+		t.Fatalf("expected snapshot unavailable response, got %s", recorder.Body.String())
 	}
 }
 
@@ -232,7 +347,7 @@ func TestJobsListEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
 	recorder := httptest.NewRecorder()
 
@@ -258,7 +373,7 @@ func TestJobTemplateEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/job-template?contract_key=black-box/recon/sd15-ddim", nil)
 	recorder := httptest.NewRecorder()
 
@@ -316,7 +431,7 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	payload := jobPayloadFixture()
 	body, _ := json.Marshal(payload)
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
@@ -363,7 +478,7 @@ func TestCreateGrayBoxJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
 		"job_type":        "pia_runtime_mainline",
 		"contract_key":    "gray-box/pia/cifar10-ddpm",
@@ -418,7 +533,7 @@ func TestCreateWhiteBoxJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	body, _ := json.Marshal(map[string]any{
 		"job_type":       "gsa_runtime_mainline",
 		"contract_key":   "white-box/gsa/ddpm-cifar10",
@@ -450,7 +565,7 @@ func TestGetJobEndpointIsProxied(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs/job_123", nil)
 	recorder := httptest.NewRecorder()
 
@@ -469,7 +584,7 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 	}))
 	defer upstream.Close()
 
-	server := NewServer(Config{ResearchAPIBaseURL: upstream.URL})
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
 	body, _ := json.Marshal(jobPayloadFixture())
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
@@ -508,5 +623,54 @@ func jobPayloadFixture() map[string]any {
 			"artifact_dir": "experiments/recon-runtime-mainline-ddim-public-50-step10/score-artifacts",
 			"method":       "threshold",
 		},
+	}
+}
+
+type snapshotBundle struct {
+	catalog            []map[string]any
+	attackDefenseTable map[string]any
+	models             []map[string]any
+	summaries          map[string]map[string]any
+}
+
+func writeSnapshotBundle(t *testing.T, bundle snapshotBundle) string {
+	t.Helper()
+
+	root := t.TempDir()
+	publicDir := filepath.Join(root, "public")
+	summariesDir := filepath.Join(publicDir, "summaries")
+	if err := os.MkdirAll(summariesDir, 0o755); err != nil {
+		t.Fatalf("mkdir failed: %v", err)
+	}
+
+	writeJSONFile(t, filepath.Join(publicDir, "catalog.json"), bundle.catalog)
+	writeJSONFile(t, filepath.Join(publicDir, "attack-defense-table.json"), bundle.attackDefenseTable)
+	writeJSONFile(t, filepath.Join(publicDir, "models.json"), bundle.models)
+
+	summaryKeys := make([]string, 0, len(bundle.summaries))
+	for key, payload := range bundle.summaries {
+		summaryKeys = append(summaryKeys, key)
+		writeJSONFile(t, filepath.Join(summariesDir, key+".json"), payload)
+	}
+
+	writeJSONFile(t, filepath.Join(publicDir, "manifest.json"), map[string]any{
+		"generated_at":  "2026-04-14T00:00:00Z",
+		"source":        "test-fixture",
+		"catalog_count": len(bundle.catalog),
+		"summary_keys":  summaryKeys,
+	})
+
+	return publicDir
+}
+
+func writeJSONFile(t *testing.T, path string, payload any) {
+	t.Helper()
+
+	bytes, err := json.Marshal(payload)
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+	if err := os.WriteFile(path, bytes, 0o644); err != nil {
+		t.Fatalf("write failed: %v", err)
 	}
 }

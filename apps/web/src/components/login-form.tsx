@@ -101,7 +101,7 @@ export function LoginForm({
         <button
           type="submit"
           disabled={pending}
-          className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55"
+          className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? copy.pending : copy.submit}
         </button>
@@ -117,15 +117,15 @@ export function LoginForm({
       ) : null}
 
       {error ? (
-        <p className="text-sm text-[#bf2f2f]">{error}</p>
+        <p className="text-sm text-[var(--risk-high)]">{error}</p>
       ) : oauthError ? (
-        <p className="text-sm text-[#bf2f2f]">{copy.error}</p>
+        <p className="text-sm text-[var(--risk-high)]">{copy.error}</p>
       ) : (
         <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
       )}
 
       <p className="text-sm leading-7 text-muted-foreground">
-        {pageCopy.registerLink} {" "}
+        {pageCopy.registerLink}{" "}
         <Link href="/register" className="auth-inline-link">
           {pageCopy.registerCta}
         </Link>
