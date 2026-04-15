@@ -46,7 +46,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm"
       style={{ animation: "modal-backdrop-in 0.15s ease-out forwards" }}
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose();

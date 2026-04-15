@@ -545,7 +545,7 @@ select {
 }
 
 .dropdown-info {
-  color: #45474d;
+  color: var(--muted-foreground);
   margin: 12px 0 0;
   line-height: 1.5;
   animation: text-fade-in 0.3s ease-out forwards;
@@ -586,7 +586,7 @@ select {
     opacity 150ms ease,
     transform 150ms ease;
   text-decoration: none;
-  color: #121317;
+  color: var(--foreground);
   opacity: 0;
   transform: translateY(6px);
   animation: text-fade-in 0.25s ease-out forwards;
@@ -801,7 +801,7 @@ select {
   letter-spacing: 0.11em;
   font-weight: 450;
   text-transform: uppercase;
-  color: #45474d;
+  color: var(--muted-foreground);
 }
 
 .auth-divider::before,
