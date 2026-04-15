@@ -1,4 +1,5 @@
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
+import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
@@ -27,6 +28,7 @@ export type AttackDefenseRowViewModel = {
   qualityCost: string;
   evidenceLevel: string;
   note: string;
+  riskLevel: RiskLevel;
 };
 
 export type AttackDefenseTableViewModel = {
@@ -101,6 +103,7 @@ export function summarizeAttackDefenseTable(rows: AttackDefenseRowPayload[]) {
       qualityCost: row.quality_cost ?? "未提供运行成本说明。",
       evidenceLevel: row.evidence_level ?? "unknown",
       note: row.note ?? "未提供补充说明。",
+      riskLevel: classifyRisk(row.auc ?? 0),
     })),
   } satisfies AttackDefenseTableViewModel;
 }

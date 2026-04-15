@@ -14,7 +14,8 @@ import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
-import { classifyRisk } from "@/lib/risk-report";
+import { classifyRisk, riskLabel } from "@/lib/risk-report";
+import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
 
 /** Generate synthetic ROC curve points given a target AUC */
@@ -95,9 +96,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   }
   const dims = copy.chartDimensions;
   const riskDistData = [
-    { level: "High", count: riskCounts.high },
-    { level: "Medium", count: riskCounts.medium },
-    { level: "Low", count: riskCounts.low },
+    { key: "high", label: riskLabel("high", locale === "zh-CN" ? "zh-CN" : "en"), count: riskCounts.high },
+    { key: "medium", label: riskLabel("medium", locale === "zh-CN" ? "zh-CN" : "en"), count: riskCounts.medium },
+    { key: "low", label: riskLabel("low", locale === "zh-CN" ? "zh-CN" : "en"), count: riskCounts.low },
   ];
 
   const attackComparisonData = [
@@ -220,6 +221,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                   <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
                   <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
                   <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>
               <tbody>
@@ -240,6 +242,12 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                     <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
                     <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
                     <td className="mono px-3 py-2 text-right">{row.tprLabel}</td>
+                    <td className="px-3 py-2">
+                      <RiskBadge
+                        auc={parseFloat(row.aucLabel)}
+                        label={riskLabel(row.riskLevel, locale === "zh-CN" ? "zh-CN" : "en")}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

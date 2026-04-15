@@ -224,6 +224,7 @@ export const WORKSPACE_COPY: Record<
         auc: string;
         asr: string;
         tpr: string;
+        risk: string;
         contractKey: string;
         label: string;
         systemGap: string;
@@ -596,6 +597,7 @@ export const WORKSPACE_COPY: Record<
         auc: "AUC",
         asr: "ASR",
         tpr: "TPR",
+        risk: "Risk",
         contractKey: "Contract Key",
         label: "Label",
         systemGap: "System Gap",
@@ -1036,6 +1038,7 @@ export const WORKSPACE_COPY: Record<
         auc: "AUC",
         asr: "ASR",
         tpr: "TPR",
+        risk: "风险等级",
         contractKey: "合约标识",
         label: "名称",
         systemGap: "系统缺口",

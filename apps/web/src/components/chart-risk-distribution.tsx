@@ -12,13 +12,13 @@ import {
 } from "recharts";
 
 interface RiskDistributionProps {
-  data: { level: string; count: number }[];
+  data: { key: string; label: string; count: number }[];
 }
 
 const RISK_COLORS: Record<string, string> = {
-  High: "#ff5f46",
-  Medium: "#b67619",
-  Low: "#157a52",
+  high: "#ff5f46",
+  medium: "#b67619",
+  low: "#157a52",
 };
 
 export function ChartRiskDistribution({ data }: RiskDistributionProps) {
@@ -27,7 +27,7 @@ export function ChartRiskDistribution({ data }: RiskDistributionProps) {
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
         <XAxis
-          dataKey="level"
+          dataKey="label"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
           tickLine={false}
           axisLine={{ stroke: "var(--border)" }}
@@ -48,7 +48,7 @@ export function ChartRiskDistribution({ data }: RiskDistributionProps) {
         />
         <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={60}>
           {data.map((entry, index) => (
-            <Cell key={index} fill={RISK_COLORS[entry.level] || "var(--accent-blue)"} />
+            <Cell key={index} fill={RISK_COLORS[entry.key] || "var(--accent-blue)"} />
           ))}
         </Bar>
       </BarChart>

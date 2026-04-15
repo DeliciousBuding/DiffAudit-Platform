@@ -9,7 +9,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { RiskBadge } from "@/components/risk-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
-import { classifyRisk } from "@/lib/risk-report";
+import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
@@ -115,9 +115,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     : generateRocData(0.85);
 
   const riskDistData = [
-    { level: "High", count: riskCounts.high },
-    { level: "Medium", count: riskCounts.medium },
-    { level: "Low", count: riskCounts.low },
+    { key: "high", label: copy.sections.riskLabels.high, count: riskCounts.high },
+    { key: "medium", label: copy.sections.riskLabels.medium, count: riskCounts.medium },
+    { key: "low", label: copy.sections.riskLabels.low, count: riskCounts.low },
   ];
 
   const attackComparisonData = [
