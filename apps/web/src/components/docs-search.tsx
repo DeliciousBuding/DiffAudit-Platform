@@ -36,10 +36,10 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     return search(index, query);
   }, [query, index]);
 
-  // Reset selected index when results change
+  // Reset selected index when query changes (not results, to avoid effect)
   useEffect(() => {
     setSelectedIndex(0);
-  }, [results]);
+  }, [query]);
 
   // Ctrl+K / Cmd+K shortcut
   useEffect(() => {
