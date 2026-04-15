@@ -18,7 +18,7 @@ export default async function RootLayout({
   const locale = resolveLocaleFromHeaderStore(await headers());
 
   return (
-    <html lang={locale === "zh-CN" ? "zh-CN" : "en"} className="h-full antialiased">
+    <html lang={locale === "zh-CN" ? "zh-CN" : "en-US"} className="h-full antialiased">
       <body className="min-h-full bg-background text-foreground">{children}</body>
     </html>
   );
