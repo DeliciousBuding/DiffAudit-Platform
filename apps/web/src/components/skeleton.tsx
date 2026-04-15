@@ -5,11 +5,11 @@
 
 "use client";
 
-/** Base pulse block */
+/** Base shimmer block — premium skeleton with smooth left-to-right shimmer */
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-muted/30 ${className ?? ""}`}
+      className={`skeleton-pulse rounded-md ${className ?? ""}`}
       aria-hidden="true"
     />
   );
@@ -63,11 +63,11 @@ export function TableSkeleton({
 /** KPI card skeleton: title bar + large number + description line */
 export function KpiSkeleton({ className }: { className?: string }) {
   return (
-    <div className={`rounded-lg border border-border bg-card p-3 ${className ?? ""}`}>
+    <div className={`rounded-lg border border-border bg-card p-4 ${className ?? ""}`}>
       {/* label */}
       <Skeleton className="h-2.5 w-24" />
       {/* value */}
-      <Skeleton className="mt-2 h-7 w-16" />
+      <Skeleton className="mt-2 h-8 w-16" />
       {/* note */}
       <Skeleton className="mt-2 h-2.5 w-32" />
     </div>
@@ -92,8 +92,8 @@ export function SidebarSkeleton({ rows = 4 }: { rows?: number }) {
     <div className="p-3 space-y-3">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex items-start gap-2">
-          <div className="h-4 w-4 shrink-0 rounded-sm bg-muted/30 animate-pulse" />
-          <div className="flex-1 h-3 rounded bg-muted/30 animate-pulse" />
+          <Skeleton className="h-4 w-4 shrink-0 rounded-sm" />
+          <Skeleton className="h-3 flex-1 rounded" />
         </div>
       ))}
     </div>
@@ -105,9 +105,9 @@ export function ChartSkeleton({ height = 220 }: { height?: number }) {
   return (
     <div className="p-3">
       <div className="flex items-center justify-center" style={{ height }}>
-        <div className="space-y-2 w-full px-4">
+        <div className="space-y-3 w-full px-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-3 rounded bg-muted/30 animate-pulse" style={{ width: `${50 + Math.random() * 50}%` }} />
+            <Skeleton key={i} className="h-3 rounded" style={{ width: `${50 + Math.random() * 50}%` }} />
           ))}
         </div>
       </div>
@@ -139,7 +139,7 @@ export function CoverageBarSkeleton() {
 /** Audit track card skeleton */
 export function AuditTrackCardSkeleton() {
   return (
-    <div className="border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center gap-2 mb-2">
         <Skeleton className="h-6 w-6 rounded-full" />
         <Skeleton className="h-3 w-20" />

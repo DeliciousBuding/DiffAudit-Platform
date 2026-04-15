@@ -38,7 +38,7 @@ export default function Loading() {
         </div>
         <div className="p-3 space-y-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-3 w-full" style={{ width: `${60 + Math.random() * 40}%` }} />
+            <Skeleton key={i} className={`h-3 ${i % 3 === 0 ? 'w-3/4' : i % 3 === 1 ? 'w-full' : 'w-5/6'}`} />
           ))}
         </div>
       </section>

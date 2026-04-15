@@ -123,6 +123,8 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     setDemoMode(checked);
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEMO_MODE, checked ? "1" : "0");
+      // Set cookie so server components can detect demo mode
+      document.cookie = `platform-demo-mode=${checked ? "1" : "0"}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     } catch {}
   }
 
