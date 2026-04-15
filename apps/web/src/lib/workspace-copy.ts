@@ -134,7 +134,9 @@ export const WORKSPACE_COPY: Record<
       emptyJobs: string;
       emptyResults: string;
       emptyTasks: string;
+      emptyTasksCta: string;
       emptyHistory: string;
+      emptyHistoryCta: string;
       retry: string;
       retrying: string;
       retryTitle: string;
@@ -533,7 +535,9 @@ export const WORKSPACE_COPY: Record<
       emptyJobs: "No tasks running right now.",
       emptyResults: "No audit results yet.",
       emptyTasks: "No active tasks.",
+      emptyTasksCta: "Create your first audit",
       emptyHistory: "No task history yet.",
+      emptyHistoryCta: "Create an audit",
       retry: "Retry",
       retrying: "Retrying...",
       retryTitle: "Retry this job",
@@ -1061,7 +1065,9 @@ export const WORKSPACE_COPY: Record<
       emptyJobs: "当前没有运行中的任务。",
       emptyResults: "还没有审计结果。",
       emptyTasks: "当前没有活跃任务。",
+      emptyTasksCta: "创建第一个审计任务",
       emptyHistory: "还没有历史任务。",
+      emptyHistoryCta: "创建审计任务",
       retry: "重试",
       retrying: "重试中...",
       retryTitle: "重试此任务",

@@ -162,8 +162,19 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
 
   if (jobs.length === 0) {
     return (
-      <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-        {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
+      <div className="px-3 py-4 text-center">
+        <div className="text-xs text-muted-foreground mb-3">
+          {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
+        </div>
+        <a
+          href="/workspace/audits/new"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[color:var(--accent-blue)] bg-[color:var(--accent-blue)]/10 rounded-md hover:bg-[color:var(--accent-blue)]/20 transition-colors"
+        >
+          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path d="M12 5v14m-7-7h14" />
+          </svg>
+          {mode === "active" ? copy.emptyTasksCta : copy.emptyHistoryCta}
+        </a>
       </div>
     );
   }

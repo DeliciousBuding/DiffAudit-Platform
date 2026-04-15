@@ -218,6 +218,15 @@ export function JobDetailClient({
         <StatusBadge tone={statusTone(job.status)} compact>
           {statusLabel(job.status, copy.jobDetail.statusLabels)}
         </StatusBadge>
+        {(job.status === "queued" || job.status === "running") && (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium text-[color:var(--accent-blue)] bg-[color:var(--accent-blue)]/10 rounded-md">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--accent-blue)] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[color:var(--accent-blue)]"></span>
+            </span>
+            LIVE
+          </span>
+        )}
       </div>
 
       {/* Detail fields */}

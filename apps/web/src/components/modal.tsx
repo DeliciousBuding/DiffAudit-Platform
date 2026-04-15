@@ -18,6 +18,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   useEffect(() => {
     if (!open) return;
     previousFocusRef.current = document.activeElement as HTMLElement;
+
     // Focus the first interactive element in the modal
     const timer = setTimeout(() => {
       contentRef.current?.querySelector<HTMLElement>(
@@ -25,14 +26,48 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       )?.focus();
     }, 0);
 
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      // Focus trap: handle Tab and Shift+Tab
+      if (e.key === "Tab") {
+        if (!contentRef.current) return;
+
+        const focusableElements = contentRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const focusableArray = Array.from(focusableElements);
+
+        if (focusableArray.length === 0) return;
+
+        const firstElement = focusableArray[0];
+        const lastElement = focusableArray[focusableArray.length - 1];
+
+        if (e.shiftKey) {
+          // Shift+Tab: if on first element, wrap to last
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          // Tab: if on last element, wrap to first
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
     };
-    document.addEventListener("keydown", handleEsc);
+
+    document.addEventListener("keydown", handleKeyDown);
     document.body.style.overflow = "hidden";
+
     return () => {
       clearTimeout(timer);
-      document.removeEventListener("keydown", handleEsc);
+      document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
       previousFocusRef.current?.focus();
     };
