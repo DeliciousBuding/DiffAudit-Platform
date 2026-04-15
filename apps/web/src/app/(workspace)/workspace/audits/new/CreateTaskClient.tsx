@@ -261,6 +261,9 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 onClick={() => {
                   if (isCompleted) setStep(index + 1);
                 }}
+                disabled={!isCompleted && !isActive}
+                aria-label={`${step.title}${isCompleted ? ' (completed)' : isActive ? ' (current)' : ''}`}
+                aria-current={isActive ? 'step' : undefined}
                 className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 snap-start ${
                   isActive
                     ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
