@@ -4,7 +4,7 @@
  */
 
 export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancelled";
-export type StatusTone = "primary" | "success" | "warning" | "danger" | "neutral" | "info";
+export type StatusTone = "primary" | "success" | "warning" | "neutral" | "info";
 
 /**
  * Map job status to badge tone

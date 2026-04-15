@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useTheme } from "@/hooks/use-theme";
 
 export function BrandMark({
   compact = false,
@@ -19,8 +17,6 @@ export function BrandMark({
   prefetch?: boolean;
   ariaLabel?: string;
 }) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const showWordmark = !hideText && !compact;
 
   const className = [
@@ -31,20 +27,26 @@ export function BrandMark({
     .filter(Boolean)
     .join(" ");
 
-  // Use white logo in dark mode, black logo in light mode
-  const logoSrc = isDark
-    ? (showWordmark ? "/brand/diffaudit-logo-white.svg" : "/brand/diffaudit-logo-white-no-text.svg")
-    : (showWordmark ? "/brand/diffaudit-logo-black.svg" : "/brand/diffaudit-logo-black-no-text.svg");
+  // Render both light and dark logos; CSS toggles visibility based on data-theme
+  const lightSrc = showWordmark ? "/brand/diffaudit-logo-black.svg" : "/brand/diffaudit-logo-black-no-text.svg";
+  const darkSrc = showWordmark ? "/brand/diffaudit-logo-white.svg" : "/brand/diffaudit-logo-white-no-text.svg";
 
   const content = (
     <span className={className}>
-      <Image
-        src={logoSrc}
+      {/* Light mode logo — hidden in dark mode */}
+      <img
+        src={lightSrc}
         alt="DiffAudit"
-        width={showWordmark ? 827 : 552}
-        height={showWordmark ? 480 : 317}
-        className="brand-mark-image"
-        priority={hero}
+        className="brand-mark-image brand-logo-light"
+        loading={hero ? "eager" : "lazy"}
+      />
+      {/* Dark mode logo — hidden in light mode */}
+      <img
+        src={darkSrc}
+        alt=""
+        className="brand-mark-image brand-logo-dark"
+        aria-hidden="true"
+        loading={hero ? "eager" : "lazy"}
       />
     </span>
   );

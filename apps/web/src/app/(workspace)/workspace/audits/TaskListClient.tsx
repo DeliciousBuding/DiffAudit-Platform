@@ -169,7 +169,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           setError(null);
         } else {
           // API unavailable, show error
-          setError(copy.taskTable.apiError || "API unavailable");
+          setError("API unavailable");
           setJobs([]);
         }
       } catch (err) {

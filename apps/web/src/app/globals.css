@@ -995,6 +995,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  min-height: 72px;
   padding: 8px 24px;
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.92);
@@ -1203,6 +1204,25 @@ button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([c
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+/* Logo theme toggle: show light logo by default, dark logo hidden */
+.brand-logo-light {
+  display: block;
+}
+
+.brand-logo-dark {
+  display: none;
+}
+
+html[data-theme="dark"] .brand-logo-light,
+html.dark .brand-logo-light {
+  display: none;
+}
+
+html[data-theme="dark"] .brand-logo-dark,
+html.dark .brand-logo-dark {
+  display: block;
 }
 
 .brand-mark-symbol {
