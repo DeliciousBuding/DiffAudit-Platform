@@ -36,10 +36,11 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     return search(index, query);
   }, [query, index]);
 
-  // Reset selected index when query changes (not results, to avoid effect)
-  useEffect(() => {
+  // Handler to update query and reset selected index together
+  const handleQueryChange = useCallback((newQuery: string) => {
+    setQuery(newQuery);
     setSelectedIndex(0);
-  }, [query]);
+  }, []);
 
   // Ctrl+K / Cmd+K shortcut
   useEffect(() => {
@@ -112,7 +113,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={content.header.searchPlaceholder}
             className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
