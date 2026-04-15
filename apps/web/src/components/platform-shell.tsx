@@ -26,8 +26,11 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-2 px-3 py-2">
             <StatusBadge tone="info">{copy.shell.siteBadge}</StatusBadge>
           </div>
-          <div className="flex items-center gap-1 px-3 pb-3">
+          <div className="flex items-center gap-1 px-3 pb-2">
             <RuntimeStatusBadge locale={locale} />
+          </div>
+          <div className="px-3 pb-3">
+            <p className="text-xs text-muted-foreground">v0.1.0</p>
           </div>
         </div>
       </aside>
