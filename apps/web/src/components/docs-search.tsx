@@ -46,7 +46,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  // Focus input when opened
+  // Focus input when opened and search on query change
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -56,7 +56,6 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     }
   }, [open]);
 
-  // Search on query change
   useEffect(() => {
     if (query.length < 2) {
       setResults([]);
