@@ -35,7 +35,7 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 function KpiCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 text-3xl font-semibold leading-none">{value}</div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>
@@ -48,7 +48,7 @@ function KpiCardWithTrend({ label, value, note, trend }: { label: string; value:
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <span className="text-3xl font-semibold leading-none">{value}</span>
         <span className={`text-base ${trendColor}`}>{trendIcon}</span>
@@ -154,15 +154,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   // Suggested next step — 2.4.5
   const suggestions: string[] = [];
-  if (riskCounts.high > 0) {
-    suggestions.push(`有 ${riskCounts.high} 个高风险结果，建议对比防御策略降低泄露风险。`);
-  }
-  if (defendedRows === 0 && totalRows > 0) {
-    suggestions.push("已有审计结果但缺少防御对比，建议创建带防御配置的审计任务。");
-  }
-  if (riskCounts.medium > 2) {
-    suggestions.push(`${riskCounts.medium} 个中等风险结果，建议增加攻击轮次获取更准确的信号。`);
-  }
+  if (riskCounts.high > 0) suggestions.push(copy.suggestions.highRisk(riskCounts.high));
+  if (defendedRows === 0 && totalRows > 0) suggestions.push(copy.suggestions.noDefense);
+  if (riskCounts.medium > 2) suggestions.push(copy.suggestions.mediumRisk(riskCounts.medium));
 
   const isEmpty = totalRows === 0;
 
@@ -181,13 +175,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Black-box</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">高风险</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">Recon 成员推断审计</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">最低权限：仅需 100 个公开样本即可重建训练数据特征。适用于模型上线前的初步风险筛查。</p>
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            创建审计
+            {copy.auditTracks.createAudit}
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -197,13 +191,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Gray-box</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">高风险</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">PIA 隐私攻击审计</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">部分权限：可访问模型 API。基线 AUC 0.841，stochastic-dropout 防御后降至 0.828。量化风险强度 + 评估防御效果。</p>
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            创建审计
+            {copy.auditTracks.createAudit}
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -213,13 +207,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">White-box</span>
-            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">极高风险</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
           </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">GSA 梯度签名审计</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">完全权限：模型权重全访问。基线 AUC 0.998，W-1 强防御后降至 0.489（接近瞎猜）。刻画风险上界 + 最强防御评估。</p>
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            创建审计
+            {copy.auditTracks.createAudit}
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -231,8 +225,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       {totalRows > 0 && (
         <section className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-semibold text-foreground">审计覆盖度</h2>
-            <span className="text-xs text-muted-foreground">{defendedRows} / {totalRows} 条已防御 · {activeContracts} 个合约已注册</span>
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-foreground">{copy.coverageBar.title}</h2>
+            <span className="text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
           </div>
           <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--success)] rounded-full transition-all" style={{ width: `${totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0}%` }} />
@@ -240,15 +234,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[color:var(--accent-blue)]" />
-              <span className="text-muted-foreground">黑盒 <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0} 条</span></span>
+              <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[color:var(--warning)]" />
-              <span className="text-muted-foreground">灰盒 <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0} 条</span></span>
+              <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[color:var(--success)]" />
-              <span className="text-muted-foreground">白盒 <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0} 条</span></span>
+              <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
           </div>
         </section>
@@ -323,7 +317,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="grid gap-3 grid-cols-3">
             <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.high}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
@@ -332,7 +326,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </p>
             </div>
             <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.medium}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
@@ -341,7 +335,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </p>
             </div>
             <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.low}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
@@ -354,7 +348,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           {/* Risk Radar — 7.1 */}
           <section className="border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.chartTitles.riskRadar}
               </h2>
               <span className="text-xs text-muted-foreground">
@@ -372,7 +366,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       <div className="grid gap-3 lg:grid-cols-2">
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.aucDistribution}
             </h2>
           </div>
@@ -389,7 +383,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.rocCurve}
             </h2>
           </div>
@@ -401,7 +395,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {totalRisk > 0 && (
           <section className="border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.chartTitles.riskDistribution}
               </h2>
             </div>
@@ -413,7 +407,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.attackComparison}
             </h2>
           </div>
@@ -428,13 +422,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {/* Recent results table */}
         <section className="lg:col-span-2 border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.recentResults}
             </h2>
           </div>
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
-              <table className="w-full border-collapse text-sm">
+              <table className="w-full border-collapse text-xs">
                 <thead className="sticky top-0 bg-muted/30">
                   <tr className="border-b border-border">
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
@@ -483,7 +477,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {/* Tasks panel */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.tasks}
             </h2>
           </div>
@@ -511,7 +505,7 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
     <div className="space-y-4">
       {/* Page header */}
       <div className="border-b border-border pb-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
         <h1 className="mt-1 text-xl font-semibold">{copy.title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{copy.description}</p>
       </div>

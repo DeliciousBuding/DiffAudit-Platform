@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
@@ -148,6 +148,8 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     showSaved(copy.preferences.language);
   }
 
+  const themeListenerRef = useRef<{ mq: MediaQueryList; handler: (e: MediaQueryListEvent) => void } | null>(null);
+
   function handleThemeChange(newTheme: ThemeMode) {
     setTheme(newTheme);
     try {
@@ -159,6 +161,12 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
       document.documentElement.classList.toggle("dark", resolved === "dark");
       document.documentElement.style.colorScheme = resolved;
 
+      // Remove old listener if switching away from system or switching again
+      if (themeListenerRef.current) {
+        themeListenerRef.current.mq.removeEventListener("change", themeListenerRef.current.handler);
+        themeListenerRef.current = null;
+      }
+
       // Listen for OS theme changes when "system" is selected
       if (newTheme === "system") {
         const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -169,10 +177,20 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
           document.documentElement.style.colorScheme = next;
         };
         mq.addEventListener("change", handler);
+        themeListenerRef.current = { mq, handler };
       }
     } catch {}
     showSaved(copy.preferences.theme);
   }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (themeListenerRef.current) {
+        themeListenerRef.current.mq.removeEventListener("change", themeListenerRef.current.handler);
+      }
+    };
+  }, []);
 
   async function handleTestRuntime() {
     setRuntimeTesting(true);

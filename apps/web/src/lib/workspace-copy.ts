@@ -69,6 +69,22 @@ export const WORKSPACE_COPY: Record<
           defense: string;
         };
       };
+      auditTracks: {
+        blackBoxLabel: string; blackBoxTitle: string; blackBoxDesc: string;
+        grayBoxLabel: string; grayBoxTitle: string; grayBoxDesc: string;
+        whiteBoxLabel: string; whiteBoxTitle: string; whiteBoxDesc: string;
+        createAudit: string;
+      };
+      riskBadgeLabels: { high: string; medium: string; low: string; critical: string };
+      coverageBar: {
+        title: string; summaryText: (defended: number, total: number, contracts: number) => string;
+        tracks: Record<string, string>; trackCountSuffix: string;
+      };
+      suggestions: {
+        highRisk: (count: number) => string;
+        noDefense: string;
+        mediumRisk: (count: number) => string;
+      };
       riskInterpretations: {
         high: string;
         medium: string;
@@ -379,6 +395,24 @@ export const WORKSPACE_COPY: Record<
           coverage: "Coverage",
           defense: "Defense",
         },
+      },
+      auditTracks: {
+        blackBoxLabel: "Black-box", blackBoxTitle: "Recon Member Inference Audit", blackBoxDesc: "Lowest privilege: reconstructs training data features from just 100 public samples. Suitable for initial risk screening before model deployment.",
+        grayBoxLabel: "Gray-box", grayBoxTitle: "PIA Privacy Attack Audit", grayBoxDesc: "Partial access: model API available. Baseline AUC 0.841, drops to 0.828 with stochastic-dropout defense. Quantifies risk intensity + evaluates defense effectiveness.",
+        whiteBoxLabel: "White-box", whiteBoxTitle: "GSA Gradient Signature Audit", whiteBoxDesc: "Full access: model weights available. Baseline AUC 0.998, drops to 0.489 with W-1 strong defense (near random guessing). Characterizes risk upper bound + strongest defense evaluation.",
+        createAudit: "Create audit",
+      },
+      riskBadgeLabels: { high: "High risk", medium: "Medium risk", low: "Low risk", critical: "Critical risk" },
+      coverageBar: {
+        title: "Audit Coverage",
+        summaryText: (defended: number, total: number, contracts: number) => `${defended} / ${total} defended · ${contracts} contracts registered`,
+        tracks: { "black-box": "Black-box", "gray-box": "Gray-box", "white-box": "White-box" },
+        trackCountSuffix: " rows",
+      },
+      suggestions: {
+        highRisk: (count: number) => `${count} high-risk results detected. Compare defense strategies to reduce leakage risk.`,
+        noDefense: "Audit results exist but no defense comparison. Create a task with defense configuration.",
+        mediumRisk: (count: number) => `${count} medium-risk results detected. Increase attack rounds for more accurate signal.`,
       },
       riskInterpretations: {
         high: "High attack AUC — the model likely memorized training data. Compare defense strategies.",
@@ -823,6 +857,24 @@ export const WORKSPACE_COPY: Record<
           coverage: "覆盖率",
           defense: "防御效果",
         },
+      },
+      auditTracks: {
+        blackBoxLabel: "黑盒", blackBoxTitle: "Recon 成员推断审计", blackBoxDesc: "最低权限：仅需 100 个公开样本即可重建训练数据特征。适用于模型上线前的初步风险筛查。",
+        grayBoxLabel: "灰盒", grayBoxTitle: "PIA 隐私攻击审计", grayBoxDesc: "部分权限：可访问模型 API。基线 AUC 0.841，stochastic-dropout 防御后降至 0.828。量化风险强度 + 评估防御效果。",
+        whiteBoxLabel: "白盒", whiteBoxTitle: "GSA 梯度签名审计", whiteBoxDesc: "完全权限：模型权重全访问。基线 AUC 0.998，W-1 强防御后降至 0.489（接近瞎猜）。刻画风险上界 + 最强防御评估。",
+        createAudit: "创建审计",
+      },
+      riskBadgeLabels: { high: "高风险", medium: "中风险", low: "低风险", critical: "极高风险" },
+      coverageBar: {
+        title: "审计覆盖度",
+        summaryText: (defended: number, total: number, contracts: number) => `${defended} / ${total} 条已防御 · ${contracts} 个合约已注册`,
+        tracks: { "black-box": "黑盒", "gray-box": "灰盒", "white-box": "白盒" },
+        trackCountSuffix: " 条",
+      },
+      suggestions: {
+        highRisk: (count: number) => `有 ${count} 个高风险结果，建议对比防御策略降低泄露风险。`,
+        noDefense: "已有审计结果但缺少防御对比，建议创建带防御配置的审计任务。",
+        mediumRisk: (count: number) => `${count} 个中等风险结果，建议增加攻击轮次获取更准确的信号。`,
       },
       riskInterpretations: {
         high: "攻击 AUC 很高，模型很可能记住了训练数据。建议对比不同防御策略的效果。",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
@@ -139,22 +139,26 @@ export function JobDetailClient({
     }
   }, [jobId]);
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    const controller = new AbortController();
+    let cancelled = false;
 
     async function loop() {
+      if (cancelled) return;
       const current = await fetchJob();
-      // Poll every 3s for queued/running jobs
+      if (cancelled) return;
       if (current && (current.status === "queued" || current.status === "running")) {
-        // Use a timeout that can be aborted
-        const timer = setTimeout(loop, 3000);
-        return () => clearTimeout(timer);
+        timerRef.current = setTimeout(loop, 3000);
       }
     }
 
     void loop();
 
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [fetchJob]);
 
   const copy = WORKSPACE_COPY[locale];
