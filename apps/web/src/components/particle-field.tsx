@@ -3,13 +3,12 @@
 import { useEffect, useRef, useCallback } from "react";
 
 // ─── Config ────────────────────────────────────────────────────
-const PARTICLE_COUNT = 200;
-const CONNECT_DIST = 130;
-const MOUSE_RADIUS = 180;
-const MOUSE_FORCE = 9000;
-const SPRING_STRENGTH = 0.015;
-const DAMPING = 0.93;
-const BASE_DRIFT = 0.18;
+const PARTICLE_COUNT = 400;
+const CONNECT_DIST = 90;
+const MOUSE_RADIUS = 200;
+const MOUSE_FORCE = 12000;
+const SPRING_STRENGTH = 0.008;
+const DAMPING = 0.96;
 
 interface Particle {
   x: number;
@@ -20,8 +19,9 @@ interface Particle {
   vy: number;
   radius: number;
   alpha: number;
-  /** Per-particle phase for gentle oscillation */
   phase: number;
+  /** Noise timestep — simulates diffusion schedule */
+  noiseT: number;
 }
 
 function createParticles(w: number, h: number): Particle[] {
@@ -34,14 +34,23 @@ function createParticles(w: number, h: number): Particle[] {
       y,
       anchorX: x,
       anchorY: y,
-      vx: (Math.random() - 0.5) * BASE_DRIFT,
-      vy: (Math.random() - 0.5) * BASE_DRIFT,
-      radius: 1.5 + Math.random() * 2.2,
-      alpha: 0.35 + Math.random() * 0.55,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
+      radius: 1.0 + Math.random() * 1.6,
+      alpha: 0.3 + Math.random() * 0.5,
       phase: Math.random() * Math.PI * 2,
+      noiseT: Math.random() * 1000,
     });
   }
   return particles;
+}
+
+/** Simplex-like noise approximation for organic motion */
+function noise2D(x: number, y: number): number {
+  const s = Math.sin(x * 0.8 + y * 1.2) * 0.5 +
+            Math.sin(x * 1.7 - y * 0.9) * 0.3 +
+            Math.sin(x * 0.3 + y * 2.1) * 0.2;
+  return s;
 }
 
 export function ParticleField({ className }: { className?: string }) {
@@ -65,7 +74,6 @@ export function ParticleField({ className }: { className?: string }) {
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
 
-    // Re-scatter particles if canvas just initialized
     if (particlesRef.current.length === 0) {
       particlesRef.current = createParticles(w, h);
     }
@@ -75,15 +83,11 @@ export function ParticleField({ className }: { className?: string }) {
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    // Track mouse
     const handleMouse = (e: MouseEvent) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
-      mouseRef.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+      mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
     const handleMouseLeave = () => {
       mouseRef.current = { x: -9999, y: -9999 };
@@ -92,20 +96,14 @@ export function ParticleField({ className }: { className?: string }) {
     window.addEventListener("mousemove", handleMouse);
     canvasRef.current?.addEventListener("mouseleave", handleMouseLeave);
 
-    // Observe theme changes
     const observer = new MutationObserver(() => {
-      const theme = document.documentElement.getAttribute("data-theme");
-      isDarkRef.current = theme === "dark";
+      isDarkRef.current = document.documentElement.getAttribute("data-theme") === "dark";
     });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme", "class"],
-    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
     isDarkRef.current =
       document.documentElement.getAttribute("data-theme") === "dark" ||
       document.documentElement.classList.contains("dark");
 
-    // Animation loop
     const animate = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -119,21 +117,32 @@ export function ParticleField({ className }: { className?: string }) {
       const mouse = mouseRef.current;
       const particles = particlesRef.current;
 
-      timeRef.current += 0.008;
+      timeRef.current += 0.012;
       const t = timeRef.current;
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
-      // Update particles
+      // ─── Diffusion-inspired noise field ────────────────────
+      // Each particle follows a continuously evolving noise field,
+      // simulating the forward diffusion process (adding noise).
+      // Mouse proximity triggers "denoising" — particles snap toward structure.
       for (const p of particles) {
-        // Spring back to anchor
+        p.noiseT += 0.006;
+        const nx = noise2D(p.x * 0.005 + t * 0.3, p.y * 0.005 + p.phase);
+        const ny = noise2D(p.y * 0.005 - t * 0.25, p.x * 0.005 + p.phase + 50);
+
+        // Noise-driven flow (the "diffusion" force)
+        p.vx += nx * 0.12;
+        p.vy += ny * 0.12;
+
+        // Spring back to anchor (gentle structure pull)
         const dx = p.anchorX - p.x;
         const dy = p.anchorY - p.y;
         p.vx += dx * SPRING_STRENGTH;
         p.vy += dy * SPRING_STRENGTH;
 
-        // Mouse repulsion
+        // Mouse repulsion — "denoising" zone
         const mx = p.x - mouse.x;
         const my = p.y - mouse.y;
         const mDist = Math.sqrt(mx * mx + my * my);
@@ -143,108 +152,67 @@ export function ParticleField({ className }: { className?: string }) {
           p.vy += (my / mDist) * force;
         }
 
-        // Gentle drift oscillation — natural flow
-        p.vx += Math.sin(t * 1.2 + p.phase) * 0.06;
-        p.vy += Math.cos(t * 0.9 + p.phase * 1.3) * 0.06;
-
-        // Damping
         p.vx *= DAMPING;
         p.vy *= DAMPING;
 
-        // Move
         p.x += p.vx;
         p.y += p.vy;
 
-        // Soft boundary bounce
-        if (p.x < 0) {
-          p.x = 0;
-          p.vx *= -0.5;
-        }
-        if (p.x > w) {
-          p.x = w;
-          p.vx *= -0.5;
-        }
-        if (p.y < 0) {
-          p.y = 0;
-          p.vy *= -0.5;
-        }
-        if (p.y > h) {
-          p.y = h;
-          p.vy *= -0.5;
-        }
+        // Wrap around edges for infinite flow feel
+        if (p.x < -20) { p.x = w + 20; p.anchorX = p.x; }
+        if (p.x > w + 20) { p.x = -20; p.anchorX = p.x; }
+        if (p.y < -20) { p.y = h + 20; p.anchorY = p.y; }
+        if (p.y > h + 20) { p.y = -20; p.anchorY = p.y; }
       }
 
-      // Draw connections
+      // ─── Draw connections ────────────────────────────────
+      ctx.lineWidth = 0.4;
       for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i];
           const b = particles[j];
           const ddx = a.x - b.x;
           const ddy = a.y - b.y;
-          const dist = Math.sqrt(ddx * ddx + ddy * ddy);
-          if (dist < CONNECT_DIST) {
-            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.4;
+          const distSq = ddx * ddx + ddy * ddy;
+          if (distSq < CONNECT_DIST * CONNECT_DIST) {
+            const dist = Math.sqrt(distSq);
+            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.3;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            if (dark) {
-              ctx.strokeStyle = `rgba(140, 180, 255, ${lineAlpha})`;
-            } else {
-              ctx.strokeStyle = `rgba(0, 0, 0, ${lineAlpha * 0.35})`;
-            }
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = dark
+              ? `rgba(140, 180, 255, ${lineAlpha})`
+              : `rgba(0, 0, 0, ${lineAlpha * 0.4})`;
             ctx.stroke();
           }
         }
       }
 
-      // Draw particles
+      // ─── Draw particles ──────────────────────────────────
       for (const p of particles) {
-        // Displacement from anchor → visual excitement
-        const disp = Math.sqrt(
-          (p.x - p.anchorX) ** 2 + (p.y - p.anchorY) ** 2,
-        );
-        const excitement = Math.min(disp / 60, 1);
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        const excitement = Math.min(speed / 2, 1);
 
         if (dark) {
-          // Glow effect in dark mode
-          const glowRadius = p.radius * (2 + excitement * 3);
-          const gradient = ctx.createRadialGradient(
-            p.x,
-            p.y,
-            0,
-            p.x,
-            p.y,
-            glowRadius,
-          );
-          gradient.addColorStop(
-            0,
-            `rgba(140, 190, 255, ${p.alpha * (0.6 + excitement * 0.4)})`,
-          );
-          gradient.addColorStop(0.4, `rgba(91, 142, 249, ${p.alpha * 0.3})`);
-          gradient.addColorStop(1, `rgba(91, 142, 249, 0)`);
+          const glowR = p.radius * (2 + excitement * 3);
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+          grad.addColorStop(0, `rgba(140, 190, 255, ${p.alpha * (0.6 + excitement * 0.4)})`);
+          grad.addColorStop(0.4, `rgba(91, 142, 249, ${p.alpha * 0.25})`);
+          grad.addColorStop(1, `rgba(91, 142, 249, 0)`);
           ctx.beginPath();
-          ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2);
-          ctx.fillStyle = gradient;
+          ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
           ctx.fill();
 
-          // Core dot
           ctx.beginPath();
-          ctx.arc(
-            p.x,
-            p.y,
-            p.radius * (0.8 + excitement * 0.4),
-            0,
-            Math.PI * 2,
-          );
+          ctx.arc(p.x, p.y, p.radius * (0.8 + excitement * 0.5), 0, Math.PI * 2);
           ctx.fillStyle = `rgba(200, 220, 255, ${p.alpha * (0.7 + excitement * 0.3)})`;
           ctx.fill();
         } else {
-          // Light mode — bold dark dots
-          const r = p.radius * (0.9 + excitement * 0.4);
+          const r = p.radius * (0.7 + excitement * 0.5);
           ctx.beginPath();
           ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 0, 0, ${p.alpha * (0.3 + excitement * 0.3)})`;
+          ctx.fillStyle = `rgba(0, 0, 0, ${p.alpha * (0.25 + excitement * 0.3)})`;
           ctx.fill();
         }
       }

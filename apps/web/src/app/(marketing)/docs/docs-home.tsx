@@ -10,6 +10,7 @@ import { getDocsContent, getDocsPage } from "./docs-data";
 import { Tabs } from "@/components/tabs";
 import { DocsSearch } from "@/components/docs-search";
 import { BrandMark } from "@/components/brand-mark";
+import { UserAvatar } from "@/components/user-avatar";
 
 type DocsHomeProps = {
   loggedIn: boolean;
@@ -177,12 +178,9 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                 Ctrl+K
               </kbd>
             </button>
-            {loggedIn && (
-              <a href="/workspace" className="rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-all">
-                {content.header.openWorkspace}
-              </a>
-            )}
-            {!loggedIn && (
+            {loggedIn ? (
+              <UserAvatar />
+            ) : (
               <a href="/login" className="rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all">
                 {content.header.signIn}
               </a>

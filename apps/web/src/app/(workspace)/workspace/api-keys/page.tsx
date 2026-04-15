@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LOCALE_STORAGE_KEY, type Locale } from "@/components/language-picker";
 
 interface ApiKey {
   id: string;
@@ -11,6 +12,57 @@ interface ApiKey {
   scopes: string[];
   status: "active" | "revoked";
 }
+
+const COPY = {
+  "en-US": {
+    eyebrow: "API Keys",
+    title: "Manage API access credentials.",
+    description: "Create and manage API keys to access the DiffAudit platform programmatically. Keys are scoped to specific permissions and can be revoked at any time.",
+    createNew: "Create new key",
+    createTitle: "Create a new API key",
+    keyName: "Key name",
+    keyPlaceholder: "e.g. Production Runner, CI Pipeline",
+    permissions: "Permissions",
+    generate: "Generate key",
+    cancel: "Cancel",
+    successTitle: "Key created successfully",
+    successBody: "Copy your key now — you won't be able to see it again.",
+    copy: "Copy",
+    copied: "✓ Copied",
+    done: "Done",
+    activeKeys: "Active keys",
+    active: "Active",
+    revoked: "Revoked",
+    created: "Created",
+    lastUsed: "Last used",
+    revoke: "Revoke",
+    usageTitle: "API usage example",
+  },
+  "zh-CN": {
+    eyebrow: "API 密钥",
+    title: "管理 API 访问凭据。",
+    description: "创建和管理 API 密钥，通过编程方式访问 DiffAudit 平台。密钥具有特定权限范围，可随时撤销。",
+    createNew: "创建新密钥",
+    createTitle: "创建新的 API 密钥",
+    keyName: "密钥名称",
+    keyPlaceholder: "例如：生产环境 Runner、CI 管道",
+    permissions: "权限范围",
+    generate: "生成密钥",
+    cancel: "取消",
+    successTitle: "密钥创建成功",
+    successBody: "请立即复制密钥——之后将无法再次查看。",
+    copy: "复制",
+    copied: "✓ 已复制",
+    done: "完成",
+    activeKeys: "活跃密钥",
+    active: "活跃",
+    revoked: "已撤销",
+    created: "创建于",
+    lastUsed: "最近使用",
+    revoke: "撤销",
+    usageTitle: "API 使用示例",
+  },
+};
 
 const MOCK_KEYS: ApiKey[] = [
   {
@@ -43,6 +95,12 @@ const MOCK_KEYS: ApiKey[] = [
 ];
 
 export default function ApiKeysPage() {
+  const [locale] = useState<Locale>(() => {
+    if (typeof window === "undefined") return "en-US";
+    const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    return (stored === "zh-CN" || stored === "en-US") ? stored : "en-US";
+  });
+  const t = COPY[locale];
   const [keys] = useState<ApiKey[]>(MOCK_KEYS);
   const [showCreate, setShowCreate] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
@@ -69,15 +127,11 @@ export default function ApiKeysPage() {
       {/* Header */}
       <div className="mb-1">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          API Keys
+          {t.eyebrow}
         </p>
       </div>
-      <h1 className="text-xl font-semibold text-foreground mb-1">
-        Manage API access credentials.
-      </h1>
-      <p className="text-sm text-muted-foreground mb-6">
-        Create and manage API keys to access the DiffAudit platform programmatically. Keys are scoped to specific permissions and can be revoked at any time.
-      </p>
+      <h1 className="text-xl font-semibold text-foreground mb-1">{t.title}</h1>
+      <p className="text-sm text-muted-foreground mb-6">{t.description}</p>
 
       {/* Create key section */}
       <div className="mb-8">
@@ -89,25 +143,25 @@ export default function ApiKeysPage() {
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M12 5v14M5 12h14" />
             </svg>
-            Create new key
+            {t.createNew}
           </button>
         )}
 
         {showCreate && !createdKey && (
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <h3 className="text-sm font-semibold text-foreground mb-4">Create a new API key</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-4">{t.createTitle}</h3>
             <div className="mb-4">
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">Key name</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">{t.keyName}</label>
               <input
                 type="text"
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
-                placeholder="e.g. Production Runner, CI Pipeline"
+                placeholder={t.keyPlaceholder}
                 className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/30 focus:border-[var(--accent-blue)] transition-all"
               />
             </div>
             <div className="mb-5">
-              <label className="block text-xs font-medium text-muted-foreground mb-2">Permissions</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-2">{t.permissions}</label>
               <div className="flex flex-wrap gap-2">
                 {["audit:read", "audit:write", "results:read", "results:export", "admin"].map((scope) => (
                   <label key={scope} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs cursor-pointer hover:border-[var(--accent-blue)]/30 transition-colors">
@@ -123,13 +177,13 @@ export default function ApiKeysPage() {
                 disabled={!newKeyName.trim()}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-foreground text-background px-4 py-2 text-sm font-medium transition-all hover:opacity-90 disabled:opacity-40"
               >
-                Generate key
+                {t.generate}
               </button>
               <button
                 onClick={() => setShowCreate(false)}
                 className="rounded-xl px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           </div>
@@ -144,10 +198,8 @@ export default function ApiKeysPage() {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-foreground mb-1">Key created successfully</h3>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Copy your key now — you won&apos;t be able to see it again.
-                </p>
+                <h3 className="text-sm font-semibold text-foreground mb-1">{t.successTitle}</h3>
+                <p className="text-xs text-muted-foreground mb-3">{t.successBody}</p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 rounded-lg bg-background border border-border px-3 py-2 text-xs font-mono text-foreground truncate">
                     {createdKey}
@@ -156,7 +208,7 @@ export default function ApiKeysPage() {
                     onClick={handleCopy}
                     className="shrink-0 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground hover:border-[var(--accent-blue)] transition-all"
                   >
-                    {copied ? "✓ Copied" : "Copy"}
+                    {copied ? t.copied : t.copy}
                   </button>
                 </div>
               </div>
@@ -166,7 +218,7 @@ export default function ApiKeysPage() {
                 onClick={() => { setCreatedKey(null); setShowCreate(false); }}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                Done
+                {t.done}
               </button>
             </div>
           </div>
@@ -177,7 +229,7 @@ export default function ApiKeysPage() {
       <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
         <div className="px-5 py-3 border-b border-border bg-muted/10">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Active keys · {keys.filter(k => k.status === "active").length}
+            {t.activeKeys} · {keys.filter(k => k.status === "active").length}
           </h3>
         </div>
         <div className="divide-y divide-border">
@@ -186,7 +238,6 @@ export default function ApiKeysPage() {
               key={key.id}
               className={`px-5 py-4 flex items-center gap-4 transition-colors hover:bg-muted/5 ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
-              {/* Icon */}
               <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${
                 key.status === "active"
                   ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
@@ -197,7 +248,6 @@ export default function ApiKeysPage() {
                 </svg>
               </div>
 
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-sm font-medium text-foreground truncate">{key.name}</span>
@@ -206,38 +256,33 @@ export default function ApiKeysPage() {
                       ? "bg-[var(--accent-green)]/10 text-[var(--accent-green)]"
                       : "bg-muted/30 text-muted-foreground"
                   }`}>
-                    {key.status === "active" ? "Active" : "Revoked"}
+                    {key.status === "active" ? t.active : t.revoked}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                   <code className="font-mono">{key.prefix}</code>
                   <span>·</span>
-                  <span>Created {key.created}</span>
+                  <span>{t.created} {key.created}</span>
                   {key.lastUsed && (
                     <>
                       <span>·</span>
-                      <span>Last used {key.lastUsed}</span>
+                      <span>{t.lastUsed} {key.lastUsed}</span>
                     </>
                   )}
                 </div>
               </div>
 
-              {/* Scopes */}
               <div className="hidden md:flex items-center gap-1 shrink-0">
                 {key.scopes.map((scope) => (
-                  <span
-                    key={scope}
-                    className="inline-flex items-center rounded-md border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
-                  >
+                  <span key={scope} className="inline-flex items-center rounded-md border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
                     {scope}
                   </span>
                 ))}
               </div>
 
-              {/* Actions */}
               {key.status === "active" && (
                 <button className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground hover:text-[var(--accent-coral)] hover:border-[var(--accent-coral)]/30 transition-all">
-                  Revoke
+                  {t.revoke}
                 </button>
               )}
             </div>
@@ -250,7 +295,7 @@ export default function ApiKeysPage() {
         <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2 bg-[#222326]">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[#9ca0aa]">bash</span>
-            <span className="text-xs text-[#9ca0aa]">API usage example</span>
+            <span className="text-xs text-[#9ca0aa]">{t.usageTitle}</span>
           </div>
         </div>
         <pre className="p-4 overflow-x-auto text-sm leading-relaxed">
