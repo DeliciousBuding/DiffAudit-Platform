@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useTheme } from "@/hooks/use-theme";
 
 export function BrandMark({
   compact = false,
@@ -16,7 +19,10 @@ export function BrandMark({
   prefetch?: boolean;
   ariaLabel?: string;
 }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const showWordmark = !hideText && !compact;
+
   const className = [
     "brand-mark",
     hero ? "brand-mark-hero" : "",
@@ -25,10 +31,15 @@ export function BrandMark({
     .filter(Boolean)
     .join(" ");
 
+  // Use white logo in dark mode, black logo in light mode
+  const logoSrc = isDark
+    ? (showWordmark ? "/diffaudit-logo-white.svg" : "/diffaudit-logo-white-no-text.svg")
+    : (showWordmark ? "/brand/diffaudit-logo-black.svg" : "/brand/diffaudit-logo-black-no-text.svg");
+
   const content = (
     <span className={className}>
       <Image
-        src={showWordmark ? "/brand/diffaudit-logo-black.svg" : "/brand/diffaudit-logo-black-no-text.svg"}
+        src={logoSrc}
         alt="DiffAudit"
         width={showWordmark ? 827 : 552}
         height={showWordmark ? 480 : 317}
