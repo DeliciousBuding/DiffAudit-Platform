@@ -443,8 +443,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   max={1000}
                   value={form.rounds}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    if (!Number.isNaN(val) && val > 0) {
+                    const val = e.target.value === '' ? 1 : parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val >= 1 && val <= 1000) {
                       setForm((prev) => ({ ...prev, rounds: val }));
                     }
                   }}
@@ -463,8 +463,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   max={512}
                   value={form.batchSize}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    if (!Number.isNaN(val) && val > 0) {
+                    const val = e.target.value === '' ? 1 : parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val >= 1 && val <= 512) {
                       setForm((prev) => ({ ...prev, batchSize: val }));
                     }
                   }}
