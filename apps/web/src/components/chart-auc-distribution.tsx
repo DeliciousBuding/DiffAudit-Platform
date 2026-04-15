@@ -30,7 +30,7 @@ export function ChartAucDistribution({ data }: AucDistributionProps) {
   }
 
   return (
-    <ResponsiveContainer width="100%" height="100%" minHeight={220} aspect={1.8}>
+    <ResponsiveContainer width="100%" height={220}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
         <XAxis
