@@ -4,7 +4,15 @@ export function BrandMark() {
   return <SiteBrandMark compact href="/" prefetch={false} />;
 }
 
-export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" }) {
+export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" | "key" }) {
+  if (icon === "key") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
+        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+      </svg>
+    );
+  }
+
   if (icon === "spark") {
     return (
       <svg
