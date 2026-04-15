@@ -23,11 +23,13 @@ interface ChartRiskRadarProps {
   height?: number;
 }
 
-/** Shared tooltip style for charts — avoids duplication */
+/** Shared tooltip style for charts */
 const chartTooltipStyle: React.CSSProperties = {
   fontSize: 11,
-  borderRadius: 4,
-  padding: "4px 8px",
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
 };
 
 export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
@@ -92,7 +94,7 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
             if (!payload?.length) return null;
             const p = payload[0];
             return (
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4, padding: "6px 10px", ...chartTooltipStyle }}>
+              <div style={{ ...chartTooltipStyle, padding: "6px 10px" }}>
                 <div style={{ fontWeight: 600 }}>{p.payload?.label ?? p.name}</div>
                 <div style={{ color: "var(--muted-foreground)" }}>{(p.value as number)?.toFixed(2)}</div>
               </div>
