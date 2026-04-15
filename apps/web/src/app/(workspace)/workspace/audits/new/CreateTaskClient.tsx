@@ -195,7 +195,27 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
     <div className="space-y-4">
       {/* Step indicator */}
       <div className="border border-border bg-card">
-        <div className="flex items-center gap-0 border-b border-border bg-muted/20">
+        {/* Progress header */}
+        <div className="px-4 py-3 border-b border-border bg-muted/10">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-foreground">
+              {labels.stepProgress || "Step"} {form.step} {labels.stepOf || "of"} {steps.length}
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {Math.round((form.step / steps.length) * 100)}% {labels.complete || "complete"}
+            </span>
+          </div>
+          {/* Progress bar */}
+          <div className="h-1.5 bg-muted/40 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[var(--accent-blue)] transition-all duration-300 ease-out"
+              style={{ width: `${(form.step / steps.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Step tabs */}
+        <div className="flex items-center gap-0 border-b border-border bg-muted/20 overflow-x-auto">
           {steps.map((step, index) => {
             const isActive = form.step === index + 1;
             const isCompleted = form.step > index + 1;
@@ -206,7 +226,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 onClick={() => {
                   if (isCompleted) setStep(index + 1);
                 }}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                   isActive
                     ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
                     : isCompleted
@@ -225,7 +245,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 >
                   {isCompleted ? "\u2713" : step.label}
                 </span>
-                {step.title}
+                <span className="hidden sm:inline">{step.title}</span>
               </button>
             );
           })}

@@ -288,6 +288,11 @@ export const WORKSPACE_COPY: Record<
         systemGap: string;
         workspace: string;
       };
+      metricTooltips: {
+        auc: string;
+        asr: string;
+        tpr: string;
+      };
     };
     settings: {
       eyebrow: string;
@@ -563,6 +568,9 @@ export const WORKSPACE_COPY: Record<
         whiteBoxNote: "Requires full model weights and gradient access.",
       },
       labels: {
+        stepProgress: "Step",
+        stepOf: "of",
+        complete: "complete",
         selectModel: "Target model",
         modelPlaceholder: "Select a model from catalog",
         rounds: "Attack rounds",
@@ -729,6 +737,11 @@ export const WORKSPACE_COPY: Record<
         label: "Label",
         systemGap: "System Gap",
         workspace: "Workspace",
+      },
+      metricTooltips: {
+        auc: "Area Under Curve - measures attack effectiveness (0-1, higher = more leakage)",
+        asr: "Attack Success Rate - percentage of successful attacks",
+        tpr: "True Positive Rate at 1% False Positive Rate - precision metric",
       },
     },
     settings: {
@@ -1073,6 +1086,9 @@ export const WORKSPACE_COPY: Record<
         whiteBoxNote: "需要完整的模型权重和梯度信息。",
       },
       labels: {
+        stepProgress: "步骤",
+        stepOf: "共",
+        complete: "完成",
         selectModel: "目标模型",
         modelPlaceholder: "从目录中选择模型",
         rounds: "攻击轮次",
@@ -1239,6 +1255,11 @@ export const WORKSPACE_COPY: Record<
         label: "名称",
         systemGap: "系统缺口",
         workspace: "工作区",
+      },
+      metricTooltips: {
+        auc: "曲线下面积 - 衡量攻击有效性 (0-1，越高表示泄露越严重)",
+        asr: "攻击成功率 - 成功攻击的百分比",
+        tpr: "1% 假阳性率下的真阳性率 - 精确度指标",
       },
     },
     settings: {
