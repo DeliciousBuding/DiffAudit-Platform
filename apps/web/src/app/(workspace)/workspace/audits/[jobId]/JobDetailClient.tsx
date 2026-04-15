@@ -82,9 +82,9 @@ function LogTail({ label, content, linesLabel }: { label: string; content: strin
         <span className="mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
-        <span className="text-[10px] text-muted-foreground">{tail.length} {linesLabel}</span>
+        <span className="text-xs text-muted-foreground">{tail.length} {linesLabel}</span>
       </div>
-      <pre className="mono text-[10px] leading-relaxed p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
+      <pre className="mono text-xs leading-relaxed p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
         {tail.join("\n")}
       </pre>
     </div>
@@ -255,7 +255,7 @@ export function JobDetailClient({
           <div className="text-[10px] font-semibold uppercase tracking-wider text-warning mb-1">
             {copy.jobDetail.labels.error}
           </div>
-          <pre className="mono text-[10px] text-warning whitespace-pre-wrap break-all">
+          <pre className="mono text-xs text-warning whitespace-pre-wrap break-all">
             {job.error}
           </pre>
         </div>

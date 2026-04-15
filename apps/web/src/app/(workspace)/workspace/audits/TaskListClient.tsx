@@ -158,17 +158,17 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
               <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
             </div>
-            <div className="mono text-[10px] text-muted-foreground mb-1 truncate">
+            <div className="mono text-xs text-muted-foreground mb-1 truncate">
               {job.contract_key}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="truncate">{job.workspace_name}</span>
-              <span className="text-[10px] whitespace-nowrap ml-2">
+              <span className="text-xs whitespace-nowrap ml-2">
                 {formatDuration(job.created_at, job.updated_at)}
               </span>
             </div>
             {job.error && (
-              <div className="mono mt-1.5 text-[10px] text-warning truncate">
+              <div className="mono mt-1.5 text-xs text-warning truncate">
                 {job.error}
               </div>
             )}
@@ -203,7 +203,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
             >
               <td className="px-3 py-2">
                 <div className="font-medium text-xs">{job.job_id}</div>
-                <div className="mono text-[10px] text-muted-foreground mt-0.5">{job.contract_key}</div>
+                <div className="mono text-xs text-muted-foreground mt-0.5">{job.contract_key}</div>
               </td>
               <td className="px-3 py-2">
                 <span className="text-xs text-muted-foreground">{job.job_type}</span>
