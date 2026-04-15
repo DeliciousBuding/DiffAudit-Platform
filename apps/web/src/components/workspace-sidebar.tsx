@@ -63,7 +63,6 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
           <Link
             key={item.href}
             href={item.href}
-            prefetch={false}
             aria-current={active ? "page" : undefined}
             className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
             title={item.subtitle}
