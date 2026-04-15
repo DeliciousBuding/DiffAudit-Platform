@@ -117,9 +117,9 @@ export function LoginForm({
       ) : null}
 
       {error ? (
-        <p className="text-sm text-[#bf2f2f]">{error}</p>
+        <p className="text-sm text-[var(--risk-high)]">{error}</p>
       ) : oauthError ? (
-        <p className="text-sm text-[#bf2f2f]">{copy.error}</p>
+        <p className="text-sm text-[var(--risk-high)]">{copy.error}</p>
       ) : (
         <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
       )}

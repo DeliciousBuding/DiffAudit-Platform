@@ -139,7 +139,9 @@ export const WORKSPACE_COPY: Record<
         trackBlackBox: string;
         trackGrayBox: string;
         trackWhiteBox: string;
+        trackFilterLabel: string;
         searchPlaceholder: string;
+        searchLabel: string;
         activeFilters: string;
       };
     };
@@ -524,7 +526,9 @@ export const WORKSPACE_COPY: Record<
         trackBlackBox: "Black-box/Recon",
         trackGrayBox: "Gray-box/PIA",
         trackWhiteBox: "White-box/GSA",
+        trackFilterLabel: "Filter by track",
         searchPlaceholder: "Search contract key or job ID",
+        searchLabel: "Search contracts or jobs",
         activeFilters: "active",
       },
     },
@@ -1032,7 +1036,9 @@ export const WORKSPACE_COPY: Record<
         trackBlackBox: "黑盒/Recon",
         trackGrayBox: "灰盒/PIA",
         trackWhiteBox: "白盒/GSA",
+        trackFilterLabel: "按轨道筛选",
         searchPlaceholder: "搜索合同项或任务 ID",
+        searchLabel: "搜索合同或任务",
         activeFilters: "个筛选",
       },
     },

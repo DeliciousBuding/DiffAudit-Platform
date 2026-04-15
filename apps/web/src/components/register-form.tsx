@@ -106,7 +106,7 @@ export function RegisterForm({
       ) : null}
 
       {error ? (
-        <p className="text-sm text-[#bf2f2f]">{error}</p>
+        <p className="text-sm text-[var(--risk-high)]">{error}</p>
       ) : (
         <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
       )}

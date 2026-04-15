@@ -100,7 +100,7 @@ export function Tooltip({
 
   const tooltipElement = visible ? (
     <div
-      className={`pointer-events-none fixed z-[200] ${positionClasses[position]}`}
+      className={`pointer-events-none fixed z-[50] ${positionClasses[position]}`}
       style={{
         top: tooltipRect.top,
         left: tooltipRect.left,
@@ -124,6 +124,7 @@ export function Tooltip({
         onFocus={handleEnter}
         onBlur={handleLeave}
         className="inline-flex"
+        aria-hidden="true"
       >
         {children}
       </span>

@@ -73,6 +73,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
 
   const exportCompetition = useCallback(async () => {
     setIsExporting(true);
+    let tempDiv: HTMLDivElement | null = null;
 
     try {
       const html = generateCompetitionReportHTML({
@@ -83,7 +84,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
       });
 
       const pdf = new jsPDF("p", "mm", "a4");
-      const tempDiv = document.createElement("div");
+      tempDiv = document.createElement("div");
       tempDiv.innerHTML = html;
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
@@ -99,6 +100,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
       });
 
       document.body.removeChild(tempDiv);
+      tempDiv = null;
 
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -123,6 +125,9 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
       pdf.save(`DiffAudit-Competition-${dateStr}.pdf`);
     } catch (err) {
       console.error("Competition PDF export failed:", err);
+      if (tempDiv && document.body.contains(tempDiv)) {
+        document.body.removeChild(tempDiv);
+      }
       // Fallback to HTML
       const html = generateCompetitionReportHTML({ rows, catalogSize, defendedRows, locale });
       const blob = new Blob([html], { type: "text/html;charset=utf-8" });

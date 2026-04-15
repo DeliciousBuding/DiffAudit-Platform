@@ -98,11 +98,12 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]" role="dialog" aria-modal="true" aria-label={content.header.searchPlaceholder}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={() => setOpen(false)}
+        aria-hidden="true"
       />
 
       {/* Search panel */}

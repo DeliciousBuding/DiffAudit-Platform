@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -62,6 +62,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Filter models by selected attack type track
   const filteredModels = useMemo(() => {
@@ -154,7 +155,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setSubmitState("success");
 
       // Redirect after a short delay
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         router.push("/workspace/audits");
       }, 1500);
     } catch (err) {
@@ -162,6 +163,15 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setErrorMessage(err instanceof Error ? err.message : labels.submissionFailed);
     }
   }, [form.attackType, form.selectedContractKey, form.rounds, form.batchSize, form.adaptiveSampling, router]);
+
+  // Cleanup redirect timer on unmount
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   // Step indicator
   const steps = [
@@ -412,7 +422,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   }`}
                 >
                   <span
-                    className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
+                    className={`inline-block h-3.5 w-3.5 rounded-full bg-[var(--color-bg-primary)] shadow transition-transform ${
                       form.adaptiveSampling ? "translate-x-4" : "translate-x-0.5"
                     }`}
                   />

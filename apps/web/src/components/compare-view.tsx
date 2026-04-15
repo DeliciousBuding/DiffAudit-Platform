@@ -226,7 +226,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
                 const d = pair.defended;
                 return (
                   <tr
-                    key={`${pair.attack}-${pair.defended?.defense ?? i}`}
+                    key={`${pair.attack}-${pair.model}-${pair.defended?.defense ?? "none"}-${i}`}
                     className={`border-b border-border ${i % 2 === 0 ? "bg-background" : "bg-muted/10"}`}
                   >
                     <td className="px-3 py-2 font-medium">{pair.attack}</td>

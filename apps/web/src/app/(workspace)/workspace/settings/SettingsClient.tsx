@@ -261,7 +261,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
                 aria-label={`${copy.systemStatus.demoMode}: ${demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}`}
               >
                 <span
-                  className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
+                  className={`inline-block h-3.5 w-3.5 rounded-full bg-[var(--color-bg-primary)] shadow transition-transform ${
                     demoMode ? "translate-x-[1.125rem]" : "translate-x-1"
                   }`}
                 />

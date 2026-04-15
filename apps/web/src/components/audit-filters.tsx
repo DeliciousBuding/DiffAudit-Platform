@@ -108,6 +108,8 @@ export function AuditFilters({ locale = "en-US", onFilterChange }: AuditFiltersP
 
       {/* Track dropdown */}
       <select
+        id="audit-track-filter"
+        aria-label={copy.trackFilterLabel}
         value={track}
         onChange={handleTrackChange}
         className="inline-flex items-center rounded-md border border-border bg-background px-2 py-1 text-[11px] font-medium text-foreground outline-none transition-colors hover:bg-muted/40 focus:border-[rgba(47,109,246,0.52)] focus:ring-2 focus:ring-[rgba(47,109,246,0.08)]"
@@ -126,7 +128,9 @@ export function AuditFilters({ locale = "en-US", onFilterChange }: AuditFiltersP
       <div className="relative flex-1 max-w-[220px]">
         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none select-none">&#x2315;</span>
         <input
+          id="audit-filter-search"
           type="text"
+          aria-label={copy.searchLabel}
           value={search}
           onChange={handleSearchChange}
           placeholder={copy.searchPlaceholder}
