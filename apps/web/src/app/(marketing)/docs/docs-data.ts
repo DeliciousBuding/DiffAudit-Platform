@@ -74,48 +74,48 @@ function zhContent(): DocsContent {
         group: "开始使用",
         navLabel: "快速开始",
         eyebrow: "快速开始",
-        title: "DiffAudit 概述与首次审计",
+        title: "DiffAudit 概述",
         summary:
-          "从统一入口进入站点，在 Audits 创建任务，在 Workspace 与 Reports 查看运行和风险结果。文档页的结构与真实产品路径保持一致。",
+          "DiffAudit 是一套成员推理风险审计系统，涵盖目录管理、任务执行、状态追踪与证据报告四个模块。本文档按产品实际路径组织。",
         sections: [
           {
             id: "overview",
             label: "概述",
-            title: "这是一个围绕隐私风险审计组织的工作台",
+            title: "系统定位与架构",
             paragraphs: [
-              "DiffAudit 不是一个展示实验结果的静态站点，而是一套把目录、任务、运行状态、证据表与报告解释收口到同一工作台的审计产品。",
-              "文档页本身也遵循这种结构：左侧是文档树，中间是当前文档，顶部是当前文档的内容锚点，而不是把所有内容堆成一页。",
+              "DiffAudit 将目录、任务、运行状态、证据表与报告解释整合在统一的工作台中。用户通过 Web 前端发起审计任务，任务经由 API Gateway 转发至 Runtime-Server，最终由 Python Runner 执行具体实验。",
+              "系统的输出包括 AUC、ASR、TPR@FPR 等量化指标，以及基于这些指标的风险分级与防御效果对照。",
             ],
             rows: [
               { eyebrow: "入口", title: "统一站点入口", body: "首页、登录、文档和工作台共用同一品牌入口与导航体系。", tone: "blue" },
-              { eyebrow: "执行", title: "任务在 Audits 发起", body: "选择目标模型、实验模板和上下文后提交任务。", tone: "neutral" },
-              { eyebrow: "解释", title: "结果在 Reports 完成解释", body: "AUC、ASR、TPR、风险等级和覆盖缺口会被整理成可复核结论。", tone: "amber" },
+              { eyebrow: "执行", title: "任务发起", body: "在 Audits 页面选择目标模型、攻击类型和执行参数后提交任务。", tone: "neutral" },
+              { eyebrow: "解释", title: "结果解释", body: "AUC、ASR、TPR 和风险等级在 Workspace 与 Reports 页面汇总展示，并支持 CSV/PDF 导出。", tone: "amber" },
             ],
           },
           {
             id: "first-audit",
-            label: "第一次使用",
-            title: "三步完成第一次审计",
+            label: "首次审计",
+            title: "首次审计流程",
             paragraphs: [
-              "正确路径不是先找后端接口，而是先进入产品，再沿着任务流转理解整套系统。",
+              "完成一次完整的审计任务需要三个步骤：认证登录、创建任务、查看结果。",
             ],
             rows: [
-              { eyebrow: "01", title: "登录并进入工作台", body: "通过统一认证进入站点，之后保持在同一产品壳层里完成操作。", tone: "blue" },
-              { eyebrow: "02", title: "创建新的审计任务", body: "在 Audits 选择目标对象并发起运行，任务会流向 Runtime-Server 和具体 Runner。", tone: "neutral" },
-              { eyebrow: "03", title: "回看结果并导出", body: "在 Workspace 看状态，在 Reports 看结果解释和导出材料。", tone: "green" },
+              { eyebrow: "01", title: "登录工作台", body: "通过认证后进入 Workspace 页面，查看当前任务状态和最近的审计结果。", tone: "blue" },
+              { eyebrow: "02", title: "创建审计任务", body: "在 Audits 页面选择目标模型和攻击参数，提交后任务自动执行。", tone: "neutral" },
+              { eyebrow: "03", title: "查看与导出结果", body: "任务完成后，在 Workspace 查看状态概览，在 Reports 查看详细分析和导出报告。", tone: "green" },
             ],
           },
           {
             id: "common-routes",
             label: "常用入口",
-            title: "最常用的页面入口",
+            title: "功能入口",
             paragraphs: [
-              "读完这一页后，用户应该直接知道下一步去哪里，而不是停留在文档里。",
+              "以下链接可直接跳转到对应功能页面。",
             ],
             links: [
               { title: "Workspace", body: "查看当前任务、最近结果和系统状态。", href: "/workspace", cta: "打开 Workspace" },
-              { title: "Audits", body: "创建任务并跟踪运行。", href: "/workspace/audits", cta: "前往 Audits" },
-              { title: "Reports", body: "查看风险解释、覆盖缺口与导出。", href: "/workspace/reports", cta: "前往 Reports" },
+              { title: "Audits", body: "创建任务并跟踪运行状态。", href: "/workspace/audits", cta: "前往 Audits" },
+              { title: "Reports", body: "查看风险解释、覆盖缺口与导出报告。", href: "/workspace/reports", cta: "前往 Reports" },
             ],
           },
         ],
@@ -125,37 +125,35 @@ function zhContent(): DocsContent {
         group: "产品结构",
         navLabel: "工作台结构",
         eyebrow: "产品结构",
-        title: "四个核心工作区",
+        title: "工作台模块",
         summary:
-          "平台不是按后端模块暴露给用户，而是按用户要做什么组织成四个工作区：Workspace、Audits、Reports、Settings。",
+          "工作台包含四个模块：Workspace（总览）、Audits（任务管理）、Reports（结果分析）、Settings（系统配置）。",
         sections: [
           {
             id: "workspace-map",
-            label: "页面地图",
-            title: "工作台骨架",
+            label: "模块概览",
+            title: "四个功能模块",
             paragraphs: [
-              "全站文档和产品都应该先讲清这个骨架：总览、操作、解释、控制。",
+              "工作台按用户操作类型组织为四个页面，每个页面承担明确的职责。",
             ],
             rows: [
-              { eyebrow: "Home", title: "Workspace", body: "展示当前结果量、运行态和下一步动作。", tone: "blue" },
-              { eyebrow: "Run", title: "Audits", body: "承担任务创建、运行跟踪和结果回看。", tone: "neutral" },
-              { eyebrow: "Read", title: "Reports", body: "把实验结果整理成风险解释与导出材料。", tone: "amber" },
-              { eyebrow: "Control", title: "Settings", body: "管理默认参数、系统状态和账户环境。", tone: "green" },
+              { eyebrow: "总览", title: "Workspace", body: "KPI 指标、风险分布雷达图、最近结果表和下一步建议。", tone: "blue" },
+              { eyebrow: "执行", title: "Audits", body: "任务创建向导、活跃任务列表和历史任务记录。", tone: "neutral" },
+              { eyebrow: "分析", title: "Reports", body: "AUC/ROC 分布图、风险等级分布、攻击效果对比和 CSV 导出。", tone: "amber" },
+              { eyebrow: "配置", title: "Settings", body: "默认参数设置、系统连接状态和关于系统说明。", tone: "green" },
             ],
           },
           {
             id: "page-grammar",
-            label: "页面语法",
-            title: "每一页都遵循同一套结构语法",
+            label: "页面结构",
+            title: "页面层级结构",
             paragraphs: [
-              "页面层级固定为：全局壳层、页面头部、摘要带、主工作区、辅助工作区。",
-              "文档页本身也应该采用相同语法，因此正文区是阅读面，左侧是文档树，顶部是当前文档的内容目录。",
+              "每个页面遵循统一的结构层级：全局壳层、页面头部（标题 + 一句话描述）、主工作区、辅助工作区。",
             ],
             rows: [
-              { title: "页面头部", body: "负责说明这一页的目的和一句话摘要。", tone: "neutral" },
-              { title: "摘要带", body: "只放最关键的状态和数字，不抢正文阅读。", tone: "neutral" },
-              { title: "主工作区", body: "承担这一页的核心任务。", tone: "blue" },
-              { title: "辅助区", body: "只补充，不重复主内容。", tone: "neutral" },
+              { title: "页面头部", body: "说明当前页面的目的和一句话摘要。", tone: "neutral" },
+              { title: "主工作区", body: "承担页面的核心功能和数据展示。", tone: "blue" },
+              { title: "辅助区", body: "补充信息，与主工作区不重复。", tone: "neutral" },
             ],
           },
         ],
@@ -165,46 +163,46 @@ function zhContent(): DocsContent {
         group: "产品结构",
         navLabel: "审计线路",
         eyebrow: "核心概念",
-        title: "从黑盒到白盒的审计深度",
+        title: "审计线路与风险分级",
         summary:
-          "DiffAudit 的产品价值来自逐层递进的证据链，而不是单次脚本执行结果。文档需要先把这个结构讲清楚。",
+          "系统提供三条审计线路（Recon/PIA/GSA），覆盖从黑盒到白盒的攻击深度。每条线路的输出统一转换为风险等级。",
         sections: [
           {
             id: "tracks",
             label: "三条线路",
             title: "三条审计线路",
             paragraphs: [
-              "平台把不同深度的攻击与证据组织成三条清晰线路，便于从筛查到验证逐层推进。",
+              "三条线路按攻击所需的前置信息量从低到高排列，便于从快速筛查到深度验证逐级推进。",
             ],
             rows: [
-              { eyebrow: "Black-box", title: "Recon", body: "以最低前置成本观察模型是否暴露成员信号。", tone: "blue" },
-              { eyebrow: "Gray-box", title: "PIA", body: "利用部分模型内部信息增强攻击线索和解释力。", tone: "amber" },
-              { eyebrow: "White-box", title: "GSA", body: "下钻到参数、梯度或训练痕迹，形成更强证据链。", tone: "coral" },
+              { eyebrow: "Black-box", title: "Recon（黑盒）", body: "仅需模型输入输出接口，以最低成本判断模型是否暴露成员信号。", tone: "blue" },
+              { eyebrow: "Gray-box", title: "PIA（灰盒）", body: "需要部分模型内部信息（如中间层激活值），增强攻击效果和可解释性。", tone: "amber" },
+              { eyebrow: "White-box", title: "GSA（白盒）", body: "需要完全访问模型参数和梯度，形成最强的证据链。", tone: "coral" },
             ],
           },
           {
             id: "risk-levels",
             label: "风险分级",
-            title: "结果如何被转成风险等级",
+            title: "风险分级标准",
             paragraphs: [
-              "前端不会只显示指标，而是把结果进一步翻译成等级和解释。",
+              "系统根据 AUC 指标将审计结果划分为三个风险等级，每个等级附带处理建议。",
             ],
             table: {
               columns: ["等级", "阈值", "说明"],
               rows: [
-                ["高风险", "AUC > 0.85", "成员信号显著，需要优先处理并继续查看防御对照。"],
-                ["中风险", "0.65 ≤ AUC ≤ 0.85", "存在可利用线索，建议继续分析与加固。"],
-                ["低风险", "AUC < 0.65", "攻击接近随机或暴露较低，可作为基线继续监控。"],
+                ["高风险", "AUC > 0.85", "成员信号显著，建议优先评估防御策略效果。"],
+                ["中风险", "0.65 ≤ AUC ≤ 0.85", "存在可检测信号，建议增加攻击轮次以获取更精确的评估。"],
+                ["低风险", "AUC < 0.65", "攻击效果接近随机，可作为安全基线参考。"],
               ],
             },
           },
           {
             id: "interpretation",
             label: "结果解释",
-            title: "从指标到结论",
+            title: "指标解读方法",
             paragraphs: [
-              "每一个重要结果面都应该遵循同样的解释链条：原始指标、风险标签、短解释、下一步动作。",
-              "这也是 Reports 页和文档页需要始终对齐的产品语义。",
+              "审计结果包含三个核心指标：AUC（区分训练集与非成员样本的能力）、ASR（攻击成功率）和 TPR@FPR（固定误报率下的检测率）。",
+              "Reports 页面将这些指标转换为可视化的风险分布图和攻击效果对比图，便于判断模型泄露风险。",
             ],
           },
         ],
@@ -212,33 +210,33 @@ function zhContent(): DocsContent {
       {
         slug: "deployment-runtime",
         group: "运行与接入",
-        navLabel: "部署",
+        navLabel: "部署架构",
         eyebrow: "运行与接入",
         title: "Platform → Runtime-Server → Runners",
         summary:
-          "这部分不是部署命令列表，而是帮助读者理解任务和结果是如何在三层系统里流动的。",
+          "系统由三层组件构成：Platform 负责任务编排与结果展示，Runtime-Server 负责任务调度与状态管理，Runners 负责执行具体实验。",
         sections: [
           {
             id: "tiers",
             label: "三层架构",
-            title: "平台的三层分工",
+            title: "系统分层职责",
             paragraphs: [
-              "前端负责入口、调度和解释，运行时服务负责任务生命期，具体实验则由 Runner 执行。",
+              "Web 前端通过 Next.js 构建，API Gateway 使用 Go 语言实现。Runtime-Server 同样使用 Go，Python Runner 负责具体的攻击实验执行。",
             ],
             rows: [
-              { eyebrow: "1", title: "Platform", body: "Web 前端与 API Gateway，处理入口、编排、展示和报告组织。", tone: "blue" },
-              { eyebrow: "2", title: "Runtime-Server", body: "负责队列调度、状态汇聚和 Runner 管理。", tone: "neutral" },
-              { eyebrow: "3", title: "Experiment Runners", body: "执行 Recon、PIA、GSA 等具体实验，把结果回传上层。", tone: "amber" },
+              { eyebrow: "1", title: "Platform", body: "Web 前端与 API Gateway（端口 8780），负责任务入口、流程编排、结果展示与报告生成。", tone: "blue" },
+              { eyebrow: "2", title: "Runtime-Server", body: "独立运行服务（端口 8765），负责任务调度、状态管理和 Runner 进程管理。", tone: "neutral" },
+              { eyebrow: "3", title: "Experiment Runners", body: "Python 进程，执行 Recon、PIA、GSA 实验并将结果通过标准输出回传。", tone: "amber" },
             ],
           },
           {
             id: "boundaries",
             label: "边界",
-            title: "关键边界",
+            title: "组件边界",
             paragraphs: [
-              "前端不直接执行实验。",
-              "Runtime 不负责结果叙事。",
-              "Reports 负责把实验输出转成可复核的产品化结论。",
+              "前端通过 HTTP API 与 Runtime-Server 通信，不直接执行实验代码。",
+              "Runtime-Server 负责任务生命周期管理，不参与结果分析和报告生成。",
+              "Reports 模块将实验数据转换为结构化的风险评估结论。",
             ],
           },
         ],
@@ -246,31 +244,31 @@ function zhContent(): DocsContent {
       {
         slug: "integration",
         group: "运行与接入",
-        navLabel: "接入",
+        navLabel: "接入指南",
         eyebrow: "运行与接入",
-        title: "如何把平台接入到你的使用流程",
+        title: "平台接入流程",
         summary:
-          "接入不是把一堆 API 调起来，而是把入口、任务、结果和报告整合进你自己的工作链路里。",
+          "接入流程包含：配置 Runtime-Server 连接参数、创建审计任务、查看结果并导出报告。",
         sections: [
           {
             id: "entry",
-            label: "入口接入",
-            title: "统一入口与认证",
+            label: "认证",
+            title: "统一认证入口",
             paragraphs: [
-              "文档、首页、登录和工作台应共享同一品牌和同一站点入口，避免把用户切到多个产品壳层。",
+              "首页、登录、文档和工作台共享同一认证体系，用户登录后即可访问全部功能。",
             ],
           },
           {
             id: "workflow-link",
-            label: "流程接入",
-            title: "让任务流转接入你的工作流",
+            label: "工作流",
+            title: "任务流转流程",
             paragraphs: [
-              "推荐做法是把 DiffAudit 放在‘创建任务 → 查看运行 → 导出报告’这条链的中间，而不是孤立调用单个接口。",
+              "完整流程：在 Audits 页面创建任务 → 查看任务执行状态 → 在 Workspace 查看汇总结果 → 在 Reports 页面导出分析报告。",
             ],
             rows: [
-              { title: "任务入口", body: "从 Audits 发起，保证用户对目标和上下文有明确理解。", tone: "neutral" },
-              { title: "结果回看", body: "回到 Workspace 与 Reports，看结构化输出，而不是只看接口响应。", tone: "blue" },
-              { title: "材料导出", body: "把结果整理成可复核的风险报告。", tone: "green" },
+              { title: "任务创建", body: "选择攻击类型、目标模型和执行参数，提交后任务自动执行。", tone: "neutral" },
+              { title: "状态跟踪", body: "任务状态通过 3 秒轮询更新，支持取消和重试操作。", tone: "blue" },
+              { title: "报告导出", body: "支持 CSV 数据导出和 PDF 比赛报告（含封面、图表、表格）。", tone: "green" },
             ],
           },
         ],
@@ -278,11 +276,11 @@ function zhContent(): DocsContent {
       {
         slug: "api-reference",
         group: "参考",
-        navLabel: "API",
+        navLabel: "API 参考",
         eyebrow: "参考",
-        title: "当前对外可见的核心接口",
+        title: "API 接口",
         summary:
-          "API 文档保留产品可感知的关键路径，不复制全部后端路由。它应该服务于理解产品，而不是替代源码。",
+          "以下接口覆盖目录查询、任务创建、任务列表、实验汇总和证据表查询。",
         sections: [
           {
             id: "core-endpoints",
@@ -319,10 +317,10 @@ function zhContent(): DocsContent {
           {
             id: "notes",
             label: "说明",
-            title: "使用这些接口时的理解方式",
+            title: "使用说明",
             paragraphs: [
-              "接口只是系统行为的边界，不是产品体验的全部。",
-              "真正的推荐阅读顺序是：先看产品结构，再看当前这页的接口，再回到工作台感知这些接口如何支撑页面行为。",
+              "接口地址中的端口 8780 对应 API Gateway 服务，端口 8765 对应 Runtime-Server。",
+              "前端页面通过 API Gateway 转发，不直接访问 Runtime-Server。",
             ],
           },
         ],
@@ -351,48 +349,48 @@ function enContent(): DocsContent {
         group: "Get started",
         navLabel: "Quick start",
         eyebrow: "Quick start",
-        title: "DiffAudit overview and first audit",
+        title: "DiffAudit overview",
         summary:
-          "Enter from one unified site, create jobs in Audits, and read runtime plus risk results through Workspace and Reports. The docs follow the real product path.",
+          "DiffAudit is a membership inference risk audit system with four modules: catalog management, task execution, status tracking, and evidence reporting.",
         sections: [
           {
             id: "overview",
             label: "Overview",
-            title: "A workspace built around privacy-risk auditing",
+            title: "System overview",
             paragraphs: [
-              "DiffAudit is not a static result site. It is an audit product that keeps catalog, task creation, runtime state, evidence tables, and risk reporting inside one workspace.",
-              "The docs follow the same structure: a file tree on the left, the current document in the middle, and current-document sections across the top.",
+              "DiffAudit integrates catalog, task execution, runtime state, evidence tables, and report interpretation into a single workspace. Users initiate audit tasks through the web frontend, which are forwarded via the API Gateway to the Runtime-Server and executed by Python Runners.",
+              "Output includes quantitative metrics (AUC, ASR, TPR@FPR) and risk classification derived from those metrics.",
             ],
             rows: [
               { eyebrow: "Entry", title: "Unified site entry", body: "Home, sign-in, docs, and workspace share the same brand and navigation frame.", tone: "blue" },
-              { eyebrow: "Run", title: "Jobs start in Audits", body: "Choose a target model and context, then launch execution from the audits surface.", tone: "neutral" },
-              { eyebrow: "Read", title: "Results are interpreted in Reports", body: "AUC, ASR, TPR, risk level, and coverage gaps are organized into reviewable conclusions.", tone: "amber" },
+              { eyebrow: "Execution", title: "Task initiation", body: "Select attack type, target model, and execution parameters in the Audits page.", tone: "neutral" },
+              { eyebrow: "Analysis", title: "Result interpretation", body: "AUC, ASR, TPR, and risk levels are displayed in the Workspace and Reports pages with CSV/PDF export.", tone: "amber" },
             ],
           },
           {
             id: "first-audit",
-            label: "First use",
-            title: "Three steps to the first audit",
+            label: "First audit",
+            title: "First audit workflow",
             paragraphs: [
-              "The right path is not to start from raw APIs. Enter the product first, then follow the task flow.",
+              "A complete audit workflow requires three steps: authenticate, create a task, and review results.",
             ],
             rows: [
-              { eyebrow: "01", title: "Sign in and enter workspace", body: "Authenticate once, then stay inside the same product shell.", tone: "blue" },
-              { eyebrow: "02", title: "Create an audit job", body: "Choose a target and launch the run from Audits.", tone: "neutral" },
-              { eyebrow: "03", title: "Review and export", body: "Return to Workspace and Reports for results, risk interpretation, and export.", tone: "green" },
+              { eyebrow: "01", title: "Sign in to workspace", body: "After authentication, enter the Workspace page to view current task status and recent results.", tone: "blue" },
+              { eyebrow: "02", title: "Create an audit task", body: "Select a target model and attack parameters in the Audits page. The task executes automatically.", tone: "neutral" },
+              { eyebrow: "03", title: "Review and export results", body: "View status summaries in Workspace and detailed analysis with report export in Reports.", tone: "green" },
             ],
           },
           {
             id: "common-routes",
-            label: "Useful routes",
-            title: "The most useful entry points",
+            label: "Navigation",
+            title: "Function entry points",
             paragraphs: [
-              "The end of this page should send people back into the product, not keep them reading forever.",
+              "Direct links to each functional page.",
             ],
             links: [
-              { title: "Workspace", body: "See current tasks, recent results, and system state.", href: "/workspace", cta: "Open Workspace" },
-              { title: "Audits", body: "Create jobs and monitor execution.", href: "/workspace/audits", cta: "Go to Audits" },
-              { title: "Reports", body: "Read risk interpretation, coverage gaps, and exports.", href: "/workspace/reports", cta: "Go to Reports" },
+              { title: "Workspace", body: "View current tasks, recent results, and system status.", href: "/workspace", cta: "Open Workspace" },
+              { title: "Audits", body: "Create tasks and track execution status.", href: "/workspace/audits", cta: "Go to Audits" },
+              { title: "Reports", body: "View risk analysis, coverage gaps, and export reports.", href: "/workspace/reports", cta: "Go to Reports" },
             ],
           },
         ],
@@ -402,31 +400,35 @@ function enContent(): DocsContent {
         group: "Product structure",
         navLabel: "Workspace structure",
         eyebrow: "Product structure",
-        title: "Four core work areas",
+        title: "Workspace modules",
         summary:
-          "The product is not exposed according to backend modules. It is organized around four work areas: Workspace, Audits, Reports, and Settings.",
+          "The workspace contains four pages: Workspace (overview), Audits (task management), Reports (result analysis), and Settings (system configuration).",
         sections: [
           {
             id: "workspace-map",
-            label: "Page map",
-            title: "The workspace skeleton",
+            label: "Module overview",
+            title: "Four functional pages",
             paragraphs: [
-              "The docs and product should both explain the same skeleton: overview, operation, interpretation, and control.",
+              "Each page in the workspace has a clearly defined role.",
             ],
             rows: [
-              { eyebrow: "Home", title: "Workspace", body: "Current volume, recent results, runtime health, and next action.", tone: "blue" },
-              { eyebrow: "Run", title: "Audits", body: "Task creation, progress tracking, and fresh results.", tone: "neutral" },
-              { eyebrow: "Read", title: "Reports", body: "Risk interpretation, evidence review, and export.", tone: "amber" },
-              { eyebrow: "Control", title: "Settings", body: "Defaults, account context, and system configuration.", tone: "green" },
+              { eyebrow: "Overview", title: "Workspace", body: "KPI metrics, risk radar chart, recent results table, and next-step suggestions.", tone: "blue" },
+              { eyebrow: "Execution", title: "Audits", body: "Task creation wizard, active task list, and historical task records.", tone: "neutral" },
+              { eyebrow: "Analysis", title: "Reports", body: "AUC/ROC distribution charts, risk level distribution, attack comparison, and CSV export.", tone: "amber" },
+              { eyebrow: "Config", title: "Settings", body: "Default parameters, system connection status, and system information.", tone: "green" },
             ],
           },
           {
             id: "page-grammar",
-            label: "Page grammar",
-            title: "A shared page grammar",
+            label: "Page structure",
+            title: "Page hierarchy",
             paragraphs: [
-              "Every major page follows the same hierarchy: global shell, page header, summary band, primary work area, supporting area.",
-              "The docs page should follow that grammar too, so it feels like part of the same product family.",
+              "Each page follows a unified structure: global shell, page header (title + one-line description), primary work area, and supporting area.",
+            ],
+            rows: [
+              { title: "Page header", body: "States the purpose and one-line summary of the current page.", tone: "neutral" },
+              { title: "Primary area", body: "Core functionality and data display for the page.", tone: "blue" },
+              { title: "Supporting area", body: "Supplementary information that does not duplicate the primary area.", tone: "neutral" },
             ],
           },
         ],
@@ -436,45 +438,46 @@ function enContent(): DocsContent {
         group: "Product structure",
         navLabel: "Audit tracks",
         eyebrow: "Core concept",
-        title: "Evidence depth from black-box to white-box",
+        title: "Audit tracks and risk classification",
         summary:
-          "The product value comes from a layered evidence chain rather than one script output. The docs need to frame that clearly.",
+          "The system provides three audit tracks (Recon/PIA/GSA) covering black-box to white-box attack depth. Each track's output is converted to a unified risk level.",
         sections: [
           {
             id: "tracks",
             label: "Three tracks",
             title: "Three audit tracks",
             paragraphs: [
-              "The platform organizes attacks and evidence into three progressive tracks so screening, analysis, and validation can stay on one path.",
+              "Tracks are ordered by the amount of prior information required for the attack, from quick screening to deep validation.",
             ],
             rows: [
-              { eyebrow: "Black-box", title: "Recon", body: "Observe whether the model exposes membership signals with minimal setup cost.", tone: "blue" },
-              { eyebrow: "Gray-box", title: "PIA", body: "Use partial internal model information to sharpen attack signals.", tone: "amber" },
-              { eyebrow: "White-box", title: "GSA", body: "Drill into parameters, gradients, or traces for stronger evidence.", tone: "coral" },
+              { eyebrow: "Black-box", title: "Recon", body: "Requires only model input/output interface. Lowest cost for initial risk assessment.", tone: "blue" },
+              { eyebrow: "Gray-box", title: "PIA", body: "Requires partial internal model information (e.g., intermediate layer activations) for stronger attack signals.", tone: "amber" },
+              { eyebrow: "White-box", title: "GSA", body: "Requires full access to model parameters and gradients. Produces the strongest evidence chain.", tone: "coral" },
             ],
           },
           {
             id: "risk-levels",
             label: "Risk levels",
-            title: "How metrics become risk levels",
+            title: "Risk classification criteria",
             paragraphs: [
-              "The frontend does not stop at showing numbers. It turns them into readable risk levels and interpretation.",
+              "Audit results are classified into three risk levels based on AUC thresholds, each with recommended actions.",
             ],
             table: {
               columns: ["Level", "Threshold", "Description"],
               rows: [
-                ["High", "AUC > 0.85", "Strong member signal remains; prioritize mitigation and defense review."],
-                ["Medium", "0.65 ≤ AUC ≤ 0.85", "Usable attack signal exists; continue analysis and hardening."],
-                ["Low", "AUC < 0.65", "Attack is near random or exposure is limited; keep as a monitored baseline."],
+                ["High", "AUC > 0.85", "Strong membership signal. Prioritize defense strategy evaluation."],
+                ["Medium", "0.65 ≤ AUC ≤ 0.85", "Detectable signal exists. Increase attack rounds for more precise assessment."],
+                ["Low", "AUC < 0.65", "Attack near random. Use as a security baseline reference."],
               ],
             },
           },
           {
             id: "interpretation",
             label: "Interpretation",
-            title: "From metric to conclusion",
+            title: "Metric interpretation",
             paragraphs: [
-              "Every major result surface should use the same interpretation chain: raw metric, risk label, short explanation, and next action.",
+              "Each audit result includes three core metrics: AUC (discrimination between training and non-member samples), ASR (attack success rate), and TPR@FPR (detection rate at fixed false positive rate).",
+              "The Reports page converts these metrics into visual risk distribution charts and attack comparison graphs.",
             ],
           },
         ],
@@ -486,29 +489,29 @@ function enContent(): DocsContent {
         eyebrow: "Runtime & integration",
         title: "Platform → Runtime-Server → Runners",
         summary:
-          "This is not a command dump. It exists to show how tasks and results flow through the three system layers.",
+          "The system has three layers: Platform (task orchestration and display), Runtime-Server (scheduling and state management), and Runners (experiment execution).",
         sections: [
           {
             id: "tiers",
             label: "Three tiers",
-            title: "Three-layer responsibility split",
+            title: "Layer responsibilities",
             paragraphs: [
-              "The frontend owns entry, orchestration, and explanation. Runtime owns lifecycle. Runners own concrete experiments.",
+              "The web frontend is built with Next.js. The API Gateway is implemented in Go. The Runtime-Server also uses Go, with Python Runners executing attack experiments.",
             ],
             rows: [
-              { eyebrow: "1", title: "Platform", body: "Frontend and API gateway for entry, orchestration, presentation, and reporting.", tone: "blue" },
-              { eyebrow: "2", title: "Runtime-Server", body: "Task control, queueing, state, and runner management.", tone: "neutral" },
-              { eyebrow: "3", title: "Experiment Runners", body: "Concrete execution units for Recon, PIA, GSA, and related experiments.", tone: "amber" },
+              { eyebrow: "1", title: "Platform", body: "Web frontend and API Gateway (port 8780) for task entry, orchestration, display, and reporting.", tone: "blue" },
+              { eyebrow: "2", title: "Runtime-Server", body: "Independent service (port 8765) for task scheduling, state management, and runner process management.", tone: "neutral" },
+              { eyebrow: "3", title: "Experiment Runners", body: "Python processes executing Recon, PIA, GSA experiments, returning results via stdout.", tone: "amber" },
             ],
           },
           {
             id: "boundaries",
             label: "Boundaries",
-            title: "Important boundaries",
+            title: "Component boundaries",
             paragraphs: [
-              "The frontend does not directly execute experiments.",
-              "Runtime is not responsible for final product narrative.",
-              "Reports turn experimental output into reviewable product conclusions.",
+              "The frontend communicates with Runtime-Server via HTTP API. It does not execute experiment code directly.",
+              "The Runtime-Server manages task lifecycle but does not participate in result analysis or report generation.",
+              "The Reports module converts experiment data into structured risk assessment conclusions.",
             ],
           },
         ],
@@ -518,29 +521,29 @@ function enContent(): DocsContent {
         group: "Runtime & integration",
         navLabel: "Integration",
         eyebrow: "Runtime & integration",
-        title: "How the platform fits into your workflow",
+        title: "Integration workflow",
         summary:
-          "Integration is not just about calling APIs. It is about connecting entry, task flow, results, and reports into one working chain.",
+          "Integration steps: configure Runtime-Server connection, create audit tasks, review results, and export reports.",
         sections: [
           {
             id: "entry",
-            label: "Entry",
-            title: "Unified entry and authentication",
+            label: "Authentication",
+            title: "Unified authentication",
             paragraphs: [
-              "Docs, home, sign-in, and workspace should share one site frame so users do not feel bounced across different surfaces.",
+              "Home, login, docs, and workspace share the same authentication system. All features are accessible after login.",
             ],
           },
           {
             id: "workflow-link",
             label: "Workflow",
-            title: "Connect task flow to your working process",
+            title: "Task flow",
             paragraphs: [
-              "The best integration path is to use DiffAudit in the middle of a larger loop: create task, watch run, then export results.",
+              "Complete workflow: create task in Audits → monitor execution → view summary in Workspace → export report from Reports.",
             ],
             rows: [
-              { title: "Task entry", body: "Start from Audits so users understand the target and current context.", tone: "neutral" },
-              { title: "Result review", body: "Return to Workspace and Reports for structured interpretation rather than raw responses.", tone: "blue" },
-              { title: "Export", body: "Use the report path to produce material that can be reviewed by others.", tone: "green" },
+              { title: "Task creation", body: "Select attack type, target model, and parameters. The task executes automatically after submission.", tone: "neutral" },
+              { title: "Status tracking", body: "Task status updates via 3-second polling. Cancel and retry operations are supported.", tone: "blue" },
+              { title: "Report export", body: "Supports CSV data export and PDF competition reports (cover, charts, tables).", tone: "green" },
             ],
           },
         ],
@@ -550,26 +553,26 @@ function enContent(): DocsContent {
         group: "Reference",
         navLabel: "API",
         eyebrow: "Reference",
-        title: "Core external endpoints",
+        title: "API endpoints",
         summary:
-          "The API docs keep only the product-facing critical path. They should help readers understand behavior, not replace source code.",
+          "Endpoints cover catalog query, task creation, task listing, experiment summary, and evidence table lookup.",
         sections: [
           {
             id: "core-endpoints",
             label: "Core endpoints",
-            title: "Critical path endpoints",
+            title: "Key endpoints",
             paragraphs: [
-              "These endpoints cover catalog discovery, job creation, job review, experiment summaries, and evidence lookup.",
+              "Port 8780 is the API Gateway. Port 8765 is the Runtime-Server. The frontend communicates only with the API Gateway.",
             ],
             codeBlocks: [
               {
                 language: "bash",
-                title: "Query the auditable model catalog",
+                title: "Query auditable model catalog",
                 code: `curl -s http://localhost:8780/api/v1/catalog | jq '.tracks[].entries[].contractKey'`,
               },
               {
                 language: "bash",
-                title: "Create an audit job",
+                title: "Create audit task",
                 code: `curl -s -X POST http://localhost:8780/api/v1/audit/jobs \\
   -H 'Content-Type: application/json' \\
   -d '{"contract_key":"recon-sd15","workspace_name":"default","job_type":"recon"}'`,
@@ -579,8 +582,8 @@ function enContent(): DocsContent {
               columns: ["Method", "Path", "Description"],
               rows: [
                 ["GET", "/api/v1/catalog", "Read the auditable model and dataset catalog."],
-                ["GET", "/api/v1/audit/jobs", "List the current user's audit jobs."],
-                ["POST", "/api/v1/audit/jobs", "Create a new audit job and start execution."],
+                ["GET", "/api/v1/audit/jobs", "List current audit jobs."],
+                ["POST", "/api/v1/audit/jobs", "Create a new audit job."],
                 ["GET", "/api/v1/experiments/{workspace}/summary", "Read experiment summary for a workspace."],
                 ["GET", "/api/v1/evidence/attack-defense-table", "Read the attack-defense evidence table."],
               ],
@@ -589,10 +592,10 @@ function enContent(): DocsContent {
           {
             id: "notes",
             label: "Notes",
-            title: "How to read these APIs",
+            title: "Usage notes",
             paragraphs: [
-              "APIs define system boundaries, but they are not the whole product experience.",
-              "The best reading order is: understand product structure first, then read APIs, then return to the workspace to see those APIs embodied in the UI.",
+              "Port 8780 is the API Gateway. Port 8765 is the Runtime-Server.",
+              "The frontend routes through the API Gateway and does not directly access the Runtime-Server.",
             ],
           },
         ],

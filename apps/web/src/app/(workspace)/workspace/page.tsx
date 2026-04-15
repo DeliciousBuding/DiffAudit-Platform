@@ -145,8 +145,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     { dimension: "auc", label: "AUC", value: avgAucNum },
     { dimension: "asr", label: "ASR", value: avgAsrNum },
     { dimension: "tpr", label: "TPR", value: avgTprNum },
-    { dimension: "coverage", label: "Coverage", value: coverageRatio },
-    { dimension: "defense", label: "Defense", value: defenseEffectiveness },
+    { dimension: "coverage", label: copy.sections.radarLabels.coverage, value: coverageRatio },
+    { dimension: "defense", label: copy.sections.radarLabels.defense, value: defenseEffectiveness },
   ];
 
   // Suggested next step — 2.4.5
@@ -224,7 +224,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </svg>
               <div>
                 <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
-                  建议的下一步
+                  {copy.sections.suggestedNextSteps}
                 </h3>
                 <ul className="space-y-1">
                   {suggestions.map((s, i) => (
@@ -243,7 +243,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="grid gap-3 grid-cols-3">
             <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[var(--risk-high)]">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                High risk
+                {copy.sections.riskLabels.high}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
               <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
@@ -252,7 +252,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </div>
             <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[var(--risk-medium)]">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Medium risk
+                {copy.sections.riskLabels.medium}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
               <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
@@ -261,7 +261,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </div>
             <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[var(--risk-low)]">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Low risk
+                {copy.sections.riskLabels.low}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
               <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
@@ -274,10 +274,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <section className="border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
               <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Risk Radar
+                {copy.sections.chartTitles.riskRadar}
               </h2>
               <span className="text-[10px] text-muted-foreground">
-                {radarData.length} dimensions
+                {radarData.length} {copy.sections.radarDimensionsLabel}
               </span>
             </div>
             <div className="p-2">
@@ -292,7 +292,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              AUC Distribution
+              {copy.sections.chartTitles.aucDistribution}
             </h2>
           </div>
           <div className="p-3">
@@ -309,7 +309,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              ROC Curve
+              {copy.sections.chartTitles.rocCurve}
             </h2>
           </div>
           <div className="p-3">
@@ -321,7 +321,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <section className="border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2">
               <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Risk Distribution
+                {copy.sections.chartTitles.riskDistribution}
               </h2>
             </div>
             <div className="p-3">
@@ -333,7 +333,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Attack Comparison
+              {copy.sections.chartTitles.attackComparison}
             </h2>
           </div>
           <div className="p-3">

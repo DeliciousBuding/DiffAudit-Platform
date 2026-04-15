@@ -47,6 +47,24 @@ export const WORKSPACE_COPY: Record<
           tpr: string;
         };
         noAucData: string;
+        chartTitles: {
+          aucDistribution: string;
+          rocCurve: string;
+          riskDistribution: string;
+          attackComparison: string;
+          riskRadar: string;
+        };
+        riskLabels: {
+          high: string;
+          medium: string;
+          low: string;
+        };
+        radarDimensionsLabel: string;
+        suggestedNextSteps: string;
+        radarLabels: {
+          coverage: string;
+          defense: string;
+        };
       };
       riskInterpretations: {
         high: string;
@@ -336,6 +354,24 @@ export const WORKSPACE_COPY: Record<
           tpr: "TPR",
         },
         noAucData: "No AUC data available",
+        chartTitles: {
+          aucDistribution: "AUC Distribution",
+          rocCurve: "ROC Curve",
+          riskDistribution: "Risk Distribution",
+          attackComparison: "Attack Comparison",
+          riskRadar: "Risk Radar",
+        },
+        riskLabels: {
+          high: "High risk",
+          medium: "Medium risk",
+          low: "Low risk",
+        },
+        radarDimensionsLabel: "dimensions",
+        suggestedNextSteps: "Suggested next steps",
+        radarLabels: {
+          coverage: "Coverage",
+          defense: "Defense",
+        },
       },
       riskInterpretations: {
         high: "High attack AUC — the model likely memorized training data. Compare defense strategies.",
@@ -758,6 +794,24 @@ export const WORKSPACE_COPY: Record<
           tpr: "TPR",
         },
         noAucData: "暂无 AUC 数据",
+        chartTitles: {
+          aucDistribution: "AUC 分布",
+          rocCurve: "ROC 曲线",
+          riskDistribution: "风险分布",
+          attackComparison: "攻击对比",
+          riskRadar: "风险雷达",
+        },
+        riskLabels: {
+          high: "高风险",
+          medium: "中风险",
+          low: "低风险",
+        },
+        radarDimensionsLabel: "维度",
+        suggestedNextSteps: "建议的下一步",
+        radarLabels: {
+          coverage: "覆盖率",
+          defense: "防御效果",
+        },
       },
       riskInterpretations: {
         high: "攻击 AUC 很高，模型很可能记住了训练数据。建议对比不同防御策略的效果。",

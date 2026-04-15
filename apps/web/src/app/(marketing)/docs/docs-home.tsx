@@ -17,10 +17,20 @@ type DocsHomeProps = {
 export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const router = useRouter();
   const [locale, setLocale] = useState<Locale>("en-US");
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     setLocale(getStoredLocale());
+    // Read initial theme from stored preference or system
+    const stored = localStorage.getItem("diffaudit-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDark(stored === "dark" || (!stored && prefersDark));
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("diffaudit-theme", dark ? "dark" : "light");
+  }, [dark]);
 
   const content = getDocsContent(locale);
   const [selectedSlug, setSelectedSlug] = useState(initialSlug ?? content.pages[0]?.slug ?? "");
@@ -68,6 +78,8 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
       onGroupChange={handleGroupChange}
       groupPages={groupPages}
       locale={locale}
+      dark={dark}
+      setDark={setDark}
     />
   );
 }
@@ -82,12 +94,14 @@ type DocsLayoutProps = {
   nextPage: DocsPage | null;
 };
 
-function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, groupTabs, activeGroupTab, onGroupChange, groupPages, locale }: DocsLayoutProps & {
+function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, groupTabs, activeGroupTab, onGroupChange, groupPages, locale, dark, setDark }: DocsLayoutProps & {
   groupTabs: Array<{ value: string; label: string }>;
   activeGroupTab: string;
   onGroupChange: (value: string) => void;
   groupPages: DocsPage[];
   locale: Locale;
+  dark: boolean;
+  setDark: (v: boolean) => void;
 }) {
   // Group pages by their group
   const groupedPages = new Map<string, DocsPage[]>();
@@ -144,6 +158,23 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            {/* Dark mode toggle */}
+            <button
+              onClick={() => setDark(!dark)}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? (
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="12" cy="12" r="5"/>
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+              )}
+            </button>
             {/* Search button — 2.3.1 */}
             <button
               onClick={() => {
@@ -184,25 +215,20 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
             tabs={groupTabs}
             variant="inline"
           />
-          {/* Sub-navigation: pages within the active group */}
-          <div className="hidden sm:flex items-center gap-1 text-xs">
-            {groupPages.map((p) => {
-              const isActive = p.slug === selectedSlug;
-              return (
-                <button
-                  key={p.slug}
-                  onClick={() => onSelectSlug(p.slug)}
-                  className={`px-2 py-2.5 transition-colors ${
-                    isActive
-                      ? "text-[var(--color-text-primary)] font-medium"
-                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
-                  }`}
+          {/* Sub-navigation: sections within the current page */}
+          {page && page.sections.length > 1 && (
+            <div className="hidden md:flex items-center gap-1 text-xs">
+              {page.sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className="px-2 py-2.5 transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
                 >
-                  {p.navLabel}
-                </button>
-              );
-            })}
-          </div>
+                  {section.label}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -270,7 +296,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
-                  Edit this page on GitHub
+                  {locale === "zh-CN" ? "在 GitHub 上编辑此页" : "Edit this page on GitHub"}
                 </a>
               </div>
 
@@ -286,7 +312,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                         <path d="M15 18l-6-6 6-6" />
                       </svg>
                       <div>
-                        <div className="text-[10px] text-[var(--color-text-muted)]">Previous</div>
+                        <div className="text-[10px] text-[var(--color-text-muted)]">{locale === "zh-CN" ? "上一页" : "Previous"}</div>
                         <div className="text-sm font-medium text-[var(--color-text-primary)]">{prevPage.navLabel}</div>
                       </div>
                     </button>
@@ -297,7 +323,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                       className="flex flex-1 items-center justify-end gap-3 rounded-lg border border-[var(--color-border-subtle)] p-4 text-right transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
                     >
                       <div>
-                        <div className="text-[10px] text-[var(--color-text-muted)]">Next</div>
+                        <div className="text-[10px] text-[var(--color-text-muted)]">{locale === "zh-CN" ? "下一页" : "Next"}</div>
                         <div className="text-sm font-medium text-[var(--color-text-primary)]">{nextPage.navLabel}</div>
                       </div>
                       <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" strokeWidth={2}>
