@@ -141,7 +141,12 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
-  const [demoMode, setDemoMode] = useState(true); // Demo mode enabled by default
+
+  // Check demo mode from cookie - stable across renders
+  const [demoMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return document.cookie.includes('platform-demo-mode=1');
+  });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -169,17 +174,16 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
               : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
           setJobs(filtered);
           setError(null);
-          setDemoMode(false); // Switch to production mode if API is available
         } else {
-          // API unavailable, stay in demo mode
-          setJobs(generateDemoJobs(mode));
-          setError(null);
+          // API unavailable, show error
+          setError(copy.taskTable.apiError || "API unavailable");
+          setJobs([]);
         }
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
-          // API unavailable, stay in demo mode
-          setJobs(generateDemoJobs(mode));
-          setError(null);
+          // API unavailable, show error
+          setError(copy.taskTable.apiError || "API unavailable");
+          setJobs([]);
         }
       } finally {
         setLoading(false);
