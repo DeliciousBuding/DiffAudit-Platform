@@ -52,6 +52,7 @@ describe("attack-defense table helpers", () => {
           qualityCost: "100 public samples per split",
           evidenceLevel: "runtime-mainline",
           note: "current black-box main evidence",
+          riskLevel: "medium",
         },
         {
           track: "gray-box",
@@ -64,6 +65,7 @@ describe("attack-defense table helpers", () => {
           qualityCost: "512 samples per split",
           evidenceLevel: "runtime-mainline",
           note: "current gray-box defended main result",
+          riskLevel: "medium",
         },
       ],
     });
@@ -98,9 +100,10 @@ describe("attack-defense table helpers", () => {
           aucLabel: "n/a",
           asrLabel: "n/a",
           tprLabel: "n/a",
-          qualityCost: "未提供运行成本说明。",
+          qualityCost: "No cost information provided.",
           evidenceLevel: "unknown",
-          note: "未提供补充说明。",
+          note: "No additional notes.",
+          riskLevel: "low",
         },
       ],
     });
