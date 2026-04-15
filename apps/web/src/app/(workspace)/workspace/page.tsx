@@ -205,7 +205,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </a>
 
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
@@ -264,7 +264,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             {/* 3-step guide with enhanced visual hierarchy */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 w-full">
               {localeData.emptyWorkspace.steps.map((step, idx) => (
-                <div key={step.step} className="relative flex flex-col items-center text-center p-4 rounded-lg bg-card/50 border border-border/50 hover:border-[color:var(--accent-blue)]/30 transition-colors">
+                <div key={step.step} className="relative flex flex-col items-center text-center p-4 rounded-lg bg-card/50 border border-border/50 hover:border-[color:var(--accent-blue)]/30 transition-all duration-200">
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--accent-blue)] text-sm font-bold text-white mb-3 shadow-sm">
                     {step.step}
                   </span>
@@ -449,7 +449,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     return (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}`}
-                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+                      className={`table-row-hover border-b border-border transition-all duration-200 hover:bg-muted/30 ${
                         index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
                     >

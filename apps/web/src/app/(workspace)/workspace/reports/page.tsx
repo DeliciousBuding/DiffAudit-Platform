@@ -239,7 +239,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                 {rows.map((row, index) => (
                   <tr
                     key={`${row.track}-${row.attack}-${row.defense}`}
-                    className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+                    className={`table-row-hover border-b border-border transition-all duration-200 hover:bg-muted/30 ${
                       index % 2 === 0 ? "bg-background" : "bg-muted/10"
                     }`}
                   >

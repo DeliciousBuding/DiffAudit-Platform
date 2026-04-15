@@ -153,7 +153,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     return (
       <div className="divide-y divide-border">
         {jobs.map((job) => (
-          <div key={job.job_id} className="px-3 py-2.5 transition-colors hover:bg-muted/30">
+          <div key={job.job_id} className="px-3 py-2.5 transition-all duration-200 hover:bg-muted/30">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
               <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
@@ -197,7 +197,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           {jobs.map((job, index) => (
             <tr
               key={job.job_id}
-              className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+              className={`table-row-hover border-b border-border transition-all duration-200 hover:bg-muted/30 ${
                 index % 2 === 0 ? "bg-background" : "bg-muted/10"
               }`}
             >

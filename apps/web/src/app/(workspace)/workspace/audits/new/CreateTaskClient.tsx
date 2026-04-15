@@ -238,7 +238,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
         </div>
 
         {/* Step tabs */}
-        <div className="flex items-center gap-0 border-b border-border bg-muted/20 overflow-x-auto">
+        <div className="flex items-center gap-0 border-b border-border bg-muted/20 overflow-x-auto snap-x snap-mandatory scrollbar-thin">
           {steps.map((step, index) => {
             const isActive = form.step === index + 1;
             const isCompleted = form.step > index + 1;
@@ -249,7 +249,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 onClick={() => {
                   if (isCompleted) setStep(index + 1);
                 }}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 snap-start ${
                   isActive
                     ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
                     : isCompleted
