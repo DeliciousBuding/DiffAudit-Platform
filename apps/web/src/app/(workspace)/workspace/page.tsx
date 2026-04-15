@@ -165,9 +165,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   return (
     <>
       {/* Charts grid - 6 cards in 3x2 layout */}
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3" role="region" aria-label="Dashboard overview">
         {/* KPI Summary Card */}
-        <section className="rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.overview || "系统概览"}
@@ -194,7 +194,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
 
         {/* Risk Radar */}
-        <section className="rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.riskRadar}
@@ -505,7 +505,7 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-entrance">
       {/* Page header */}
       <div className="border-b border-border pb-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>

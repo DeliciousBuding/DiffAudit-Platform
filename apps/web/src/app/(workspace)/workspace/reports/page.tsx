@@ -354,7 +354,7 @@ export default async function WorkspaceReportsPage({ locale }: { locale?: Locale
   const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-entrance">
       <Breadcrumb items={[
         { label: navItems[0].title, href: "/workspace" },
         { label: navItems[2].title }

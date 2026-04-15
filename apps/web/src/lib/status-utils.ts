@@ -4,22 +4,22 @@
  */
 
 export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancelled";
-export type StatusTone = "primary" | "success" | "warning" | "danger" | "neutral";
+export type StatusTone = "primary" | "success" | "warning" | "danger" | "neutral" | "info";
 
 /**
  * Map job status to badge tone
  * Single source of truth for status colors
  */
-export function getStatusTone(status: JobStatus): StatusTone {
+export function getStatusTone(status: string): StatusTone {
   switch (status) {
     case "queued":
       return "primary";
     case "running":
-      return "primary";
+      return "info";
     case "completed":
       return "success";
     case "failed":
-      return "danger";
+      return "warning";
     case "cancelled":
       return "neutral";
     default:

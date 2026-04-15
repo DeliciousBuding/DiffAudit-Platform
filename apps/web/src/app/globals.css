@@ -1274,6 +1274,51 @@ button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([c
     background-color 140ms ease;
 }
 
+.table-row-hover:hover {
+  border-left-color: var(--accent-blue);
+}
+
+/* ===== Staggered card entrance animation ===== */
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-animate {
+  opacity: 0;
+  animation: card-entrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card-animate:nth-child(1) { animation-delay: 0.05s; }
+.card-animate:nth-child(2) { animation-delay: 0.1s; }
+.card-animate:nth-child(3) { animation-delay: 0.15s; }
+.card-animate:nth-child(4) { animation-delay: 0.2s; }
+.card-animate:nth-child(5) { animation-delay: 0.25s; }
+.card-animate:nth-child(6) { animation-delay: 0.3s; }
+
+/* Focus ring standardization */
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* Smooth page transition */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-entrance {
+  animation: page-fade-in 0.35s ease-out;
+}
+
 /* ===== Dark Mode variables — 3.1 ===== */
 
 html[data-theme="dark"],

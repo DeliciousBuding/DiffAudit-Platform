@@ -17,7 +17,7 @@ export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale 
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-entrance">
       {/* Page header */}
       <div className="border-b border-border pb-3">
         <div className="flex items-start justify-between gap-4">
