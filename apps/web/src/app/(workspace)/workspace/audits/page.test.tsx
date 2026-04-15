@@ -34,9 +34,9 @@ describe("WorkspaceAuditsPage", () => {
 
     const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("创建任务、跟踪运行、查看结果。");
+    expect(markup).toContain("创建任务，跟踪进度，查看结果。");
     expect(markup).toContain("创建任务");
-    expect(markup).toContain("活跃任务");
+    expect(markup).toContain("运行中的任务");
     expect(markup).toContain("历史任务");
   });
 
@@ -63,9 +63,9 @@ describe("WorkspaceAuditsPage", () => {
 
     const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "en-US" }));
 
-    expect(markup).toContain("Create tasks, track runs, review results.");
+    expect(markup).toContain("Create tasks, track progress, review results.");
     expect(markup).toContain("Create task");
-    expect(markup).toContain("Active tasks");
-    expect(markup).toContain("Task history");
+    expect(markup).toContain("Running tasks");
+    expect(markup).toContain("History");
   });
 });

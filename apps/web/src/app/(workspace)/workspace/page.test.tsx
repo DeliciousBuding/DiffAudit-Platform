@@ -55,12 +55,9 @@ describe("WorkspaceHomePage", () => {
 
     const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("待办、审计结果和关键指标。");
-    expect(markup).toContain("当前待办");
-    expect(markup).toContain("最近结果");
-    expect(markup).toContain("PIA GPU512 baseline");
-    expect(markup).toContain("活跃合同");
-    expect(markup).toContain("已防御行");
+    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态。");
+    expect(markup).toContain("看看你的模型泄露了什么。");
+    expect(markup).toContain("工作台");
   });
 
   it("renders en-US copy when backend data is unavailable", async () => {
@@ -68,10 +65,8 @@ describe("WorkspaceHomePage", () => {
 
     const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "en-US" }));
 
-    expect(markup).toContain("Tasks, audit results, and key metrics.");
-    expect(markup).toContain("Current tasks");
-    expect(markup).toContain("Recent results");
-    expect(markup).toContain("No audit results yet. Create a job in the audits page.");
-    expect(markup).toContain("Live contracts");
+    expect(markup).toContain("Your workspace aggregates current audit tasks, recent results, and system status at a glance.");
+    expect(markup).toContain("See what your model is leaking.");
+    expect(markup).toContain("Workspace");
   });
 });

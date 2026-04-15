@@ -12,7 +12,7 @@ describe("theme helpers", () => {
   it("accepts only supported theme values", () => {
     expect(isThemeMode("light")).toBe(true);
     expect(isThemeMode("dark")).toBe(true);
-    expect(isThemeMode("system")).toBe(false);
+    expect(isThemeMode("system")).toBe(true);
     expect(isThemeMode("")).toBe(false);
   });
 
