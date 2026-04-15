@@ -278,7 +278,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
         <div className="p-4">
           {/* Step 1: Attack type selection */}
           {form.step === 1 && (
-            <div className="space-y-3">
+            <div className={`space-y-3 transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
               <div className="text-xs text-muted-foreground mb-3">{copy.steps.step1Desc}</div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                 {(
@@ -309,7 +309,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       key={card.type}
                       type="button"
                       onClick={() => selectAttackType(card.type)}
-                      className={`text-left rounded-lg border p-4 transition-all ${
+                      className={`text-left rounded-lg border p-4 transition-all duration-200 ${
                         isSelected
                           ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                           : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
@@ -354,9 +354,14 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
           {/* Step 2: Target model selection */}
           {form.step === 2 && (
-            <div className="space-y-3">
+            <div className={`space-y-3 transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
               <div className="text-xs text-muted-foreground mb-3">{copy.steps.step2Desc}</div>
-              {filteredModels.length === 0 ? (
+              {catalogLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Spinner className="h-8 w-8 text-[var(--accent-blue)]" />
+                  <div className="text-xs text-muted-foreground">Loading model catalog...</div>
+                </div>
+              ) : filteredModels.length === 0 ? (
                 <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded-lg">
                   {labels.disabled}
                 </div>
@@ -369,7 +374,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         key={model.contractKey}
                         type="button"
                         onClick={() => selectModel(model.contractKey)}
-                        className={`text-left rounded-lg border p-3 transition-all ${
+                        disabled={catalogLoading}
+                        className={`text-left rounded-lg border p-3 transition-all duration-200 disabled:opacity-50 ${
                           isSelected
                             ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                             : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
@@ -400,7 +406,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40"
+                  disabled={catalogLoading}
+                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 disabled:opacity-50"
                 >
                   &larr; {copy.steps.step1Title}
                 </button>
@@ -410,7 +417,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
           {/* Step 3: Configure parameters */}
           {form.step === 3 && (
-            <div className="space-y-4 max-w-md">
+            <div className={`space-y-4 max-w-md transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
               <div className="text-xs text-muted-foreground mb-3">{copy.steps.step3Desc}</div>
 
               {/* Rounds */}
@@ -498,7 +505,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
           {/* Step 4: Review & submit */}
           {form.step === 4 && (
-            <div className="space-y-4 max-w-lg">
+            <div className={`space-y-4 max-w-lg transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
               <div className="text-xs text-muted-foreground mb-3">{labels.reviewSummary}</div>
 
               {/* Review card */}
@@ -585,7 +592,14 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     disabled={submitState === "submitting"}
                     className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-70"
                   >
-                    {submitState === "submitting" ? labels.submitting : labels.submitButton}
+                    {submitState === "submitting" ? (
+                      <>
+                        <Spinner className="h-3 w-3" />
+                        {labels.submitting}
+                      </>
+                    ) : (
+                      labels.submitButton
+                    )}
                   </button>
                 )}
               </div>
