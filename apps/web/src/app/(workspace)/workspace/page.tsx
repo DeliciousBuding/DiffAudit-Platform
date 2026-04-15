@@ -173,6 +173,84 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
       </div>
 
+      {/* Audit track quick-access cards — Platform Boost */}
+      <div className="grid gap-3 md:grid-cols-3">
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Black-box</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">高风险</span>
+          </div>
+          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--accent-blue)] transition-colors">Recon 成员推断审计</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">最低权限：仅需 100 个公开样本即可重建训练数据特征。适用于模型上线前的初步风险筛查。</p>
+          <div className="mt-3 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+            创建审计
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </div>
+        </a>
+
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Gray-box</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">高风险</span>
+          </div>
+          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--warning)] transition-colors">PIA 隐私攻击审计</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">部分权限：可访问模型 API。基线 AUC 0.841，stochastic-dropout 防御后降至 0.828。量化风险强度 + 评估防御效果。</p>
+          <div className="mt-3 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+            创建审计
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </div>
+        </a>
+
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">White-box</span>
+            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">极高风险</span>
+          </div>
+          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--success)] transition-colors">GSA 梯度签名审计</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">完全权限：模型权重全访问。基线 AUC 0.998，W-1 强防御后降至 0.489（接近瞎猜）。刻画风险上界 + 最强防御评估。</p>
+          <div className="mt-3 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+            创建审计
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </div>
+        </a>
+      </div>
+
+      {/* System progress bar — audit coverage overview */}
+      {totalRows > 0 && (
+        <section className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xs font-semibold text-foreground">审计覆盖度</h2>
+            <span className="text-xs text-muted-foreground">{defendedRows} / {totalRows} 条已防御 · {activeContracts} 个合约已注册</span>
+          </div>
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--success)] rounded-full transition-all" style={{ width: `${totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0}%` }} />
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--accent-blue)]" />
+              <span className="text-muted-foreground">黑盒 <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0} 条</span></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--warning)]" />
+              <span className="text-muted-foreground">灰盒 <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0} 条</span></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--success)]" />
+              <span className="text-muted-foreground">白盒 <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0} 条</span></span>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Empty workspace guidance — 7.2.3 */}
       {isEmpty ? (
         <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-4">
