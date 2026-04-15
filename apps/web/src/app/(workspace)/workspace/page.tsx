@@ -264,7 +264,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* Compact audit track quick-access cards */}
       <div className="grid gap-3 md:grid-cols-3">
-        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.blackBoxTitle} - ${copy.auditTracks.createAudit}`}>
+        <Link href="/workspace/audits/new?track=black-box" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.blackBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]" aria-hidden="true">1</span>
             <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
@@ -280,7 +280,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </Link>
 
-        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.grayBoxTitle} - ${copy.auditTracks.createAudit}`}>
+        <Link href="/workspace/audits/new?track=gray-box" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.grayBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]" aria-hidden="true">2</span>
             <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
@@ -296,7 +296,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </Link>
 
-        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
+        <Link href="/workspace/audits/new?track=white-box" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
             <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
