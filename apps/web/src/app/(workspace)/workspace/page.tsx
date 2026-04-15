@@ -163,25 +163,125 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* KPI row — with trend indicators 2.4.1 */}
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
-        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
-        <KpiCardWithTrend label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
-        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
+      {/* Compact KPI bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 border border-border bg-card rounded-lg p-2.5">
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.kpis.liveContractsLabel}</div>
+          <div className="text-xl font-semibold leading-none">{activeContracts}</div>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.kpis.defendedRowsLabel}</div>
+          <div className="text-xl font-semibold leading-none">{defendedRows}</div>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.kpis.avgAucLabel}</div>
+          <div className="text-xl font-semibold leading-none">{avgAuc}</div>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.kpis.defenseEvaluatedLabel}</div>
+          <div className="text-xl font-semibold leading-none">{totalRows}</div>
+        </div>
       </div>
 
-      {/* Audit track quick-access cards — Platform Boost */}
-      <div className="grid gap-3 md:grid-cols-3">
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.blackBoxTitle} - ${copy.auditTracks.createAudit}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-xs font-bold text-[color:var(--accent-blue)]" aria-hidden="true">1</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-xs font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+      {/* Charts grid - moved to top for visual impact */}
+      <div className="grid gap-2 lg:grid-cols-2">
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-1.5">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.rocCurve}
+            </h2>
           </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
+          <div className="p-2">
+            <ChartRocCurve data={rocData} />
+          </div>
+        </section>
+
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-1.5">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.attackComparison}
+            </h2>
+          </div>
+          <div className="p-2">
+            <ChartAttackComparison data={attackComparisonData} />
+          </div>
+        </section>
+
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-1.5">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.aucDistribution}
+            </h2>
+          </div>
+          <div className="p-2">
+            {aucDistData.length > 0 ? (
+              <ChartAucDistribution data={aucDistData} />
+            ) : (
+              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
+                {copy.sections.noAucData}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {totalRisk > 0 && (
+          <section className="border border-border bg-card">
+            <div className="border-b border-border bg-muted/20 px-3 py-1.5">
+              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {copy.sections.chartTitles.riskDistribution}
+              </h2>
+            </div>
+            <div className="p-2">
+              <ChartRiskDistribution data={riskDistData} />
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Risk distribution cards */}
+      {totalRisk > 0 && (
+        <div className="grid gap-2 grid-cols-3">
+          <div className="rounded-lg border border-border bg-card p-2.5 border-l-[3px] border-l-[var(--risk-high)]">
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.riskLabels.high}
+            </div>
+            <div className="mt-1 text-xl font-semibold leading-none">{riskCounts.high}</div>
+            <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              {copy.riskInterpretations.high}
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-2.5 border-l-[3px] border-l-[var(--risk-medium)]">
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.riskLabels.medium}
+            </div>
+            <div className="mt-1 text-xl font-semibold leading-none">{riskCounts.medium}</div>
+            <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              {copy.riskInterpretations.medium}
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-2.5 border-l-[3px] border-l-[var(--risk-low)]">
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.riskLabels.low}
+            </div>
+            <div className="mt-1 text-xl font-semibold leading-none">{riskCounts.low}</div>
+            <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              {copy.riskInterpretations.low}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Compact audit track quick-access cards */}
+      <div className="grid gap-2 md:grid-cols-3">
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-2.5 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.blackBoxTitle} - ${copy.auditTracks.createAudit}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]" aria-hidden="true">1</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+          </div>
+          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
+          <div className="mt-2 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -189,15 +289,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </a>
 
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.grayBoxTitle} - ${copy.auditTracks.createAudit}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-xs font-bold text-[color:var(--warning)]" aria-hidden="true">2</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-xs font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-2.5 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.grayBoxTitle} - ${copy.auditTracks.createAudit}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]" aria-hidden="true">2</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
+          <div className="mt-2 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -205,15 +305,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </a>
 
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-xs font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-xs font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-2.5 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
           </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
+          <div className="mt-2 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -222,27 +322,27 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </a>
       </div>
 
-      {/* System progress bar — audit coverage overview */}
+      {/* Compact system progress bar */}
       {totalRows > 0 && (
-        <section className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-foreground">{copy.coverageBar.title}</h2>
-            <span className="text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
+        <section className="rounded-lg border border-border bg-card p-2.5">
+          <div className="flex items-center justify-between mb-1.5">
+            <h2 className="text-[9px] font-semibold uppercase tracking-wider text-foreground">{copy.coverageBar.title}</h2>
+            <span className="text-[10px] text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
           </div>
-          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--success)] rounded-full transition-all" style={{ width: `${totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0}%` }} />
           </div>
-          <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--accent-blue)]" />
+          <div className="mt-2 grid grid-cols-3 gap-3 text-[10px]">
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-blue)]" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--warning)]" />
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--warning)]" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--success)]" />
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--success)]" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
           </div>
@@ -315,110 +415,22 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         )
       )}
 
-      {/* Risk distribution */}
-      {totalRisk > 0 && (
-        <div className="grid gap-3 lg:grid-cols-2">
-          <div className="grid gap-3 grid-cols-3">
-            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.high}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.high}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.medium}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.medium}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.low}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.low}
-              </p>
-            </div>
+      {/* Risk Radar */}
+      {totalRisk > 0 && radarData.length > 0 && (
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.riskRadar}
+            </h2>
+            <span className="text-[10px] text-muted-foreground">
+              {radarData.length} {copy.sections.radarDimensionsLabel}
+            </span>
           </div>
-
-          {/* Risk Radar — 7.1 */}
-          <section className="border border-border bg-card">
-            <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.chartTitles.riskRadar}
-              </h2>
-              <span className="text-xs text-muted-foreground">
-                {radarData.length} {copy.sections.radarDimensionsLabel}
-              </span>
-            </div>
-            <div className="p-2">
-              <ChartRiskRadar data={radarData} height={220} />
-            </div>
-          </section>
-        </div>
+          <div className="p-2">
+            <ChartRiskRadar data={radarData} height={200} />
+          </div>
+        </section>
       )}
-
-      {/* Charts grid */}
-      <div className="grid gap-3 lg:grid-cols-2">
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.aucDistribution}
-            </h2>
-          </div>
-          <div className="p-3">
-            {aucDistData.length > 0 ? (
-              <ChartAucDistribution data={aucDistData} />
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
-                {copy.sections.noAucData}
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.rocCurve}
-            </h2>
-          </div>
-          <div className="p-3">
-            <ChartRocCurve data={rocData} />
-          </div>
-        </section>
-
-        {totalRisk > 0 && (
-          <section className="border border-border bg-card">
-            <div className="border-b border-border bg-muted/20 px-3 py-2">
-              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.chartTitles.riskDistribution}
-              </h2>
-            </div>
-            <div className="p-3">
-              <ChartRiskDistribution data={riskDistData} />
-            </div>
-          </section>
-        )}
-
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.attackComparison}
-            </h2>
-          </div>
-          <div className="p-3">
-            <ChartAttackComparison data={attackComparisonData} />
-          </div>
-        </section>
-      </div>
 
       {/* Main content grid */}
       <div className="grid gap-3 lg:grid-cols-3">
