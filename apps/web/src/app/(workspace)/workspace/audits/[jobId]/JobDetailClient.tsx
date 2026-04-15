@@ -8,6 +8,8 @@ import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/skeleton";
 import { Modal } from "@/components/modal";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { getStatusTone } from "@/lib/status-utils";
+import { getErrorMessage } from "@/lib/error-messages";
 
 const JOB_TYPE_TO_TRACK: Record<string, "black-box" | "gray-box" | "white-box"> = {
   "recon_artifact_mainline": "black-box",
@@ -28,14 +30,6 @@ interface JobDetail {
   error?: string | null;
   stdout_tail?: string | null;
   stderr_tail?: string | null;
-}
-
-function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
-  if (status === "completed") return "success";
-  if (status === "failed") return "warning";
-  if (status === "running") return "info";
-  if (status === "cancelled") return "neutral";
-  return "primary";
 }
 
 function statusLabel(status: string, labels: Record<string, string>): string {
@@ -108,7 +102,8 @@ export function JobDetailClient({
     try {
       const res = await fetch(`/api/v1/audit/jobs/${jobId}`, { signal });
       if (!res.ok) {
-        setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed} (HTTP ${res.status})`);
+        const errorMsg = getErrorMessage(res.status, locale);
+        setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed}: ${errorMsg}`);
         return null;
       }
       const data = await res.json();
@@ -217,7 +212,7 @@ export function JobDetailClient({
       {/* Header: job ID + status badge */}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="mono text-sm font-medium">{job.job_id}</span>
-        <StatusBadge tone={statusTone(job.status)} compact>
+        <StatusBadge tone={getStatusTone(job.status as any)} compact>
           {statusLabel(job.status, copy.jobDetail.statusLabels)}
         </StatusBadge>
         {(job.status === "queued" || job.status === "running") && (

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { getStatusTone } from "@/lib/status-utils";
 
 interface JobRecord {
   job_id: string;
@@ -27,14 +28,6 @@ interface JobRecord {
 interface TaskListClientProps {
   mode: "active" | "history";
   locale: Locale;
-}
-
-function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
-  if (status === "completed") return "success";
-  if (status === "failed") return "warning";
-  if (status === "running") return "info";
-  if (status === "cancelled") return "neutral";
-  return "primary";
 }
 
 function statusLabel(status: string, labels: Record<string, string>): string {
@@ -274,7 +267,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           <div key={job.job_id} className="px-3 py-2.5 transition-all duration-200 hover:bg-muted/30">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="mono text-xs font-medium truncate" title={job.job_id}>{job.job_id}</span>
-              <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
+              <StatusBadge tone={getStatusTone(job.status as any)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
             </div>
             <div className="mono text-xs text-muted-foreground mb-1 truncate" title={job.contract_key}>
               {job.contract_key}
@@ -330,7 +323,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                 <span className="mono text-xs">{job.target_model ?? "--"}</span>
               </td>
               <td className="px-3 py-2">
-                <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
+                <StatusBadge tone={getStatusTone(job.status as any)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
               </td>
               <td className="px-3 py-2">
                 <span className="mono text-xs text-muted-foreground">{formatTime(job.created_at, locale)}</span>
