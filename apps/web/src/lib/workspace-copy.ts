@@ -63,8 +63,12 @@ export const WORKSPACE_COPY: Record<
           low: string;
         };
         radarDimensionsLabel: string;
+        chartDimensions: string[];
         suggestedNextSteps: string;
         radarLabels: {
+          auc: string;
+          asr: string;
+          tpr: string;
           coverage: string;
           defense: string;
         };
@@ -432,8 +436,12 @@ export const WORKSPACE_COPY: Record<
           low: "Low risk",
         },
         radarDimensionsLabel: "dimensions",
+        chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
         suggestedNextSteps: "Suggested next steps",
         radarLabels: {
+          auc: "AUC",
+          asr: "ASR",
+          tpr: "TPR",
           coverage: "Coverage",
           defense: "Defense",
         },
@@ -936,8 +944,12 @@ export const WORKSPACE_COPY: Record<
           low: "低风险",
         },
         radarDimensionsLabel: "维度",
+        chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
         suggestedNextSteps: "建议的下一步",
         radarLabels: {
+          auc: "AUC",
+          asr: "ASR",
+          tpr: "TPR",
           coverage: "覆盖率",
           defense: "防御效果",
         },

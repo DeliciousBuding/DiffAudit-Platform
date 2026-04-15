@@ -46,6 +46,18 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className }: T
     [tabs, value, onChange]
   );
 
+  // Inject keyframes once globally
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const id = "tabs-underline-keyframes";
+    if (!document.getElementById(id)) {
+      const style = document.createElement("style");
+      style.id = id;
+      style.textContent = `@keyframes tabs-underline{from{transform:scaleX(0.6);opacity:0}to{transform:scaleX(1);opacity:1}}`;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   const baseClasses =
     "relative flex items-center gap-0 text-sm font-medium border-b border-[var(--color-border-subtle)]";
   const variantClasses =
@@ -60,6 +72,7 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className }: T
             key={tab.value}
             data-value={tab.value}
             role="tab"
+            tabIndex={isActive ? 0 : -1}
             aria-selected={isActive}
             aria-controls={`tabpanel-${tab.value}`}
             onClick={() => onChange(tab.value)}
@@ -79,12 +92,6 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className }: T
           </button>
         );
       })}
-      <style>{`
-        @keyframes tabs-underline {
-          from { transform: scaleX(0.6); opacity: 0; }
-          to { transform: scaleX(1); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -102,6 +109,7 @@ export function TabPanel({ value, activeValue, children, className }: TabPanelPr
     <div
       role="tabpanel"
       id={`tabpanel-${value}`}
+      aria-labelledby={`tab-${value}`}
       className={className}
     >
       {children}

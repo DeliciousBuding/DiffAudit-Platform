@@ -123,12 +123,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     { key: "low", label: copy.sections.riskLabels.low, count: riskCounts.low },
   ];
 
+  const dims = copy.sections.chartDimensions;
   const attackComparisonData = [
-    { dimension: "Detection Rate", Recon: 0.78, PIA: 0.65, GSA: 0.82 },
-    { dimension: "Stealth", Recon: 0.92, PIA: 0.71, GSA: 0.45 },
-    { dimension: "Coverage", Recon: 0.60, PIA: 0.85, GSA: 0.73 },
-    { dimension: "Reproducibility", Recon: 0.88, PIA: 0.79, GSA: 0.91 },
-    { dimension: "Speed", Recon: 0.95, PIA: 0.68, GSA: 0.55 },
+    { dimension: dims[0], Recon: 0.78, PIA: 0.65, GSA: 0.82 },
+    { dimension: dims[1], Recon: 0.92, PIA: 0.71, GSA: 0.45 },
+    { dimension: dims[2], Recon: 0.60, PIA: 0.85, GSA: 0.73 },
+    { dimension: dims[3], Recon: 0.88, PIA: 0.79, GSA: 0.91 },
+    { dimension: dims[4], Recon: 0.95, PIA: 0.68, GSA: 0.55 },
   ];
 
   // Risk radar data — 7.1
@@ -145,9 +146,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const defenseEffectiveness = defendedRows > 0 ? Math.min(1, defendedRows / Math.max(1, totalRows) * 2) : 0.2;
 
   const radarData = [
-    { dimension: "auc", label: "AUC", value: avgAucNum },
-    { dimension: "asr", label: "ASR", value: avgAsrNum },
-    { dimension: "tpr", label: "TPR", value: avgTprNum },
+    { dimension: "auc", label: copy.sections.radarLabels.auc, value: avgAucNum },
+    { dimension: "asr", label: copy.sections.radarLabels.asr, value: avgAsrNum },
+    { dimension: "tpr", label: copy.sections.radarLabels.tpr, value: avgTprNum },
     { dimension: "coverage", label: copy.sections.radarLabels.coverage, value: coverageRatio },
     { dimension: "defense", label: copy.sections.radarLabels.defense, value: defenseEffectiveness },
   ];
