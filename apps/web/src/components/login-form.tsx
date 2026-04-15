@@ -125,7 +125,7 @@ export function LoginForm({
       )}
 
       <p className="text-sm leading-7 text-muted-foreground">
-        {pageCopy.registerLink} {" "}
+        {pageCopy.registerLink}{" "}
         <Link href="/register" className="auth-inline-link">
           {pageCopy.registerCta}
         </Link>

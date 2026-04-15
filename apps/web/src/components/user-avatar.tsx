@@ -23,6 +23,7 @@ export function UserAvatar() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [locale, setLocale] = useState<Locale>("en-US");
+  const [avatarError, setAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme, setTheme } = useTheme();
 
@@ -107,16 +108,13 @@ export function UserAvatar() {
         aria-label="User menu"
         aria-expanded={showMenu}
       >
-        {user?.avatarUrl ? (
+        {user?.avatarUrl && !avatarError ? (
           <img
             src={user.avatarUrl}
             alt={user.username}
             className="h-6 w-6 rounded-full object-cover ring-1 ring-border"
             referrerPolicy="no-referrer"
-            onError={(e) => {
-              // Fallback to initial on error
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
+            onError={() => setAvatarError(true)}
           />
         ) : (
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[11px] font-semibold text-[color:var(--accent-blue)]">

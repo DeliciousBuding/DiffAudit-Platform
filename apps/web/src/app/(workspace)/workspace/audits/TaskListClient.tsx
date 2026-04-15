@@ -117,7 +117,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     }
 
     return () => controller.abort();
-  }, [mode]);
+  }, [mode, copy.jobsUnavailable]);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);

@@ -69,7 +69,10 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       clearTimeout(timer);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
-      previousFocusRef.current?.focus();
+      // Only restore focus if the element still exists in the DOM
+      if (previousFocusRef.current && document.contains(previousFocusRef.current)) {
+        previousFocusRef.current.focus();
+      }
     };
   }, [open, onClose]);
 

@@ -85,7 +85,7 @@ export function RegisterForm({
         </div>
         <div className="grid gap-2">
           <label className="caption" htmlFor="register-email">{copy.email}</label>
-          <input id="register-email" type="email" className="portal-input h-[58px]" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={copy.emailPlaceholder} />
+          <input id="register-email" type="email" className="portal-input h-[58px]" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={copy.emailPlaceholder} required />
         </div>
         <div className="grid gap-2">
           <label className="caption" htmlFor="register-password">{copy.password}</label>
