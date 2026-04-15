@@ -1,11 +1,12 @@
 import { headers } from "next/headers";
 
 import { LanguagePicker } from "@/components/language-picker";
-import { LogoutButton } from "@/components/logout-button";
 import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { UserAvatar } from "@/components/user-avatar";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -35,6 +36,7 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
       <div className="workspace-main-area">
         <header className="workspace-topbar">
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <LanguagePicker value={locale} reloadOnChange />
             <a
               href="https://github.com/DeliciousBuding/DiffAudit-Platform"
@@ -45,7 +47,7 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
             >
               <GithubIcon />
             </a>
-            <LogoutButton label={copy.shell.signOut} />
+            <UserAvatar />
           </div>
         </header>
         <main className="workspace-main-content">{children}</main>

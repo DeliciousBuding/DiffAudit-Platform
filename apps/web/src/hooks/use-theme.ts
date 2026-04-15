@@ -4,10 +4,16 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   DEFAULT_THEME,
-  resolveThemeMode,
   THEME_STORAGE_KEY,
   ThemeMode,
 } from "@/lib/theme";
+
+function resolveToLightOrDark(mode: ThemeMode): "light" | "dark" {
+  if (mode === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return mode;
+}
 
 function getInitialTheme(): ThemeMode {
   if (typeof window === "undefined") {
@@ -15,11 +21,11 @@ function getInitialTheme(): ThemeMode {
   }
 
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === "light" || stored === "dark") {
+  if (stored === "light" || stored === "dark" || stored === "system") {
     return stored;
   }
 
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return DEFAULT_THEME;
 }
 
 export function useTheme() {
@@ -27,15 +33,32 @@ export function useTheme() {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.dataset.theme = theme;
-    root.style.colorScheme = theme;
-    root.classList.toggle("dark", theme === "dark");
+    const resolved = resolveToLightOrDark(theme);
+    root.dataset.theme = resolved;
+    root.style.colorScheme = resolved;
+    root.classList.toggle("dark", resolved === "dark");
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  // Listen for OS theme changes when in system mode
+  useEffect(() => {
+    if (theme !== "system") return;
+
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => {
+      const root = document.documentElement;
+      const resolved = e.matches ? "dark" : "light";
+      root.dataset.theme = resolved;
+      root.style.colorScheme = resolved;
+      root.classList.toggle("dark", resolved === "dark");
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
   }, [theme]);
 
   const toggle = useCallback((x?: number, y?: number) => {
     const root = document.documentElement;
-    const nextTheme: ThemeMode = resolveThemeMode(root.classList.contains("dark") ? "light" : "dark");
+    const nextTheme: ThemeMode = root.classList.contains("dark") ? "light" : "dark";
 
     const originX = x ?? 40;
     const originY = y ?? window.innerHeight - 40;
@@ -70,5 +93,11 @@ export function useTheme() {
     setThemeState(nextTheme);
   }, []);
 
-  return { theme, toggle };
+  const setTheme = useCallback((mode: ThemeMode) => {
+    setThemeState(mode);
+  }, []);
+
+  const resolvedTheme = typeof window !== "undefined" ? resolveToLightOrDark(theme) : "light";
+
+  return { theme, resolvedTheme, toggle, setTheme };
 }

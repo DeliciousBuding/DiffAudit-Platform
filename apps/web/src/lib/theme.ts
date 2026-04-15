@@ -1,10 +1,10 @@
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system";
 
 export const THEME_STORAGE_KEY = "theme";
-export const DEFAULT_THEME: ThemeMode = "light";
+export const DEFAULT_THEME: ThemeMode = "system";
 
 export function isThemeMode(value: unknown): value is ThemeMode {
-  return value === "light" || value === "dark";
+  return value === "light" || value === "dark" || value === "system";
 }
 
 export function resolveThemeMode(
@@ -28,14 +28,22 @@ export function getThemeBootScript(
 
     try {
       const stored = window.localStorage.getItem("${storageKey}");
-      const theme = stored === "light" || stored === "dark"
-        ? stored
-        : window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
+      let resolved;
+      if (stored === "light" || stored === "dark") {
+        resolved = stored;
+      } else if (stored === "system" || !stored) {
+        resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      } else {
+        resolved = "${fallback}" === "system"
+          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
           : "${fallback}";
-      apply(theme);
+      }
+      apply(resolved);
     } catch (error) {
-      apply("${fallback}");
+      const fallbackResolved = "${fallback}" === "system"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : "${fallback}";
+      apply(fallbackResolved);
     }
   })();`;
 }
