@@ -26,7 +26,7 @@ const chartTooltipStyle: React.CSSProperties = {
 
 export function ChartRocCurve({ data }: RocCurveProps) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height="100%" minHeight={220} aspect={1.8}>
       <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
         <XAxis

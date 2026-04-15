@@ -52,13 +52,13 @@ export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-2 text-center text-[11px] font-bold transition-all duration-150 ${
+            className={`flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-lg border p-2 text-center text-[11px] font-bold transition-all duration-150 ${
               active
                 ? "border-primary/20 bg-accent text-foreground"
                 : "border-transparent text-muted-foreground"
             }`}
           >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-foreground">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-foreground">
               <NavIcon icon={item.icon} />
             </span>
             <span className="text-[12px]">{item.shortLabel}</span>

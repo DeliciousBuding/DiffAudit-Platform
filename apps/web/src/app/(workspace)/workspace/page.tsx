@@ -164,7 +164,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   return (
     <>
       {/* KPI row — with trend indicators 2.4.1 */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
         <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
         <KpiCardWithTrend label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
@@ -251,7 +251,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* Empty workspace guidance — Task 3.1 optimized */}
       {isEmpty ? (
-        <section className="border-2 border-[color:var(--accent-blue)]/40 bg-gradient-to-br from-[color:var(--accent-blue)]/8 to-[color:var(--accent-blue)]/3 rounded-xl p-6 shadow-sm">
+        <section className="border-2 border-[color:var(--accent-blue)]/40 bg-gradient-to-br from-[color:var(--accent-blue)]/8 to-[color:var(--accent-blue)]/3 rounded-lg p-6 shadow-sm">
           <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/15 mb-4">
               <svg viewBox="0 0 24 24" className="h-6 w-6 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -282,7 +282,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             {/* Enhanced CTA button */}
             <a
               href="/workspace/audits/new"
-              className="inline-flex items-center gap-2 rounded-lg border-2 border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg hover:scale-105 hover:bg-[color:var(--accent-blue)]/90"
+              className="inline-flex items-center gap-2 rounded-md border-2 border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg hover:scale-105 hover:bg-[color:var(--accent-blue)]/90"
             >
               {localeData.emptyWorkspace.cta}
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">

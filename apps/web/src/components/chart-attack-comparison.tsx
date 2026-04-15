@@ -38,7 +38,7 @@ const chartTooltipStyle: React.CSSProperties = {
 
 export function ChartAttackComparison({ data }: AttackComparisonProps) {
   return (
-    <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height="100%" minHeight={260} aspect={1.5}>
       <RadarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
         <PolarGrid stroke="var(--border)" />
         <PolarAngleAxis

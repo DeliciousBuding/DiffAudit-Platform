@@ -54,7 +54,7 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="max-w-lg w-full border-2 border-[color:var(--warning)]/40 bg-[color:var(--warning)]/5 rounded-xl p-6 shadow-lg">
+      <div className="max-w-lg w-full border-2 border-[color:var(--warning)]/40 bg-[color:var(--warning)]/5 rounded-lg p-6 shadow-lg">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[color:var(--warning)]/20">
             <svg viewBox="0 0 24 24" className="h-6 w-6 text-[color:var(--warning)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -83,13 +83,13 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
             <div className="flex items-center gap-3">
               <button
                 onClick={reset}
-                className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md hover:opacity-90"
+                className="inline-flex items-center gap-2 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md hover:opacity-90"
               >
                 Try again
               </button>
               <a
                 href="/workspace"
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
               >
                 Go to workspace
               </a>
