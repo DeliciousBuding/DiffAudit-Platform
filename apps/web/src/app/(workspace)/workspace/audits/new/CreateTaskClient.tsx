@@ -455,8 +455,17 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   max={1000}
                   value={form.rounds}
                   onChange={(e) => {
-                    const val = e.target.value === '' ? 1 : parseInt(e.target.value, 10);
-                    if (!Number.isNaN(val) && val >= 1 && val <= 1000) {
+                    const rawValue = e.target.value;
+                    if (rawValue === '') {
+                      setForm((prev) => ({ ...prev, rounds: 1 }));
+                      return;
+                    }
+                    const val = parseInt(rawValue, 10);
+                    if (Number.isNaN(val) || val < 1) {
+                      setForm((prev) => ({ ...prev, rounds: 1 }));
+                    } else if (val > 1000) {
+                      setForm((prev) => ({ ...prev, rounds: 1000 }));
+                    } else {
                       setForm((prev) => ({ ...prev, rounds: val }));
                     }
                   }}
@@ -475,8 +484,17 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   max={512}
                   value={form.batchSize}
                   onChange={(e) => {
-                    const val = e.target.value === '' ? 1 : parseInt(e.target.value, 10);
-                    if (!Number.isNaN(val) && val >= 1 && val <= 512) {
+                    const rawValue = e.target.value;
+                    if (rawValue === '') {
+                      setForm((prev) => ({ ...prev, batchSize: 1 }));
+                      return;
+                    }
+                    const val = parseInt(rawValue, 10);
+                    if (Number.isNaN(val) || val < 1) {
+                      setForm((prev) => ({ ...prev, batchSize: 1 }));
+                    } else if (val > 512) {
+                      setForm((prev) => ({ ...prev, batchSize: 512 }));
+                    } else {
                       setForm((prev) => ({ ...prev, batchSize: val }));
                     }
                   }}
