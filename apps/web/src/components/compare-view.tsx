@@ -98,24 +98,24 @@ function DefenseBar({ undefendedAuc, defendedAuc, copy }: { undefendedAuc: numbe
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground w-8">{copy.before}</span>
+        <span className="text-xs text-muted-foreground w-8">{copy.before}</span>
         <div className="flex-1 h-3 bg-muted/20 rounded-sm overflow-hidden">
           <div
             className="h-full rounded-sm transition-all"
             style={{ width: `${before * 100}%`, backgroundColor: "var(--risk-high)" }}
           />
         </div>
-        <span className="mono text-[10px] w-10 text-right">{before.toFixed(2)}</span>
+        <span className="mono text-xs w-10 text-right">{before.toFixed(2)}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground w-8">{copy.after}</span>
+        <span className="text-xs text-muted-foreground w-8">{copy.after}</span>
         <div className="flex-1 h-3 bg-muted/20 rounded-sm overflow-hidden">
           <div
             className="h-full rounded-sm transition-all"
             style={{ width: `${after * 100}%`, backgroundColor: reduction > 0.15 ? "var(--success)" : reduction > 0 ? "var(--risk-medium)" : "var(--risk-high)" }}
           />
         </div>
-        <span className="mono text-[10px] w-10 text-right">{after.toFixed(2)}</span>
+        <span className="mono text-xs w-10 text-right">{after.toFixed(2)}</span>
       </div>
     </div>
   );
@@ -154,7 +154,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
             {copy.summaryPairs}
           </div>
           <div className="mt-1.5 text-2xl font-semibold">{pairs.length}</div>
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground">
             {copy.effectiveCount}
           </p>
         </div>
@@ -165,7 +165,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
           <div className="mt-1.5 text-2xl font-semibold" style={{ color: avgAucReduction < 0 ? "var(--success)" : "var(--warning)" }}>
             {avgAucReduction >= 0 ? "+" : ""}{avgAucReduction.toFixed(3)}
           </div>
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground">
             {avgAucReduction < 0 ? copy.effectiveYes : copy.effectiveNo}
           </p>
         </div>
@@ -176,7 +176,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
           <div className="mt-1.5 text-2xl font-semibold" style={{ color: "var(--success)" }}>
             {effectiveCount}/{pairs.length}
           </div>
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground">
             {copy.effectiveNote}
           </p>
         </div>

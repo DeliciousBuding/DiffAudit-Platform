@@ -332,7 +332,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
               <label className="text-xs text-muted-foreground">
                 {copy.preferences.language}
               </label>
-              <p className="text-[10px] text-muted-foreground">{copy.preferences.languageNote}</p>
+              <p className="text-xs text-muted-foreground">{copy.preferences.languageNote}</p>
               <div className="flex gap-1">
                 {(["zh-CN", "en-US"] as Locale[]).map((l) => (
                   <button
@@ -485,7 +485,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
                 {copy.aboutSystem.useCaseItems.map((item) => (
                   <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
                     <div className="text-xs font-medium">{item.title}</div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</div>
                   </div>
                 ))}
               </div>
@@ -494,7 +494,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
             {/* System boundary */}
             <div>
               <h3 className="text-xs font-medium mb-1.5">{copy.aboutSystem.systemBoundary}</h3>
-              <p className="text-[10px] text-muted-foreground leading-relaxed border-l-2 border-[var(--accent-blue)] pl-2">
+              <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-[var(--accent-blue)] pl-2">
                 {copy.aboutSystem.boundaryNote}
               </p>
             </div>
@@ -511,7 +511,7 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
                       }`} />
                       <span className="text-xs font-medium">{item.tier}</span>
                     </div>
-                    <div className="text-[10px] text-muted-foreground leading-relaxed">{item.desc}</div>
+                    <div className="text-xs text-muted-foreground leading-relaxed">{item.desc}</div>
                   </div>
                 ))}
               </div>

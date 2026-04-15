@@ -179,7 +179,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.coverageGaps}
             </h2>
-            <span className="text-[10px] text-[color:var(--warning)]">
+            <span className="text-xs text-[color:var(--warning)]">
               {gapData.length} {copy.sections.highRiskGaps}
             </span>
           </div>
@@ -191,7 +191,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-36 shrink-0 text-xs font-medium truncate" title={`${gap.attack} → ${gap.defense}`}>
                     <div className="truncate">{gap.attack}</div>
-                    <div className="truncate text-[10px] text-muted-foreground">{gap.defense}</div>
+                    <div className="truncate text-xs text-muted-foreground">{gap.defense}</div>
                   </div>
                   <div className="flex-1 h-5 bg-muted/20 rounded-sm overflow-hidden">
                     <div
@@ -331,7 +331,7 @@ async function CoverageGapsSection({ locale }: { locale: Locale }) {
                     index % 2 === 0 ? "bg-background" : "bg-muted/10"
                   }`}
                 >
-                  <td className="mono px-3 py-2 text-[10px] text-muted-foreground">{entry.contractKey}</td>
+                  <td className="mono px-3 py-2 text-xs text-muted-foreground">{entry.contractKey}</td>
                   <td className="px-3 py-2 font-medium">{entry.label}</td>
                   <td className="px-3 py-2 text-muted-foreground max-w-xs">{entry.systemGap}</td>
                   <td className="px-3 py-2 text-muted-foreground">{entry.bestWorkspace}</td>

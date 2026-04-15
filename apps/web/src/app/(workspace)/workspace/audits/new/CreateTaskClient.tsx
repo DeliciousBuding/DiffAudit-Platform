@@ -317,7 +317,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     >
                       <div className="text-sm font-semibold mb-1.5">{card.title}</div>
                       <div className="text-xs text-muted-foreground mb-2 leading-relaxed">{card.desc}</div>
-                      <div className="text-[10px] text-muted-foreground italic">{card.note}</div>
+                      <div className="text-xs text-muted-foreground italic">{card.note}</div>
                     </button>
                   );
                 })}
@@ -394,7 +394,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                                 : labels.availabilityDisabled}
                           </StatusBadge>
                         </div>
-                        <div className="mono text-[10px] text-muted-foreground">{model.contractKey}</div>
+                        <div className="mono text-xs text-muted-foreground">{model.contractKey}</div>
                         <div className="text-xs text-muted-foreground mt-1">{model.capabilityLabel}</div>
                       </button>
                     );

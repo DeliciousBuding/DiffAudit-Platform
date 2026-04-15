@@ -175,9 +175,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       <div className="grid gap-3 md:grid-cols-3">
         <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.blackBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]" aria-hidden="true">1</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-xs font-bold text-[color:var(--accent-blue)]" aria-hidden="true">1</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-xs font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
           <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
@@ -191,9 +191,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.grayBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]" aria-hidden="true">2</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-xs font-bold text-[color:var(--warning)]" aria-hidden="true">2</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-xs font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
           <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
@@ -207,9 +207,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-xs font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-xs font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
           </div>
           <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
