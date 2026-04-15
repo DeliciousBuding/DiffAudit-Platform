@@ -106,7 +106,7 @@ export function RegisterForm({
             <p className="text-xs text-[var(--risk-high)] mt-1">{copy.passwordMismatch}</p>
           )}
         </div>
-        <button type="submit" disabled={pending} className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55">
+        <button type="submit" disabled={pending} className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-50">
           {pending ? copy.pending : copy.submit}
         </button>
       </form>

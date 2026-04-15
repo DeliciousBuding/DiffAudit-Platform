@@ -614,7 +614,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitState === "submitting"}
-                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-70"
+                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitState === "submitting" ? (
                       <>

@@ -101,7 +101,7 @@ export function LoginForm({
         <button
           type="submit"
           disabled={pending}
-          className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55"
+          className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? copy.pending : copy.submit}
         </button>
