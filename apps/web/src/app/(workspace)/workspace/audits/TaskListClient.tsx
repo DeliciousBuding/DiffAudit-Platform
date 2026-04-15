@@ -249,7 +249,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
         <div className="text-xs text-muted-foreground mb-3">
           {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
         </div>
-        <a
+        <Link
           href="/workspace/audits/new"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[color:var(--accent-blue)] bg-[color:var(--accent-blue)]/10 rounded-md hover:bg-[color:var(--accent-blue)]/20 transition-colors"
         >
@@ -257,7 +257,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
             <path d="M12 5v14m-7-7h14" />
           </svg>
           {mode === "active" ? copy.emptyTasksCta : copy.emptyHistoryCta}
-        </a>
+        </Link>
       </div>
     );
   }

@@ -16,11 +16,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const [locale, setLocale] = useState<Locale>("en-US");
-
-  useEffect(() => {
-    setLocale(getStoredLocale());
-  }, []);
+  const [locale] = useState<Locale>(getStoredLocale);
 
   const copy = WORKSPACE_COPY[locale].settings.errorPage;
 

@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { Locale } from "@/components/language-picker";
 import { getStoredLocale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "./docs-data";
 import { getDocsContent, getDocsPage } from "./docs-data";
-import { Tabs, TabPanel } from "@/components/tabs";
+import { Tabs } from "@/components/tabs";
 import { DocsSearch } from "@/components/docs-search";
 
 type DocsHomeProps = {
@@ -16,16 +17,13 @@ type DocsHomeProps = {
 
 export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const router = useRouter();
-  const [locale, setLocale] = useState<Locale>("en-US");
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    setLocale(getStoredLocale());
-    // Read initial theme from stored preference or system
+  const [locale, setLocale] = useState<Locale>(getStoredLocale);
+  const [dark, setDark] = useState(() => {
+    if (typeof window === 'undefined') return false;
     const stored = localStorage.getItem("diffaudit-theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDark(stored === "dark" || (!stored && prefersDark));
-  }, []);
+    return stored === "dark" || (!stored && prefersDark);
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -55,7 +53,7 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const handleSelectSlug = useCallback((slug: string) => {
     setSelectedSlug(slug);
     router.push(`/docs/${slug}`);
-  }, [router]);
+  }, [router, setSelectedSlug]);
 
   function handleGroupChange(groupValue: string) {
     const firstPageInGroup = content.pages.find((p) => p.group === groupValue);
@@ -145,13 +143,13 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
       <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center gap-6">
-            <a href="/" className="text-sm font-semibold text-[var(--color-text-primary)]">
+            <Link href="/" className="text-sm font-semibold text-[var(--color-text-primary)]">
               DiffAudit
-            </a>
+            </Link>
             <nav className="hidden gap-4 sm:flex">
-              <a href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+              <Link href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
                 {content.header.home}
-              </a>
+              </Link>
               <span className="text-sm font-medium text-[var(--color-text-primary)]">
                 {content.header.docs}
               </span>
