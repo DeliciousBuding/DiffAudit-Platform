@@ -1077,8 +1077,8 @@ html.dark .header-pill-primary:hover {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-height: 72px;
-  padding: 8px 24px;
+  min-height: 48px;
+  padding: 6px 24px;
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
@@ -1087,7 +1087,7 @@ html.dark .header-pill-primary:hover {
 
 .workspace-main-content {
   flex: 1;
-  padding: 24px;
+  padding: 16px 24px;
   max-width: 1400px;
   width: 100%;
 }

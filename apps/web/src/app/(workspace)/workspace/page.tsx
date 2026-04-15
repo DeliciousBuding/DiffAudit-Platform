@@ -511,12 +511,12 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (
-    <div className="space-y-4 page-entrance">
-      {/* Page header */}
-      <div className="border-b border-border pb-3">
+    <div className="space-y-3 page-entrance">
+      {/* Page header — compact */}
+      <div className="pb-2">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-        <h1 className="mt-1 text-xl font-semibold">{copy.title}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{copy.description}</p>
+        <h1 className="mt-0.5 text-lg font-semibold">{copy.title}</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
       </div>
 
       <Suspense fallback={
