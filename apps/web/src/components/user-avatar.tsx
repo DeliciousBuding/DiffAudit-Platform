@@ -22,14 +22,14 @@ const USERNAME_STORAGE_KEY = "platform-custom-username-v1";
 export function UserAvatar() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [locale, setLocale] = useState<Locale>(() => {
+  const [locale] = useState<Locale>(() => {
     if (typeof window === 'undefined') return "en-US";
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
     return (stored === "zh-CN" || stored === "en-US") ? stored : "en-US";
   });
   const [avatarError, setAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   // Fetch user info
   useEffect(() => {

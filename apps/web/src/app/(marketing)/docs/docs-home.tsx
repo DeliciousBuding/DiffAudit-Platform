@@ -17,7 +17,7 @@ type DocsHomeProps = {
 
 export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const router = useRouter();
-  const [locale, setLocale] = useState<Locale>(getStoredLocale);
+  const [locale] = useState<Locale>(getStoredLocale);
   const [dark, setDark] = useState(() => {
     if (typeof window === 'undefined') return false;
     const stored = localStorage.getItem("diffaudit-theme");
