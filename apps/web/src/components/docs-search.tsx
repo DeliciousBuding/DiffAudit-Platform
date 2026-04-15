@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import type { Locale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "@/app/(marketing)/docs/docs-data";
 import { getDocsContent } from "@/app/(marketing)/docs/docs-data";
@@ -52,17 +52,16 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
-  // Search on query change
-  useEffect(() => {
-    if (query.length < 2) {
-      setResults([]);
-      setSelectedIndex(0);
-      return;
-    }
-    const matches = search(index, query);
-    setResults(matches);
-    setSelectedIndex(0);
+  // Search on query change - use useMemo to avoid setState in effect
+  const searchResults = useMemo(() => {
+    if (query.length < 2) return [];
+    return search(index, query);
   }, [query, index]);
+
+  useEffect(() => {
+    setResults(searchResults);
+    setSelectedIndex(0);
+  }, [searchResults]);
 
   // Keyboard navigation within results
   const handleKeyDown = useCallback(
