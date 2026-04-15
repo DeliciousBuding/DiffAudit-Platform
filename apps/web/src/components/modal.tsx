@@ -12,17 +12,29 @@ type ModalProps = {
 
 export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    // Focus the first interactive element in the modal
+    const timer = setTimeout(() => {
+      contentRef.current?.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )?.focus();
+    }, 0);
+
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handleEsc);
     document.body.style.overflow = "hidden";
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("keydown", handleEsc);
       document.body.style.overflow = "";
+      previousFocusRef.current?.focus();
     };
   }, [open, onClose]);
 
@@ -31,6 +43,9 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   return (
     <div
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       style={{ animation: "modal-backdrop-in 0.15s ease-out forwards" }}
       onClick={(e) => {
@@ -38,12 +53,13 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       }}
     >
       <div
+        ref={contentRef}
         className="mx-4 w-full max-w-md rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] shadow-xl"
         style={{ animation: "modal-content-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-5 py-3">
-          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">{title}</h2>
+          <h2 id="modal-title" className="text-sm font-semibold text-[var(--color-text-primary)]">{title}</h2>
           <button
             onClick={onClose}
             className="rounded p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-primary)] transition-colors"

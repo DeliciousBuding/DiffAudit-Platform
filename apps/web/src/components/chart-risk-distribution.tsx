@@ -16,9 +16,18 @@ interface RiskDistributionProps {
 }
 
 const RISK_COLORS: Record<string, string> = {
-  high: "#ff5f46",
-  medium: "#b67619",
-  low: "#157a52",
+  high: "var(--risk-high, #ff5f46)",
+  medium: "var(--risk-medium, #b67619)",
+  low: "var(--success, #157a52)",
+};
+
+/** Shared tooltip style for charts */
+const chartTooltipStyle: React.CSSProperties = {
+  fontSize: 11,
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
 };
 
 export function ChartRiskDistribution({ data }: RiskDistributionProps) {
@@ -37,15 +46,7 @@ export function ChartRiskDistribution({ data }: RiskDistributionProps) {
           tickLine={false}
           axisLine={false}
         />
-        <Tooltip
-          contentStyle={{
-            fontSize: 11,
-            borderRadius: 6,
-            border: "1px solid var(--border)",
-            background: "var(--card)",
-            color: "var(--foreground)",
-          }}
-        />
+        <Tooltip contentStyle={chartTooltipStyle} />
         <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={60}>
           {data.map((entry, index) => (
             <Cell key={index} fill={RISK_COLORS[entry.key] || "var(--accent-blue)"} />

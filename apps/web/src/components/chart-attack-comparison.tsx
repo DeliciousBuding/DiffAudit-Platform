@@ -20,6 +20,22 @@ interface AttackComparisonProps {
   }[];
 }
 
+/** Track colors using CSS variables for theme consistency */
+const TRACK_COLORS = {
+  recon: "var(--risk-high, #ff5f46)",
+  pia: "var(--risk-medium, #b67619)",
+  gsa: "var(--accent-blue, #2f6df6)",
+};
+
+/** Shared tooltip style for charts */
+const chartTooltipStyle: React.CSSProperties = {
+  fontSize: 11,
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
+};
+
 export function ChartAttackComparison({ data }: AttackComparisonProps) {
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -35,23 +51,15 @@ export function ChartAttackComparison({ data }: AttackComparisonProps) {
           domain={[0, 1]}
           tickCount={5}
         />
-        <Tooltip
-          contentStyle={{
-            fontSize: 11,
-            borderRadius: 6,
-            border: "1px solid var(--border)",
-            background: "var(--card)",
-            color: "var(--foreground)",
-          }}
-        />
+        <Tooltip contentStyle={chartTooltipStyle} />
         <Legend
           wrapperStyle={{ fontSize: 10 }}
         />
         <Radar
           name="Recon"
           dataKey="Recon"
-          stroke="#ff5f46"
-          fill="#ff5f46"
+          stroke={TRACK_COLORS.recon}
+          fill={TRACK_COLORS.recon}
           fillOpacity={0.12}
           strokeWidth={2}
           isAnimationActive={false}
@@ -59,8 +67,8 @@ export function ChartAttackComparison({ data }: AttackComparisonProps) {
         <Radar
           name="PIA"
           dataKey="PIA"
-          stroke="#b67619"
-          fill="#b67619"
+          stroke={TRACK_COLORS.pia}
+          fill={TRACK_COLORS.pia}
           fillOpacity={0.12}
           strokeWidth={2}
           isAnimationActive={false}
@@ -68,8 +76,8 @@ export function ChartAttackComparison({ data }: AttackComparisonProps) {
         <Radar
           name="GSA"
           dataKey="GSA"
-          stroke="#2f6df6"
-          fill="#2f6df6"
+          stroke={TRACK_COLORS.gsa}
+          fill={TRACK_COLORS.gsa}
           fillOpacity={0.12}
           strokeWidth={2}
           isAnimationActive={false}

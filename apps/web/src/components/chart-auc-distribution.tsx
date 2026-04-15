@@ -14,6 +14,15 @@ interface AucDistributionProps {
   data: { auc: number; count: number }[];
 }
 
+/** Shared tooltip style for charts */
+const chartTooltipStyle: React.CSSProperties = {
+  fontSize: 11,
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
+};
+
 export function ChartAucDistribution({ data }: AucDistributionProps) {
   return (
     <ResponsiveContainer width="100%" height={220}>
@@ -31,15 +40,7 @@ export function ChartAucDistribution({ data }: AucDistributionProps) {
           tickLine={false}
           axisLine={false}
         />
-        <Tooltip
-          contentStyle={{
-            fontSize: 11,
-            borderRadius: 6,
-            border: "1px solid var(--border)",
-            background: "var(--card)",
-            color: "var(--foreground)",
-          }}
-        />
+        <Tooltip contentStyle={chartTooltipStyle} />
         <Bar
           dataKey="count"
           fill="var(--accent-blue)"

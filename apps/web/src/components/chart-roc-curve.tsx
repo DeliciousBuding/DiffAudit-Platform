@@ -15,6 +15,15 @@ interface RocCurveProps {
   data: { fpr: number; tpr: number }[];
 }
 
+/** Shared tooltip style for charts */
+const chartTooltipStyle: React.CSSProperties = {
+  fontSize: 11,
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
+};
+
 export function ChartRocCurve({ data }: RocCurveProps) {
   return (
     <ResponsiveContainer width="100%" height={220}>
@@ -37,15 +46,7 @@ export function ChartRocCurve({ data }: RocCurveProps) {
           axisLine={false}
           label={{ value: "True Positive Rate", angle: -90, position: "insideLeft", fontSize: 10, fill: "var(--muted-foreground)" }}
         />
-        <Tooltip
-          contentStyle={{
-            fontSize: 11,
-            borderRadius: 6,
-            border: "1px solid var(--border)",
-            background: "var(--card)",
-            color: "var(--foreground)",
-          }}
-        />
+        <Tooltip contentStyle={chartTooltipStyle} />
         <ReferenceLine
           segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]}
           stroke="var(--muted-foreground)"
