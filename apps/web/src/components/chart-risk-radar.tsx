@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { ChartEmptyState } from "./chart-empty-state";
 
 interface RiskRadarData {
   dimension: string;
@@ -52,6 +53,10 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
     observer.observe(document.documentElement, { attributes: true });
     return () => observer.disconnect();
   }, []);
+
+  if (!data || data.length === 0) {
+    return <ChartEmptyState message="No radar data available / 暂无雷达数据" height={height} />;
+  }
 
   const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(33, 34, 38, 0.1)";
   const axisColor = isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(33, 34, 38, 0.4)";

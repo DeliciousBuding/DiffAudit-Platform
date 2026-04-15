@@ -10,6 +10,7 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
+import { ChartEmptyState } from "./chart-empty-state";
 
 interface RocCurveProps {
   data: { fpr: number; tpr: number }[];
@@ -25,6 +26,10 @@ const chartTooltipStyle: React.CSSProperties = {
 };
 
 export function ChartRocCurve({ data }: RocCurveProps) {
+  if (!data || data.length === 0) {
+    return <ChartEmptyState message="No ROC data available / 暂无 ROC 数据" height={220} />;
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%" minHeight={220} aspect={1.8}>
       <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>

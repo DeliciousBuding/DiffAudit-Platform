@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { ChartEmptyState } from "./chart-empty-state";
 
 interface AttackComparisonProps {
   data: {
@@ -37,6 +38,10 @@ const chartTooltipStyle: React.CSSProperties = {
 };
 
 export function ChartAttackComparison({ data }: AttackComparisonProps) {
+  if (!data || data.length === 0) {
+    return <ChartEmptyState message="No comparison data available / 暂无对比数据" height={260} />;
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%" minHeight={260} aspect={1.5}>
       <RadarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
