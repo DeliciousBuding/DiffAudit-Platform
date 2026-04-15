@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
+import { LOCALE_STORAGE_KEY, type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 interface UserInfo {
   username: string;
@@ -20,8 +22,17 @@ const USERNAME_STORAGE_KEY = "platform-custom-username-v1";
 export function UserAvatar() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [locale, setLocale] = useState<Locale>("en-US");
   const menuRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme, setTheme } = useTheme();
+
+  // Load locale
+  useEffect(() => {
+    const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (stored === "zh-CN" || stored === "en-US") {
+      setLocale(stored);
+    }
+  }, []);
 
   // Fetch user info
   useEffect(() => {
@@ -85,6 +96,7 @@ export function UserAvatar() {
   }, [showMenu]);
 
   const initial = user?.username?.[0]?.toUpperCase() ?? "?";
+  const copy = WORKSPACE_COPY[locale].userMenu;
 
   return (
     <div className="relative" ref={menuRef}>
@@ -135,7 +147,7 @@ export function UserAvatar() {
               )}
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium truncate">{user?.username ?? "User"}</div>
-                <div className="text-[10px] text-muted-foreground">Logged in</div>
+                <div className="text-[10px] text-muted-foreground">{copy.loggedIn}</div>
               </div>
             </div>
           </div>
@@ -144,22 +156,23 @@ export function UserAvatar() {
           <div className="p-1.5">
             {/* Theme selector */}
             <div className="px-2.5 py-1.5">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Theme</div>
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.themeLabel}</div>
               <div className="flex gap-1">
                 {([
-                  { value: "light" as ThemeMode, label: "Light", icon: "sun" },
-                  { value: "dark" as ThemeMode, label: "Dark", icon: "moon" },
-                  { value: "system" as ThemeMode, label: "System", icon: "system" },
+                  { value: "light" as ThemeMode, label: copy.themeLight, icon: "sun" },
+                  { value: "dark" as ThemeMode, label: copy.themeDark, icon: "moon" },
+                  { value: "system" as ThemeMode, label: copy.themeSystem, icon: "system" },
                 ]).map((option) => (
                   <button
                     key={option.value}
                     onClick={() => setTheme(option.value)}
-                    className={`flex-1 flex flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[10px] transition-colors ${
+                    className={`flex-1 flex flex-col items-center gap-0.5 rounded-md px-2 py-1.5 text-[10px] transition-colors ${
                       theme === option.value
                         ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
                         : "text-muted-foreground hover:bg-muted/30"
                     }`}
                     title={option.label}
+                    aria-label={option.label}
                   >
                     {option.icon === "sun" ? (
                       <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -177,7 +190,7 @@ export function UserAvatar() {
                         <circle cx="9" cy="15" r="1.5" fill="currentColor" stroke="none" />
                       </svg>
                     )}
-                    <span>{option.label}</span>
+                    <span className="truncate max-w-full">{option.label}</span>
                   </button>
                 ))}
               </div>
@@ -194,11 +207,11 @@ export function UserAvatar() {
                 <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
-              Settings
+              {copy.settings}
             </a>
             <div className="mt-1 pt-1 border-t border-border">
               <div className="px-2.5 py-1.5">
-                <LogoutButton label="Sign out" />
+                <LogoutButton label={copy.signOut} />
               </div>
             </div>
           </div>

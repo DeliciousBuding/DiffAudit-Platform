@@ -16,6 +16,15 @@ export const WORKSPACE_COPY: Record<
       githubTitle: string;
       signOut: string;
     };
+    userMenu: {
+      loggedIn: string;
+      themeLabel: string;
+      themeLight: string;
+      themeDark: string;
+      themeSystem: string;
+      settings: string;
+      signOut: string;
+    };
     nav: Array<{
       href: string;
       title: string;
@@ -398,6 +407,15 @@ export const WORKSPACE_COPY: Record<
       desktopNavAriaLabel: "Workspace navigation",
       mobileNavAriaLabel: "Mobile navigation",
       githubTitle: "GitHub",
+      signOut: "Sign out",
+    },
+    userMenu: {
+      loggedIn: "Logged in",
+      themeLabel: "Theme",
+      themeLight: "Light",
+      themeDark: "Dark",
+      themeSystem: "System",
+      settings: "Settings",
       signOut: "Sign out",
     },
     nav: [
@@ -917,6 +935,15 @@ export const WORKSPACE_COPY: Record<
       desktopNavAriaLabel: "工作台导航",
       mobileNavAriaLabel: "移动端导航",
       githubTitle: "GitHub",
+      signOut: "退出登录",
+    },
+    userMenu: {
+      loggedIn: "已登录",
+      themeLabel: "主题",
+      themeLight: "浅色",
+      themeDark: "深色",
+      themeSystem: "跟随系统",
+      settings: "设置",
       signOut: "退出登录",
     },
     nav: [
