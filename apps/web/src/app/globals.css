@@ -452,17 +452,17 @@ select {
     0 14px 32px rgba(18, 19, 23, 0.1);
 }
 
-/* Primary variant — filled for emphasis */
+/* Primary variant — accent blue fill for emphasis */
 .header-pill-primary {
-  background: var(--foreground);
-  color: var(--background);
+  background: var(--accent-blue);
+  color: #fff;
   border-color: transparent;
-  box-shadow: 0 4px 14px rgba(18, 19, 23, 0.12);
+  box-shadow: 0 4px 14px rgba(47, 109, 246, 0.25);
 }
 
 .header-pill-primary:hover {
-  background: var(--muted-foreground);
-  box-shadow: 0 6px 20px rgba(18, 19, 23, 0.16);
+  background: var(--accent-blue-hover);
+  box-shadow: 0 6px 20px rgba(47, 109, 246, 0.35);
 }
 
 /* Dark mode overrides */
@@ -483,14 +483,16 @@ html.dark .header-pill:hover {
 
 html[data-theme="dark"] .header-pill-primary,
 html.dark .header-pill-primary {
-  background: var(--palette-grey-1200);
-  color: var(--palette-grey-0);
+  background: var(--accent-blue);
+  color: #fff;
   border-color: transparent;
+  box-shadow: 0 4px 14px rgba(91, 142, 249, 0.3);
 }
 
 html[data-theme="dark"] .header-pill-primary:hover,
 html.dark .header-pill-primary:hover {
-  background: var(--palette-grey-900);
+  background: var(--accent-blue-hover);
+  box-shadow: 0 6px 20px rgba(91, 142, 249, 0.4);
 }
 
 .portal-shell {
