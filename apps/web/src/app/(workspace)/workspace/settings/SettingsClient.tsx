@@ -233,114 +233,175 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
         <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
       </div>
 
-      {/* Settings cards */}
-      <div className="grid gap-3 lg:grid-cols-3">
-        {/* System status */}
+      {/* Settings grid - organized by priority */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        {/* System & Runtime - Combined */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.systemStatus.title}
             </h2>
           </div>
-          <div className="p-3">
-            {/* Runtime connection */}
-            <div className="flex items-center justify-between">
+          <div className="p-3 space-y-3">
+            {/* Runtime connection status */}
+            <div className="flex items-center justify-between pb-3 border-b border-border">
               <span className="text-xs text-muted-foreground">{copy.systemStatus.runtime}</span>
               <RuntimeStatusBadge locale={locale} />
             </div>
 
             {/* Demo mode toggle */}
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{copy.systemStatus.demoMode}</span>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-medium">{copy.systemStatus.demoMode}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => handleDemoModeToggle(!demoMode)}
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                  demoMode
-                    ? "bg-[color:var(--success)]"
-                    : "bg-[color:var(--border)]"
+                  demoMode ? "bg-[color:var(--success)]" : "bg-[color:var(--border)]"
                 }`}
                 aria-label={`${copy.systemStatus.demoMode}: ${demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}`}
               >
                 <span
-                  className={`inline-block h-3.5 w-3.5 rounded-full bg-[var(--color-bg-primary)] shadow transition-transform ${
+                  className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
                     demoMode ? "translate-x-[1.125rem]" : "translate-x-1"
                   }`}
                 />
               </button>
             </div>
+
+            {/* Runtime config */}
+            <div className="pt-3 border-t border-border space-y-2">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-medium">{copy.runtimeConfig.title}</h3>
+                {savedMsg === copy.runtimeConfig.saved && (
+                  <span className="text-[10px] text-[color:var(--success)]">{copy.runtimeConfig.saved}</span>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">{copy.runtimeConfig.host}</label>
+                  <input
+                    type="text"
+                    value={runtimeHost}
+                    onChange={(e) => handleSaveRuntimeHost(e.target.value)}
+                    placeholder={copy.runtimeConfig.hostPlaceholder}
+                    className="settings-input mono text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">{copy.runtimeConfig.port}</label>
+                  <input
+                    type="text"
+                    value={runtimePort}
+                    onChange={(e) => handleSaveRuntimePort(e.target.value)}
+                    className="settings-input mono text-xs"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleTestRuntime}
+                  disabled={runtimeTesting}
+                  className="flex-1 rounded-md bg-[color:var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 transition-colors"
+                >
+                  {runtimeTesting ? copy.runtimeConfig.testing : copy.runtimeConfig.testConnection}
+                </button>
+                {runtimeConnected === true && (
+                  <span className="text-[10px] text-[color:var(--success)]">{copy.runtimeConfig.connected}</span>
+                )}
+                {runtimeConnected === false && (
+                  <span className="text-[10px] text-[color:var(--warning)]">{copy.runtimeConfig.disconnected}</span>
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Audit configuration */}
+        {/* Audit Configuration */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditConfig.title}
             </h2>
             {savedMsg === copy.auditConfig.saved && (
-              <span className="text-[10px] text-[color:var(--success)]">
-                {copy.auditConfig.saved}
-              </span>
+              <span className="text-[10px] text-[color:var(--success)]">{copy.auditConfig.saved}</span>
             )}
           </div>
-          <div className="p-3">
-            {/* Default rounds */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.auditConfig.defaultRounds}
-              </label>
-              <input
-                type="number"
-                value={defaultRounds}
-                onChange={(e) => handleRoundsChange(e.target.value)}
-                onBlur={() => showSaved(copy.auditConfig.defaultRounds)}
-                min={1}
-                max={1000}
-                className="settings-input"
-              />
+          <div className="p-3 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">{copy.auditConfig.defaultRounds}</label>
+                <input
+                  type="number"
+                  value={defaultRounds}
+                  onChange={(e) => handleRoundsChange(e.target.value)}
+                  onBlur={() => showSaved(copy.auditConfig.defaultRounds)}
+                  min={1}
+                  max={1000}
+                  className="settings-input"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">{copy.auditConfig.defaultBatchSize}</label>
+                <input
+                  type="number"
+                  value={defaultBatchSize}
+                  onChange={(e) => handleBatchSizeChange(e.target.value)}
+                  onBlur={() => showSaved(copy.auditConfig.defaultBatchSize)}
+                  min={1}
+                  max={1024}
+                  className="settings-input"
+                />
+              </div>
             </div>
 
-            {/* Default batch size */}
-            <div className="mt-3 space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.auditConfig.defaultBatchSize}
-              </label>
-              <input
-                type="number"
-                value={defaultBatchSize}
-                onChange={(e) => handleBatchSizeChange(e.target.value)}
-                onBlur={() => showSaved(copy.auditConfig.defaultBatchSize)}
-                min={1}
-                max={1024}
-                className="settings-input"
-              />
+            {/* Template save */}
+            <div className="pt-3 border-t border-border">
+              <div className="text-xs font-medium mb-1.5">{copy.auditTemplates.title}</div>
+              <p className="text-xs text-muted-foreground mb-2 leading-relaxed">{copy.auditTemplates.description}</p>
+              <button
+                onClick={() => {
+                  try {
+                    const template = {
+                      rounds: defaultRounds,
+                      batchSize: defaultBatchSize,
+                      createdAt: new Date().toISOString(),
+                    };
+                    window.localStorage.setItem("platform-audit-template-default", JSON.stringify(template));
+                    showSaved(copy.auditTemplates.saved);
+                  } catch {}
+                }}
+                className="w-full rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-colors"
+              >
+                {copy.auditTemplates.saveCurrent}
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Preferences — 2.2.1 */}
+        {/* Preferences */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.preferences.title}
             </h2>
           </div>
-          <div className="p-3 space-y-4">
-            {/* Language selector */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.preferences.language}
-              </label>
-              <p className="text-xs text-muted-foreground">{copy.preferences.languageNote}</p>
-              <div className="flex gap-1">
+          <div className="p-3 space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium">{copy.preferences.language}</label>
+              <p className="text-xs text-muted-foreground leading-snug">{copy.preferences.languageNote}</p>
+              <div className="flex gap-1.5">
                 {(["zh-CN", "en-US"] as Locale[]).map((l) => (
                   <button
                     key={l}
                     onClick={() => handleLocaleChange(l)}
-                    className={`flex-1 rounded px-3 py-1.5 text-xs transition-colors ${
+                    className={`flex-1 rounded px-3 py-1.5 text-xs font-medium transition-colors ${
                       currentLocale === l
-                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
+                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)]"
                         : "text-muted-foreground hover:bg-muted/30"
                     }`}
                   >
@@ -350,12 +411,9 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
               </div>
             </div>
 
-            {/* Theme selector */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.preferences.theme}
-              </label>
-              <div className="flex gap-1">
+            <div className="space-y-1.5 pt-3 border-t border-border">
+              <label className="text-xs font-medium">{copy.preferences.theme}</label>
+              <div className="flex gap-1.5">
                 {([
                   { key: "light" as const, label: copy.preferences.themeLight },
                   { key: "dark" as const, label: copy.preferences.themeDark },
@@ -364,9 +422,9 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
                   <button
                     key={t.key}
                     onClick={() => handleThemeChange(t.key)}
-                    className={`flex-1 rounded px-3 py-1.5 text-xs transition-colors ${
+                    className={`flex-1 rounded px-2.5 py-1.5 text-xs font-medium transition-colors ${
                       theme === t.key
-                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
+                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)]"
                         : "text-muted-foreground hover:bg-muted/30"
                     }`}
                   >
@@ -378,157 +436,15 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
           </div>
         </section>
 
-        {/* Runtime Connection — 2.2.2 */}
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.runtimeConfig.title}
-            </h2>
-            {savedMsg === copy.runtimeConfig.saved && (
-              <span className="text-[10px] text-[color:var(--success)]">
-                {copy.runtimeConfig.saved}
-              </span>
-            )}
-          </div>
-          <div className="p-3 space-y-3">
-            {/* Host */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.runtimeConfig.host}
-              </label>
-              <input
-                type="text"
-                value={runtimeHost}
-                onChange={(e) => handleSaveRuntimeHost(e.target.value)}
-                placeholder={copy.runtimeConfig.hostPlaceholder}
-                className="settings-input mono"
-              />
-            </div>
-
-            {/* Port */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.runtimeConfig.port}
-              </label>
-              <input
-                type="text"
-                value={runtimePort}
-                onChange={(e) => handleSaveRuntimePort(e.target.value)}
-                className="settings-input mono"
-              />
-            </div>
-
-            {/* Test connection */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleTestRuntime}
-                disabled={runtimeTesting}
-                className="flex-1 rounded-md bg-[color:var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 transition-colors"
-              >
-                {runtimeTesting ? copy.runtimeConfig.testing : copy.runtimeConfig.testConnection}
-              </button>
-              {runtimeConnected === true && (
-                <span className="text-[10px] text-[color:var(--success)]">{copy.runtimeConfig.connected}</span>
-              )}
-              {runtimeConnected === false && (
-                <span className="text-[10px] text-[color:var(--warning)]">{copy.runtimeConfig.disconnected}</span>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Audit Templates — 2.2.3 */}
+        {/* Account */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.auditTemplates.title}
-            </h2>
-          </div>
-          <div className="p-3">
-            <p className="text-xs text-muted-foreground mb-3">
-              {copy.auditTemplates.description}
-            </p>
-            <button
-              onClick={() => {
-                try {
-                  const template = {
-                    rounds: defaultRounds,
-                    batchSize: defaultBatchSize,
-                    createdAt: new Date().toISOString(),
-                  };
-                  window.localStorage.setItem(
-                    "platform-audit-template-default",
-                    JSON.stringify(template)
-                  );
-                  showSaved(copy.auditTemplates.saved);
-                } catch {}
-              }}
-              className="w-full rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-colors"
-            >
-              {copy.auditTemplates.saveCurrent}
-            </button>
-          </div>
-        </section>
-
-        {/* About System — Day 4: use cases + system boundary */}
-        <section className="border border-border bg-card lg:col-span-2">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.aboutSystem.title}
-            </h2>
-          </div>
-          <div className="p-3 space-y-4">
-            {/* Use cases */}
-            <div>
-              <h3 className="text-xs font-medium mb-2">{copy.aboutSystem.useCases}</h3>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {copy.aboutSystem.useCaseItems.map((item) => (
-                  <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
-                    <div className="text-xs font-medium">{item.title}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* System boundary */}
-            <div>
-              <h3 className="text-xs font-medium mb-1.5">{copy.aboutSystem.systemBoundary}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-[var(--accent-blue)] pl-2">
-                {copy.aboutSystem.boundaryNote}
-              </p>
-            </div>
-
-            {/* Framework */}
-            <div>
-              <h3 className="text-xs font-medium mb-2">{copy.aboutSystem.framework}</h3>
-              <div className="flex gap-2">
-                {copy.aboutSystem.frameworkItems.map((item, i) => (
-                  <div key={item.tier} className="flex-1 rounded border border-border px-2.5 py-2">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className={`inline-block h-1.5 w-1.5 rounded-full ${
-                        i === 0 ? "bg-[var(--accent-blue)]" : i === 1 ? "bg-[var(--warning)]" : "bg-[var(--accent-coral)]"
-                      }`} />
-                      <span className="text-xs font-medium">{item.tier}</span>
-                    </div>
-                    <div className="text-xs text-muted-foreground leading-relaxed">{item.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Account — 2.2.4 */}
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.account.title}
             </h2>
           </div>
           <div className="p-3">
-            {/* Username with avatar */}
-            <div className="space-y-1">
+            <div className="space-y-1 mb-4">
               <span className="text-xs text-muted-foreground">{copy.account.username}</span>
               {username ? (
                 <div className="flex items-center gap-2">
@@ -546,14 +462,62 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
                 </div>
               )}
             </div>
-
-            {/* Logout */}
-            <div className="mt-4">
-              <LogoutButton label={copy.account.logout} />
-            </div>
+            <LogoutButton label={copy.account.logout} />
           </div>
         </section>
       </div>
+
+      {/* About System - Full width */}
+      <section className="border border-border bg-card">
+        <div className="border-b border-border bg-muted/20 px-3 py-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {copy.aboutSystem.title}
+          </h2>
+        </div>
+        <div className="p-3">
+          <div className="grid gap-4 lg:grid-cols-2">
+            {/* Use cases */}
+            <div>
+              <h3 className="text-xs font-semibold mb-2">{copy.aboutSystem.useCases}</h3>
+              <div className="grid gap-2">
+                {copy.aboutSystem.useCaseItems.map((item) => (
+                  <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
+                    <div className="text-xs font-medium">{item.title}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5 leading-snug">{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Framework & Boundary */}
+            <div className="space-y-3">
+              <div>
+                <h3 className="text-xs font-semibold mb-2">{copy.aboutSystem.framework}</h3>
+                <div className="space-y-2">
+                  {copy.aboutSystem.frameworkItems.map((item, i) => (
+                    <div key={item.tier} className="rounded border border-border px-2.5 py-2">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className={`inline-block h-1.5 w-1.5 rounded-full ${
+                          i === 0 ? "bg-[var(--accent-blue)]" : i === 1 ? "bg-[var(--warning)]" : "bg-[var(--accent-coral)]"
+                        }`} />
+                        <span className="text-xs font-medium">{item.tier}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground leading-snug">{item.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-semibold mb-1.5">{copy.aboutSystem.systemBoundary}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-[var(--accent-blue)] pl-2">
+                  {copy.aboutSystem.boundaryNote}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

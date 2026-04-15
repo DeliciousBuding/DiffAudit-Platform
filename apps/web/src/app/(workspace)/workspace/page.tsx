@@ -163,29 +163,36 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* Hero section with KPIs and Risk Radar */}
-      <div className="grid gap-3 lg:grid-cols-[2fr_1fr]">
-        {/* Left: KPI Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-lg border border-border bg-card p-3">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">{copy.kpis.liveContractsLabel}</div>
-            <div className="text-3xl font-bold leading-none">{activeContracts}</div>
+      {/* Charts grid - 6 cards in 3x2 layout */}
+      <div className="grid gap-3 lg:grid-cols-3">
+        {/* KPI Summary Card */}
+        <section className="rounded-lg border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.overview || "系统概览"}
+            </h2>
           </div>
-          <div className="rounded-lg border border-border bg-card p-3">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">{copy.kpis.defendedRowsLabel}</div>
-            <div className="text-3xl font-bold leading-none">{defendedRows}</div>
+          <div className="p-3 grid grid-cols-2 gap-3">
+            <div>
+              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.liveContractsLabel}</div>
+              <div className="text-2xl font-bold leading-none">{activeContracts}</div>
+            </div>
+            <div>
+              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.defendedRowsLabel}</div>
+              <div className="text-2xl font-bold leading-none">{defendedRows}</div>
+            </div>
+            <div>
+              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.avgAucLabel}</div>
+              <div className="text-2xl font-bold leading-none">{avgAuc}</div>
+            </div>
+            <div>
+              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.defenseEvaluatedLabel}</div>
+              <div className="text-2xl font-bold leading-none">{totalRows}</div>
+            </div>
           </div>
-          <div className="rounded-lg border border-border bg-card p-3">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">{copy.kpis.avgAucLabel}</div>
-            <div className="text-3xl font-bold leading-none">{avgAuc}</div>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-3">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">{copy.kpis.defenseEvaluatedLabel}</div>
-            <div className="text-3xl font-bold leading-none">{totalRows}</div>
-          </div>
-        </div>
+        </section>
 
-        {/* Right: Risk Radar */}
+        {/* Risk Radar */}
         <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -193,13 +200,23 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </h2>
           </div>
           <div className="p-3">
-            <ChartRiskRadar data={radarData} height={240} />
+            <ChartRiskRadar data={radarData} height={220} />
           </div>
         </section>
-      </div>
 
-      {/* Charts grid */}
-      <div className="grid gap-3 lg:grid-cols-3">
+        {/* Attack Comparison */}
+        <section className="rounded-lg border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.attackComparison}
+            </h2>
+          </div>
+          <div className="p-3">
+            <ChartAttackComparison data={attackComparisonData} />
+          </div>
+        </section>
+
+        {/* ROC Curve */}
         <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -211,6 +228,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </section>
 
+        {/* AUC Distribution */}
         <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -228,6 +246,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </section>
 
+        {/* Risk Distribution */}
         {totalRisk > 0 && (
           <section className="rounded-lg border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2">
@@ -241,57 +260,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </section>
         )}
       </div>
-
-      {/* Attack comparison - full width */}
-      <section className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {copy.sections.chartTitles.attackComparison}
-          </h2>
-        </div>
-        <div className="p-3">
-          <ChartAttackComparison data={attackComparisonData} />
-        </div>
-      </section>
-
-      {/* Risk distribution cards - more compact */}
-      {totalRisk > 0 && (
-        <div className="grid gap-3 grid-cols-3">
-          <div className="rounded-lg border-2 border-l-[var(--risk-high)] bg-card p-3">
-            <div className="flex items-baseline gap-2 mb-1">
-              <div className="text-2xl font-bold leading-none">{riskCounts.high}</div>
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.high}
-              </div>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-snug">
-              {copy.riskInterpretations.high}
-            </p>
-          </div>
-          <div className="rounded-lg border-2 border-l-[var(--risk-medium)] bg-card p-3">
-            <div className="flex items-baseline gap-2 mb-1">
-              <div className="text-2xl font-bold leading-none">{riskCounts.medium}</div>
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.medium}
-              </div>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-snug">
-              {copy.riskInterpretations.medium}
-            </p>
-          </div>
-          <div className="rounded-lg border-2 border-l-[var(--risk-low)] bg-card p-3">
-            <div className="flex items-baseline gap-2 mb-1">
-              <div className="text-2xl font-bold leading-none">{riskCounts.low}</div>
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.low}
-              </div>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-snug">
-              {copy.riskInterpretations.low}
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Compact audit track quick-access cards */}
       <div className="grid gap-3 md:grid-cols-3">
@@ -371,29 +339,29 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
       )}
 
-      {/* Empty workspace guidance — Task 3.1 optimized */}
+      {/* Empty workspace guidance or suggestions */}
       {isEmpty ? (
-        <section className="border-2 border-[color:var(--accent-blue)]/40 bg-gradient-to-br from-[color:var(--accent-blue)]/8 to-[color:var(--accent-blue)]/3 rounded-lg p-6 shadow-sm">
-          <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/15 mb-4">
-              <svg viewBox="0 0 24 24" className="h-6 w-6 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+        <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-4">
+          <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/15 mb-3">
+              <svg viewBox="0 0 24 24" className="h-5 w-5 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2 text-foreground">{localeData.emptyWorkspace.title}</h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-xl">{localeData.emptyWorkspace.description}</p>
+            <h3 className="text-base font-semibold mb-1.5 text-foreground">{localeData.emptyWorkspace.title}</h3>
+            <p className="text-xs text-muted-foreground mb-4 max-w-lg leading-relaxed">{localeData.emptyWorkspace.description}</p>
 
-            {/* 3-step guide with enhanced visual hierarchy */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 w-full">
+            {/* Compact 3-step guide */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 w-full">
               {localeData.emptyWorkspace.steps.map((step, idx) => (
-                <div key={step.step} className="relative flex flex-col items-center text-center p-4 rounded-lg bg-card/50 border border-border/50 hover:border-[color:var(--accent-blue)]/30 transition-all duration-200">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--accent-blue)] text-sm font-bold text-white mb-3 shadow-sm">
+                <div key={step.step} className="relative flex flex-col items-center text-center p-3 rounded-lg bg-card/50 border border-border/50">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)] text-xs font-bold text-white mb-2">
                     {step.step}
                   </span>
-                  <div className="text-sm font-semibold mb-1.5 text-foreground">{step.title}</div>
-                  <div className="text-xs text-muted-foreground leading-relaxed">{step.desc}</div>
+                  <div className="text-xs font-semibold mb-1 text-foreground">{step.title}</div>
+                  <div className="text-xs text-muted-foreground leading-snug">{step.desc}</div>
                   {idx < 2 && (
-                    <svg viewBox="0 0 24 24" className="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/30" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <svg viewBox="0 0 24 24" className="hidden sm:block absolute -right-1.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/30" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                       <path d="M9 5l7 7-7 7" />
                     </svg>
                   )}
@@ -401,20 +369,18 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            {/* Enhanced CTA button */}
             <a
               href="/workspace/audits/new"
-              className="inline-flex items-center gap-2 rounded-md border-2 border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg hover:scale-105 hover:bg-[color:var(--accent-blue)]/90"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90"
             >
               {localeData.emptyWorkspace.cta}
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
           </div>
         </section>
       ) : (
-        /* Suggested next step — 2.4.5 */
         suggestions.length > 0 && (
           <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
             <div className="flex items-start gap-2">
@@ -435,23 +401,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </div>
           </section>
         )
-      )}
-
-      {/* Risk Radar */}
-      {totalRisk > 0 && radarData.length > 0 && (
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.riskRadar}
-            </h2>
-            <span className="text-[10px] text-muted-foreground">
-              {radarData.length} {copy.sections.radarDimensionsLabel}
-            </span>
-          </div>
-          <div className="p-2">
-            <ChartRiskRadar data={radarData} height={200} />
-          </div>
-        </section>
       )}
 
       {/* Main content grid */}

@@ -33,7 +33,7 @@ export function BrandMark({
 
   // Use white logo in dark mode, black logo in light mode
   const logoSrc = isDark
-    ? (showWordmark ? "/diffaudit-logo-white.svg" : "/diffaudit-logo-white-no-text.svg")
+    ? (showWordmark ? "/brand/diffaudit-logo-white.svg" : "/brand/diffaudit-logo-white-no-text.svg")
     : (showWordmark ? "/brand/diffaudit-logo-black.svg" : "/brand/diffaudit-logo-black-no-text.svg");
 
   const content = (
