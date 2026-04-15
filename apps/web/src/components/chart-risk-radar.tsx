@@ -63,8 +63,8 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
   const tickColor = isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(33, 34, 38, 0.6)";
 
   return (
-    <ResponsiveContainer width="100%" height="100%" minHeight={height} aspect={1.5}>
-      <RadarChart data={data}>
+    <ResponsiveContainer width="100%" height={height}>
+      <RadarChart data={data} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
         <PolarGrid stroke={gridColor} />
         <PolarAngleAxis
           dataKey="label"
