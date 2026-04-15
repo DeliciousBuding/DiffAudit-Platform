@@ -916,6 +916,8 @@ select {
   display: flex;
   align-items: center;
 }
+  align-items: center;
+}
 
 .workspace-sidebar-body {
   flex: 1;
