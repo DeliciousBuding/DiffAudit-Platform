@@ -8,6 +8,16 @@ import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
+// Spinner component for loading states
+function Spinner({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg className={`animate-spin ${className}`} viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
 type AttackType = "black-box" | "gray-box" | "white-box";
 
 type ModelOption = {
@@ -62,6 +72,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [stepTransitioning, setStepTransitioning] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Filter models by selected attack type track
@@ -77,20 +89,31 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   }, [form.selectedContractKey, availableModels]);
 
   const setStep = useCallback((step: number) => {
+    setStepTransitioning(true);
     setForm((prev) => ({ ...prev, step }));
+    setTimeout(() => setStepTransitioning(false), 300);
   }, []);
 
   const selectAttackType = useCallback((type: AttackType) => {
+    setCatalogLoading(true);
+    setStepTransitioning(true);
     setForm((prev) => ({
       ...prev,
       attackType: type,
       selectedContractKey: null, // Reset model when attack type changes
       step: 2,
     }));
+    // Simulate catalog loading time
+    setTimeout(() => {
+      setCatalogLoading(false);
+      setStepTransitioning(false);
+    }, 300);
   }, []);
 
   const selectModel = useCallback((contractKey: string) => {
+    setStepTransitioning(true);
     setForm((prev) => ({ ...prev, selectedContractKey: contractKey, step: 3 }));
+    setTimeout(() => setStepTransitioning(false), 300);
   }, []);
 
   const handleSubmit = useCallback(async () => {
