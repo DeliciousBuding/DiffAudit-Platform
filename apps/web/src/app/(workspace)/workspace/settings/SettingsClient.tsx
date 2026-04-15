@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
@@ -14,10 +14,9 @@ const STORAGE_KEYS = {
   DEFAULT_BATCH_SIZE: "platform-default-batch-size-v1",
   RUNTIME_HOST: "platform-runtime-host-v1",
   RUNTIME_PORT: "platform-runtime-port-v1",
-  THEME: "platform-theme-v1",
 } as const;
 
-type ThemeMode = "light" | "dark" | "system";
+import type { ThemeMode } from "@/lib/theme";
 
 interface SettingsClientProps {
   locale: Locale;
@@ -140,49 +139,10 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     showSaved(copy.preferences.language);
   }
 
-  const themeListenerRef = useRef<{ mq: MediaQueryList; handler: (e: MediaQueryListEvent) => void } | null>(null);
-
   function handleThemeChange(newTheme: ThemeMode) {
-    setTheme(newTheme);
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
-      const resolved = newTheme === "system"
-        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-        : newTheme;
-      document.documentElement.setAttribute("data-theme", resolved);
-      document.documentElement.classList.toggle("dark", resolved === "dark");
-      document.documentElement.style.colorScheme = resolved;
-
-      // Remove old listener if switching away from system or switching again
-      if (themeListenerRef.current) {
-        themeListenerRef.current.mq.removeEventListener("change", themeListenerRef.current.handler);
-        themeListenerRef.current = null;
-      }
-
-      // Listen for OS theme changes when "system" is selected
-      if (newTheme === "system") {
-        const mq = window.matchMedia("(prefers-color-scheme: dark)");
-        const handler = (e: MediaQueryListEvent) => {
-          const next = e.matches ? "dark" : "light";
-          document.documentElement.setAttribute("data-theme", next);
-          document.documentElement.classList.toggle("dark", next === "dark");
-          document.documentElement.style.colorScheme = next;
-        };
-        mq.addEventListener("change", handler);
-        themeListenerRef.current = { mq, handler };
-      }
-    } catch {}
+    setSharedTheme(newTheme);
     showSaved(copy.preferences.theme);
   }
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (themeListenerRef.current) {
-        themeListenerRef.current.mq.removeEventListener("change", themeListenerRef.current.handler);
-      }
-    };
-  }, []);
 
   async function handleTestRuntime() {
     setRuntimeTesting(true);
