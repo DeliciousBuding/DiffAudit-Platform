@@ -151,7 +151,10 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
       <div className="px-3 py-4 text-center">
         <div className="text-xs text-[color:var(--warning)] mb-2">{error}</div>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            setError(null);
+            setLoading(true);
+          }}
           className="text-xs text-[color:var(--accent-blue)] hover:underline"
         >
           {copy.retry || "Retry"}
@@ -186,14 +189,14 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
         {jobs.map((job) => (
           <div key={job.job_id} className="px-3 py-2.5 transition-all duration-200 hover:bg-muted/30">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="mono text-xs font-medium truncate">{job.job_id}</span>
+              <span className="mono text-xs font-medium truncate" title={job.job_id}>{job.job_id}</span>
               <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
             </div>
-            <div className="mono text-xs text-muted-foreground mb-1 truncate">
+            <div className="mono text-xs text-muted-foreground mb-1 truncate" title={job.contract_key}>
               {job.contract_key}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span className="truncate">{job.workspace_name}</span>
+              <span className="truncate" title={job.workspace_name}>{job.workspace_name}</span>
               <span className="text-xs whitespace-nowrap ml-2">
                 {formatDuration(job.created_at, job.updated_at)}
               </span>
@@ -233,11 +236,11 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
               }`}
             >
               <td className="px-3 py-2">
-                <div className="font-medium text-xs">{job.job_id}</div>
-                <div className="mono text-xs text-muted-foreground mt-0.5">{job.contract_key}</div>
+                <div className="font-medium text-xs" title={job.job_id}>{job.job_id}</div>
+                <div className="mono text-xs text-muted-foreground mt-0.5" title={job.contract_key}>{job.contract_key}</div>
               </td>
               <td className="px-3 py-2">
-                <span className="text-xs text-muted-foreground">{job.job_type}</span>
+                <span className="text-xs text-muted-foreground" title={job.job_type}>{job.job_type}</span>
               </td>
               <td className="px-3 py-2">
                 <span className="mono text-xs">{job.target_model ?? "--"}</span>

@@ -220,7 +220,16 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
     switch (form.step) {
       case 1: return form.attackType !== null;
       case 2: return form.selectedContractKey !== null;
-      case 3: return true;
+      case 3: return (
+        typeof form.rounds === 'number' &&
+        !Number.isNaN(form.rounds) &&
+        form.rounds >= 1 &&
+        form.rounds <= 1000 &&
+        typeof form.batchSize === 'number' &&
+        !Number.isNaN(form.batchSize) &&
+        form.batchSize >= 1 &&
+        form.batchSize <= 512
+      );
       case 4: return false;
       default: return false;
     }
