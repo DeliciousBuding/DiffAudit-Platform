@@ -31,10 +31,10 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 
 function KpiCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-3">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1.5 text-2xl font-semibold leading-none">{value}</div>
-      <p className="mt-1 text-[10px] text-muted-foreground leading-tight">{note}</p>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-2 text-3xl font-semibold leading-none">{value}</div>
+      <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>
   );
 }
@@ -44,13 +44,13 @@ function KpiCardWithTrend({ label, value, note, trend }: { label: string; value:
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : "—";
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   return (
-    <div className="rounded-lg border border-border bg-card p-3">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1.5 flex items-baseline gap-2">
-        <span className="text-2xl font-semibold leading-none">{value}</span>
-        <span className={`text-sm ${trendColor}`}>{trendIcon}</span>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-2 flex items-baseline gap-2">
+        <span className="text-3xl font-semibold leading-none">{value}</span>
+        <span className={`text-base ${trendColor}`}>{trendIcon}</span>
       </div>
-      <p className="mt-1 text-[10px] text-muted-foreground leading-tight">{note}</p>
+      <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>
   );
 }
@@ -181,9 +181,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Black-box</span>
             <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">高风险</span>
           </div>
-          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--accent-blue)] transition-colors">Recon 成员推断审计</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">最低权限：仅需 100 个公开样本即可重建训练数据特征。适用于模型上线前的初步风险筛查。</p>
-          <div className="mt-3 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">Recon 成员推断审计</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">最低权限：仅需 100 个公开样本即可重建训练数据特征。适用于模型上线前的初步风险筛查。</p>
+          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             创建审计
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -197,9 +197,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Gray-box</span>
             <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">高风险</span>
           </div>
-          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--warning)] transition-colors">PIA 隐私攻击审计</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">部分权限：可访问模型 API。基线 AUC 0.841，stochastic-dropout 防御后降至 0.828。量化风险强度 + 评估防御效果。</p>
-          <div className="mt-3 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">PIA 隐私攻击审计</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">部分权限：可访问模型 API。基线 AUC 0.841，stochastic-dropout 防御后降至 0.828。量化风险强度 + 评估防御效果。</p>
+          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             创建审计
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -213,9 +213,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">White-box</span>
             <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">极高风险</span>
           </div>
-          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--success)] transition-colors">GSA 梯度签名审计</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">完全权限：模型权重全访问。基线 AUC 0.998，W-1 强防御后降至 0.489（接近瞎猜）。刻画风险上界 + 最强防御评估。</p>
-          <div className="mt-3 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">GSA 梯度签名审计</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">完全权限：模型权重全访问。基线 AUC 0.998，W-1 强防御后降至 0.489（接近瞎猜）。刻画风险上界 + 最强防御评估。</p>
+          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             创建审计
             <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -272,8 +272,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                       {step.step}
                     </span>
                     <div>
-                      <div className="text-xs font-medium">{step.title}</div>
-                      <div className="text-[10px] text-muted-foreground">{step.desc}</div>
+                      <div className="text-sm font-medium">{step.title}</div>
+                      <div className="text-xs text-muted-foreground">{step.desc}</div>
                     </div>
                   </div>
                 ))}
@@ -301,7 +301,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <path d="M12 16v-4M12 8h.01" />
               </svg>
               <div>
-                <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
                   {copy.sections.suggestedNextSteps}
                 </h3>
                 <ul className="space-y-1">
@@ -319,30 +319,30 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       {totalRisk > 0 && (
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="grid gap-3 grid-cols-3">
-            <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[var(--risk-high)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.high}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
-              <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              <p className="mt-1 text-xs text-muted-foreground leading-tight">
                 {copy.riskInterpretations.high}
               </p>
             </div>
-            <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[var(--risk-medium)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.medium}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
-              <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              <p className="mt-1 text-xs text-muted-foreground leading-tight">
                 {copy.riskInterpretations.medium}
               </p>
             </div>
-            <div className="rounded-lg border border-border bg-card p-3 border-l-[3px] border-l-[var(--risk-low)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.low}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
-              <p className="mt-1 text-[10px] text-muted-foreground leading-tight">
+              <p className="mt-1 text-xs text-muted-foreground leading-tight">
                 {copy.riskInterpretations.low}
               </p>
             </div>
@@ -351,10 +351,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           {/* Risk Radar — 7.1 */}
           <section className="border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.chartTitles.riskRadar}
               </h2>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {radarData.length} {copy.sections.radarDimensionsLabel}
               </span>
             </div>
@@ -369,7 +369,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       <div className="grid gap-3 lg:grid-cols-2">
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.aucDistribution}
             </h2>
           </div>
@@ -386,7 +386,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.rocCurve}
             </h2>
           </div>
@@ -398,7 +398,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {totalRisk > 0 && (
           <section className="border border-border bg-card">
             <div className="border-b border-border bg-muted/20 px-3 py-2">
-              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.chartTitles.riskDistribution}
               </h2>
             </div>
@@ -410,7 +410,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.attackComparison}
             </h2>
           </div>
@@ -425,13 +425,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {/* Recent results table */}
         <section className="lg:col-span-2 border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.recentResults}
             </h2>
           </div>
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
-              <table className="w-full border-collapse text-xs">
+              <table className="w-full border-collapse text-sm">
                 <thead className="sticky top-0 bg-muted/30">
                   <tr className="border-b border-border">
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
@@ -480,7 +480,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {/* Tasks panel */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.tasks}
             </h2>
           </div>
@@ -490,7 +490,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[9px] font-semibold rounded-sm">
                   {index + 1}
                 </span>
-                <p className="text-xs leading-relaxed text-muted-foreground">{item}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">{item}</p>
               </div>
             ))}
           </div>
@@ -508,9 +508,9 @@ export default async function WorkspaceHomePage({ locale }: { locale?: Locale } 
     <div className="space-y-4">
       {/* Page header */}
       <div className="border-b border-border pb-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-        <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
+        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
+        <h1 className="mt-1 text-xl font-semibold">{copy.title}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{copy.description}</p>
       </div>
 
       <Suspense fallback={
