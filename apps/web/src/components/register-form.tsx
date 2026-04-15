@@ -43,6 +43,10 @@ export function RegisterForm({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
+  // Live password match validation
+  const passwordsMatch = password === confirmPassword;
+  const showMismatch = confirmPassword.length > 0 && !passwordsMatch;
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -89,7 +93,18 @@ export function RegisterForm({
         </div>
         <div className="grid gap-2">
           <label className="caption" htmlFor="register-confirm-password">{copy.confirmPassword}</label>
-          <input id="register-confirm-password" type="password" className="portal-input h-[58px]" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={copy.confirmPasswordPlaceholder} required />
+          <input
+            id="register-confirm-password"
+            type="password"
+            className={`portal-input h-[58px] ${showMismatch ? 'border-[var(--risk-high)] focus:border-[var(--risk-high)]' : ''}`}
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            placeholder={copy.confirmPasswordPlaceholder}
+            required
+          />
+          {showMismatch && (
+            <p className="text-xs text-[var(--risk-high)] mt-1">{copy.passwordMismatch}</p>
+          )}
         </div>
         <button type="submit" disabled={pending} className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55">
           {pending ? copy.pending : copy.submit}
