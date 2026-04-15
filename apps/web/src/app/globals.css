@@ -1255,7 +1255,7 @@ tbody tr:hover td {
 }
 
 /* ===== Button base ===== */
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]) {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.header-pill) {
   font-family: "Google Sans Flex", var(--font-sans-fallback);
   font-size: 14px;
   font-weight: 450;
@@ -1266,14 +1266,14 @@ button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([c
   cursor: pointer;
 }
 
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):hover {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.header-pill):hover {
   background: var(--palette-grey-10);
   border-color: var(--border);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):active {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.header-pill):active {
   transform: translateY(0);
   background: var(--palette-grey-20);
   box-shadow: none;
@@ -1943,7 +1943,7 @@ html.dark .workspace-input {
 }
 
 /* Button micro-interaction (4.2.2) — replace the global catch-all with token-based version */
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset) {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill) {
   font-family: "Google Sans Flex", var(--font-sans-fallback);
   font-size: 14px;
   font-weight: 450;
@@ -1958,23 +1958,23 @@ button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([c
   cursor: pointer;
 }
 
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):hover {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):hover {
   background: var(--palette-grey-10);
   border-color: var(--border);
   transform: translateY(-1px);
 }
 
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):active {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):active {
   transform: translateY(0);
   background: var(--palette-grey-20);
 }
 
 /* Micro-animation: button scale (replaces the previous scale-based rule) */
-button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):hover {
+button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):hover {
   transform: scale(1.02);
 }
 
-button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):active {
+button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):active {
   transform: scale(0.98);
 }
 
