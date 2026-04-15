@@ -195,7 +195,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
 
         {/* Risk Radar */}
-        <section className="card-animate rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
+          <div className="h-0.5 bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--info)]" />
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.riskRadar}
