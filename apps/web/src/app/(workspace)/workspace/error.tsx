@@ -1,17 +1,24 @@
 "use client";
 
+import { headers } from "next/headers";
+import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
 /**
  * Global error boundary for the (workspace) route group.
  * Next.js automatically catches errors and renders this component.
  * https://nextjs.org/docs/app/api-reference/file-conventions/error
  */
-export default function GlobalError({
+export default async function GlobalError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const locale = resolveLocaleFromHeaderStore(await headers());
+  const copy = WORKSPACE_COPY[locale].settings.errorPage;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="max-w-lg w-full border-2 border-[color:var(--warning)]/40 bg-[color:var(--warning)]/5 rounded-lg p-6 shadow-lg">
@@ -23,21 +30,21 @@ export default function GlobalError({
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-semibold mb-2 text-foreground">
-              Something went wrong
+              {copy.title}
             </h2>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              An unexpected error occurred while loading this page.
+              {copy.description}
             </p>
 
             {error.digest && (
               <p className="text-xs text-muted-foreground mb-3">
-                Error ID: {error.digest}
+                {locale === "zh-CN" ? "错误 ID" : "Error ID"}: {error.digest}
               </p>
             )}
 
             <details className="mb-4">
               <summary className="text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                Error details
+                {locale === "zh-CN" ? "错误详情" : "Error details"}
               </summary>
               <pre className="mt-2 p-3 bg-muted/30 rounded-md text-xs overflow-auto max-h-32 border border-border">
                 {error.message}
@@ -49,13 +56,13 @@ export default function GlobalError({
                 onClick={reset}
                 className="inline-flex items-center gap-2 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md hover:opacity-90"
               >
-                Try again
+                {copy.retry}
               </button>
               <a
                 href="/workspace"
                 className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
               >
-                Go to workspace
+                {copy.goHome}
               </a>
             </div>
           </div>
