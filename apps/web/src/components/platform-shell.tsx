@@ -5,7 +5,6 @@ import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { UserAvatar } from "@/components/user-avatar";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -36,13 +35,12 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
       <div className="workspace-main-area">
         <header className="workspace-topbar">
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <LanguagePicker value={locale} reloadOnChange />
             <a
               href="https://github.com/DeliciousBuding/DiffAudit-Platform"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition hover:text-foreground"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:text-foreground hover:border-[color:var(--accent-blue)]/40"
               title={copy.shell.githubTitle}
             >
               <GithubIcon />

@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import { LogoutButton } from "@/components/logout-button";
+import { useTheme } from "@/hooks/use-theme";
+import type { ThemeMode } from "@/lib/theme";
 
 interface UserInfo {
   username: string;
@@ -19,6 +21,7 @@ export function UserAvatar() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
   // Fetch user info
   useEffect(() => {
@@ -139,6 +142,49 @@ export function UserAvatar() {
 
           {/* Menu items */}
           <div className="p-1.5">
+            {/* Theme selector */}
+            <div className="px-2.5 py-1.5">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Theme</div>
+              <div className="flex gap-1">
+                {([
+                  { value: "light" as ThemeMode, label: "Light", icon: "sun" },
+                  { value: "dark" as ThemeMode, label: "Dark", icon: "moon" },
+                  { value: "system" as ThemeMode, label: "System", icon: "system" },
+                ]).map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setTheme(option.value)}
+                    className={`flex-1 flex flex-col items-center gap-1 rounded-md px-2 py-1.5 text-[10px] transition-colors ${
+                      theme === option.value
+                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
+                        : "text-muted-foreground hover:bg-muted/30"
+                    }`}
+                    title={option.label}
+                  >
+                    {option.icon === "sun" ? (
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    ) : option.icon === "moon" ? (
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
+                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="3" />
+                        <path d="M13 3v18M13 7h4M13 11h5M13 15h4" />
+                        <circle cx="9" cy="9" r="1.5" fill="currentColor" stroke="none" />
+                        <circle cx="9" cy="15" r="1.5" fill="currentColor" stroke="none" />
+                      </svg>
+                    )}
+                    <span>{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="my-1 border-t border-border" />
+
             <a
               href="/workspace/settings"
               className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
