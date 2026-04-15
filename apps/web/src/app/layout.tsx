@@ -6,6 +6,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DiffAudit Platform",
   description: "Membership inference audit platform for diffusion models.",
+  icons: {
+    icon: [
+      { url: "/brand/diffaudit-logo-black-no-text.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 export const dynamic = "force-dynamic";
