@@ -407,19 +407,19 @@ select {
 }
 
 .portal-pill-sm-primary {
-  background: #121317;
-  color: #ffffff;
+  background: var(--foreground);
+  color: var(--background);
 }
 
 .portal-pill-sm-primary:hover {
-  background: #2f3034;
+  background: var(--muted-foreground);
 }
 
 .portal-shell {
   position: relative;
   overflow: clip;
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--background);
 }
 
 .header {
@@ -431,13 +431,13 @@ select {
   width: 100%;
   z-index: 20;
   transition: transform 0.3s ease-in-out;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(var(--background-rgb), 0.85);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
 
 .header.dropdown-open {
-  background: #fff;
+  background: var(--background);
 }
 
 .header-content {
@@ -497,7 +497,7 @@ select {
   top: 100%;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 0 0 24px 24px;
@@ -536,7 +536,7 @@ select {
   line-height: 25.92px;
   letter-spacing: -0.07px;
   font-weight: 450;
-  color: #121317;
+  color: var(--foreground);
   margin: 0;
   animation: text-fade-in 0.3s ease-out forwards;
   animation-delay: 0.05s;
