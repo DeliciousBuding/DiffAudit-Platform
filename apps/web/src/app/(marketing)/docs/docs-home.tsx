@@ -240,8 +240,9 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                 return (
                   <h3
                     key={i}
-                    className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]"
+                    className="mt-6 mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]"
                   >
+                    <span className="inline-block h-3.5 w-0.5 rounded-full bg-[var(--color-accent-blue)]" />
                     {item.label}
                   </h3>
                 );
@@ -251,12 +252,15 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                 <button
                   key={item.page.slug}
                   onClick={() => onSelectSlug(item.page.slug)}
-                  className={`block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors ${
+                  className={`relative block w-full rounded-md px-3 py-1.5 text-left text-sm transition-all duration-150 ${
                     isActive
                       ? "bg-[var(--color-bg-active)] text-[var(--color-text-primary)] font-medium"
                       : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
                   }`}
                 >
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] rounded-full bg-[var(--color-accent-blue)]" />
+                  )}
                   {item.page.navLabel}
                 </button>
               );
@@ -459,14 +463,14 @@ function SectionRenderer({ section }: { section: DocsSection }) {
             <a
               key={i}
               href={link.href}
-              className="rounded-lg border border-[var(--color-border-subtle)] p-4 transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
+              className="group rounded-lg border border-[var(--color-border-subtle)] p-4 transition-all duration-200 hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)] hover:-translate-y-0.5 hover:shadow-md"
             >
               <h3 className="mb-1 text-sm font-semibold text-[var(--color-text-primary)]">
                 {link.title}
               </h3>
               <p className="mb-3 text-sm text-[var(--color-text-secondary)]">{link.body}</p>
-              <span className="text-sm font-medium text-[var(--color-accent-blue)]">
-                {link.cta}
+              <span className="text-sm font-medium text-[var(--color-accent-blue)] group-hover:underline">
+                {link.cta} →
               </span>
             </a>
           ))}
@@ -490,25 +494,24 @@ function CodeBlock({ block }: { block: { language: string; title?: string; code:
   const highlightedCode = highlightBash(block.code);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)]">
+    <div className="overflow-hidden rounded-lg border border-[var(--color-border-subtle)] bg-[#1a1b1e] shadow-sm">
       {block.title && (
-        <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-4 py-2">
+        <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2 bg-[#222326]">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-[var(--color-text-muted)]">{block.language}</span>
-            <span className="text-xs text-[var(--color-text-muted)]">—</span>
-            <span className="text-xs text-[var(--color-text-secondary)]">{block.title}</span>
+            <span className="inline-flex items-center rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[#9ca0aa]">{block.language}</span>
+            <span className="text-xs text-[#9ca0aa]">{block.title}</span>
           </div>
           <button
             onClick={handleCopy}
-            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-accent-blue)] transition-colors"
+            className="text-xs text-[#9ca0aa] hover:text-white transition-colors"
           >
-            {copied ? "Copied!" : "Copy"}
+            {copied ? "✓ Copied" : "Copy"}
           </button>
         </div>
       )}
       <pre className="p-4 overflow-x-auto text-sm leading-relaxed">
         <code
-          className="text-[var(--color-text-primary)]"
+          className="text-[#e0e4ec]"
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />
       </pre>
