@@ -15,7 +15,7 @@ import { useEffect, useRef, useCallback } from "react";
  */
 
 // ─── Config ────────────────────────────────────────────────────
-const PARTICLE_COUNT = 900;
+const PARTICLE_COUNT = 500;
 const CONNECT_DIST = 70;
 
 interface Particle {
@@ -60,8 +60,8 @@ function createParticles(w: number, h: number): Particle[] {
     targetY: pt.y,
     noiseX: 0,
     noiseY: 0,
-    radius: 0.8 + Math.random() * 1.2,
-    alpha: 0.25 + Math.random() * 0.45,
+    radius: 0.8 + Math.random() * 1.0,
+    alpha: 0.3 + Math.random() * 0.3,
     phase: Math.random() * Math.PI * 2,
     speed: 0.3 + Math.random() * 0.7,
   }));
@@ -168,13 +168,13 @@ export function ParticleField({ className }: { className?: string }) {
       function centerFade(px: number, py: number): number {
         const cx = Math.abs(px - w / 2) / (w / 2);
         const cy = Math.abs(py - h / 2) / (h / 2);
-        return Math.min(1, Math.max(cx, cy) * 1.6);
+        return Math.min(1, Math.max(cx, cy) * 2.0);
       }
 
       // ─── Draw connections ──────────────────────────────
       // More connections appear during structured state (low diffusion)
-      const connectAlphaScale = 1 - diffusionT * 0.6;
-      ctx.lineWidth = 0.3;
+      const connectAlphaScale = 1 - diffusionT * 0.4;
+      ctx.lineWidth = 0.5;
       for (let i = 0; i < particles.length; i++) {
         const a = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
@@ -186,7 +186,7 @@ export function ParticleField({ className }: { className?: string }) {
             const dist = Math.sqrt(distSq);
             const fade = centerFade((a.x + b.x) / 2, (a.y + b.y) / 2);
             const lineAlpha =
-              (1 - dist / CONNECT_DIST) * 0.2 * connectAlphaScale * fade;
+              (1 - dist / CONNECT_DIST) * 0.22 * connectAlphaScale * fade;
             if (lineAlpha < 0.008) continue;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -225,10 +225,10 @@ export function ParticleField({ className }: { className?: string }) {
           ctx.fillStyle = `rgba(200, 220, 255, ${a * 0.7})`;
           ctx.fill();
         } else {
-          const r = p.radius * 0.7 * sizeBoost;
+          const r = p.radius * 0.8 * sizeBoost;
           ctx.beginPath();
           ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 0, 0, ${a * 0.3})`;
+          ctx.fillStyle = `rgba(0, 0, 0, ${a * 0.35})`;
           ctx.fill();
         }
       }

@@ -148,10 +148,39 @@ export function UserAvatar() {
 
           {/* Menu items */}
           <div className="p-1.5">
-            {/* Theme selector — compact inline */}
+            {/* Language selector */}
             <div className="flex items-center justify-between px-2.5 py-1.5">
-              <span className="text-[11px] text-muted-foreground">{copy.themeLabel}</span>
-              <div className="flex items-center gap-0.5 rounded-full border border-border bg-muted/30 p-0.5">
+              <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{locale === "zh-CN" ? "语言" : "Language"}</span>
+              <div className="flex items-center gap-1 rounded-full p-0.5" style={{ border: "1px solid var(--border)", background: "var(--muted)" }}>
+                {([
+                  { value: "en-US" as Locale, label: "EN" },
+                  { value: "zh-CN" as Locale, label: "中" },
+                ]).map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => {
+                      if (opt.value !== locale) {
+                        window.localStorage.setItem(LOCALE_STORAGE_KEY, opt.value);
+                        document.cookie = `${LOCALE_STORAGE_KEY}=${opt.value}; path=/; max-age=31536000; samesite=lax`;
+                        window.location.reload();
+                      }
+                    }}
+                    className="btn-reset flex items-center justify-center h-6 rounded-full px-2.5 text-[11px] font-medium transition-all"
+                    style={locale === opt.value
+                      ? { background: "var(--foreground)", color: "var(--background)" }
+                      : { color: "var(--muted-foreground)" }
+                    }
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Theme selector */}
+            <div className="flex items-center justify-between px-2.5 py-1.5">
+              <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{copy.themeLabel}</span>
+              <div className="flex items-center gap-1 rounded-full p-0.5" style={{ border: "1px solid var(--border)", background: "var(--muted)" }}>
                 {([
                   { value: "light" as ThemeMode, icon: "sun", label: copy.themeLight },
                   { value: "dark" as ThemeMode, icon: "moon", label: copy.themeDark },
@@ -160,26 +189,27 @@ export function UserAvatar() {
                   <button
                     key={option.value}
                     onClick={() => setTheme(option.value)}
-                    className={`flex items-center justify-center h-7 w-7 rounded-full transition-all ${
-                      theme === option.value
-                        ? "bg-card shadow-sm text-foreground border border-border"
-                        : "text-muted-foreground hover:text-foreground border border-transparent"
-                    }`}
+                    className="btn-reset flex items-center justify-center h-7 w-7 rounded-full transition-all"
+                    style={theme === option.value
+                      ? { background: "var(--foreground)", color: "var(--background)" }
+                      : { color: "var(--muted-foreground)" }
+                    }
                     title={option.label}
                     aria-label={option.label}
                   >
                     {option.icon === "sun" ? (
-                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07-7.07l-1.41 1.41M8.34 15.66l-1.41 1.41m12.14 0l-1.41-1.41M8.34 8.34L6.93 6.93" />
                       </svg>
                     ) : option.icon === "moon" ? (
-                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
                         <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
                       </svg>
                     ) : (
-                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2" />
-                        <path d="M12 4v16" />
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <path d="M8 21h8m-4-4v4" />
                       </svg>
                     )}
                   </button>

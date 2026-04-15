@@ -11,6 +11,7 @@ import {
 } from "@/components/language-picker";
 import { ParticleField } from "@/components/particle-field";
 import { UserAvatar } from "@/components/user-avatar";
+import { GithubIcon } from "@/components/platform-shell-icons";
 
 type NavLink = {
   title: string;
@@ -663,19 +664,38 @@ export function MarketingHome({
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
-            <LanguagePicker value={locale} onChange={setLocale} />
+          <div className="flex items-center gap-2">
             {loggedIn ? (
               <>
                 <Link href={workbenchUrl} className="header-pill header-pill-primary hidden sm:inline-flex">
                   {copy.header.openWorkspace}
                 </Link>
+                <a
+                  href="https://github.com/DeliciousBuding/DiffAudit-Platform"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="header-pill inline-flex !px-0 !w-[38px] justify-center"
+                  title="GitHub"
+                >
+                  <GithubIcon />
+                </a>
                 <UserAvatar />
               </>
             ) : (
-              <Link href="/login" className="header-pill header-pill-primary">
-                {copy.header.signIn}
-              </Link>
+              <>
+                <Link href="/login" className="header-pill header-pill-primary">
+                  {copy.header.signIn}
+                </Link>
+                <a
+                  href="https://github.com/DeliciousBuding/DiffAudit-Platform"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="header-pill inline-flex !px-0 !w-[38px] justify-center"
+                  title="GitHub"
+                >
+                  <GithubIcon />
+                </a>
+              </>
             )}
           </div>
         </div>
