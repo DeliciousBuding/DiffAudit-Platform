@@ -21,7 +21,6 @@ interface DocsSearchProps {
 export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -30,6 +29,17 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
 
   // Build searchable index
   const index = buildIndex(content);
+
+  // Search on query change - use useMemo instead of state
+  const results = useMemo(() => {
+    if (query.length < 2) return [];
+    return search(index, query);
+  }, [query, index]);
+
+  // Reset selected index when results change
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [results]);
 
   // Ctrl+K / Cmd+K shortcut
   useEffect(() => {
@@ -51,17 +61,6 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     if (!open) return;
     setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
-
-  // Search on query change - use useMemo to avoid setState in effect
-  const searchResults = useMemo(() => {
-    if (query.length < 2) return [];
-    return search(index, query);
-  }, [query, index]);
-
-  useEffect(() => {
-    setResults(searchResults);
-    setSelectedIndex(0);
-  }, [searchResults]);
 
   // Keyboard navigation within results
   const handleKeyDown = useCallback(
