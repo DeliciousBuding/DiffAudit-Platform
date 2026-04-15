@@ -5,10 +5,12 @@ import { fetchCatalogDashboard } from "@/lib/catalog";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { CreateTaskClient } from "./CreateTaskClient";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default async function CreateTaskPage({ locale }: { locale?: Locale } = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].createTask;
+  const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 
   // Fetch catalog for model selection step
   const catalog = await fetchCatalogDashboard();
@@ -28,6 +30,12 @@ export default async function CreateTaskPage({ locale }: { locale?: Locale } = {
 
   return (
     <div className="space-y-4">
+      <Breadcrumb items={[
+        { label: navItems[0].title, href: "/workspace" },
+        { label: navItems[1].title, href: "/workspace/audits" },
+        { label: copy.title }
+      ]} />
+
       {/* Page header */}
       <div className="border-b border-border pb-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>

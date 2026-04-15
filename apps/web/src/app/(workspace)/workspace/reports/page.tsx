@@ -17,6 +17,7 @@ import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 // Cache RSC responses for 60s — demo data doesn't change during a session
 export const revalidate = 60;
@@ -343,9 +344,14 @@ async function CoverageGapsSection({ locale }: { locale: Locale }) {
 
 export default async function WorkspaceReportsPage({ locale }: { locale?: Locale } = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+  const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 
   return (
     <div className="space-y-4">
+      <Breadcrumb items={[
+        { label: navItems[0].title, href: "/workspace" },
+        { label: navItems[2].title }
+      ]} />
       <Suspense fallback={
         <>
           <div className="border-b border-border pb-3">

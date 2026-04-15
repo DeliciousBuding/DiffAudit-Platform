@@ -4,6 +4,7 @@ import { type Locale } from "@/components/language-picker";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { JobDetailClient } from "./JobDetailClient";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default async function JobDetailPage({
   params,
@@ -15,9 +16,16 @@ export default async function JobDetailPage({
   const { jobId } = await params;
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].jobDetail;
+  const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 
   return (
     <div className="space-y-4">
+      <Breadcrumb items={[
+        { label: navItems[0].title, href: "/workspace" },
+        { label: navItems[1].title, href: "/workspace/audits" },
+        { label: copy.title }
+      ]} />
+
       {/* Page header */}
       <div className="border-b border-border pb-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
