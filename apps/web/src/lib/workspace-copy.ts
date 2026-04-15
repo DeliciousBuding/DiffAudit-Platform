@@ -60,6 +60,7 @@ export const WORKSPACE_COPY: Record<
         };
         noAucData: string;
         chartTitles: {
+          overview: string;
           aucDistribution: string;
           rocCurve: string;
           riskDistribution: string;
@@ -455,6 +456,7 @@ export const WORKSPACE_COPY: Record<
         },
         noAucData: "No AUC data available",
         chartTitles: {
+          overview: "System Overview",
           aucDistribution: "AUC Distribution",
           rocCurve: "ROC Curve",
           riskDistribution: "Risk Distribution",
@@ -985,6 +987,7 @@ export const WORKSPACE_COPY: Record<
         },
         noAucData: "暂无 AUC 数据",
         chartTitles: {
+          overview: "系统概览",
           aucDistribution: "AUC 分布",
           rocCurve: "ROC 曲线",
           riskDistribution: "风险分布",
