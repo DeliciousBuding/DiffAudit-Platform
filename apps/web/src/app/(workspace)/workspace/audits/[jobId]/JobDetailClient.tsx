@@ -11,12 +11,6 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { getStatusTone } from "@/lib/status-utils";
 import { getErrorMessage } from "@/lib/error-messages";
 
-const JOB_TYPE_TO_TRACK: Record<string, "black-box" | "gray-box" | "white-box"> = {
-  "recon_artifact_mainline": "black-box",
-  "pia_runtime_mainline": "gray-box",
-  "gsa_runtime_mainline": "white-box",
-};
-
 // Extended job record — the detail API may return stdout/stderr tails
 interface JobDetail {
   job_id: string;
