@@ -100,7 +100,7 @@ export function UserAvatar() {
       <button
         type="button"
         onClick={() => setShowMenu(!showMenu)}
-        className="flex items-center gap-2 rounded-md border border-border bg-card px-2 py-1 transition-all hover:border-[color:var(--accent-blue)]/40 hover:bg-[color:var(--accent-blue)]/5"
+        className="header-pill flex items-center gap-2"
         aria-label="User menu"
         aria-expanded={showMenu}
       >

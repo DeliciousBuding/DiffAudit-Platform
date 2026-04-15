@@ -667,13 +667,13 @@ export function MarketingHome({
             <LanguagePicker value={locale} onChange={setLocale} />
             {loggedIn ? (
               <>
-                <Link href={workbenchUrl} className="portal-pill-sm portal-pill-sm-primary hidden sm:inline-flex">
+                <Link href={workbenchUrl} className="header-pill header-pill-primary hidden sm:inline-flex">
                   {copy.header.openWorkspace}
                 </Link>
                 <UserAvatar />
               </>
             ) : (
-              <Link href="/login" className="portal-pill-sm portal-pill-sm-primary">
+              <Link href="/login" className="header-pill header-pill-primary">
                 {copy.header.signIn}
               </Link>
             )}
