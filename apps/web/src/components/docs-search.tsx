@@ -46,16 +46,13 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  // Focus input when opened and search on query change
+  // Reset state when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery("");
-      setResults([]);
-      setSelectedIndex(0);
-    }
+    if (!open) return;
+    setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
+  // Search on query change
   useEffect(() => {
     if (query.length < 2) {
       setResults([]);
@@ -132,7 +129,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
           <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
             {results.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
-                {content.header.searchNoResults} "{query}"
+                {content.header.searchNoResults} &quot;{query}&quot;
               </div>
             ) : (
               <div className="space-y-1">

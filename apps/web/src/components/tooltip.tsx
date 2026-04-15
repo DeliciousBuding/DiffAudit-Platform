@@ -23,14 +23,13 @@ export function Tooltip({
   delayHide = 100,
 }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(true);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tooltipRect, setTooltipRect] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
-    setMounted(true);
     return () => {
       if (showTimer.current) clearTimeout(showTimer.current);
       if (hideTimer.current) clearTimeout(hideTimer.current);

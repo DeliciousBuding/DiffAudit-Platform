@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const DEMO_MODE_KEY = "platform-demo-mode-v1";
 
@@ -9,16 +9,14 @@ const DEMO_MODE_KEY = "platform-demo-mode-v1";
  * Demo Mode uses snapshot data instead of calling the Runtime API.
  */
 export function useDemoMode(): boolean {
-  const [isDemoMode, setIsDemoMode] = useState(false);
-
-  useEffect(() => {
+  const [isDemoMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
     try {
-      const stored = window.localStorage.getItem(DEMO_MODE_KEY);
-      setIsDemoMode(stored === "1");
+      return window.localStorage.getItem(DEMO_MODE_KEY) === "1";
     } catch {
-      setIsDemoMode(false);
+      return false;
     }
-  }, []);
+  });
 
   return isDemoMode;
 }
