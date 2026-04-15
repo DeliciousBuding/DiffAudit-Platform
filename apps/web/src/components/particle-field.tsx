@@ -12,7 +12,7 @@ import { useEffect, useRef, useCallback } from "react";
  * - Center exclusion zone keeps hero text readable
  */
 
-const PARTICLE_COUNT = 455;
+const PARTICLE_COUNT = 350;
 const MEMBER_RATIO = 0.1;
 const CONNECT_DIST_NORMAL = 50;
 const CONNECT_DIST_MEMBER = 130;
@@ -21,10 +21,10 @@ const BASE_COLOR_LIGHT = { r: 156, g: 163, b: 175 }; // gray-400
 const BASE_COLOR_DARK = { r: 100, g: 116, b: 139 };  // slate-500
 
 const MEMBER_COLORS = [
-  { r: 150, g: 165, b: 210 }, // muted indigo
-  { r: 170, g: 155, b: 200 }, // muted violet
-  { r: 120, g: 185, b: 145 }, // muted green
-  { r: 200, g: 160, b: 110 }, // muted amber
+  { r: 139, g: 164, b: 249 }, // indigo-400
+  { r: 167, g: 139, b: 250 }, // violet-400
+  { r: 74, g: 222, b: 128 },  // green-400
+  { r: 251, g: 146, b: 60 },  // orange-400
 ];
 
 interface Particle {

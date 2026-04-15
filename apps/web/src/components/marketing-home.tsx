@@ -50,6 +50,7 @@ const HOME_COPY: Record<
     };
     hero: {
       title: [string, string];
+      subtitle: string;
       primaryCtaLoggedIn: string;
       primaryCtaLoggedOut: string;
       secondaryCta: string;
@@ -250,7 +251,8 @@ const HOME_COPY: Record<
       },
     },
     hero: {
-      title: ["让隐私风险无处可藏", "让合规分析有迹可循"],
+      title: ["探明数据记忆边界", ""],
+      subtitle: "让生成模型的隐私风险与合规分析有迹可循。",
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",
       secondaryCta: "查看能力范围",
@@ -475,6 +477,7 @@ const HOME_COPY: Record<
     },
     hero: {
       title: ["Audit diffusion models", "before they reach production."],
+      subtitle: "Membership inference attack platform for privacy-aware AI compliance.",
       primaryCtaLoggedIn: "Open audit workspace",
       primaryCtaLoggedOut: "Sign in to start",
       secondaryCta: "Explore coverage",
@@ -711,24 +714,34 @@ export function MarketingHome({
             <BrandMark hero />
           </div>
 
-          <div className="header-container">
+          <div className="header-container" style={{ maxWidth: "900px" }}>
             <h1 className="landing-main-header">
               <span>{copy.hero.title[0]}</span>
-              <span>{copy.hero.title[1]}</span>
+              {copy.hero.title[1] && <span>{copy.hero.title[1]}</span>}
             </h1>
+            <p style={{
+              marginTop: "1.5rem",
+              fontSize: "clamp(16px, 2vw, 22px)",
+              fontWeight: 500,
+              color: "var(--muted-foreground)",
+              letterSpacing: "0.02em",
+              lineHeight: 1.6,
+            }}>
+              {copy.hero.subtitle}
+            </p>
           </div>
 
-          <div className="welcome-cta">
+          <div className="welcome-cta" style={{ paddingTop: "2rem" }}>
             {loggedIn ? (
-              <Link href={workbenchUrl} className="hero-button hero-button-primary">
+              <Link href={workbenchUrl} className="hero-button hero-button-primary" style={{ borderRadius: "10px" }}>
                 {copy.hero.primaryCtaLoggedIn}
               </Link>
             ) : (
-              <Link href="/login" className="hero-button hero-button-primary">
+              <Link href="/login" className="hero-button hero-button-primary" style={{ borderRadius: "10px" }}>
                 {copy.hero.primaryCtaLoggedOut}
               </Link>
             )}
-            <a href="#coverage" className="hero-button hero-button-secondary">
+            <a href="#coverage" className="hero-button hero-button-secondary" style={{ borderRadius: "10px" }}>
               {copy.hero.secondaryCta}
             </a>
           </div>
