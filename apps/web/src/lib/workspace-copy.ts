@@ -425,6 +425,7 @@ export const WORKSPACE_COPY: Record<
       { href: "/workspace", title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
       { href: "/workspace/audits", title: "Audits", subtitle: "Create jobs and review runs", shortLabel: "Audits" },
       { href: "/workspace/reports", title: "Reports", subtitle: "Summaries and exports", shortLabel: "Reports" },
+      { href: "/workspace/api-keys", title: "API Keys", subtitle: "Manage access credentials", shortLabel: "Keys" },
       { href: "/workspace/settings", title: "Settings", subtitle: "Team, keys, and preferences", shortLabel: "Settings" },
     ],
     workspace: {
@@ -958,6 +959,7 @@ export const WORKSPACE_COPY: Record<
       { href: "/workspace", title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
       { href: "/workspace/audits", title: "审计流程", subtitle: "创建审计任务，查看运行结果", shortLabel: "审计" },
       { href: "/workspace/reports", title: "报告", subtitle: "结果汇总与导出", shortLabel: "报告" },
+      { href: "/workspace/api-keys", title: "API 密钥", subtitle: "管理访问凭据", shortLabel: "密钥" },
       { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥和偏好设置", shortLabel: "设置" },
     ],
     workspace: {

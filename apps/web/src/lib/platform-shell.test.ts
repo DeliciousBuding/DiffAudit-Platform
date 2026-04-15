@@ -9,6 +9,7 @@ describe("platform shell helpers", () => {
       "dashboard",
       "spark",
       "report",
+      "key",
       "settings",
     ]);
   });
@@ -19,7 +20,7 @@ describe("platform shell helpers", () => {
   });
 
   it("matches nested routes to the longest compatible nav item", () => {
-    expect(findActiveNavItem("/workspace/settings/team")).toEqual(navItems[3]);
+    expect(findActiveNavItem("/workspace/settings/team")).toEqual(navItems[4]);
     expect(findActiveNavItem("/workspace/reports/preview/123")).toEqual(navItems[2]);
   });
 

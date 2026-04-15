@@ -123,7 +123,7 @@ export function UserAvatar() {
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-1.5 w-64 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50">
+        <div className="absolute right-0 top-full mt-1.5 w-64 rounded-2xl border border-border bg-card shadow-xl overflow-hidden z-50">
           {/* User info header */}
           <div className="px-3 py-2.5 border-b border-border bg-muted/10">
             <div className="flex items-center gap-2">
@@ -148,22 +148,22 @@ export function UserAvatar() {
 
           {/* Menu items */}
           <div className="p-1.5">
-            {/* Theme selector */}
-            <div className="px-2.5 py-1.5">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.themeLabel}</div>
-              <div className="flex gap-1">
+            {/* Theme selector — compact inline */}
+            <div className="flex items-center justify-between px-2.5 py-1.5">
+              <span className="text-[11px] text-muted-foreground">{copy.themeLabel}</span>
+              <div className="flex items-center gap-0.5 rounded-full border border-border bg-muted/30 p-0.5">
                 {([
-                  { value: "light" as ThemeMode, label: copy.themeLight, icon: "sun" },
-                  { value: "dark" as ThemeMode, label: copy.themeDark, icon: "moon" },
-                  { value: "system" as ThemeMode, label: copy.themeSystem, icon: "system" },
+                  { value: "light" as ThemeMode, icon: "sun", label: copy.themeLight },
+                  { value: "dark" as ThemeMode, icon: "moon", label: copy.themeDark },
+                  { value: "system" as ThemeMode, icon: "system", label: copy.themeSystem },
                 ]).map((option) => (
                   <button
                     key={option.value}
                     onClick={() => setTheme(option.value)}
-                    className={`flex-1 flex flex-col items-center gap-0.5 rounded-md px-2 py-1.5 text-[10px] transition-colors ${
+                    className={`flex items-center justify-center h-7 w-7 rounded-full transition-all ${
                       theme === option.value
-                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
-                        : "text-muted-foreground hover:bg-muted/30"
+                        ? "bg-card shadow-sm text-foreground border border-border"
+                        : "text-muted-foreground hover:text-foreground border border-transparent"
                     }`}
                     title={option.label}
                     aria-label={option.label}
@@ -178,13 +178,10 @@ export function UserAvatar() {
                       </svg>
                     ) : (
                       <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <rect x="3" y="3" width="18" height="18" rx="3" />
-                        <path d="M13 3v18M13 7h4M13 11h5M13 15h4" />
-                        <circle cx="9" cy="9" r="1.5" fill="currentColor" stroke="none" />
-                        <circle cx="9" cy="15" r="1.5" fill="currentColor" stroke="none" />
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                        <path d="M12 4v16" />
                       </svg>
                     )}
-                    <span className="truncate max-w-full">{option.label}</span>
                   </button>
                 ))}
               </div>
@@ -194,7 +191,7 @@ export function UserAvatar() {
 
             <a
               href="/workspace/settings"
-              className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
+              className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
               onClick={() => setShowMenu(false)}
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">

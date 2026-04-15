@@ -3,13 +3,13 @@
 import { useEffect, useRef, useCallback } from "react";
 
 // ─── Config ────────────────────────────────────────────────────
-const PARTICLE_COUNT = 130;
-const CONNECT_DIST = 110;
-const MOUSE_RADIUS = 160;
-const MOUSE_FORCE = 8000;
-const SPRING_STRENGTH = 0.018;
-const DAMPING = 0.92;
-const BASE_DRIFT = 0.15;
+const PARTICLE_COUNT = 200;
+const CONNECT_DIST = 130;
+const MOUSE_RADIUS = 180;
+const MOUSE_FORCE = 9000;
+const SPRING_STRENGTH = 0.015;
+const DAMPING = 0.93;
+const BASE_DRIFT = 0.18;
 
 interface Particle {
   x: number;
@@ -36,8 +36,8 @@ function createParticles(w: number, h: number): Particle[] {
       anchorY: y,
       vx: (Math.random() - 0.5) * BASE_DRIFT,
       vy: (Math.random() - 0.5) * BASE_DRIFT,
-      radius: 1.2 + Math.random() * 1.8,
-      alpha: 0.25 + Math.random() * 0.55,
+      radius: 1.5 + Math.random() * 2.2,
+      alpha: 0.35 + Math.random() * 0.55,
       phase: Math.random() * Math.PI * 2,
     });
   }
@@ -143,9 +143,9 @@ export function ParticleField({ className }: { className?: string }) {
           p.vy += (my / mDist) * force;
         }
 
-        // Gentle drift oscillation
-        p.vx += Math.sin(t + p.phase) * 0.02;
-        p.vy += Math.cos(t * 0.7 + p.phase) * 0.02;
+        // Gentle drift oscillation — natural flow
+        p.vx += Math.sin(t * 1.2 + p.phase) * 0.06;
+        p.vy += Math.cos(t * 0.9 + p.phase * 1.3) * 0.06;
 
         // Damping
         p.vx *= DAMPING;
@@ -183,16 +183,16 @@ export function ParticleField({ className }: { className?: string }) {
           const ddy = a.y - b.y;
           const dist = Math.sqrt(ddx * ddx + ddy * ddy);
           if (dist < CONNECT_DIST) {
-            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.35;
+            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.4;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
             if (dark) {
               ctx.strokeStyle = `rgba(140, 180, 255, ${lineAlpha})`;
             } else {
-              ctx.strokeStyle = `rgba(47, 109, 246, ${lineAlpha * 0.5})`;
+              ctx.strokeStyle = `rgba(0, 0, 0, ${lineAlpha * 0.35})`;
             }
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.6;
             ctx.stroke();
           }
         }
@@ -240,16 +240,11 @@ export function ParticleField({ className }: { className?: string }) {
           ctx.fillStyle = `rgba(200, 220, 255, ${p.alpha * (0.7 + excitement * 0.3)})`;
           ctx.fill();
         } else {
-          // Light mode — subtle dots
+          // Light mode — bold dark dots
+          const r = p.radius * (0.9 + excitement * 0.4);
           ctx.beginPath();
-          ctx.arc(
-            p.x,
-            p.y,
-            p.radius * (0.8 + excitement * 0.3),
-            0,
-            Math.PI * 2,
-          );
-          ctx.fillStyle = `rgba(47, 109, 246, ${p.alpha * (0.2 + excitement * 0.25)})`;
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 0, 0, ${p.alpha * (0.3 + excitement * 0.3)})`;
           ctx.fill();
         }
       }
