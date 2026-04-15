@@ -183,7 +183,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
@@ -199,7 +199,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
@@ -215,7 +215,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
@@ -254,7 +254,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20">
-              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2}>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 16v-4M12 8h.01" />
               </svg>
@@ -282,7 +282,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 className="inline-flex items-center gap-1.5 rounded border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </a>
@@ -294,7 +294,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         suggestions.length > 0 && (
           <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 16v-4M12 8h.01" />
               </svg>
@@ -430,7 +430,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
               <table className="w-full border-collapse text-xs">
-                <thead className="sticky top-0 bg-muted/30">
+                <thead className="sticky top-0 z-10 bg-muted/30">
                   <tr className="border-b border-border">
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.attack}</th>

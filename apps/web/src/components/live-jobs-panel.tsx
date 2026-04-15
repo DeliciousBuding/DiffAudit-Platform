@@ -141,11 +141,11 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [locale, auditsCopy.statusLabels, panelCopy.justUpdated, panelCopy.noSummary]);
 
   if (state.kind === "loading") {
     return (
-      <div className="rounded-[22px] border border-border bg-[var(--color-bg-primary)]/55 p-4 text-sm leading-7 text-muted-foreground">
+      <div className="rounded-lg border border-border bg-[var(--color-bg-primary)]/55 p-4 text-sm leading-7 text-muted-foreground">
         {auditsCopy.jobsRefreshNote}
       </div>
     );
@@ -153,8 +153,19 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
 
   if (state.kind === "error") {
     return (
-      <div className="rounded-[22px] border border-border bg-[var(--color-bg-primary)]/55 p-4 text-sm leading-7 text-muted-foreground">
-        {auditsCopy.jobsUnavailable}
+      <div className="rounded-lg border border-[var(--risk-high)]/30 bg-[var(--risk-high)]/5 p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--risk-high)]/20">
+            <svg viewBox="0 0 24 24" className="h-4 w-4 text-[var(--risk-high)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M15 9l-6 6M9 9l6 6" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-medium text-[var(--risk-high)]">{auditsCopy.jobsUnavailable}</div>
+            <p className="mt-1 text-xs text-muted-foreground">{panelCopy.errorHint || "Unable to load audit jobs. Please check if Runtime-Server is running."}</p>
+          </div>
+        </div>
       </div>
     );
   }
