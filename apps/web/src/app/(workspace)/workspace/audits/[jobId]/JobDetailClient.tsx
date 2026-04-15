@@ -122,7 +122,7 @@ export function JobDetailClient({
     } finally {
       setLoading(false);
     }
-  }, [jobId]);
+  }, [jobId, locale]);
 
   const handleCancelJob = useCallback(async () => {
     setCancelling(true);

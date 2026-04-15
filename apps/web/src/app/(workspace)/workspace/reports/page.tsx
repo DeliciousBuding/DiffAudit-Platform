@@ -18,6 +18,7 @@ import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { MetricLabel } from "@/components/metric-label";
 
 // Cache RSC responses for 60s — demo data doesn't change during a session
 export const revalidate = 60;
@@ -222,9 +223,15 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                   <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
                   <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.track}</th>
                   <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">
+                    <MetricLabel label={copy.tableHeaders.auc} tooltip={copy.metricTooltips.auc} />
+                  </th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">
+                    <MetricLabel label={copy.tableHeaders.asr} tooltip={copy.metricTooltips.asr} />
+                  </th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">
+                    <MetricLabel label={copy.tableHeaders.tpr} tooltip={copy.metricTooltips.tpr} />
+                  </th>
                   <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>

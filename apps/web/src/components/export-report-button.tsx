@@ -57,7 +57,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
       const dateStr = now.toISOString().slice(0, 10);
       pdf.save(`DiffAudit-Report-${dateStr}.pdf`);
     } catch (err) {
-      console.error("PDF export failed:", err);
+      // Fallback to HTML export if PDF generation fails
       const html = generateReportHTML(rows, locale);
       const blob = new Blob([html], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -124,7 +124,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
       const dateStr = now.toISOString().slice(0, 10);
       pdf.save(`DiffAudit-Competition-${dateStr}.pdf`);
     } catch (err) {
-      console.error("Competition PDF export failed:", err);
+      // Fallback to HTML export if PDF generation fails
       if (tempDiv && document.body.contains(tempDiv)) {
         document.body.removeChild(tempDiv);
       }

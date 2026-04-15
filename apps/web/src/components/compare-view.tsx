@@ -6,6 +6,7 @@ import { type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { classifyRisk } from "@/lib/risk-report";
+import { MetricLabel } from "@/components/metric-label";
 
 type CompareViewProps = {
   rows: AttackDefenseRowViewModel[];
@@ -126,6 +127,7 @@ function useCompareCopy(locale: Locale) {
 
 export function CompareView({ rows, locale }: CompareViewProps) {
   const copy = useCompareCopy(locale);
+  const tooltips = WORKSPACE_COPY[locale].reports.metricTooltips;
   const pairs = useMemo(() => computeComparePairs(rows), [rows]);
 
   if (pairs.length === 0) {
@@ -208,15 +210,33 @@ export function CompareView({ rows, locale }: CompareViewProps) {
               </tr>
               <tr className="border-b border-border text-[10px] text-muted-foreground">
                 <th></th><th></th>
-                <th className="px-2 py-1 text-right mono">{copy.auc}</th>
-                <th className="px-2 py-1 text-right mono">{copy.asr}</th>
-                <th className="px-2 py-1 text-right mono">{copy.tpr}</th>
-                <th className="px-2 py-1 text-right mono border-l border-border">{copy.auc}</th>
-                <th className="px-2 py-1 text-right mono">{copy.asr}</th>
-                <th className="px-2 py-1 text-right mono">{copy.tpr}</th>
-                <th className="px-2 py-1 text-right border-l border-border text-[color:var(--accent-blue)]">{copy.auc}</th>
-                <th className="px-2 py-1 text-right text-[color:var(--accent-blue)]">{copy.asr}</th>
-                <th className="px-2 py-1 text-right text-[color:var(--accent-blue)]">{copy.tpr}</th>
+                <th className="px-2 py-1 text-right mono">
+                  <MetricLabel label={copy.auc} tooltip={tooltips.auc} />
+                </th>
+                <th className="px-2 py-1 text-right mono">
+                  <MetricLabel label={copy.asr} tooltip={tooltips.asr} />
+                </th>
+                <th className="px-2 py-1 text-right mono">
+                  <MetricLabel label={copy.tpr} tooltip={tooltips.tpr} />
+                </th>
+                <th className="px-2 py-1 text-right mono border-l border-border">
+                  <MetricLabel label={copy.auc} tooltip={tooltips.auc} />
+                </th>
+                <th className="px-2 py-1 text-right mono">
+                  <MetricLabel label={copy.asr} tooltip={tooltips.asr} />
+                </th>
+                <th className="px-2 py-1 text-right mono">
+                  <MetricLabel label={copy.tpr} tooltip={tooltips.tpr} />
+                </th>
+                <th className="px-2 py-1 text-right border-l border-border text-[color:var(--accent-blue)]">
+                  <MetricLabel label={copy.auc} tooltip={tooltips.auc} />
+                </th>
+                <th className="px-2 py-1 text-right text-[color:var(--accent-blue)]">
+                  <MetricLabel label={copy.asr} tooltip={tooltips.asr} />
+                </th>
+                <th className="px-2 py-1 text-right text-[color:var(--accent-blue)]">
+                  <MetricLabel label={copy.tpr} tooltip={tooltips.tpr} />
+                </th>
                 <th className="px-2 py-1 border-l border-border"></th>
               </tr>
             </thead>
