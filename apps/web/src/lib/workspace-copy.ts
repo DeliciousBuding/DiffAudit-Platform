@@ -176,6 +176,9 @@ export const WORKSPACE_COPY: Record<
         whiteBoxNote: string;
       };
       labels: {
+        stepProgress: string;
+        stepOf: string;
+        complete: string;
         selectModel: string;
         modelPlaceholder: string;
         rounds: string;
@@ -379,6 +382,7 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: string;
       noSummary: string;
+      errorHint: string;
     };
   }
 > = {
@@ -898,6 +902,7 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: "Just updated",
       noSummary: "Summary path will appear after the run completes.",
+      errorHint: "Unable to load audit jobs. Please check if Runtime-Server is running.",
     },
   },
   "zh-CN": {
@@ -1416,6 +1421,7 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: "刚刚更新",
       noSummary: "运行完成后会显示 summary 路径。",
+      errorHint: "无法加载审计任务。请检查 Runtime-Server 是否正在运行。",
     },
   },
 };

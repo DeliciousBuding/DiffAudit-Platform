@@ -6,10 +6,11 @@
 "use client";
 
 /** Base shimmer block — premium skeleton with smooth left-to-right shimmer */
-export function Skeleton({ className }: { className?: string }) {
+export function Skeleton({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <div
       className={`skeleton-pulse rounded-md ${className ?? ""}`}
+      style={style}
       aria-hidden="true"
     />
   );
@@ -102,12 +103,15 @@ export function SidebarSkeleton({ rows = 4 }: { rows?: number }) {
 
 /** Chart section skeleton: header bar + chart area */
 export function ChartSkeleton({ height = 220 }: { height?: number }) {
+  const widths = [65, 80, 55, 90, 70];
   return (
     <div className="p-3">
       <div className="flex items-center justify-center" style={{ height }}>
         <div className="space-y-3 w-full px-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-3 rounded" style={{ width: `${50 + Math.random() * 50}%` }} />
+          {widths.map((width, i) => (
+            <div key={i} style={{ width: `${width}%` }}>
+              <Skeleton className="h-3 rounded" />
+            </div>
           ))}
         </div>
       </div>
