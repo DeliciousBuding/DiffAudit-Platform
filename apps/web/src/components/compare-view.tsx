@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { classifyRisk } from "@/lib/risk-report";
 
@@ -21,41 +22,6 @@ interface ComparePair {
   deltaAsr: number | null;
   deltaTpr: number | null;
 }
-
-const COMPARE_COPY = {
-  "zh-CN": {
-    title: "防御效果对比",
-    description: "对比同一攻击类型在无防御和有防御状态下的指标差异。",
-    noDefense: "无防御",
-    defense: "有防御",
-    delta: "变化",
-    attack: "攻击类型",
-    model: "模型",
-    auc: "AUC",
-    asr: "ASR",
-    tpr: "TPR@1%",
-    improvement: "防御效果",
-    noPairs: "暂无可对比的防御数据。创建带防御配置的任务后会自动显示对比结果。",
-    better: "降低",
-    worse: "升高",
-  },
-  "en-US": {
-    title: "Defense Effectiveness",
-    description: "Compare metrics between undefended and defended states for each attack.",
-    noDefense: "Undefended",
-    defense: "Defended",
-    delta: "Delta",
-    attack: "Attack",
-    model: "Model",
-    auc: "AUC",
-    asr: "ASR",
-    tpr: "TPR@1%",
-    improvement: "Defense Effect",
-    noPairs: "No defense comparison data yet. Create tasks with defense configurations to see results.",
-    better: "Reduced",
-    worse: "Increased",
-  },
-};
 
 function computeComparePairs(rows: AttackDefenseRowViewModel[]): ComparePair[] {
   // Group by attack + model
@@ -123,7 +89,7 @@ function DeltaCell({ value, labelLowerIsBetter }: { value: number | null; labelL
   );
 }
 
-function DefenseBar({ undefendedAuc, defendedAuc }: { undefendedAuc: number; defendedAuc: number }) {
+function DefenseBar({ undefendedAuc, defendedAuc, copy }: { undefendedAuc: number; defendedAuc: number; copy: ReturnType<typeof useCompareCopy> }) {
   const before = Math.max(0, Math.min(1, undefendedAuc));
   const after = Math.max(0, Math.min(1, defendedAuc));
   const reduction = before - after;
@@ -131,7 +97,7 @@ function DefenseBar({ undefendedAuc, defendedAuc }: { undefendedAuc: number; def
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground w-8">Before</span>
+        <span className="text-[10px] text-muted-foreground w-8">{copy.before}</span>
         <div className="flex-1 h-3 bg-muted/20 rounded-sm overflow-hidden">
           <div
             className="h-full rounded-sm transition-all"
@@ -141,7 +107,7 @@ function DefenseBar({ undefendedAuc, defendedAuc }: { undefendedAuc: number; def
         <span className="mono text-[10px] w-10 text-right">{before.toFixed(2)}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground w-8">After</span>
+        <span className="text-[10px] text-muted-foreground w-8">{copy.after}</span>
         <div className="flex-1 h-3 bg-muted/20 rounded-sm overflow-hidden">
           <div
             className="h-full rounded-sm transition-all"
@@ -154,8 +120,12 @@ function DefenseBar({ undefendedAuc, defendedAuc }: { undefendedAuc: number; def
   );
 }
 
+function useCompareCopy(locale: Locale) {
+  return WORKSPACE_COPY[locale].reports.compareView;
+}
+
 export function CompareView({ rows, locale }: CompareViewProps) {
-  const copy = COMPARE_COPY[locale];
+  const copy = useCompareCopy(locale);
   const pairs = useMemo(() => computeComparePairs(rows), [rows]);
 
   if (pairs.length === 0) {
@@ -179,33 +149,33 @@ export function CompareView({ rows, locale }: CompareViewProps) {
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-lg border border-border bg-card p-3">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            对比组数
+            {copy.summaryPairs}
           </div>
           <div className="mt-1.5 text-2xl font-semibold">{pairs.length}</div>
           <p className="mt-1 text-[10px] text-muted-foreground">
-            Attack/Defense pairs
+            {copy.effectiveCount}
           </p>
         </div>
         <div className="rounded-lg border border-border bg-card p-3">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            AUC 平均变化
+            {copy.summaryAvgChange}
           </div>
           <div className="mt-1.5 text-2xl font-semibold" style={{ color: avgAucReduction < 0 ? "var(--success)" : "var(--warning)" }}>
             {avgAucReduction >= 0 ? "+" : ""}{avgAucReduction.toFixed(3)}
           </div>
           <p className="mt-1 text-[10px] text-muted-foreground">
-            {avgAucReduction < 0 ? "防御有效" : "防御效果有限"}
+            {avgAucReduction < 0 ? copy.effectiveYes : copy.effectiveNo}
           </p>
         </div>
         <div className="rounded-lg border border-border bg-card p-3">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            有效防御
+            {copy.summaryEffective}
           </div>
           <div className="mt-1.5 text-2xl font-semibold" style={{ color: "var(--success)" }}>
             {effectiveCount}/{pairs.length}
           </div>
           <p className="mt-1 text-[10px] text-muted-foreground">
-            AUC 降低 &gt; 0.1
+            {copy.effectiveNote}
           </p>
         </div>
       </div>
@@ -233,7 +203,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
                   {copy.delta}
                 </th>
                 <th className="px-3 py-1.5 text-center font-semibold text-muted-foreground border-l border-border">
-                  可视化
+                  {copy.visualization}
                 </th>
               </tr>
               <tr className="border-b border-border text-[10px] text-muted-foreground">
@@ -277,7 +247,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
                       <DeltaCell value={pair.deltaTpr} />
                     </td>
                     <td className="px-2 py-2 border-l border-border min-w-[180px]">
-                      {u && d && <DefenseBar undefendedAuc={u.auc} defendedAuc={d.auc} />}
+                      {u && d && <DefenseBar undefendedAuc={u.auc} defendedAuc={d.auc} copy={copy} />}
                     </td>
                   </tr>
                 );

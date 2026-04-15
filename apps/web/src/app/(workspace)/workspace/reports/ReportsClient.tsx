@@ -4,18 +4,9 @@ import { useState } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { CompareView } from "@/components/compare-view";
-
-const REPORT_TABS = [
-  { value: "results", label: "审计结果" },
-  { value: "compare", label: "对比分析" },
-];
-
-const REPORT_TABS_EN = [
-  { value: "results", label: "Results" },
-  { value: "compare", label: "Compare" },
-];
 
 interface ReportsClientProps {
   rows: AttackDefenseRowViewModel[];
@@ -24,8 +15,12 @@ interface ReportsClientProps {
 }
 
 export function ReportsClient({ rows, locale, resultsContent }: ReportsClientProps) {
-  const tabs = locale === "zh-CN" ? REPORT_TABS : REPORT_TABS_EN;
+  const copy = WORKSPACE_COPY[locale].reports;
   const [activeTab, setActiveTab] = useState("results");
+  const tabs = [
+    { value: "results", label: copy.reportTabs.results },
+    { value: "compare", label: copy.reportTabs.compare },
+  ];
 
   return (
     <div className="space-y-4">

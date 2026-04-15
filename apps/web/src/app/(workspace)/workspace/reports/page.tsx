@@ -59,7 +59,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   const rows = table?.rows ?? [];
   const catalogSize = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
-  const localeCode = locale === "zh-CN" ? "zh-CN" : "en";
+  const localeCode = locale === "zh-CN" ? "zh-CN" : "en-US";
   const exportRows: ReportExportRow[] = rows.map((r) => ({
     track: r.track,
     attack: r.attack,

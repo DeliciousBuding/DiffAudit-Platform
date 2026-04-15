@@ -221,6 +221,36 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      reportTabs: {
+        results: string;
+        compare: string;
+      };
+      compareView: {
+        title: string;
+        description: string;
+        noDefense: string;
+        defense: string;
+        delta: string;
+        attack: string;
+        model: string;
+        auc: string;
+        asr: string;
+        tpr: string;
+        improvement: string;
+        noPairs: string;
+        better: string;
+        worse: string;
+        summaryPairs: string;
+        summaryAvgChange: string;
+        summaryEffective: string;
+        effectiveCount: string;
+        effectiveNote: string;
+        effectiveYes: string;
+        effectiveNo: string;
+        visualization: string;
+        before: string;
+        after: string;
+      };
       sections: {
         auditResults: string;
         coverageGaps: string;
@@ -326,6 +356,15 @@ export const WORKSPACE_COPY: Record<
       scenario: string;
       scenarioPlaceholder: string;
       submit: string;
+    };
+    exportButton: {
+      exporting: string;
+      competition: string;
+      competitionTitle: string;
+    };
+    liveJobsPanel: {
+      justUpdated: string;
+      noSummary: string;
     };
   }
 > = {
@@ -615,6 +654,36 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "Reports",
       title: "Audit results and coverage gaps.",
       description: "Aggregate audit results and identify weak spots in your model's defenses.",
+      reportTabs: {
+        results: "Results",
+        compare: "Compare",
+      },
+      compareView: {
+        title: "Defense Effectiveness",
+        description: "Compare metrics between undefended and defended states for each attack.",
+        noDefense: "Undefended",
+        defense: "Defended",
+        delta: "Delta",
+        attack: "Attack",
+        model: "Model",
+        auc: "AUC",
+        asr: "ASR",
+        tpr: "TPR@1%",
+        improvement: "Defense Effect",
+        noPairs: "No defense comparison data yet. Create tasks with defense configurations to see results.",
+        better: "Reduced",
+        worse: "Increased",
+        summaryPairs: "Comparison Pairs",
+        summaryAvgChange: "Avg AUC Change",
+        summaryEffective: "Effective Defense",
+        effectiveCount: "AUC Reduced > 0.1",
+        effectiveNote: "Defense Effective",
+        effectiveYes: "Defense Effective",
+        effectiveNo: "Defense Limited",
+        visualization: "Visualization",
+        before: "Before",
+        after: "After",
+      },
       sections: {
         auditResults: "Audit results",
         coverageGaps: "Coverage gaps",
@@ -789,6 +858,15 @@ export const WORKSPACE_COPY: Record<
       scenario: "Use case",
       scenarioPlaceholder: "Describe the model, the team using it, and the current risk focus.",
       submit: "Submit trial request",
+    },
+    exportButton: {
+      exporting: "Exporting...",
+      competition: "Competition",
+      competitionTitle: "Export competition materials",
+    },
+    liveJobsPanel: {
+      justUpdated: "Just updated",
+      noSummary: "Summary path will appear after the run completes.",
     },
   },
   "zh-CN": {
@@ -1077,6 +1155,36 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "报告",
       title: "审计结果和覆盖缺口。",
       description: "这里汇总了所有审计结果，帮你发现模型防御的薄弱环节。",
+      reportTabs: {
+        results: "审计结果",
+        compare: "对比分析",
+      },
+      compareView: {
+        title: "防御效果对比",
+        description: "对比同一攻击类型在无防御和有防御状态下的指标差异。",
+        noDefense: "无防御",
+        defense: "有防御",
+        delta: "变化",
+        attack: "攻击类型",
+        model: "模型",
+        auc: "AUC",
+        asr: "ASR",
+        tpr: "TPR@1%",
+        improvement: "防御效果",
+        noPairs: "暂无可对比的防御数据。创建带防御配置的任务后会自动显示对比结果。",
+        better: "降低",
+        worse: "升高",
+        summaryPairs: "对比组数",
+        summaryAvgChange: "AUC 平均变化",
+        summaryEffective: "有效防御",
+        effectiveCount: "AUC 降低 > 0.1",
+        effectiveNote: "防御有效",
+        effectiveYes: "防御有效",
+        effectiveNo: "防御效果有限",
+        visualization: "可视化",
+        before: "防御前",
+        after: "防御后",
+      },
       sections: {
         auditResults: "审计结果",
         coverageGaps: "覆盖缺口",
@@ -1251,6 +1359,15 @@ export const WORKSPACE_COPY: Record<
       scenario: "使用场景",
       scenarioPlaceholder: "请简要描述你想审计的模型、使用团队和当前风险关注点。",
       submit: "提交试用申请",
+    },
+    exportButton: {
+      exporting: "导出中...",
+      competition: "比赛材料",
+      competitionTitle: "一键导出比赛材料",
+    },
+    liveJobsPanel: {
+      justUpdated: "刚刚更新",
+      noSummary: "运行完成后会显示 summary 路径。",
     },
   },
 };

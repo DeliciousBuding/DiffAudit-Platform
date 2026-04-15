@@ -45,9 +45,9 @@ function statusTone(status: string): AuditJobViewModel["statusTone"] {
   return "primary";
 }
 
-function formatUpdatedAt(value: string | null | undefined) {
+function formatUpdatedAt(value: string | null | undefined, justUpdated: string) {
   if (!value) {
-    return "刚刚更新";
+    return justUpdated;
   }
 
   const date = new Date(value);
@@ -65,7 +65,7 @@ function formatUpdatedAt(value: string | null | undefined) {
   }).format(date);
 }
 
-function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[] {
+function summarizeAuditJobs(jobs: AuditJobPayload[], justUpdated: string, noSummary: string): AuditJobViewModel[] {
   const normalized = jobs
     .flatMap((job) => {
       if (
@@ -97,8 +97,8 @@ function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[] {
       statusTone: statusTone(job.status),
       contractKey: job.contract_key,
       workspaceName: job.workspace_name ?? "pending workspace",
-      updatedAtLabel: formatUpdatedAt(job.updated_at),
-      summaryPath: job.summary_path ?? "运行完成后会显示 summary 路径。",
+      updatedAtLabel: formatUpdatedAt(job.updated_at, justUpdated),
+      summaryPath: job.summary_path ?? noSummary,
       error: job.error ?? "",
     }));
 
@@ -106,7 +106,8 @@ function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[] {
 }
 
 export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
-  const copy = WORKSPACE_COPY[locale].audits;
+  const auditsCopy = WORKSPACE_COPY[locale].audits;
+  const panelCopy = WORKSPACE_COPY[locale].liveJobsPanel;
   const [state, setState] = useState<JobsState>({ kind: "loading" });
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
         }
 
         if (!cancelled) {
-          setState({ kind: "ready", jobs: summarizeAuditJobs(payload as AuditJobPayload[]) });
+          setState({ kind: "ready", jobs: summarizeAuditJobs(payload as AuditJobPayload[], panelCopy.justUpdated, panelCopy.noSummary) });
         }
       } catch {
         if (!cancelled) {
@@ -144,7 +145,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
   if (state.kind === "loading") {
     return (
       <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-        {copy.jobsRefreshNote}
+        {auditsCopy.jobsRefreshNote}
       </div>
     );
   }
@@ -152,7 +153,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
   if (state.kind === "error") {
     return (
       <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-        {copy.jobsUnavailable}
+        {auditsCopy.jobsUnavailable}
       </div>
     );
   }
@@ -160,7 +161,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
   if (state.jobs.length === 0) {
     return (
       <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
-        {copy.emptyJobs}
+        {auditsCopy.emptyJobs}
       </div>
     );
   }
@@ -186,7 +187,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
               {job.contractKey}
             </div>
             <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
-              {copy.updatedAt} {job.updatedAtLabel}
+              {auditsCopy.updatedAt} {job.updatedAtLabel}
             </div>
           </div>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">

@@ -6,16 +6,19 @@ import { jsPDF } from "jspdf";
 
 import { generateReportHTML, type ReportExportRow } from "@/lib/risk-report";
 import { generateCompetitionReportHTML } from "@/lib/competition-report";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { type Locale } from "@/components/language-picker";
 
 interface ExportReportButtonProps {
   rows: ReportExportRow[];
   label: string;
-  locale: string;
+  locale: Locale;
   catalogSize?: number;
   defendedRows?: number;
 }
 
 export function ExportReportButton({ rows, label, locale, catalogSize = 0, defendedRows = 0 }: ExportReportButtonProps) {
+  const copy = WORKSPACE_COPY[locale].exportButton;
   const [isExporting, setIsExporting] = useState(false);
 
   const exportAsPdf = useCallback(async () => {
@@ -148,7 +151,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            导出中...
+            {copy.exporting}
           </span>
         ) : (
           label
@@ -159,7 +162,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
         className="portal-pill-sm border border-[color:var(--accent-blue)] text-[color:var(--accent-blue)] hover:bg-[color:var(--accent-blue)]/5"
         onClick={exportCompetition}
         disabled={isExporting}
-        title={locale === "zh-CN" ? "一键导出比赛材料" : "Export competition materials"}
+        title={copy.competitionTitle}
       >
         {isExporting ? (
           <span className="inline-flex items-center gap-1.5">
@@ -167,7 +170,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            导出中...
+            {copy.exporting}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1">
@@ -177,7 +180,7 @@ export function ExportReportButton({ rows, label, locale, catalogSize = 0, defen
               <line x1="12" y1="18" x2="12" y2="12" />
               <line x1="9" y1="15" x2="15" y2="15" />
             </svg>
-            {locale === "zh-CN" ? "比赛材料" : "Competition"}
+            {copy.competition}
           </span>
         )}
       </button>
