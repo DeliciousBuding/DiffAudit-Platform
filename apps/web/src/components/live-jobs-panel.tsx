@@ -45,7 +45,7 @@ function statusTone(status: string): AuditJobViewModel["statusTone"] {
   return "primary";
 }
 
-function formatUpdatedAt(value: string | null | undefined, justUpdated: string) {
+function formatUpdatedAt(value: string | null | undefined, justUpdated: string, locale: string) {
   if (!value) {
     return justUpdated;
   }
@@ -55,17 +55,16 @@ function formatUpdatedAt(value: string | null | undefined, justUpdated: string) 
     return value;
   }
 
-  return new Intl.DateTimeFormat("zh-CN", {
+  return new Intl.DateTimeFormat(locale, {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "Asia/Hong_Kong",
   }).format(date);
 }
 
-function summarizeAuditJobs(jobs: AuditJobPayload[], justUpdated: string, noSummary: string): AuditJobViewModel[] {
+function summarizeAuditJobs(jobs: AuditJobPayload[], justUpdated: string, noSummary: string, locale: string, statusLabels: Record<string, string>): AuditJobViewModel[] {
   const normalized = jobs
     .flatMap((job) => {
       if (
@@ -93,11 +92,11 @@ function summarizeAuditJobs(jobs: AuditJobPayload[], justUpdated: string, noSumm
     })
     .map((job) => ({
       jobId: job.job_id,
-      status: job.status,
+      status: statusLabels[job.status] ?? job.status,
       statusTone: statusTone(job.status),
       contractKey: job.contract_key,
       workspaceName: job.workspace_name ?? "pending workspace",
-      updatedAtLabel: formatUpdatedAt(job.updated_at, justUpdated),
+      updatedAtLabel: formatUpdatedAt(job.updated_at, justUpdated, locale),
       summaryPath: job.summary_path ?? noSummary,
       error: job.error ?? "",
     }));
@@ -126,7 +125,9 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
         }
 
         if (!cancelled) {
-          setState({ kind: "ready", jobs: summarizeAuditJobs(payload as AuditJobPayload[], panelCopy.justUpdated, panelCopy.noSummary) });
+          const statusLabels = auditsCopy.statusLabels;
+          const localeTag = locale === "zh-CN" ? "zh-CN" : "en-US";
+          setState({ kind: "ready", jobs: summarizeAuditJobs(payload as AuditJobPayload[], panelCopy.justUpdated, panelCopy.noSummary, localeTag, statusLabels) });
         }
       } catch {
         if (!cancelled) {
@@ -144,7 +145,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
 
   if (state.kind === "loading") {
     return (
-      <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
+      <div className="rounded-[22px] border border-border bg-[var(--color-bg-primary)]/55 p-4 text-sm leading-7 text-muted-foreground">
         {auditsCopy.jobsRefreshNote}
       </div>
     );
@@ -152,7 +153,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
 
   if (state.kind === "error") {
     return (
-      <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
+      <div className="rounded-[22px] border border-border bg-[var(--color-bg-primary)]/55 p-4 text-sm leading-7 text-muted-foreground">
         {auditsCopy.jobsUnavailable}
       </div>
     );
@@ -160,7 +161,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
 
   if (state.jobs.length === 0) {
     return (
-      <div className="rounded-[22px] border border-border bg-white/55 p-4 text-sm leading-7 text-muted-foreground">
+      <div className="rounded-[22px] border border-border bg-[var(--color-bg-primary)]/55 p-4 text-sm leading-7 text-muted-foreground">
         {auditsCopy.emptyJobs}
       </div>
     );
@@ -171,7 +172,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
       {state.jobs.map((job) => (
         <article
           key={job.jobId}
-          className="rounded-[22px] border border-border bg-white/55 p-4"
+          className="rounded-[22px] border border-border bg-[var(--color-bg-primary)]/55 p-4"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -183,10 +184,10 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
             <StatusBadge tone={job.statusTone}>{job.status}</StatusBadge>
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
+            <div className="rounded-[18px] border border-border bg-[var(--color-bg-secondary)]/70 px-3 py-3 text-sm">
               {job.contractKey}
             </div>
-            <div className="rounded-[18px] border border-border bg-white/70 px-3 py-3 text-sm">
+            <div className="rounded-[18px] border border-border bg-[var(--color-bg-secondary)]/70 px-3 py-3 text-sm">
               {auditsCopy.updatedAt} {job.updatedAtLabel}
             </div>
           </div>

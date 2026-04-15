@@ -85,7 +85,7 @@ export function LanguagePicker({
   }, []);
 
   useEffect(() => {
-    document.documentElement.lang = locale === "zh-CN" ? "zh-CN" : "en";
+    document.documentElement.lang = locale === "zh-CN" ? "zh-CN" : "en-US";
   }, [locale]);
 
   useEffect(() => {
