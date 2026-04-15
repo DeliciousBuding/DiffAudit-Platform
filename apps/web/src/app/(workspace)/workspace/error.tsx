@@ -1,7 +1,7 @@
 "use client";
 
-import { headers } from "next/headers";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { useEffect, useState } from "react";
+import { getStoredLocale, type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 /**
@@ -9,14 +9,19 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
  * Next.js automatically catches errors and renders this component.
  * https://nextjs.org/docs/app/api-reference/file-conventions/error
  */
-export default async function GlobalError({
+export default function GlobalError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const locale = resolveLocaleFromHeaderStore(await headers());
+  const [locale, setLocale] = useState<Locale>("en-US");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+  }, []);
+
   const copy = WORKSPACE_COPY[locale].settings.errorPage;
 
   return (
