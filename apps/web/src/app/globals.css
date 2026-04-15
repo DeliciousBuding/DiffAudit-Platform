@@ -452,17 +452,14 @@ select {
     0 14px 32px rgba(18, 19, 23, 0.1);
 }
 
-/* Primary variant — accent blue fill for emphasis */
+/* Primary variant — subtle emphasis via border + weight, not fill */
 .header-pill-primary {
-  background: var(--accent-blue);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 14px rgba(47, 109, 246, 0.25);
+  border-color: rgba(33, 34, 38, 0.18);
+  font-weight: 500;
 }
 
 .header-pill-primary:hover {
-  background: var(--accent-blue-hover);
-  box-shadow: 0 6px 20px rgba(47, 109, 246, 0.35);
+  border-color: rgba(33, 34, 38, 0.32);
 }
 
 /* Dark mode overrides */
@@ -478,21 +475,17 @@ html.dark .header-pill {
 html[data-theme="dark"] .header-pill:hover,
 html.dark .header-pill:hover {
   background: rgba(42, 42, 45, 0.92);
-  border-color: rgba(91, 142, 249, 0.16);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 html[data-theme="dark"] .header-pill-primary,
 html.dark .header-pill-primary {
-  background: var(--accent-blue);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 14px rgba(91, 142, 249, 0.3);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 html[data-theme="dark"] .header-pill-primary:hover,
 html.dark .header-pill-primary:hover {
-  background: var(--accent-blue-hover);
-  box-shadow: 0 6px 20px rgba(91, 142, 249, 0.4);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 .portal-shell {
@@ -743,6 +736,14 @@ html.dark .header-pill-primary:hover {
   min-height: 100svh;
 }
 
+.particle-field-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .welcome-section {
   align-items: center;
   justify-content: center;
@@ -752,6 +753,7 @@ html.dark .header-pill-primary:hover {
   overflow-x: clip;
   padding: 36px 0 60px;
   position: relative;
+  z-index: 1;
   text-align: center;
 }
 

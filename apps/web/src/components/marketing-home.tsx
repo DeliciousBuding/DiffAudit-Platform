@@ -684,7 +684,7 @@ export function MarketingHome({
       </header>
 
       <div className="welcome-wrapper">
-        <ParticleField />
+        <ParticleField className="particle-field-hero" />
 
         <section id="product" className="welcome-section">
           <div className="logo-container">

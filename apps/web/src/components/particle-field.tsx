@@ -2,84 +2,84 @@
 
 import { useEffect, useRef, useCallback } from "react";
 
+// ─── Config ────────────────────────────────────────────────────
+const PARTICLE_COUNT = 130;
+const CONNECT_DIST = 110;
+const MOUSE_RADIUS = 160;
+const MOUSE_FORCE = 8000;
+const SPRING_STRENGTH = 0.018;
+const DAMPING = 0.92;
+const BASE_DRIFT = 0.15;
+
 interface Particle {
   x: number;
   y: number;
+  anchorX: number;
+  anchorY: number;
   vx: number;
   vy: number;
   radius: number;
-  opacity: number;
+  alpha: number;
+  /** Per-particle phase for gentle oscillation */
+  phase: number;
 }
 
-interface ParticleFieldProps {
-  density?: "low" | "medium" | "high";
-  color?: string;
-  lineColor?: string;
-  mouseRadius?: number;
-  mouseForce?: number;
+function createParticles(w: number, h: number): Particle[] {
+  const particles: Particle[] = [];
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    particles.push({
+      x,
+      y,
+      anchorX: x,
+      anchorY: y,
+      vx: (Math.random() - 0.5) * BASE_DRIFT,
+      vy: (Math.random() - 0.5) * BASE_DRIFT,
+      radius: 1.2 + Math.random() * 1.8,
+      alpha: 0.25 + Math.random() * 0.55,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+  return particles;
 }
 
-const DENSITY_MAP = {
-  low: { particleCount: 30, maxDistance: 120 },
-  medium: { particleCount: 60, maxDistance: 150 },
-  high: { particleCount: 100, maxDistance: 180 },
-};
-
-export function ParticleField({
-  density = "medium",
-  color = "rgba(255, 255, 255, 0.6)",
-  lineColor = "rgba(255, 255, 255, 0.08)",
-  mouseRadius = 120,
-  mouseForce = 0.02,
-}: ParticleFieldProps) {
+export function ParticleField({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: -9999, y: -9999 });
-  const animationRef = useRef<number>(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+  const isDarkRef = useRef(false);
+  const timeRef = useRef(0);
 
-  const initParticles = useCallback((width: number, height: number) => {
-    const config = DENSITY_MAP[density];
-    const particles: Particle[] = [];
-    for (let i = 0; i < config.particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        radius: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.5 + 0.3,
-      });
+  const handleResize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = parent.clientWidth;
+    const h = parent.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+
+    // Re-scatter particles if canvas just initialized
+    if (particlesRef.current.length === 0) {
+      particlesRef.current = createParticles(w, h);
     }
-    return particles;
-  }, [density]);
+  }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Handle device pixel ratio
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const resize = () => {
-      const rect = container.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
-      ctx.scale(dpr, dpr);
-      return { width: rect.width, height: rect.height };
-    };
-
-    const { width, height } = resize();
-    particlesRef.current = initParticles(width, height);
-
-    // Mouse tracking
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
+    // Track mouse
+    const handleMouse = (e: MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
       mouseRef.current = {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
@@ -89,73 +89,110 @@ export function ParticleField({
       mouseRef.current = { x: -9999, y: -9999 };
     };
 
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("mousemove", handleMouse);
+    canvasRef.current?.addEventListener("mouseleave", handleMouseLeave);
 
-    // Resize observer
-    const observer = new ResizeObserver(() => {
-      resize();
+    // Observe theme changes
+    const observer = new MutationObserver(() => {
+      const theme = document.documentElement.getAttribute("data-theme");
+      isDarkRef.current = theme === "dark";
     });
-    observer.observe(container);
-
-    // Determine dark mode for color adaptation
-    const isDark = () => {
-      return document.documentElement.classList.contains("dark") ||
-        document.documentElement.getAttribute("data-theme") === "dark";
-    };
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme", "class"],
+    });
+    isDarkRef.current =
+      document.documentElement.getAttribute("data-theme") === "dark" ||
+      document.documentElement.classList.contains("dark");
 
     // Animation loop
-    const config = DENSITY_MAP[density];
     const animate = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = canvas.width / dpr;
       const h = canvas.height / dpr;
-      ctx.clearRect(0, 0, w, h);
-
-      const particles = particlesRef.current;
+      const dark = isDarkRef.current;
       const mouse = mouseRef.current;
+      const particles = particlesRef.current;
+
+      timeRef.current += 0.008;
+      const t = timeRef.current;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
 
       // Update particles
       for (const p of particles) {
+        // Spring back to anchor
+        const dx = p.anchorX - p.x;
+        const dy = p.anchorY - p.y;
+        p.vx += dx * SPRING_STRENGTH;
+        p.vy += dy * SPRING_STRENGTH;
+
         // Mouse repulsion
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouseRadius && dist > 0) {
-          const force = (mouseRadius - dist) / mouseRadius * mouseForce;
-          p.vx += (dx / dist) * force;
-          p.vy += (dy / dist) * force;
+        const mx = p.x - mouse.x;
+        const my = p.y - mouse.y;
+        const mDist = Math.sqrt(mx * mx + my * my);
+        if (mDist < MOUSE_RADIUS && mDist > 1) {
+          const force = MOUSE_FORCE / (mDist * mDist);
+          p.vx += (mx / mDist) * force;
+          p.vy += (my / mDist) * force;
         }
 
+        // Gentle drift oscillation
+        p.vx += Math.sin(t + p.phase) * 0.02;
+        p.vy += Math.cos(t * 0.7 + p.phase) * 0.02;
+
         // Damping
-        p.vx *= 0.99;
-        p.vy *= 0.99;
+        p.vx *= DAMPING;
+        p.vy *= DAMPING;
 
         // Move
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap around edges
-        if (p.x < -10) p.x = w + 10;
-        if (p.x > w + 10) p.x = -10;
-        if (p.y < -10) p.y = h + 10;
-        if (p.y > h + 10) p.y = -10;
+        // Soft boundary bounce
+        if (p.x < 0) {
+          p.x = 0;
+          p.vx *= -0.5;
+        }
+        if (p.x > w) {
+          p.x = w;
+          p.vx *= -0.5;
+        }
+        if (p.y < 0) {
+          p.y = 0;
+          p.vy *= -0.5;
+        }
+        if (p.y > h) {
+          p.y = h;
+          p.vy *= -0.5;
+        }
       }
 
       // Draw connections
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < config.maxDistance) {
-            const opacity = (1 - dist / config.maxDistance) * 0.15;
+          const a = particles[i];
+          const b = particles[j];
+          const ddx = a.x - b.x;
+          const ddy = a.y - b.y;
+          const dist = Math.sqrt(ddx * ddx + ddy * ddy);
+          if (dist < CONNECT_DIST) {
+            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.35;
             ctx.beginPath();
-            ctx.strokeStyle = isDark()
-              ? `rgba(91, 142, 249, ${opacity})`
-              : `rgba(47, 109, 246, ${opacity * 0.5})`;
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            if (dark) {
+              ctx.strokeStyle = `rgba(140, 180, 255, ${lineAlpha})`;
+            } else {
+              ctx.strokeStyle = `rgba(47, 109, 246, ${lineAlpha * 0.5})`;
+            }
             ctx.lineWidth = 0.5;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
             ctx.stroke();
           }
         }
@@ -163,34 +200,79 @@ export function ParticleField({
 
       // Draw particles
       for (const p of particles) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = isDark()
-          ? `rgba(180, 200, 240, ${p.opacity * 0.7})`
-          : color.replace("0.6", String(p.opacity * 0.5));
-        ctx.fill();
+        // Displacement from anchor → visual excitement
+        const disp = Math.sqrt(
+          (p.x - p.anchorX) ** 2 + (p.y - p.anchorY) ** 2,
+        );
+        const excitement = Math.min(disp / 60, 1);
+
+        if (dark) {
+          // Glow effect in dark mode
+          const glowRadius = p.radius * (2 + excitement * 3);
+          const gradient = ctx.createRadialGradient(
+            p.x,
+            p.y,
+            0,
+            p.x,
+            p.y,
+            glowRadius,
+          );
+          gradient.addColorStop(
+            0,
+            `rgba(140, 190, 255, ${p.alpha * (0.6 + excitement * 0.4)})`,
+          );
+          gradient.addColorStop(0.4, `rgba(91, 142, 249, ${p.alpha * 0.3})`);
+          gradient.addColorStop(1, `rgba(91, 142, 249, 0)`);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2);
+          ctx.fillStyle = gradient;
+          ctx.fill();
+
+          // Core dot
+          ctx.beginPath();
+          ctx.arc(
+            p.x,
+            p.y,
+            p.radius * (0.8 + excitement * 0.4),
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle = `rgba(200, 220, 255, ${p.alpha * (0.7 + excitement * 0.3)})`;
+          ctx.fill();
+        } else {
+          // Light mode — subtle dots
+          ctx.beginPath();
+          ctx.arc(
+            p.x,
+            p.y,
+            p.radius * (0.8 + excitement * 0.3),
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle = `rgba(47, 109, 246, ${p.alpha * (0.2 + excitement * 0.25)})`;
+          ctx.fill();
+        }
       }
 
-      animationRef.current = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    rafRef.current = requestAnimationFrame(animate);
 
     return () => {
-      cancelAnimationFrame(animationRef.current);
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouse);
       observer.disconnect();
     };
-  }, [density, color, lineColor, mouseRadius, mouseForce, initParticles]);
+  }, [handleResize]);
 
   return (
-    <div ref={containerRef} className="particle-field">
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ pointerEvents: "none" }}
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      className={className}
+      style={{ display: "block", pointerEvents: "none" }}
+      aria-hidden="true"
+    />
   );
 }
