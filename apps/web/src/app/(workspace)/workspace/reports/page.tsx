@@ -121,9 +121,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
     <>
       {/* Charts section */}
       <div className="grid gap-3 lg:grid-cols-2" id="report-charts">
-        <section className="border border-border bg-card">
+        <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.aucDistribution}
             </h2>
           </div>
@@ -138,9 +138,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
           </div>
         </section>
 
-        <section className="border border-border bg-card">
+        <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.rocCurve}
             </h2>
           </div>
@@ -149,9 +149,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
           </div>
         </section>
 
-        <section className="border border-border bg-card">
+        <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.riskDistribution}
             </h2>
           </div>
@@ -160,9 +160,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
           </div>
         </section>
 
-        <section className="border border-border bg-card">
+        <section className="rounded-lg border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.attackComparison}
             </h2>
           </div>
@@ -174,9 +174,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
 
       {/* Coverage gaps visualization — 2.4.4 */}
       {gapData.length > 0 && (
-        <section className="border border-border bg-card" id="coverage-gaps">
+        <section className="rounded-lg border border-border bg-card" id="coverage-gaps">
           <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.coverageGaps}
             </h2>
             <span className="text-xs text-[color:var(--warning)]">
@@ -207,9 +207,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
         </section>
       )}
 
-      <section className="border border-border bg-card" id="report-table">
+      <section className="rounded-lg border border-border bg-card" id="report-table">
         <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {copy.sections.auditResults}
           </h2>
         </div>
