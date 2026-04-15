@@ -9,6 +9,7 @@ import type { DocsContent, DocsPage, DocsSection } from "./docs-data";
 import { getDocsContent, getDocsPage } from "./docs-data";
 import { Tabs } from "@/components/tabs";
 import { DocsSearch } from "@/components/docs-search";
+import { BrandMark } from "@/components/brand-mark";
 
 type DocsHomeProps = {
   loggedIn: boolean;
@@ -140,46 +141,32 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       {/* Topbar */}
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-sm font-semibold text-[var(--color-text-primary)]">
-              DiffAudit
+          <div className="flex items-center gap-5">
+            <Link href="/" className="flex items-center gap-2" aria-label="DiffAudit Home">
+              <BrandMark compact />
+              <span className="hidden sm:inline text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)] border-l border-[var(--color-border-subtle)] pl-3 ml-1">
+                Docs
+              </span>
             </Link>
-            <nav className="hidden gap-4 sm:flex">
-              <Link href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+            <nav className="hidden gap-4 sm:flex ml-2">
+              <Link href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 {content.header.home}
               </Link>
-              <span className="text-sm font-medium text-[var(--color-text-primary)]">
+              <Link href="/#product" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 {content.header.docs}
-              </span>
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            {/* Dark mode toggle */}
-            <button
-              onClick={() => setDark(!dark)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {dark ? (
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <circle cx="12" cy="12" r="5"/>
-                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                </svg>
-              )}
-            </button>
-            {/* Search button — 2.3.1 */}
+            {/* Search button */}
             <button
               onClick={() => {
                 const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true });
                 window.dispatchEvent(event);
               }}
-              className="hidden sm:flex items-center gap-2 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-colors"
+              className="hidden sm:flex items-center gap-2 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-all"
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />
@@ -190,14 +177,14 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                 Ctrl+K
               </kbd>
             </button>
-            {!loggedIn && (
-              <a href="/login" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-                {content.header.signIn}
+            {loggedIn && (
+              <a href="/workspace" className="rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-all">
+                {content.header.openWorkspace}
               </a>
             )}
-            {loggedIn && (
-              <a href="/workspace" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-                {content.header.openWorkspace}
+            {!loggedIn && (
+              <a href="/login" className="rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all">
+                {content.header.signIn}
               </a>
             )}
           </div>
