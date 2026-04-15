@@ -35,7 +35,9 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
 
   // Preferences
   const [currentLocale, setCurrentLocale] = useState<Locale>(locale);
-  const [theme, setTheme] = useState<ThemeMode>("light");
+
+  // Theme — delegate to the shared useTheme hook so it syncs with topbar UserAvatar
+  const { theme, setTheme: setSharedTheme } = useTheme();
 
   // Runtime config
   const [runtimeHost, setRuntimeHost] = useState("http://127.0.0.1");
@@ -68,18 +70,6 @@ export function SettingsClient({ locale, initialUsername }: SettingsClientProps)
     try {
       const savedLocale = getStoredLocale();
       setCurrentLocale(savedLocale);
-    } catch {}
-    try {
-      const savedTheme = window.localStorage.getItem(STORAGE_KEYS.THEME) as ThemeMode | null;
-      if (savedTheme) {
-        setTheme(savedTheme);
-        const resolved = savedTheme === "system"
-          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-          : savedTheme;
-        document.documentElement.setAttribute("data-theme", resolved);
-        document.documentElement.classList.toggle("dark", resolved === "dark");
-        document.documentElement.style.colorScheme = resolved;
-      }
     } catch {}
   }, []);
 

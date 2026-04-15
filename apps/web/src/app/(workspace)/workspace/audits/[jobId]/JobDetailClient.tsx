@@ -206,7 +206,7 @@ export function JobDetailClient({
       {/* Header: job ID + status badge */}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="mono text-sm font-medium">{job.job_id}</span>
-        <StatusBadge tone={getStatusTone(job.status as any)} compact>
+        <StatusBadge tone={getStatusTone(job.status)} compact>
           {statusLabel(job.status, copy.jobDetail.statusLabels)}
         </StatusBadge>
         {(job.status === "queued" || job.status === "running") && (

@@ -167,28 +167,29 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       {/* Charts grid - 6 cards in 3x2 layout */}
       <div className="grid gap-3 lg:grid-cols-3" role="region" aria-label="Dashboard overview">
         {/* KPI Summary Card */}
-        <section className="card-animate rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
+          <div className="h-0.5 bg-gradient-to-r from-[color:var(--accent-blue)] via-[color:var(--success)] to-[color:var(--warning)]" />
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.overview || "系统概览"}
             </h2>
           </div>
           <div className="p-3 grid grid-cols-2 gap-3">
-            <div>
+            <div className="rounded-md bg-[color:var(--accent-blue)]/5 p-2.5">
               <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.liveContractsLabel}</div>
-              <div className="text-2xl font-bold leading-none">{activeContracts}</div>
+              <div className="text-2xl font-bold leading-none text-[color:var(--accent-blue)]">{activeContracts}</div>
             </div>
-            <div>
+            <div className="rounded-md bg-[color:var(--success)]/5 p-2.5">
               <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.defendedRowsLabel}</div>
-              <div className="text-2xl font-bold leading-none">{defendedRows}</div>
+              <div className="text-2xl font-bold leading-none text-[color:var(--success)]">{defendedRows}</div>
             </div>
-            <div>
+            <div className="rounded-md bg-[color:var(--warning)]/5 p-2.5">
               <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.avgAucLabel}</div>
-              <div className="text-2xl font-bold leading-none">{avgAuc}</div>
+              <div className="text-2xl font-bold leading-none text-[color:var(--warning)]">{avgAuc}</div>
             </div>
-            <div>
+            <div className="rounded-md bg-[color:var(--info)]/5 p-2.5">
               <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.defenseEvaluatedLabel}</div>
-              <div className="text-2xl font-bold leading-none">{totalRows}</div>
+              <div className="text-2xl font-bold leading-none text-[color:var(--info)]">{totalRows}</div>
             </div>
           </div>
         </section>
@@ -206,7 +207,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
 
         {/* Attack Comparison */}
-        <section className="rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
+          <div className="h-0.5 bg-gradient-to-r from-[color:var(--warning)] to-[color:var(--accent-coral)]" />
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.attackComparison}
@@ -218,7 +220,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
 
         {/* ROC Curve */}
-        <section className="rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
+          <div className="h-0.5 bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--info)]" />
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.rocCurve}
@@ -230,7 +233,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </section>
 
         {/* AUC Distribution */}
-        <section className="rounded-lg border border-border bg-card">
+        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
+          <div className="h-0.5 bg-gradient-to-r from-[color:var(--success)] to-[color:var(--accent-blue)]" />
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.sections.chartTitles.aucDistribution}
@@ -249,7 +253,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         {/* Risk Distribution */}
         {totalRisk > 0 && (
-          <section className="rounded-lg border border-border bg-card">
+          <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
+            <div className="h-0.5 bg-gradient-to-r from-[color:var(--risk-high)] via-[color:var(--risk-medium)] to-[color:var(--risk-low)]" />
             <div className="border-b border-border bg-muted/20 px-3 py-2">
               <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.chartTitles.riskDistribution}

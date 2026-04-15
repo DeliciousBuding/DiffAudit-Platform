@@ -123,7 +123,7 @@ export function UserAvatar() {
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-1.5 w-52 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50">
+        <div className="absolute right-0 top-full mt-1.5 w-64 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50">
           {/* User info header */}
           <div className="px-3 py-2.5 border-b border-border bg-muted/10">
             <div className="flex items-center gap-2">

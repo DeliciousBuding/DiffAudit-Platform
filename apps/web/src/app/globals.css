@@ -905,7 +905,8 @@ select {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border);
-  background: var(--palette-grey-0);
+  background:
+    linear-gradient(180deg, var(--palette-grey-0) 0%, var(--palette-grey-10) 100%);
 }
 
 .workspace-sidebar-header {
@@ -915,6 +916,7 @@ select {
   min-height: 72px;
   display: flex;
   align-items: center;
+  background: linear-gradient(135deg, rgba(47, 109, 246, 0.03), transparent 80%);
 }
 
 .workspace-sidebar-body {
@@ -942,6 +944,7 @@ select {
   flex-shrink: 0;
   border-top: 1px solid var(--border);
   padding-top: 4px;
+  background: linear-gradient(0deg, rgba(47, 109, 246, 0.02), transparent 100%);
 }
 
 .workspace-sidebar-link {
