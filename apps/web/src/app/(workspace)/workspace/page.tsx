@@ -370,15 +370,31 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            <Link
-              href="/workspace/audits/new"
-              className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90"
-            >
-              {localeData.emptyWorkspace.cta}
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <Link
+                href="/workspace/audits/new"
+                className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90"
+              >
+                {localeData.emptyWorkspace.cta}
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <button
+                onClick={() => {
+                  document.cookie = "platform-demo-mode=1; path=/; max-age=31536000";
+                  window.location.reload();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-transparent px-4 py-2 text-xs font-semibold text-[color:var(--accent-blue)] transition-all hover:bg-[color:var(--accent-blue)]/10"
+              >
+                {localeData.emptyWorkspace.demoCta}
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">{localeData.emptyWorkspace.demoNote}</p>
           </div>
         </section>
       ) : (

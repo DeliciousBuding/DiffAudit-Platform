@@ -238,7 +238,7 @@ export const WORKSPACE_COPY: Record<
       };
     };
     emptyWorkspace: {
-      title: string; description: string; cta: string;
+      title: string; description: string; cta: string; demoCta: string; demoNote: string;
       steps: Array<{ step: string; title: string; desc: string }>;
     };
     reports: {
@@ -698,6 +698,8 @@ export const WORKSPACE_COPY: Record<
       title: "No audit results yet.",
       description: "DiffAudit discovers privacy risks in ML models through three attack tracks: black-box, gray-box, and white-box.",
       cta: "Create your first audit",
+      demoCta: "Try demo mode",
+      demoNote: "Explore with pre-loaded sample data",
       steps: [
         { step: "1", title: "Choose attack track", desc: "Black-box (recommended), gray-box, or white-box." },
         { step: "2", title: "Select target model", desc: "Pick a model from the contract directory to audit." },
@@ -1229,6 +1231,8 @@ export const WORKSPACE_COPY: Record<
       title: "还没有审计结果。",
       description: "DiffAudit 通过三条攻击线（黑盒、灰盒、白盒）帮助你发现机器学习模型中的隐私风险。",
       cta: "创建第一个审计任务",
+      demoCta: "试用演示模式",
+      demoNote: "使用预加载的示例数据体验系统",
       steps: [
         { step: "1", title: "选择攻击方式", desc: "黑盒（推荐起点）、灰盒或白盒。" },
         { step: "2", title: "选择目标模型", desc: "从合同目录中挑选要审计的模型。" },
