@@ -175,7 +175,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
           // API unavailable, show error
-          setError(copy.taskTable.apiError || "API unavailable");
+          setError("API unavailable");
           setJobs([]);
         }
       } finally {
