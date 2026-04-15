@@ -10,6 +10,7 @@ import {
   type Locale,
 } from "@/components/language-picker";
 import { ParticleField } from "@/components/particle-field";
+import { UserAvatar } from "@/components/user-avatar";
 
 type NavLink = {
   title: string;
@@ -665,9 +666,12 @@ export function MarketingHome({
           <div className="flex items-center gap-3">
             <LanguagePicker value={locale} onChange={setLocale} />
             {loggedIn ? (
-              <Link href={workbenchUrl} className="portal-pill-sm portal-pill-sm-primary">
-                {copy.header.openWorkspace}
-              </Link>
+              <>
+                <Link href={workbenchUrl} className="portal-pill-sm portal-pill-sm-primary hidden sm:inline-flex">
+                  {copy.header.openWorkspace}
+                </Link>
+                <UserAvatar />
+              </>
             ) : (
               <Link href="/login" className="portal-pill-sm portal-pill-sm-primary">
                 {copy.header.signIn}
