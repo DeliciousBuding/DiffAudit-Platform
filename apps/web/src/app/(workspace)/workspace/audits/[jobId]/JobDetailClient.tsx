@@ -104,9 +104,9 @@ export function JobDetailClient({
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
-  const fetchJob = useCallback(async () => {
+  const fetchJob = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch(`/api/v1/audit/jobs/${jobId}`);
+      const res = await fetch(`/api/v1/audit/jobs/${jobId}`, { signal });
       if (!res.ok) {
         setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed} (HTTP ${res.status})`);
         return null;
@@ -116,7 +116,10 @@ export function JobDetailClient({
       setJob(jobData);
       setFetchError(null);
       return jobData;
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return null;
+      }
       setFetchError(WORKSPACE_COPY[locale].jobDetail.labels.apiUnreachable);
       return null;
     } finally {
@@ -142,12 +145,11 @@ export function JobDetailClient({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loop() {
-      if (cancelled) return;
-      const current = await fetchJob();
-      if (cancelled) return;
+      const current = await fetchJob(controller.signal);
+      if (controller.signal.aborted) return;
       if (current && (current.status === "queued" || current.status === "running")) {
         timerRef.current = setTimeout(loop, 3000);
       }
@@ -156,7 +158,7 @@ export function JobDetailClient({
     void loop();
 
     return () => {
-      cancelled = true;
+      controller.abort();
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [fetchJob]);
