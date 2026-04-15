@@ -77,7 +77,7 @@ function backendBaseUrl() {
 
 function formatRuntimeLabel(entry: CatalogEntryPayload) {
   if (!entry.backend) {
-    return "unassigned backend";
+    return "unassigned runtime";
   }
 
   return entry.scheduler ? `${entry.backend} / ${entry.scheduler}` : entry.backend;
@@ -95,7 +95,7 @@ function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
     runtimeLabel: formatRuntimeLabel(entry),
     bestWorkspace: entry.best_workspace ?? "pending workspace",
     bestSummaryPath: entry.best_summary_path ?? "pending summary",
-    systemGap: entry.system_gap ?? "当前没有额外系统缺口说明。",
+    systemGap: entry.system_gap ?? "pending system gap explanation",
   };
 }
 

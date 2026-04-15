@@ -296,7 +296,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
-                  {locale === "zh-CN" ? "在 GitHub 上编辑此页" : "Edit this page on GitHub"}
+                  {content.header.editPage}
                 </a>
               </div>
 
@@ -312,7 +312,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                         <path d="M15 18l-6-6 6-6" />
                       </svg>
                       <div>
-                        <div className="text-[10px] text-[var(--color-text-muted)]">{locale === "zh-CN" ? "上一页" : "Previous"}</div>
+                        <div className="text-[10px] text-[var(--color-text-muted)]">{content.header.previousPage}</div>
                         <div className="text-sm font-medium text-[var(--color-text-primary)]">{prevPage.navLabel}</div>
                       </div>
                     </button>
@@ -323,7 +323,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                       className="flex flex-1 items-center justify-end gap-3 rounded-lg border border-[var(--color-border-subtle)] p-4 text-right transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
                     >
                       <div>
-                        <div className="text-[10px] text-[var(--color-text-muted)]">{locale === "zh-CN" ? "下一页" : "Next"}</div>
+                        <div className="text-[10px] text-[var(--color-text-muted)]">{content.header.nextPage}</div>
                         <div className="text-sm font-medium text-[var(--color-text-primary)]">{nextPage.navLabel}</div>
                       </div>
                       <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" strokeWidth={2}>

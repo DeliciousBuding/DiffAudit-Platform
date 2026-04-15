@@ -49,6 +49,13 @@ export type DocsContent = {
     copyPage: string;
     copied: string;
     brandAriaLabel: string;
+    searchNoResults: string;
+    searchNavigate: string;
+    searchOpen: string;
+    searchClose: string;
+    editPage: string;
+    previousPage: string;
+    nextPage: string;
   };
   groups: string[];
   pages: DocsPage[];
@@ -66,6 +73,13 @@ function zhContent(): DocsContent {
       copyPage: "复制页面",
       copied: "已复制",
       brandAriaLabel: "前往 DiffAudit 首页",
+      searchNoResults: "没有找到关于",
+      searchNavigate: "导航",
+      searchOpen: "打开",
+      searchClose: "关闭",
+      editPage: "在 GitHub 上编辑此页",
+      previousPage: "上一页",
+      nextPage: "下一页",
     },
     groups: ["开始使用", "产品结构", "运行与接入", "参考"],
     pages: [
@@ -341,6 +355,13 @@ function enContent(): DocsContent {
       copyPage: "Copy page",
       copied: "Copied",
       brandAriaLabel: "Go to the DiffAudit homepage",
+      searchNoResults: "No results for",
+      searchNavigate: "navigate",
+      searchOpen: "open",
+      searchClose: "close",
+      editPage: "Edit this page on GitHub",
+      previousPage: "Previous",
+      nextPage: "Next",
     },
     groups: ["Get started", "Product structure", "Runtime & integration", "Reference"],
     pages: [

@@ -1,38 +1,44 @@
 "use client";
 
 import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import type { Locale } from "@/components/language-picker";
 
 type RiskBadgeProps = {
   auc: number;
   label?: string;
   compact?: boolean;
+  locale?: Locale;
 };
 
 const LEVEL_CONFIG: Record<
   RiskLevel,
-  { text: string; color: string; bg: string }
+  { color: string; bg: string }
 > = {
   high: {
-    text: "High risk",
     color: "var(--risk-high)",
     bg: "var(--risk-high-bg)",
   },
   medium: {
-    text: "Medium risk",
     color: "var(--risk-medium)",
     bg: "var(--risk-medium-bg)",
   },
   low: {
-    text: "Low risk",
     color: "var(--risk-low)",
     bg: "var(--risk-low-bg)",
   },
 };
 
-export function RiskBadge({ auc, label, compact = false }: RiskBadgeProps) {
+export function RiskBadge({ auc, label, compact = false, locale = "en-US" }: RiskBadgeProps) {
   const level = classifyRisk(auc);
   const config = LEVEL_CONFIG[level];
-  const displayLabel = label ?? config.text;
+  const copy = WORKSPACE_COPY[locale].workspace.riskBadgeLabels;
+  const fallbackLabels: Record<RiskLevel, string> = {
+    high: copy.high,
+    medium: copy.medium,
+    low: copy.low,
+  };
+  const displayLabel = label ?? fallbackLabels[level];
 
   if (compact) {
     return (

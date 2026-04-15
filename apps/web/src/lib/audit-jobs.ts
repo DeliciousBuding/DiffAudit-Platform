@@ -69,7 +69,7 @@ function statusTone(status: string): AuditJobViewModel["statusTone"] {
 
 function formatUpdatedAt(value: string | null | undefined) {
   if (!value) {
-    return "刚刚更新";
+    return "just now";
   }
 
   const date = new Date(value);
@@ -77,13 +77,12 @@ function formatUpdatedAt(value: string | null | undefined) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("zh-CN", {
+  return new Intl.DateTimeFormat("en-US", {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "Asia/Hong_Kong",
   }).format(date);
 }
 
@@ -103,7 +102,7 @@ export function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[]
       contractKey: job.contract_key ?? "unknown contract",
       workspaceName: job.workspace_name ?? "pending workspace",
       updatedAtLabel: formatUpdatedAt(job.updated_at),
-      summaryPath: job.summary_path ?? "运行完成后会显示 summary 路径。",
+      summaryPath: job.summary_path ?? "Summary path will appear after the run completes.",
       error: job.error ?? "",
     }));
 }

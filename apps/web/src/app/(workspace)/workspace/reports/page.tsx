@@ -99,9 +99,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   }
   const dims = copy.chartDimensions;
   const riskDistData = [
-    { key: "high", label: riskLabel("high", locale === "zh-CN" ? "zh-CN" : "en"), count: riskCounts.high },
-    { key: "medium", label: riskLabel("medium", locale === "zh-CN" ? "zh-CN" : "en"), count: riskCounts.medium },
-    { key: "low", label: riskLabel("low", locale === "zh-CN" ? "zh-CN" : "en"), count: riskCounts.low },
+    { key: "high", label: riskLabel("high", locale), count: riskCounts.high },
+    { key: "medium", label: riskLabel("medium", locale), count: riskCounts.medium },
+    { key: "low", label: riskLabel("low", locale), count: riskCounts.low },
   ];
 
   const attackComparisonData = [
@@ -248,7 +248,8 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                     <td className="px-3 py-2">
                       <RiskBadge
                         auc={parseFloat(row.aucLabel)}
-                        label={riskLabel(row.riskLevel, locale === "zh-CN" ? "zh-CN" : "en")}
+                        label={riskLabel(row.riskLevel, locale)}
+                        locale={locale}
                       />
                     </td>
                   </tr>

@@ -132,7 +132,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
           <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
             {results.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
-                No results for "{query}"
+                {content.header.searchNoResults} "{query}"
               </div>
             ) : (
               <div className="space-y-1">
@@ -191,15 +191,15 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
         <div className="border-t border-[var(--color-border-subtle)] px-4 py-2 flex items-center gap-4 text-[10px] text-[var(--color-text-muted)]">
           <span className="flex items-center gap-1">
             <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-1 py-0.5 font-mono">↑↓</kbd>
-            navigate
+            {content.header.searchNavigate}
           </span>
           <span className="flex items-center gap-1">
             <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-1 py-0.5 font-mono">↵</kbd>
-            open
+            {content.header.searchOpen}
           </span>
           <span className="flex items-center gap-1">
             <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-1 py-0.5 font-mono">esc</kbd>
-            close
+            {content.header.searchClose}
           </span>
         </div>
       </div>

@@ -100,9 +100,9 @@ export function summarizeAttackDefenseTable(rows: AttackDefenseRowPayload[]) {
       aucLabel: formatMetric(row.auc),
       asrLabel: formatMetric(row.asr),
       tprLabel: formatMetric(row.tpr_at_1pct_fpr),
-      qualityCost: row.quality_cost ?? "未提供运行成本说明。",
+      qualityCost: row.quality_cost ?? "No cost information provided.",
       evidenceLevel: row.evidence_level ?? "unknown",
-      note: row.note ?? "未提供补充说明。",
+      note: row.note ?? "No additional notes.",
       riskLevel: classifyRisk(row.auc ?? 0),
     })),
   } satisfies AttackDefenseTableViewModel;
