@@ -3,6 +3,10 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
+
+// Cache RSC responses for 60s — demo data doesn't change during a session
+export const revalidate = 60;
+
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";

@@ -18,6 +18,9 @@ import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
 
+// Cache RSC responses for 60s — demo data doesn't change during a session
+export const revalidate = 60;
+
 /** Generate synthetic ROC curve points given a target AUC */
 function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
   const points: { fpr: number; tpr: number }[] = [{ fpr: 0, tpr: 0 }];
