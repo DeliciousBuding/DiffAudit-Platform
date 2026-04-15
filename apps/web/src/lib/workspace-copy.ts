@@ -8,6 +8,9 @@ export const WORKSPACE_COPY: Record<
       runtimeChecking: string;
       runtimeConnected: string;
       runtimeDisconnected: string;
+      localApiChecking: string;
+      localApiConnected: string;
+      localApiDisconnected: string;
       desktopNavAriaLabel: string;
       mobileNavAriaLabel: string;
       githubTitle: string;
@@ -316,6 +319,9 @@ export const WORKSPACE_COPY: Record<
       runtimeChecking: "Runtime checking",
       runtimeConnected: "Runtime connected",
       runtimeDisconnected: "Runtime disconnected",
+      localApiChecking: "Checking Runtime",
+      localApiConnected: "Runtime OK",
+      localApiDisconnected: "Runtime unreachable",
       desktopNavAriaLabel: "Workspace navigation",
       mobileNavAriaLabel: "Mobile navigation",
       githubTitle: "GitHub",
@@ -757,6 +763,9 @@ export const WORKSPACE_COPY: Record<
       runtimeChecking: "Runtime 检查中",
       runtimeConnected: "Runtime 已连接",
       runtimeDisconnected: "Runtime 未连接",
+      localApiChecking: "检查 Runtime",
+      localApiConnected: "Runtime 正常",
+      localApiDisconnected: "Runtime 无法访问",
       desktopNavAriaLabel: "工作台导航",
       mobileNavAriaLabel: "移动端导航",
       githubTitle: "GitHub",
