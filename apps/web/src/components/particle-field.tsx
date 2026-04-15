@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 
 // ─── Config ────────────────────────────────────────────────────
-const PARTICLE_COUNT = 400;
+const PARTICLE_COUNT = 800;
 const CONNECT_DIST = 90;
 const MOUSE_RADIUS = 200;
 const MOUSE_FORCE = 12000;
@@ -176,7 +176,14 @@ export function ParticleField({ className }: { className?: string }) {
           const distSq = ddx * ddx + ddy * ddy;
           if (distSq < CONNECT_DIST * CONNECT_DIST) {
             const dist = Math.sqrt(distSq);
-            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.3;
+            // Center-fade: lines near hero center become transparent
+            const midX = (a.x + b.x) / 2;
+            const midY = (a.y + b.y) / 2;
+            const cxDist = Math.abs(midX - w / 2) / (w / 2);
+            const cyDist = Math.abs(midY - h / 2) / (h / 2);
+            const centerFade = Math.min(1, Math.max(cxDist, cyDist) * 1.8);
+            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.3 * centerFade;
+            if (lineAlpha < 0.01) continue;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
@@ -193,11 +200,18 @@ export function ParticleField({ className }: { className?: string }) {
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         const excitement = Math.min(speed / 2, 1);
 
+        // Center-fade: particles near hero center area are more transparent
+        const cxDist = Math.abs(p.x - w / 2) / (w / 2);
+        const cyDist = Math.abs(p.y - h / 2) / (h / 2);
+        const centerFade = Math.min(1, Math.max(cxDist, cyDist) * 1.6);
+        const fadedAlpha = p.alpha * centerFade;
+        if (fadedAlpha < 0.02) continue;
+
         if (dark) {
           const glowR = p.radius * (2 + excitement * 3);
           const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
-          grad.addColorStop(0, `rgba(140, 190, 255, ${p.alpha * (0.6 + excitement * 0.4)})`);
-          grad.addColorStop(0.4, `rgba(91, 142, 249, ${p.alpha * 0.25})`);
+          grad.addColorStop(0, `rgba(140, 190, 255, ${fadedAlpha * (0.6 + excitement * 0.4)})`);
+          grad.addColorStop(0.4, `rgba(91, 142, 249, ${fadedAlpha * 0.25})`);
           grad.addColorStop(1, `rgba(91, 142, 249, 0)`);
           ctx.beginPath();
           ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
@@ -206,13 +220,13 @@ export function ParticleField({ className }: { className?: string }) {
 
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius * (0.8 + excitement * 0.5), 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(200, 220, 255, ${p.alpha * (0.7 + excitement * 0.3)})`;
+          ctx.fillStyle = `rgba(200, 220, 255, ${fadedAlpha * (0.7 + excitement * 0.3)})`;
           ctx.fill();
         } else {
           const r = p.radius * (0.7 + excitement * 0.5);
           ctx.beginPath();
           ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 0, 0, ${p.alpha * (0.25 + excitement * 0.3)})`;
+          ctx.fillStyle = `rgba(0, 0, 0, ${fadedAlpha * (0.25 + excitement * 0.3)})`;
           ctx.fill();
         }
       }
