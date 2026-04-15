@@ -325,10 +325,14 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <span className="text-sm font-medium">{model.label}</span>
                           <StatusBadge
-                            tone={model.availability === "ready" ? "success" : "warning"}
+                            tone={model.availability === "ready" ? "success" : model.availability === "partial" ? "warning" : "neutral"}
                             compact
                           >
-                            {model.availability}
+                            {model.availability === "ready"
+                              ? labels.availabilityReady
+                              : model.availability === "partial"
+                                ? labels.availabilityPartial
+                                : labels.availabilityDisabled}
                           </StatusBadge>
                         </div>
                         <div className="mono text-[10px] text-muted-foreground">{model.contractKey}</div>

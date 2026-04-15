@@ -193,6 +193,9 @@ export const WORKSPACE_COPY: Record<
         successBody: string;
         goToTasks: string;
         disabled: string;
+        availabilityReady: string;
+        availabilityPartial: string;
+        availabilityDisabled: string;
       };
       recommendedConfig: {
         blackBoxTitle: string; blackBoxRounds: string; blackBoxBatch: string; blackBoxAdaptive: string;
@@ -544,7 +547,7 @@ export const WORKSPACE_COPY: Record<
         grayBoxDesc: "Launch privacy inference attacks using intermediate layer representations. Stronger signal when you can access model features.",
         grayBoxNote: "Stronger signal with intermediate feature access.",
         whiteBoxTitle: "White-box / GSA",
-        whiteBoxDesc: "Full access to model weights and gradients — the most powerful attack method. Uncovers the most隐蔽 privacy leaks.",
+        whiteBoxDesc: "Full access to model weights and gradients — the most powerful attack method. Uncovers the most hidden privacy leaks.",
         whiteBoxNote: "Requires full model weights and gradient access.",
       },
       labels: {
@@ -571,6 +574,9 @@ export const WORKSPACE_COPY: Record<
         successBody: "Your audit job has been queued. Redirecting to the task list.",
         goToTasks: "Go to task list",
         disabled: "Not available",
+        availabilityReady: "Ready",
+        availabilityPartial: "Partial",
+        availabilityDisabled: "Disabled",
       },
       recommendedConfig: {
         blackBoxTitle: "Recommended: Black-box Attack",
@@ -1072,6 +1078,9 @@ export const WORKSPACE_COPY: Record<
         successBody: "审计任务已加入队列，正在跳转到任务列表。",
         goToTasks: "前往任务列表",
         disabled: "暂不可用",
+        availabilityReady: "就绪",
+        availabilityPartial: "部分可用",
+        availabilityDisabled: "已禁用",
       },
       recommendedConfig: {
         blackBoxTitle: "黑盒攻击推荐配置",
