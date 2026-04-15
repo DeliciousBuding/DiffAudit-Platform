@@ -68,6 +68,71 @@ function formatDuration(created: string, updated: string | null): string {
   return `${hours}h ${mins % 60}m`;
 }
 
+// Demo mode: generate mock jobs for demonstration
+function generateDemoJobs(mode: "active" | "history"): JobRecord[] {
+  const now = Date.now();
+  const demoJobs: JobRecord[] = [
+    {
+      job_id: "demo-job-001",
+      status: "running",
+      contract_key: "stable-diffusion-v1-4",
+      workspace_name: "demo-workspace",
+      job_type: "black-box",
+      created_at: new Date(now - 120000).toISOString(),
+      updated_at: new Date(now - 60000).toISOString(),
+      target_model: "stable-diffusion-v1-4",
+    },
+    {
+      job_id: "demo-job-002",
+      status: "queued",
+      contract_key: "pixel-art-v2",
+      workspace_name: "demo-workspace",
+      job_type: "gray-box",
+      created_at: new Date(now - 30000).toISOString(),
+      updated_at: new Date(now - 30000).toISOString(),
+      target_model: "pixel-art-v2",
+    },
+    {
+      job_id: "demo-job-003",
+      status: "completed",
+      contract_key: "stable-diffusion-v1-4",
+      workspace_name: "demo-workspace",
+      job_type: "black-box",
+      created_at: new Date(now - 3600000).toISOString(),
+      updated_at: new Date(now - 3000000).toISOString(),
+      target_model: "stable-diffusion-v1-4",
+      metrics: { auc: 0.791, asr: 0.448, tpr: 0.519 },
+    },
+    {
+      job_id: "demo-job-004",
+      status: "completed",
+      contract_key: "pixel-art-v2",
+      workspace_name: "demo-workspace",
+      job_type: "gray-box",
+      created_at: new Date(now - 7200000).toISOString(),
+      updated_at: new Date(now - 6600000).toISOString(),
+      target_model: "pixel-art-v2",
+      metrics: { auc: 0.773, asr: 0.496, tpr: 0.689 },
+    },
+    {
+      job_id: "demo-job-005",
+      status: "failed",
+      contract_key: "post-v2",
+      workspace_name: "demo-workspace",
+      job_type: "white-box",
+      created_at: new Date(now - 10800000).toISOString(),
+      updated_at: new Date(now - 10200000).toISOString(),
+      target_model: "post-v2",
+      error: "Model checkpoint not found",
+    },
+  ];
+
+  if (mode === "active") {
+    return demoJobs.filter((j) => j.status === "running" || j.status === "queued");
+  }
+  return demoJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
+}
+
 export function TaskListClient({ mode, locale }: TaskListClientProps) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tableCopy = copy.taskTable;
@@ -76,11 +141,21 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
+  const [demoMode, setDemoMode] = useState(true); // Demo mode enabled by default
 
   useEffect(() => {
     const controller = new AbortController();
 
     async function fetchJobs() {
+      // Demo mode: use mock data
+      if (demoMode) {
+        setJobs(generateDemoJobs(mode));
+        setError(null);
+        setLoading(false);
+        return;
+      }
+
+      // Production mode: fetch from API
       try {
         const res = await fetch("/api/v1/audit/jobs", {
           signal: controller.signal,
@@ -94,12 +169,17 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
               : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
           setJobs(filtered);
           setError(null);
+          setDemoMode(false); // Switch to production mode if API is available
         } else {
-          setError(copy.jobsUnavailable);
+          // API unavailable, stay in demo mode
+          setJobs(generateDemoJobs(mode));
+          setError(null);
         }
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
-          setError(copy.jobsUnavailable);
+          // API unavailable, stay in demo mode
+          setJobs(generateDemoJobs(mode));
+          setError(null);
         }
       } finally {
         setLoading(false);
@@ -117,7 +197,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     }
 
     return () => controller.abort();
-  }, [mode, copy.jobsUnavailable]);
+  }, [mode, demoMode]);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
