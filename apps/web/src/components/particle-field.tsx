@@ -123,8 +123,11 @@ export function ParticleField({ className }: { className?: string }) {
       const CYCLE_MS = 18000;
       const start = Date.now() - 5000; 
 
-      const c1 = 1.70158;
-      const c3 = c1 + 1;
+      const c1_blow = 1.2; 
+      const c3_blow = c1_blow + 1;
+      
+      const c1_gather = 1.0; 
+      const c3_gather = c1_gather + 1;
 
       const draw = () => {
         const now = Date.now();
@@ -133,12 +136,16 @@ export function ParticleField({ className }: { className?: string }) {
         let noiseLevel = 0;
         if (t < 3500) {
            let progress = t / 3500;
-           noiseLevel = c3 * progress * progress * progress - c1 * progress * progress;
+           // use easeOutBack for blow away so it bounces at the OUTSIDE boundary!
+           let easedProgress = 1 + c3_blow * Math.pow(progress - 1, 3) + c1_blow * Math.pow(progress - 1, 2);
+           noiseLevel = easedProgress;
         } else if (t < 7500) {
            noiseLevel = 1;
-        } else if (t < 13000) {
-           let progress = (t - 7500) / 5500;
-           let easedProgress = 1 + c3 * Math.pow(progress - 1, 3) + c1 * Math.pow(progress - 1, 2);
+        } else if (t < 12000) {
+           // shortened back down to 4.5s
+           let progress = (t - 7500) / 4500;
+           // use easeOutBack but tweaked to bounce faster
+           let easedProgress = 1 + c3_gather * Math.pow(progress - 1, 3) + c1_gather * Math.pow(progress - 1, 2);
            noiseLevel = 1 - easedProgress; 
         } else {
            noiseLevel = 0;
