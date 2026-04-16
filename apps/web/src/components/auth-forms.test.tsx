@@ -31,6 +31,7 @@ describe("auth forms", () => {
         pageCopy={{
           oauthDivider: "Or continue with",
           passwordDivider: "Use password instead",
+          hidePasswordCta: "Hide password sign-in",
           registerLink: "New?",
           registerCta: "Create account",
           providerHint: "Provider hint",
@@ -45,7 +46,7 @@ describe("auth forms", () => {
 
     expect(markup).toContain("Continue with Google");
     expect(markup).toContain("Continue with GitHub");
-    expect(markup).toContain("Use password instead");
+    expect(markup).toContain("Sign in");
     expect(markup).toContain("/docs/privacy");
     expect(markup).toContain("/docs/terms");
     expect(markup).toContain("auth-provider-icon");

@@ -30,10 +30,10 @@ describe("AuthLayout", () => {
       await AuthLayout({ children: React.createElement("div", null, "auth-form") }),
     );
 
-    expect(markup).toContain("auth-layout-main");
-    expect(markup).toContain("auth-layout-stage");
-    expect(markup).toContain("auth-layout-shell");
+    expect(markup).toContain("min-h-[100svh]");
+    expect(markup).toContain("pointer-events-none");
     expect(markup).toContain("auth-form");
     expect(markup).toContain("data-theme-toggle");
+    expect(markup).toContain("data-language-picker");
   });
 });

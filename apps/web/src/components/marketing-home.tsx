@@ -254,9 +254,9 @@ const HOME_COPY: Record<
       },
     },
     hero: {
-      headline: "Audit diffusion models",
-      subheadline: "before they reach production.",
-      description: "Membership inference attack platform for privacy-aware AI compliance.",
+      headline: "探明数据记忆边界",
+      subheadline: "让生成模型的隐私风险与合规分析有迹可循。",
+      description: "基于成员推断攻击（MIA）的生成式扩散模型隐私审计平台。",
       subheadlineNoWrap: true,
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",

@@ -20,6 +20,7 @@ describe("SettingsClient account verification", () => {
           bio: null,
           providers: ["google"],
           hasPassword: false,
+          twoFactorEnabled: false,
         }}
       />,
     );
@@ -45,6 +46,7 @@ describe("SettingsClient account verification", () => {
           bio: null,
           providers: ["google"],
           hasPassword: true,
+          twoFactorEnabled: false,
         }}
         initialEmailVerificationStatus="1"
       />,
@@ -69,6 +71,7 @@ describe("SettingsClient account verification", () => {
           bio: null,
           providers: ["google"],
           hasPassword: true,
+          twoFactorEnabled: false,
         }}
       />,
     );
@@ -95,6 +98,7 @@ describe("SettingsClient account verification", () => {
           bio: null,
           providers: ["google", "github"],
           hasPassword: true,
+          twoFactorEnabled: false,
         }}
       />,
     );

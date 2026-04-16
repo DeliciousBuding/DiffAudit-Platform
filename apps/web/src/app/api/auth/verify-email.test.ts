@@ -71,9 +71,7 @@ describe("email verification routes", () => {
     sessionToken = createSession(user.id);
 
     const route = await import("./email-verification/route");
-    const response = await route.POST(new Request("http://localhost/api/auth/email-verification", {
-      method: "POST",
-    }));
+    const response = await route.POST();
     const payload = await response.json() as { email?: string; verificationUrl?: string };
 
     expect(response.status).toBe(200);
@@ -91,9 +89,7 @@ describe("email verification routes", () => {
     sessionToken = createSession(user.id);
 
     const requestRoute = await import("./email-verification/route");
-    const requestResponse = await requestRoute.POST(new Request("http://localhost/api/auth/email-verification", {
-      method: "POST",
-    }));
+    const requestResponse = await requestRoute.POST();
     const requestPayload = await requestResponse.json() as { verificationUrl: string };
     const verificationUrl = new URL(requestPayload.verificationUrl);
 
