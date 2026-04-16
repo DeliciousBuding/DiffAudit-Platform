@@ -130,14 +130,13 @@ export function ParticleField({ className }: { className?: string }) {
         let noiseLevel = 0;
         if (t < 5000) {
            noiseLevel = (t / 5000); 
-           noiseLevel = noiseLevel * noiseLevel; 
+           noiseLevel = noiseLevel * noiseLevel * noiseLevel; // Ease out extremely slow on blow-apart
         } else if (t < 9000) {
            noiseLevel = 1;
-        } else if (t < 16000) {
-           // Shortened formation time and reduced easing exponent to prevent dragging
-           let p = (t - 9000) / 7000; 
+        } else if (t < 13000) {
+           // Fast, 4-second linear snap!
+           let p = (t - 9000) / 4000; 
            noiseLevel = 1 - p; 
-           noiseLevel = Math.pow(noiseLevel, 1.8);
         } else {
            noiseLevel = 0;
         }
