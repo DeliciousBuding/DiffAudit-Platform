@@ -106,9 +106,9 @@ export function ParticleField({ className }: { className?: string }) {
         const tx = pt.x + (Math.random() - 0.5) * 4;
         const ty = pt.y + (Math.random() - 0.5) * 4;
         
-        let color = isDark ? "rgba(100, 116, 139, 0.25)" : "rgba(148, 163, 184, 0.35)";
+        let color = isDark ? "rgba(148, 163, 184, 0.3)" : "rgba(51, 65, 85, 0.4)";
         if (Math.random() > 0.9) {
-           color = isDark ? "rgba(47, 109, 246, 0.35)" : "rgba(47, 109, 246, 0.25)";
+           color = isDark ? "rgba(47, 109, 246, 0.45)" : "rgba(37, 99, 235, 0.55)";
         }
 
         return {
@@ -146,8 +146,6 @@ export function ParticleField({ className }: { className?: string }) {
         for (let i = 0; i < particles.length; i++) {
            const p = particles[i];
            
-           // FIX: Smoothly scale down drift instead of a hard jump to 0. 
-           // This prevents instantaneous teleporting (twitching/jittering) of particles when noise begins.
            const driftScale = Math.max(0, 1 - noiseLevel * 4); 
            const driftX = Math.sin(now * 0.0003 * p.speed + p.tx) * 12 * driftScale;
            const driftY = Math.cos(now * 0.0003 * p.speed + p.ty) * 12 * driftScale;
@@ -180,7 +178,7 @@ export function ParticleField({ className }: { className?: string }) {
   }, [theme]);
 
   return (
-    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className || ""}`} style={{ opacity: theme === "dark" ? 0.9 : 0.7 }}>
+    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className || ""}`} style={{ opacity: theme === "dark" ? 0.9 : 1.0 }}>
       <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
     </div>
   );
