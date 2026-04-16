@@ -4,7 +4,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useTheme } from "@/hooks/use-theme";
 
-export const PARTICLE_COUNT = 8000;
+export const PARTICLE_COUNT = 10000;
 
 export function ParticleField({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,58 +40,83 @@ export function ParticleField({ className }: { className?: string }) {
     const generateTargets = () => {
       width = canvas.offsetWidth;
       height = canvas.offsetHeight;
-      
       const tX = width / 2;
       const tY = height / 2;
       
       return Array.from({ length: PARTICLE_COUNT }).map((_, i) => {
-        // Create an aesthetically pleasing complex geometric structure (layered rings / fingerprint / eye)
         let tx = 0, ty = 0;
+        const r = Math.random();
         
-        // Distribution of mathematical shapes
-        const rando = Math.random();
-        
-        if (rando < 0.4) {
-          // Inner dense torus / infinity node
-          const t = Math.random() * Math.PI * 2;
-          const a = 200 + Math.random() * 50; 
-          const denom = 1 + Math.sin(t) * Math.sin(t);
-          tx = tX + (a * Math.cos(t) * (1 + 0.2*Math.sin(t*8))) / denom;
-          ty = tY + (a * Math.cos(t) * Math.sin(t) * (1 + 0.2*Math.sin(t*8))) / denom;
-        } else if (rando < 0.7) {
-          // Orbiting rings
-          const t = Math.random() * Math.PI * 2;
-          const rad = 450 + Math.random() * 80;
-          tx = tX + rad * Math.cos(t);
-          ty = tY + rad * Math.sin(t) * 0.4; // elliptical
+        let color = isDark ? "rgba(100, 116, 139, 0.4)" : "rgba(100, 116, 139, 0.4)";
+        let size = Math.random() * 1.5 + 0.5;
+
+        // Image generation metaphor: "An AI generated Landscape of Data"
+        if (r < 0.15) {
+          // The AI Sun / Halo
+          const ang = Math.random() * Math.PI * 2;
+          const rad = 150 * Math.random();
+          // hollow sun effect
+          const actualRad = Math.random() > 0.8 ? rad : 150 + Math.random()*5;
+          const moonX = tX;
+          const moonY = tY - 100;
+          tx = moonX + actualRad * Math.cos(ang);
+          ty = moonY + actualRad * Math.sin(ang);
+          color = "rgba(47, 109, 246, 0.8)"; // accent blue
+          size = 1.5;
+        } else if (r < 0.5) {
+          // Mathematical sweeping mountains (Data Manifolds)
+          const nx = (Math.random() - 0.5) * width * 1.4; // spread across screen
+          tx = tX + nx;
+          
+          // Use multiple sines for procedural terrain
+          const peak1 = Math.sin(nx * 0.004) * 200;
+          const peak2 = Math.cos(nx * 0.01 + 2) * 50;
+          const peak = peak1 + peak2 + 50;
+          
+          // Mountain volume
+          const depth = Math.random() * (height - (tY + peak));
+          ty = tY + peak + Math.abs(depth);
+          
+          // Highlight the mountain ridge edges
+          if (Math.random() > 0.9) {
+            ty = tY + peak + (Math.random() * 5);
+            color = isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(12, 12, 12, 0.6)";
+            size = 2;
+          }
+        } else if (r < 0.70) {
+          // Distant Background Mountain Layer
+          const nx = (Math.random() - 0.5) * width * 1.4; 
+          tx = tX + nx;
+          const peak = Math.cos(nx * 0.003 - 1) * 250 - 50;
+          
+          const depth = Math.random() * (height - (tY + peak));
+          ty = tY + peak + Math.abs(depth) * 0.5;
+          color = "rgba(47, 109, 246, 0.3)";
+        } else if (r < 0.85) {
+          // Reflection / Lake (Digital Grid) underneath
+          const nx = (Math.random() - 0.5) * width * 1.2;
+          tx = tX + nx;
+          // horizontal strict data lines
+          const lineY = Math.floor(Math.random() * 10) * 20;
+          ty = tY + 250 + lineY;
         } else {
-          // Wide outer aura structure
-          const t = Math.random() * Math.PI * 2;
-          const rad = width * Math.random();
-          tx = tX + rad * Math.cos(t);
-          ty = tY + rad * Math.sin(t);
+          // Starry sky / Persistent ambient noise
+          tx = Math.random() * width;
+          ty = Math.random() * height;
+          if (ty < tY && Math.random() > 0.95) {
+            size = 2.5; 
+            color = isDark ? "white" : "black";
+          }
         }
 
-        const isAccent = Math.random() > 0.85;
-        const color = isDark
-          ? (isAccent ? "rgba(47, 109, 246, 0.4)" : "rgba(100, 116, 139, 0.2)")
-          : (isAccent ? "rgba(47, 109, 246, 0.4)" : "rgba(100, 116, 139, 0.2)");
-        
-        return {
-          tx: tx,
-          ty: ty,
-          color: color,
-          size: (Math.random() * 1.5 + 0.5) * (isDark ? 1 : 1.2)
-        };
+        return { tx, ty, color, size, seed1: Math.random(), seed2: Math.random() };
       });
     };
 
     let particles = generateTargets();
     let animId: number;
     let start = Date.now();
-    const CYCLE = 12000; 
-
-    // We do not pre-calculate random start points, we calculate uniform random per frame based on time so it literally looks like TV static/noise
+    const CYCLE = 14000; 
 
     const draw = () => {
       if (!canvasRef.current) return;
@@ -100,63 +125,48 @@ export function ParticleField({ className }: { className?: string }) {
       
       let noiseLevel = 0;
       if (t < 3000) {
-        // Forward diffusion: structure -> noise
+        // Forward diffusion: blow the image into pure noise
         noiseLevel = t / 3000;
-        noiseLevel = noiseLevel * noiseLevel; // accelerate into noise
+        noiseLevel = Math.pow(noiseLevel, 2); 
       } else if (t < 5000) {
-        // Pure noise
+        // Pure high entropy noise (the blank latent state)
         noiseLevel = 1;
-      } else if (t < 10000) {
-        // Reverse diffusion: noise -> structure
-        noiseLevel = 1 - (t - 5000) / 5000;
-        // smooth ease out
-        noiseLevel = noiseLevel * noiseLevel * (3 - 2 * noiseLevel);
-        noiseLevel = Math.pow(noiseLevel, 1.5); // stays noisy a bit longer, then snaps to structure
+      } else if (t < 11000) {
+        // Reverse diffusion denoising: settling into the landscape
+        noiseLevel = 1 - (t - 5000) / 6000;
+        noiseLevel = noiseLevel * noiseLevel * (3 - 2 * noiseLevel); 
+        noiseLevel = Math.pow(noiseLevel, 1.2); 
       } else {
-        // Structured
+        // Final generated image holds briefly
         noiseLevel = 0;
       }
 
       ctx.clearRect(0, 0, width, height);
 
-      // Pre-calculate rotation for the structure so the final image slowly breathes/spins
-      const rotAlpha = now * 0.0002;
-      const cosA = Math.cos(rotAlpha);
-      const sinA = Math.sin(rotAlpha);
-      const cx = width / 2;
-      const cy = height / 2;
-
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // The target position with slight rotation
-        const dx = p.tx - cx;
-        const dy = p.ty - cy;
-        const rotX = cx + (dx * cosA - dy * sinA);
-        const rotY = cy + (dx * sinA + dy * cosA);
-
-        // the purely random position (high frequency noise)
-        // using pseudo-random based on id and time so it dances like TV static
-        const r1 = Math.sin(i * 12.9898 + now * 0.001) * 43758.5453;
-        const r2 = Math.sin(i * 78.233 + now * 0.001) * 43758.5453;
+        // Unique high-frequency dancing noise for each particle
+        const r1 = Math.sin(p.seed1 * 12345 + now * 0.002) * 10000;
+        const r2 = Math.sin(p.seed2 * 54321 + now * 0.002) * 10000;
         
         const randX = (r1 - Math.floor(r1)) * width;
         const randY = (r2 - Math.floor(r2)) * height;
 
-        // Lerp between true gaussian noise and structural truth
-        const renderX = rotX * (1 - noiseLevel) + randX * noiseLevel;
-        const renderY = rotY * (1 - noiseLevel) + randY * noiseLevel;
+        // Subtle pan/breathing for the landscape
+        const driftX = Math.sin(now * 0.0005) * 20;
+
+        const targetX = p.tx + driftX;
+        const targetY = p.ty;
+
+        // Denosing Lerp
+        const renderX = targetX * (1 - noiseLevel) + randX * noiseLevel;
+        const renderY = targetY * (1 - noiseLevel) + randY * noiseLevel;
 
         ctx.fillStyle = p.color;
         ctx.beginPath();
-        // Slightly larger when in noisy state to fill more
-        ctx.arc(renderX, renderY, p.size * (1 + noiseLevel), 0, Math.PI * 2);
+        ctx.arc(renderX, renderY, p.size * (1 + noiseLevel * 0.5), 0, Math.PI * 2);
         ctx.fill();
-        
-        // Draw faint connecting lines when highly structured for an "ordered network" look
-        if (noiseLevel < 0.1 && i % 30 === 0) {
-           // just some local connection magic
-        }
       }
 
       animId = requestAnimationFrame(draw);
@@ -166,9 +176,8 @@ export function ParticleField({ className }: { className?: string }) {
     return () => cancelAnimationFrame(animId);
   }, [theme]);
 
-  // Keep it z-0 so it stays underneath content. Use faint mask to prevent text blocking
   return (
-    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className || ""}`} style={{ opacity: theme === "dark" ? 0.7 : 0.4 }}>
+    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className || ""}`} style={{ opacity: theme === "dark" ? 0.8 : 0.6 }}>
       <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
     </div>
   );
