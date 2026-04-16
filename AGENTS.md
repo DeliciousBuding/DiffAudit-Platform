@@ -2,6 +2,16 @@
 
 `Platform` 是 DiffAudit 的唯一产品仓库，也是唯一需要协作开发的网站仓。
 
+## GZ2 Read-First Rule
+
+只要任务涉及 `gz2`、公网域名、部署、服务重启、环境变量或运行时排障，开始动手前必须先读：
+
+1. `RUNBOOK.md`
+2. `docs/public-runtime-runbook.md`
+3. `docs/public-runtime-handoff.md`
+
+没有完成这一步，不允许直接改 `gz2`。
+
 ## 仓库职责
 
 - `apps/web`: 单站网站与工作台
@@ -48,6 +58,13 @@
 4. push 分支
 5. 提 PR
 6. 1 个 review 后 squash merge
+
+涉及 `gz2` 的现场动作，再额外补：
+
+1. 先核对 `systemd` 实际 `WorkingDirectory` 和 `ExecStart`
+2. 先确认 `3000` / `8780` 当前由谁占用
+3. 变更后必须同时验证 `127.0.0.1` 和公网域名
+4. 不允许把未跟踪的临时发布残留留在工作树里
 
 ## 最低验证要求
 

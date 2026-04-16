@@ -41,6 +41,8 @@ apps/web/data/
 *.db
 *.db-shm
 *.db-wal
+/public/
+apps/api-go/bin/platform-api
 
 # Local worktrees
 .worktrees/

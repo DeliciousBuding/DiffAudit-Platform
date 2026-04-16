@@ -4,6 +4,12 @@
 
 公网地址：`https://diffaudit.vectorcontrol.tech/`
 
+如果任务涉及 `gz2` 运行时、发布、服务重启或公网故障，先读：
+
+- `RUNBOOK.md`
+- `docs/public-runtime-runbook.md`
+- `docs/public-runtime-handoff.md`
+
 当前仓库承载：
 
 - 单站前端：`apps/web`
@@ -50,6 +56,7 @@ npm run dev:api
 - `apps/web` 只连接 `apps/api-go`
 - `apps/api-go` 对展示态优先读取 `apps/api-go/data/public/*` snapshot
 - 只有审计控制面动作才继续转发到 `Runtime`
+- 当前 live 工作树是 `/home/ubuntu/projects/diffaudit/platform-web`
 
 刷新公网 snapshot：
 

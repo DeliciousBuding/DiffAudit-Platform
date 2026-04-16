@@ -2,6 +2,11 @@
 
 这是当前单站公网链路的最短检查清单。
 
+开始前先确认你读过仓库根目录：
+
+- `AGENTS.md`
+- `RUNBOOK.md`
+
 ## Runtime Facts
 
 - Public domain: `https://diffaudit.vectorcontrol.tech`
@@ -10,8 +15,24 @@
 - Public login: `/login`
 - Workspace entry: `/workspace`
 - Runtime host: `gz2`
+- Live worktree: `/home/ubuntu/projects/diffaudit/platform-web`
 - Live web service: `diffaudit-platform-web.service`
 - Live api service: `diffaudit-platform-api.service`
+
+## Phase 0: Service Truth
+
+```powershell
+ssh gz2 "systemctl cat diffaudit-platform-web.service"
+ssh gz2 "systemctl cat diffaudit-platform-api.service"
+ssh gz2 "ss -ltnp | grep ':3000'"
+ssh gz2 "ss -ltnp | grep ':8780'"
+```
+
+预期：
+
+- `web` 工作树是 `/home/ubuntu/projects/diffaudit/platform-web`
+- `3000` 没有孤儿 `next-server`
+- `8780` 是当前 `diffaudit-platform-api.service`
 
 ## Phase 1: Public Checks
 
@@ -30,6 +51,7 @@ curl.exe -I -A "Mozilla/5.0" https://diffaudit.vectorcontrol.tech/workspace
 ## Phase 2: `gz2` Local Checks
 
 ```powershell
+ssh gz2 "cd /home/ubuntu/projects/diffaudit/platform-web && git status --short"
 curl -I http://127.0.0.1:3000/
 curl -I http://127.0.0.1:3000/login
 curl -I http://127.0.0.1:3000/workspace
@@ -86,3 +108,11 @@ ssh gz2 "curl -s -D - http://127.0.0.1:8780/api/v1/audit/jobs"
 - `/health` 返回 `200`
 - `api-go -> Runtime` 的 jobs 路径返回 `200`
 - 即使这一步失败，展示态 `/workspace`、`/reports`、`/settings` 仍应可打开
+
+## Cleanup Rule
+
+`gz2` 工作树不应长期保留这些部署残留：
+
+- 根目录 `public/`
+- 临时拼出来的 `.patch` / `.bundle`
+- 与 tracked 二进制重复的 `apps/api-go/bin/platform-api`
