@@ -121,8 +121,6 @@ export function ParticleField({ className }: { className?: string }) {
       });
 
       const CYCLE_MS = 24000;
-      // Offset start time by 8000ms so it starts exactly in the high-noise state
-      // (User experiences denoising immediately upon page load)
       const start = Date.now() - 8000;
 
       const draw = () => {
@@ -147,8 +145,12 @@ export function ParticleField({ className }: { className?: string }) {
 
         for (let i = 0; i < particles.length; i++) {
            const p = particles[i];
-           const driftX = noiseLevel > 0.05 ? 0 : Math.sin(now * 0.0003 * p.speed + p.tx) * 12;
-           const driftY = noiseLevel > 0.05 ? 0 : Math.cos(now * 0.0003 * p.speed + p.ty) * 12;
+           
+           // FIX: Smoothly scale down drift instead of a hard jump to 0. 
+           // This prevents instantaneous teleporting (twitching/jittering) of particles when noise begins.
+           const driftScale = Math.max(0, 1 - noiseLevel * 4); 
+           const driftX = Math.sin(now * 0.0003 * p.speed + p.tx) * 12 * driftScale;
+           const driftY = Math.cos(now * 0.0003 * p.speed + p.ty) * 12 * driftScale;
            
            const roamingX = p.rx + Math.sin(now * 0.0005 * p.speed + i) * 60;
            const roamingY = p.ry + Math.cos(now * 0.0005 * p.speed + i) * 60;
