@@ -180,7 +180,7 @@ export function UserAvatar() {
             {/* Theme selector */}
             <div className="flex items-center justify-between px-2.5 py-1.5">
               <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{copy.themeLabel}</span>
-              <div className="flex items-center gap-1 rounded-full p-0.5" style={{ border: "1px solid var(--border)", background: "var(--muted)" }}>
+              <div className="grid grid-cols-3 items-center gap-1 rounded-full p-0.5" style={{ border: "1px solid var(--border)", background: "var(--muted)" }}>
                 {([
                   { value: "light" as ThemeMode, icon: "sun", label: copy.themeLight },
                   { value: "dark" as ThemeMode, icon: "moon", label: copy.themeDark },
@@ -189,7 +189,7 @@ export function UserAvatar() {
                   <button
                     key={option.value}
                     onClick={() => setTheme(option.value)}
-                    className="btn-reset flex items-center justify-center h-7 w-7 rounded-full transition-all"
+                    className="btn-reset flex min-w-[62px] items-center justify-center gap-1 rounded-full px-2 py-1.5 text-[10px] font-semibold transition-all"
                     style={theme === option.value
                       ? { background: "var(--foreground)", color: "var(--background)" }
                       : { color: "var(--muted-foreground)" }
@@ -212,6 +212,7 @@ export function UserAvatar() {
                         <path d="M8 21h8m-4-4v4" />
                       </svg>
                     )}
+                    <span>{option.label}</span>
                   </button>
                 ))}
               </div>

@@ -27,8 +27,8 @@ function MoonIcon() {
 }
 
 export function ThemeToggleButton() {
-  const { theme, toggle } = useTheme();
-  const isDark = theme === "dark";
+  const { resolvedTheme, toggle } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   return (
     <button
@@ -37,7 +37,7 @@ export function ThemeToggleButton() {
         const rect = event.currentTarget.getBoundingClientRect();
         toggle(rect.left + rect.width / 2, rect.top + rect.height / 2);
       }}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition hover:text-foreground"
+      className="header-pill header-pill-icon text-muted-foreground hover:text-foreground"
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >

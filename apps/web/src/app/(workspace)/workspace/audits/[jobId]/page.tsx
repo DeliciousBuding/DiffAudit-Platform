@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
 
-import { type Locale } from "@/components/language-picker";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { JobDetailClient } from "./JobDetailClient";
@@ -8,13 +7,11 @@ import { Breadcrumb } from "@/components/breadcrumb";
 
 export default async function JobDetailPage({
   params,
-  locale,
 }: {
   params: Promise<{ jobId: string }>;
-  locale?: Locale;
 }) {
   const { jobId } = await params;
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].jobDetail;
   const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 

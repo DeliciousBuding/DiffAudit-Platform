@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { Locale } from "@/components/language-picker";
-import { getStoredLocale } from "@/components/language-picker";
+import { type Locale, LanguagePicker, getStoredLocale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "./docs-data";
 import { getDocsContent, getDocsPage } from "./docs-data";
-import { Tabs } from "@/components/tabs";
 import { DocsSearch } from "@/components/docs-search";
 import { BrandMark } from "@/components/brand-mark";
+import { GithubIcon } from "@/components/platform-shell-icons";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { UserAvatar } from "@/components/user-avatar";
 
 type DocsHomeProps = {
@@ -20,17 +20,6 @@ type DocsHomeProps = {
 export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const router = useRouter();
   const [locale] = useState<Locale>(getStoredLocale);
-  const [dark, setDark] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    const stored = localStorage.getItem("diffaudit-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    return stored === "dark" || (!stored && prefersDark);
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("diffaudit-theme", dark ? "dark" : "light");
-  }, [dark]);
 
   const content = getDocsContent(locale);
   const [selectedSlug, setSelectedSlug] = useState(initialSlug ?? content.pages[0]?.slug ?? "");
@@ -41,28 +30,11 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const prevPage = currentPageIndex > 0 ? content.pages[currentPageIndex - 1] : null;
   const nextPage = currentPageIndex < content.pages.length - 1 ? content.pages[currentPageIndex + 1] : null;
 
-  // Compute active group tab from current page — 2.3.3
-  const activeGroupTab = page?.group ?? content.groups[0] ?? "";
-  const groupTabs = content.groups.map((g) => ({
-    value: g,
-    label: g,
-  }));
-
-  // Get pages for the active group
-  const groupPages = content.pages.filter((p) => p.group === activeGroupTab);
-
   // Navigate via Next.js router — 2.3.2
   const handleSelectSlug = useCallback((slug: string) => {
     setSelectedSlug(slug);
     router.push(`/docs/${slug}`);
   }, [router, setSelectedSlug]);
-
-  function handleGroupChange(groupValue: string) {
-    const firstPageInGroup = content.pages.find((p) => p.group === groupValue);
-    if (firstPageInGroup) {
-      setSelectedSlug(firstPageInGroup.slug);
-    }
-  }
 
   return (
     <DocsLayout
@@ -73,13 +45,7 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
       loggedIn={loggedIn}
       prevPage={prevPage}
       nextPage={nextPage}
-      groupTabs={groupTabs}
-      activeGroupTab={activeGroupTab}
-      onGroupChange={handleGroupChange}
-      groupPages={groupPages}
       locale={locale}
-      dark={dark}
-      setDark={setDark}
     />
   );
 }
@@ -94,14 +60,8 @@ type DocsLayoutProps = {
   nextPage: DocsPage | null;
 };
 
-function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, groupTabs, activeGroupTab, onGroupChange, groupPages, locale, dark, setDark }: DocsLayoutProps & {
-  groupTabs: Array<{ value: string; label: string }>;
-  activeGroupTab: string;
-  onGroupChange: (value: string) => void;
-  groupPages: DocsPage[];
+function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, locale }: DocsLayoutProps & {
   locale: Locale;
-  dark: boolean;
-  setDark: (v: boolean) => void;
 }) {
   // Group pages by their group
   const groupedPages = new Map<string, DocsPage[]>();
@@ -140,7 +100,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-primary)]">
+    <div className="docs-surface min-h-screen bg-[var(--color-bg-primary)]">
       {/* Topbar */}
       <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
@@ -160,58 +120,73 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
               </Link>
             </nav>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="header-controls flex items-center gap-2">
             {/* Search button */}
             <button
               onClick={() => {
                 const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true });
                 window.dispatchEvent(event);
               }}
-              className="hidden sm:flex items-center gap-2 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-all"
+              className="header-pill hidden sm:inline-flex !h-[38px] gap-2 !px-3 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />
                 <path d="M21 21l-4.35-4.35" />
               </svg>
               <span>{content.header.searchPlaceholder.split("、")[0] || "Search"}</span>
-              <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-1.5 py-0.5 font-mono text-[10px]">
+              <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--color-text-muted)]">
                 Ctrl+K
               </kbd>
             </button>
             {loggedIn ? (
-              <UserAvatar />
+              <>
+                <LanguagePicker value={locale} reloadOnChange compact />
+                <ThemeToggleButton />
+                <a
+                  href="https://github.com/DeliciousBuding/DiffAudit-Research"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="header-pill header-pill-icon text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                  title="GitHub"
+                >
+                  <GithubIcon />
+                </a>
+                <UserAvatar />
+              </>
             ) : (
-              <a href="/login" className="rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all">
-                {content.header.signIn}
-              </a>
+              <>
+                <a href="/login" className="header-pill header-pill-primary text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+                  {content.header.signIn}
+                </a>
+                <LanguagePicker value={locale} reloadOnChange compact />
+                <ThemeToggleButton />
+                <a
+                  href="https://github.com/DeliciousBuding/DiffAudit-Research"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="header-pill header-pill-icon text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                  title="GitHub"
+                >
+                  <GithubIcon />
+                </a>
+              </>
             )}
           </div>
         </div>
       </header>
 
-      {/* Group tab navigation — 2.3.3 */}
+      {/* Top section anchors */}
       <div className="sticky top-14 z-40 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-0">
-          <Tabs
-            value={activeGroupTab}
-            onChange={onGroupChange}
-            tabs={groupTabs}
-            variant="inline"
-          />
-          {/* Sub-navigation: sections within the current page */}
-          {page && page.sections.length > 1 && (
-            <div className="hidden md:flex items-center gap-1 text-xs">
-              {page.sections.map((section) => (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="px-2 py-2.5 transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
-                >
-                  {section.label}
-                </a>
-              ))}
-            </div>
-          )}
+        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-0">
+          {page && page.sections.length > 1 ? page.sections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="whitespace-nowrap px-2 py-2.5 text-xs transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+            >
+              {section.label}
+            </a>
+          )) : null}
         </div>
       </div>
 

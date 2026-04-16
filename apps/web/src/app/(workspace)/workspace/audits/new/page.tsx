@@ -1,14 +1,13 @@
 import { headers } from "next/headers";
 
-import { type Locale } from "@/components/language-picker";
 import { fetchCatalogDashboard } from "@/lib/catalog";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { CreateTaskClient } from "./CreateTaskClient";
 import { Breadcrumb } from "@/components/breadcrumb";
 
-export default async function CreateTaskPage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+export default async function CreateTaskPage() {
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].createTask;
   const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 

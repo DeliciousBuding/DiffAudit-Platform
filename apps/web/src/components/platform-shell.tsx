@@ -35,19 +35,22 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
 
       <div className="workspace-main-area">
         <header className="workspace-topbar">
-          <div className="flex items-center gap-2">
+          <div className="header-controls flex items-center gap-2">
             <ThemeToggleButton />
-            <LanguagePicker value={locale} reloadOnChange />
+            <LanguagePicker value={locale} reloadOnChange compact />
             <a
-              href="https://github.com/DeliciousBuding/DiffAudit-Platform"
+              href="https://github.com/DeliciousBuding/DiffAudit-Research"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition hover:text-foreground"
+              className="header-pill header-pill-icon text-muted-foreground hover:text-foreground"
               title={copy.shell.githubTitle}
             >
               <GithubIcon />
             </a>
-            <LogoutButton label={copy.shell.signOut} />
+            <LogoutButton
+              label={copy.shell.signOut}
+              className="header-pill header-pill-primary !h-[38px] !px-4 text-foreground"
+            />
           </div>
         </header>
         <main className="workspace-main-content">{children}</main>

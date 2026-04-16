@@ -4,9 +4,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithSuspense } from "@/lib/test-render";
 import WorkspaceReportsPage from "./page";
 
+const resolveLocaleFromHeaderStoreMock = vi.fn();
+
+vi.mock("next/headers", () => ({
+  headers: vi.fn(async () => new Headers()),
+}));
+
+vi.mock("@/lib/locale", () => ({
+  resolveLocaleFromHeaderStore: (...args: unknown[]) => resolveLocaleFromHeaderStoreMock(...args),
+}));
+
 describe("WorkspaceReportsPage", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    resolveLocaleFromHeaderStoreMock.mockReset();
   });
 
   it("renders zh-CN copy with backend data", async () => {
@@ -66,7 +77,8 @@ describe("WorkspaceReportsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = await renderWithSuspense(await WorkspaceReportsPage({ locale: "zh-CN" }));
+    resolveLocaleFromHeaderStoreMock.mockReturnValue("zh-CN");
+    const markup = await renderWithSuspense(await WorkspaceReportsPage());
 
     expect(markup).toContain("工作台");
     expect(markup).toContain("报告");
@@ -84,7 +96,8 @@ describe("WorkspaceReportsPage", () => {
   it("renders en-US empty states when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await WorkspaceReportsPage({ locale: "en-US" }));
+    resolveLocaleFromHeaderStoreMock.mockReturnValue("en-US");
+    const markup = renderToStaticMarkup(await WorkspaceReportsPage());
 
     // Check for breadcrumb and page structure (outside Suspense)
     expect(markup).toContain("Workspace");

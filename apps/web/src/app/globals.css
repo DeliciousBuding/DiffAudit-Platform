@@ -1,6 +1,6 @@
 /* 3.3.5: Font optimization — system fonts first, Google Fonts as fallback */
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@8..144,-10..0,25..150,400..500,0..100&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400&display=swap");
+
+
 @import url("https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD,ROND@40..48,300,0..1,0,50&display=swap");
 @import "tailwindcss";
 
@@ -142,7 +142,7 @@ html {
 body {
   min-height: 100vh;
   color: var(--foreground);
-  font-family: "Google Sans Flex", var(--font-sans-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   font-weight: 400;
   font-optical-sizing: auto;
   background:
@@ -151,6 +151,11 @@ body {
     linear-gradient(180deg, var(--palette-grey-0) 0%, var(--palette-grey-10) 100%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+svg text {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  font-variant-ligatures: none;
 }
 
 a {
@@ -171,7 +176,7 @@ select {
 }
 
 .mono {
-  font-family: "Google Sans Code", var(--font-mono-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
 }
 
 .surface-card {
@@ -471,6 +476,54 @@ select {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.86),
     0 14px 32px rgba(18, 19, 23, 0.1);
+}
+
+.header-pill-icon {
+  width: 38px;
+  padding: 0;
+}
+
+.header-pill-icon svg {
+  transition: transform 160ms ease;
+}
+
+.header-pill-icon:hover svg {
+  transform: rotate(-6deg) scale(1.05);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-controls > * {
+  animation: header-control-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes header-control-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-controls > * {
+    animation: none;
+  }
+
+  .header-pill-icon svg {
+    transition: none;
+  }
+
+  .header-pill-icon:hover svg {
+    transform: none;
+  }
 }
 
 /* Primary variant — subtle emphasis via border + weight, not fill */
@@ -799,7 +852,7 @@ html.dark .header-pill-primary:hover {
 
 .landing-main-header {
   margin: 0;
-  font-family: "Google Sans Flex", "Google Sans", var(--font-sans-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   font-size: var(--landing-main-text-size);
   line-height: var(--landing-main-text-line-height);
   letter-spacing: var(--landing-main-text-letter-spacing);
@@ -812,7 +865,7 @@ html.dark .header-pill-primary:hover {
 
 .landing-subheader {
   margin: 0;
-  font-family: "Google Sans Flex", "Google Sans", var(--font-sans-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   font-size: clamp(22px, 3vw, 34px);
   line-height: 1.16;
   letter-spacing: -0.03em;
@@ -859,7 +912,7 @@ html.dark .header-pill-primary:hover {
   align-items: center;
   border: 1px solid transparent;
   border-radius: 10px;
-  font-family: "Google Sans Flex", var(--font-sans-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   cursor: pointer;
   display: inline-flex;
   padding: 10px 24px;
@@ -929,6 +982,79 @@ html.dark .header-pill-primary:hover {
   -webkit-backdrop-filter: blur(18px);
 }
 
+.auth-layout-main {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-layout-shell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3.5vh, 36px) 0;
+}
+
+.auth-layout-stage {
+  width: 100%;
+}
+
+.auth-panel-card {
+  min-height: 370px;
+}
+
+@media (max-width: 1024px) {
+  .auth-panel-card {
+    min-height: 0;
+  }
+}
+
+.auth-input-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 15px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.auth-input-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-input-field {
+  padding-left: 52px !important;
+  padding-right: 14px;
+  line-height: 1.15;
+}
+
+.btn-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.btn-quiet:hover,
+.btn-quiet:active {
+  transform: none;
+  box-shadow: none;
+}
+
 .auth-divider {
   position: relative;
   text-align: center;
@@ -962,14 +1088,17 @@ html.dark .header-pill-primary:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 58px;
+  min-height: 52px;
   width: 100%;
+  gap: 10px;
+  padding: 0 16px;
   border-radius: 9999px;
-  border: 1px solid rgba(33, 34, 38, 0.08);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(33, 34, 38, 0.12);
+  background: rgba(255, 255, 255, 0.95);
   font-size: 15px;
   line-height: 21px;
-  font-weight: 450;
+  font-weight: 500;
+  color: var(--foreground);
   transition:
     transform 160ms ease,
     background-color 160ms ease,
@@ -979,9 +1108,46 @@ html.dark .header-pill-primary:hover {
 
 .auth-provider-button:hover {
   transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(47, 109, 246, 0.14);
-  box-shadow: 0 12px 28px rgba(18, 19, 23, 0.06);
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(47, 109, 246, 0.24);
+  box-shadow: 0 14px 26px rgba(18, 19, 23, 0.08);
+}
+
+.auth-provider-button.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  background: rgba(232, 235, 242, 0.6);
+  border-color: rgba(33, 34, 38, 0.08);
+}
+
+.auth-provider-button.is-disabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(33, 34, 38, 0.08);
+  background: rgba(232, 235, 242, 0.6);
+}
+
+.auth-provider-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.auth-provider-label,
+.portal-pill {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .auth-provider-button {
+    min-height: 52px;
+    font-size: 14px;
+  }
+
+  .auth-input-field {
+    padding-left: 48px !important;
+  }
 }
 
 .auth-inline-link {
@@ -1021,6 +1187,12 @@ html.dark .header-pill-primary:hover {
 
 .workspace-shell {
   min-height: 100vh;
+}
+
+.docs-surface {
+  font-family: var(--font-sans-fallback);
+  font-variant-ligatures: none;
+  text-rendering: optimizeLegibility;
 }
 
 /* ===== Workspace sidebar layout ===== */
@@ -1312,7 +1484,7 @@ tbody tr:hover td {
 
 /* ===== Button base ===== */
 button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.header-pill) {
-  font-family: "Google Sans Flex", var(--font-sans-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   font-size: 14px;
   font-weight: 450;
   border-radius: var(--radius-2xl);
@@ -1671,6 +1843,12 @@ html.dark .auth-provider-button {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
+html[data-theme="dark"] .btn-quiet,
+html.dark .btn-quiet {
+  background: rgba(42, 42, 45, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 html[data-theme="dark"] .auth-provider-button:hover,
 html.dark .auth-provider-button:hover {
   background: rgba(42, 42, 45, 0.94);
@@ -2000,7 +2178,7 @@ html.dark .workspace-input {
 
 /* Button micro-interaction (4.2.2) — replace the global catch-all with token-based version */
 button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill) {
-  font-family: "Google Sans Flex", var(--font-sans-fallback);
+  font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   font-size: 14px;
   font-weight: 450;
   border-radius: var(--radius-xl);
@@ -2043,3 +2221,4 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
 .animate-pulse {
   animation: skeleton-pulse 2s var(--easing-standard) infinite;
 }
+

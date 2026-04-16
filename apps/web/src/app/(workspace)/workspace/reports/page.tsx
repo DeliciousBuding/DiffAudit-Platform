@@ -331,8 +331,8 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function WorkspaceReportsPage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+export default async function WorkspaceReportsPage() {
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
   const navItems = WORKSPACE_COPY[resolvedLocale].nav;
 
   return (

@@ -5,12 +5,14 @@ import { useEffect, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
+  LanguagePicker,
   getStoredLocale,
   type Locale,
 } from "@/components/language-picker";
 import { ParticleField } from "@/components/particle-field";
 import { UserAvatar } from "@/components/user-avatar";
 import { GithubIcon } from "@/components/platform-shell-icons";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
 
 type NavLink = {
   title: string;
@@ -252,9 +254,10 @@ const HOME_COPY: Record<
       },
     },
     hero: {
-      headline: "探明数据记忆边界",
-      subheadline: "让生成模型的隐私风险与合规分析有迹可循。",
-      description: "基于成员推断攻击（MIA）的生成式扩散模型隐私审计平台。",
+      headline: "Audit diffusion models",
+      subheadline: "before they reach production.",
+      description: "Membership inference attack platform for privacy-aware AI compliance.",
+      subheadlineNoWrap: true,
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",
       secondaryCta: "查看能力范围",
@@ -588,7 +591,7 @@ export function MarketingHome({
   workbenchUrl?: string;
   initialLocale?: Locale;
 }) {
-  const [locale] = useState<Locale>(() => initialLocale ?? getStoredLocale());
+  const [locale, setLocale] = useState<Locale>(() => initialLocale ?? getStoredLocale());
   const [openNav, setOpenNav] = useState<string | null>(null);
 
   useEffect(() => {
@@ -665,17 +668,19 @@ export function MarketingHome({
             </nav>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="header-controls flex items-center gap-2">
             {loggedIn ? (
               <>
                 <Link href={workbenchUrl} className="header-pill header-pill-primary hidden sm:inline-flex">
                   {copy.header.openWorkspace}
                 </Link>
+                <LanguagePicker value={locale} onChange={setLocale} compact />
+                <ThemeToggleButton />
                 <a
-                  href="https://github.com/DeliciousBuding/DiffAudit-Platform"
+                  href="https://github.com/DeliciousBuding/DiffAudit-Research"
                   target="_blank"
                   rel="noreferrer"
-                  className="header-pill inline-flex !px-0 !w-[38px] justify-center"
+                  className="header-pill header-pill-icon"
                   title="GitHub"
                 >
                   <GithubIcon />
@@ -687,11 +692,13 @@ export function MarketingHome({
                 <Link href="/login" className="header-pill header-pill-primary">
                   {copy.header.signIn}
                 </Link>
+                <LanguagePicker value={locale} onChange={setLocale} compact />
+                <ThemeToggleButton />
                 <a
-                  href="https://github.com/DeliciousBuding/DiffAudit-Platform"
+                  href="https://github.com/DeliciousBuding/DiffAudit-Research"
                   target="_blank"
                   rel="noreferrer"
-                  className="header-pill inline-flex !px-0 !w-[38px] justify-center"
+                  className="header-pill header-pill-icon"
                   title="GitHub"
                 >
                   <GithubIcon />

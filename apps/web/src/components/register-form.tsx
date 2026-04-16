@@ -81,60 +81,66 @@ export function RegisterForm({
   }
 
   return (
-    <div className="grid gap-5">
-      <form className="grid gap-5 rounded-[20px] border border-border bg-muted/10 p-4" onSubmit={handleSubmit}>
-        <div className="grid gap-2">
-          <label className="caption" htmlFor="register-username">{copy.username}</label>
-          <div className="auth-input-shell">
-            <span className="auth-input-icon"><InputIcon icon="user" /></span>
-            <input id="register-username" className="portal-input auth-input-field h-[58px]" value={username} onChange={(event) => setUsername(event.target.value)} required />
+    <div className="flex flex-col gap-6">
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        {error ? (
+          <div className="rounded-lg bg-risk-high-bg p-3 text-sm text-risk-high">
+            {error}
+          </div>
+        ) : null}
+        
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-1.5">
+            <label className="text-[13px] font-medium text-foreground" htmlFor="register-username">{copy.username}</label>
+            <div className="auth-input-shell">
+              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
+              <input id="register-username" className="portal-input auth-input-field h-[48px] text-[15px]" value={username} onChange={(event) => setUsername(event.target.value)} required />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <label className="text-[13px] font-medium text-foreground" htmlFor="register-password">{copy.password}</label>
+            <div className="auth-input-shell">
+              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="lock" /></span>
+              <input id="register-password" type="password" className="portal-input auth-input-field h-[48px] text-[15px]" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={copy.passwordPlaceholder} required />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <label className="text-[13px] font-medium text-foreground" htmlFor="register-confirm-password">{copy.confirmPassword}</label>
+            <div className="auth-input-shell">
+              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="shield" /></span>
+              <input id="register-confirm-password" type="password" className="portal-input auth-input-field h-[48px] text-[15px]" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={copy.confirmPasswordPlaceholder} required />
+            </div>
           </div>
         </div>
-        <div className="grid gap-2">
-          <label className="caption" htmlFor="register-password">{copy.password}</label>
-          <div className="auth-input-shell">
-            <span className="auth-input-icon"><InputIcon icon="lock" /></span>
-            <input id="register-password" type="password" className="portal-input auth-input-field h-[58px]" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={copy.passwordPlaceholder} required />
-          </div>
-        </div>
-        <div className="grid gap-2">
-          <label className="caption" htmlFor="register-confirm-password">{copy.confirmPassword}</label>
-          <div className="auth-input-shell">
-            <span className="auth-input-icon"><InputIcon icon="shield" /></span>
-            <input id="register-confirm-password" type="password" className="portal-input auth-input-field h-[58px]" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={copy.confirmPasswordPlaceholder} required />
-          </div>
-        </div>
-        <button type="submit" disabled={pending} className="portal-pill mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55">
+
+        <button type="submit" disabled={pending} className="hero-button-primary mt-2 flex h-[48px] items-center justify-center rounded-[14px] text-[15px] font-medium shadow-sm transition-all hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50">
           {pending ? copy.pending : copy.submit}
         </button>
       </form>
 
-      {error ? (
-        <p className="text-sm text-[#bf2f2f]">{error}</p>
-      ) : (
-        <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
-      )}
+      <div className="flex flex-col items-center gap-4 2xl:gap-6 mt-8 2xl:mt-12">
+        {!error && (
+          <p className="text-[16px] 2xl:text-[18px] text-muted-foreground">{copy.hint}</p>
+        )}
+        
+        <p className="text-[13px] text-muted-foreground mt-2">
+          {pageCopy.loginLink}{" "}
+          <Link href={`/login?redirectTo=${encodeURIComponent(redirectTo)}`} className="text-foreground font-medium transition-colors hover:underline underline-offset-4">
+            {pageCopy.loginCta}
+          </Link>
+        </p>
 
-      {hasOauthOption ? (
-        <p className="text-sm leading-7 text-muted-foreground">{pageCopy.providerHint}</p>
-      ) : null}
-
-      <p className="text-sm leading-7 text-muted-foreground">
-        {pageCopy.loginLink} {" "}
-        <Link
-          href={`/login?redirectTo=${encodeURIComponent(redirectTo)}`}
-          className="auth-inline-link"
-        >
-          {pageCopy.loginCta}
-        </Link>
-      </p>
-
-      <p className="text-xs leading-6 text-muted-foreground">
-        {pageCopy.legalPrefix}{" "}
-        <Link href="/docs/privacy" className="auth-inline-link">{pageCopy.privacy}</Link>
-        {" · "}
-        <Link href="/docs/terms" className="auth-inline-link">{pageCopy.terms}</Link>
-      </p>
+        <p className="text-center text-[12px] leading-relaxed text-muted-foreground/60 mt-1">
+          {pageCopy.legalPrefix}{" "}
+          <Link href="/docs/privacy" className="font-medium transition-colors hover:text-foreground">{pageCopy.privacy}</Link>
+          {" · "}
+          <Link href="/docs/terms" className="font-medium transition-colors hover:text-foreground">{pageCopy.terms}</Link>
+        </p>
+      </div>
     </div>
   );
 }
+
+
+
+

@@ -65,10 +65,12 @@ export function LanguagePicker({
   value,
   onChange,
   reloadOnChange = false,
+  compact = false,
 }: {
   value?: Locale;
   onChange?: (locale: Locale) => void;
   reloadOnChange?: boolean;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [internalLocale, setInternalLocale] = useState<Locale>("en-US");
@@ -123,13 +125,23 @@ export function LanguagePicker({
     <div className={`language-picker ${isOpen ? "is-open" : ""}`}>
       <button
         type="button"
-        className="language-trigger"
+        className={compact ? "header-pill header-pill-icon language-trigger-compact" : "language-trigger"}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-label={compact ? `Language: ${currentOption.label}` : undefined}
       >
-        <span className="language-trigger-label">{currentOption.label}</span>
-        <span className="language-trigger-chevron">▾</span>
+        {compact ? (
+          <svg viewBox="0 0 24 24" className="h-[16px] w-[16px]" fill="none" stroke="currentColor" strokeWidth={1.9} aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+          </svg>
+        ) : (
+          <>
+            <span className="language-trigger-label">{currentOption.label}</span>
+            <span className="language-trigger-chevron">▾</span>
+          </>
+        )}
       </button>
 
       {isOpen && (

@@ -180,7 +180,7 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
 
   const timestamp = new Date().toISOString();
   const version = "v0.1.0";
-  const githubUrl = "github.com/DeliciousBuding/DiffAudit-Platform";
+  const githubUrl = "github.com/DeliciousBuding/DiffAudit-Research";
 
   return `<!DOCTYPE html>
 <html lang="${isZh ? "zh-CN" : "en"}">

@@ -47,7 +47,6 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const [showPasswordForm, setShowPasswordForm] = useState(!oauthEnabled.google && !oauthEnabled.github);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -73,53 +72,31 @@ export function LoginForm({
   }
 
   const oauthError = searchParams.get("error");
+  const showProviderButtons = true;
 
   return (
-    <div className="grid gap-5">
-      {(oauthEnabled.google || oauthEnabled.github) ? (
-        <div className="grid gap-3">
-          {oauthEnabled.google ? (
-            <a
-              href={`/api/auth/google?redirectTo=${encodeURIComponent(redirectTo)}`}
-              className="auth-provider-button"
-            >
-              <span className="auth-provider-icon"><ProviderIcon provider="google" /></span>
-              <span className="auth-provider-label">{pageCopy.google}</span>
-            </a>
-          ) : null}
-          {oauthEnabled.github ? (
-            <a
-              href={`/api/auth/github?redirectTo=${encodeURIComponent(redirectTo)}`}
-              className="auth-provider-button"
-            >
-              <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
-              <span className="auth-provider-label">{pageCopy.github}</span>
-            </a>
-          ) : null}
-          <p className="text-sm leading-7 text-muted-foreground">{pageCopy.providerHint}</p>
-        </div>
-      ) : null}
+    <div className="flex flex-col gap-6">
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        {error ? (
+          <div className="rounded-lg bg-risk-high-bg p-3 text-sm text-risk-high">
+            {error}
+          </div>
+        ) : oauthError ? (
+          <div className="rounded-lg bg-risk-high-bg p-3 text-sm text-risk-high">
+            {copy.error}
+          </div>
+        ) : null}
 
-      {!showPasswordForm ? (
-        <button
-          type="button"
-          onClick={() => setShowPasswordForm(true)}
-          className="auth-password-reveal btn-quiet"
-        >
-          {pageCopy.passwordDivider}
-        </button>
-      ) : (
-        <form className="grid gap-5 rounded-[20px] border border-border bg-muted/10 p-4" onSubmit={handleSubmit}>
-          <div className="auth-divider">{pageCopy.passwordDivider}</div>
-          <div className="grid gap-2">
-            <label className="caption" htmlFor="login-username">
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-1.5">
+            <label className="text-[13px] font-medium text-foreground" htmlFor="login-username">
               {copy.username}
             </label>
             <div className="auth-input-shell">
-              <span className="auth-input-icon"><InputIcon icon="user" /></span>
+              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
               <input
                 id="login-username"
-                className="portal-input auth-input-field h-[58px]"
+                className="portal-input auth-input-field h-[48px] text-[15px]"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 autoComplete="username"
@@ -129,16 +106,16 @@ export function LoginForm({
             </div>
           </div>
 
-          <div className="grid gap-2">
-            <label className="caption" htmlFor="login-password">
+          <div className="grid gap-1.5">
+            <label className="text-[13px] font-medium text-foreground" htmlFor="login-password">
               {copy.password}
             </label>
             <div className="auth-input-shell">
-              <span className="auth-input-icon"><InputIcon icon="lock" /></span>
+              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="lock" /></span>
               <input
                 id="login-password"
                 type="password"
-                className="portal-input auth-input-field h-[58px]"
+                className="portal-input auth-input-field h-[48px] text-[15px]"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="current-password"
@@ -147,52 +124,70 @@ export function LoginForm({
               />
             </div>
           </div>
+        </div>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={pending}
-              className="portal-pill mt-2 h-[58px] flex-1 disabled:cursor-not-allowed disabled:opacity-55"
-            >
-              {pending ? copy.pending : copy.submit}
-            </button>
-            {(oauthEnabled.google || oauthEnabled.github) ? (
-              <button
-                type="button"
-                onClick={() => setShowPasswordForm(false)}
-                className="btn-quiet mt-2 rounded-[16px] border border-border px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
-              >
-                {pageCopy.hidePasswordCta}
-              </button>
-            ) : null}
-          </div>
-        </form>
-      )}
-
-      {error ? (
-        <p className="text-sm text-[#bf2f2f]">{error}</p>
-      ) : oauthError ? (
-        <p className="text-sm text-[#bf2f2f]">{copy.error}</p>
-      ) : (
-        <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
-      )}
-
-      <p className="text-sm leading-7 text-muted-foreground">
-        {pageCopy.registerLink} {" "}
-        <Link
-          href={`/register?redirectTo=${encodeURIComponent(redirectTo)}`}
-          className="auth-inline-link"
+        <button
+          type="submit"
+          disabled={pending}
+          className="hero-button-primary flex h-[48px] items-center justify-center rounded-[14px] text-[15px] font-medium shadow-sm transition-all hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {pageCopy.registerCta}
-        </Link>
-      </p>
+          {pending ? copy.pending : copy.submit}
+        </button>
 
-      <p className="text-xs leading-6 text-muted-foreground">
-        {pageCopy.legalPrefix}{" "}
-        <Link href="/docs/privacy" className="auth-inline-link">{pageCopy.privacy}</Link>
-        {" · "}
-        <Link href="/docs/terms" className="auth-inline-link">{pageCopy.terms}</Link>
-      </p>
+        {showProviderButtons ? (
+          <div className="mt-4 flex flex-col gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {oauthEnabled.google ? (
+                <a
+                  href={`/api/auth/google?redirectTo=${encodeURIComponent(redirectTo)}`}
+                  className="auth-provider-button transition-transform"
+                >
+                  <span className="auth-provider-icon"><ProviderIcon provider="google" /></span>
+                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.google}</span>
+                </a>
+              ) : (
+                <span className="auth-provider-button is-disabled" aria-disabled="true" title="Google OAuth is not configured">
+                  <span className="auth-provider-icon"><ProviderIcon provider="google" /></span>
+                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.google}</span>
+                </span>
+              )}
+              {oauthEnabled.github ? (
+                <a
+                  href={`/api/auth/github?redirectTo=${encodeURIComponent(redirectTo)}`}
+                  className="auth-provider-button transition-transform"
+                >
+                  <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
+                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.github}</span>
+                </a>
+              ) : (
+                <span className="auth-provider-button is-disabled" aria-disabled="true" title="GitHub OAuth is not configured">
+                  <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
+                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.github}</span>
+                </span>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </form>
+
+      <div className="flex flex-col items-center gap-4 2xl:gap-6 mt-8 2xl:mt-12">
+        <p className="text-[16px] 2xl:text-[18px] text-muted-foreground">
+          {pageCopy.registerLink}{" "}
+          <Link href={`/register?redirectTo=${encodeURIComponent(redirectTo)}`} className="text-foreground font-medium transition-colors hover:underline underline-offset-4">
+            {pageCopy.registerCta}
+          </Link>
+        </p>
+        <p className="text-center text-[14.5px] 2xl:text-[16px] leading-relaxed text-muted-foreground/60">
+          {pageCopy.legalPrefix}{" "}
+          <Link href="/docs/privacy" className="font-medium transition-colors hover:text-foreground">{pageCopy.privacy}</Link>
+          {" · "}
+          <Link href="/docs/terms" className="font-medium transition-colors hover:text-foreground">{pageCopy.terms}</Link>
+        </p>
+      </div>
     </div>
   );
 }
+
+
+
+

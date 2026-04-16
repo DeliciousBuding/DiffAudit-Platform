@@ -454,7 +454,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     const auc = parseFloat(row.aucLabel);
                     return (
                     <tr
-                      key={`${row.track}-${row.attack}-${row.defense}`}
+                      key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${index}`}
                       className={`table-row-hover border-b border-border transition-all duration-200 hover:bg-muted/30 ${
                         index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
@@ -506,8 +506,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function WorkspaceHomePage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+export default async function WorkspaceHomePage() {
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (

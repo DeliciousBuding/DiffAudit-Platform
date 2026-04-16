@@ -61,8 +61,13 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
   }
 
   const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(33, 34, 38, 0.1)";
-  const axisColor = isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(33, 34, 38, 0.4)";
   const tickColor = isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(33, 34, 38, 0.6)";
+  const tickFont = {
+    fill: tickColor,
+    fontSize: 10,
+    fontFamily: "\"PingFang SC\", \"Microsoft YaHei\", \"Segoe UI\", sans-serif",
+    fontWeight: 500,
+  };
 
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -70,12 +75,12 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
         <PolarGrid stroke={gridColor} />
         <PolarAngleAxis
           dataKey="label"
-          tick={{ fill: tickColor, fontSize: 10 }}
+          tick={tickFont}
           tickLine={false}
         />
         <PolarRadiusAxis
           domain={[0, 1]}
-          tick={{ fill: tickColor, fontSize: 9 }}
+          tick={{ ...tickFont, fontSize: 9 }}
           tickCount={5}
           axisLine={false}
           tickLine={false}

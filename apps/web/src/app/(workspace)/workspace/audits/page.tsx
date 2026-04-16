@@ -12,8 +12,7 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";
 import { TaskListClient } from "./TaskListClient";
 
-export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+async function WorkspaceAuditsPageContent(resolvedLocale: Locale) {
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 
   return (
@@ -78,4 +77,9 @@ export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale 
       </section>
     </div>
   );
+}
+
+export default async function WorkspaceAuditsPage() {
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
+  return WorkspaceAuditsPageContent(resolvedLocale);
 }
