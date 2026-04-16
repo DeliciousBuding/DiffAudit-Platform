@@ -131,15 +131,13 @@ export function ParticleField({ className }: { className?: string }) {
         const t = (now - start) % CYCLE_MS;
         
         let noiseLevel = 0;
-        if (t < 2500) {
-           let progress = t / 2500;
-           // easeInBack: retracts slightly into logo shapes then violently bursts
+        if (t < 3500) {
+           let progress = t / 3500;
            noiseLevel = c3 * progress * progress * progress - c1 * progress * progress;
         } else if (t < 7500) {
            noiseLevel = 1;
-        } else if (t < 11500) {
-           let progress = (t - 7500) / 4000;
-           // easeOutBack: blasts slightly past target shapes then naturally rebounds
+        } else if (t < 13000) {
+           let progress = (t - 7500) / 5500;
            let easedProgress = 1 + c3 * Math.pow(progress - 1, 3) + c1 * Math.pow(progress - 1, 2);
            noiseLevel = 1 - easedProgress; 
         } else {
