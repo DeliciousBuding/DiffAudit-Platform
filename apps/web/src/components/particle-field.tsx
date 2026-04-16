@@ -48,11 +48,9 @@ export function ParticleField({ className }: { className?: string }) {
       const hctx = hcanvas.getContext("2d", { willReadFrequently: true });
       if (!hctx) return;
 
-      // Preserve aspect ratio of the SVG logo
       const aspect = img.width / img.height;
       let drawW, drawH;
       
-      // Make it span around 65% of the screen logically
       if (width > height) {
         drawH = height * 0.65;
         drawW = drawH * aspect;
@@ -65,7 +63,6 @@ export function ParticleField({ className }: { className?: string }) {
         drawH = drawW / aspect;
       }
       
-      // Place it in the dead center
       const lx = (width - drawW) / 2;
       const ly = (height - drawH) / 2;
       
@@ -84,6 +81,27 @@ export function ParticleField({ className }: { className?: string }) {
       }
 
       if (validPoints.length === 0) validPoints.push({ x: width/2, y: height/2 });
+
+      // Dynamically center based on actual visual bounding box
+      // (Bypasses SVG viewBox interior whitespace issues causing it to look left-heavy)
+      let minX = width, maxX = 0;
+      let minY = height, maxY = 0;
+      for (const p of validPoints) {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+      }
+      
+      const actualCenterX = (minX + maxX) / 2;
+      const actualCenterY = (minY + maxY) / 2;
+      const offsetX = width / 2 - actualCenterX;
+      const offsetY = height / 2 - actualCenterY;
+
+      for (const p of validPoints) {
+        p.x += offsetX;
+        p.y += offsetY;
+      }
 
       const particles = Array.from({ length: PARTICLE_COUNT }).map((_, i) => {
         const pt = validPoints[Math.floor(Math.random() * validPoints.length)];
