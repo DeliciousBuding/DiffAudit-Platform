@@ -6,10 +6,18 @@ interface CompetitionData {
   catalogSize: number;
   defendedRows: number;
   locale: string;
+  contracts?: CompetitionContract[];
+}
+
+export interface CompetitionContract {
+  contractKey: string;
+  label: string;
+  systemGap: string;
+  workspace: string;
 }
 
 export function generateCompetitionReportHTML(data: CompetitionData): string {
-  const { rows, catalogSize, defendedRows, locale } = data;
+  const { rows, catalogSize, defendedRows, locale, contracts = [] } = data;
   const isZh = locale === "zh-CN";
 
   // Compute statistics
@@ -44,6 +52,16 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
 
   const defenses = Array.from(defenseMap.keys()).filter((d) => d !== "none" && d !== "None");
   const attacks = Array.from(new Set(rows.map((r) => r.attack)));
+  const comparePairs = computeComparePairs(rows);
+  const effectiveCount = comparePairs.filter((pair) => pair.deltaAuc !== null && pair.deltaAuc < -0.1).length;
+  const avgDelta = comparePairs.length > 0
+    ? comparePairs.reduce((sum, pair) => sum + (pair.deltaAuc ?? 0), 0) / comparePairs.length
+    : 0;
+  const coverageGaps = rows
+    .map((row) => ({ attack: row.attack, defense: row.defense, auc: parseFloat(row.aucLabel) }))
+    .filter((row) => !Number.isNaN(row.auc) && row.auc >= 0.7)
+    .sort((a, b) => b.auc - a.auc)
+    .slice(0, 8);
 
   const now = new Date().toLocaleDateString(isZh ? "zh-CN" : "en-US", {
     year: "numeric",
@@ -99,6 +117,14 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
         ],
     // Risk
     riskOverview: isZh ? "风险分布" : "Risk Distribution",
+    aucDistribution: isZh ? "AUC 分数分布" : "AUC Score Distribution",
+    rocCurve: isZh ? "ROC 曲线" : "ROC Curve",
+    attackComparison: isZh ? "攻击效果对比" : "Attack Comparison",
+    defenseEffectiveness: isZh ? "防御效果对比" : "Defense Effectiveness",
+    coverageGaps: isZh ? "覆盖缺口" : "Coverage gaps",
+    summaryPairs: isZh ? "对比组数" : "Comparison Pairs",
+    summaryEffective: isZh ? "有效防御" : "Effective Defense",
+    summaryAvgChange: isZh ? "AUC 平均变化" : "Avg AUC Change",
     high: riskLabel("high", locale),
     medium: riskLabel("medium", locale),
     low: riskLabel("low", locale),
@@ -263,6 +289,15 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
   </div>
 </div>
 
+<div class="section">
+  <h2>${t.aucDistribution}</h2>
+  <p>${aucValues.map((value) => value.toFixed(3)).join(" / ") || "n/a"}</p>
+  <h2>${t.rocCurve}</h2>
+  <p>${isZh ? "基于平均 AUC 生成的导出曲线摘要。" : "Derived export curve summary based on average AUC."}</p>
+  <h2>${t.attackComparison}</h2>
+  <p>Recon ${reconAuc} | PIA ${piaAuc} | GSA ${gsaAuc}</p>
+</div>
+
 <!-- Three Attack Lines -->
 <div class="section">
   <h2>${t.attackLines}</h2>
@@ -303,7 +338,21 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
 
 <!-- Defense Comparison -->
 ${defenses.length > 0 ? `<div class="section">
-  <h2>${t.defenseComparison}</h2>
+  <h2>${t.defenseEffectiveness}</h2>
+  <div class="summary-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+    <div class="summary-card">
+      <div class="value">${comparePairs.length}</div>
+      <div class="label">${t.summaryPairs}</div>
+    </div>
+    <div class="summary-card">
+      <div class="value">${avgDelta >= 0 ? "+" : ""}${avgDelta.toFixed(3)}</div>
+      <div class="label">${t.summaryAvgChange}</div>
+    </div>
+    <div class="summary-card">
+      <div class="value">${effectiveCount}/${comparePairs.length || 0}</div>
+      <div class="label">${t.summaryEffective}</div>
+    </div>
+  </div>
   <table>
     <thead><tr>
       <th style="${thStyle}">${t.defense}</th>
@@ -313,6 +362,44 @@ ${defenses.length > 0 ? `<div class="section">
       <th style="${thStyle}">${t.tpr}</th>
     </tr></thead>
     <tbody>${defenseRows()}</tbody>
+  </table>
+</div>` : ""}
+
+${coverageGaps.length > 0 ? `<div class="section">
+  <h2>${t.coverageGaps}</h2>
+  <table>
+    <thead><tr>
+      <th style="${thStyle}">${t.attack}</th>
+      <th style="${thStyle}">${t.defense}</th>
+      <th style="${thStyle}">${t.auc}</th>
+    </tr></thead>
+    <tbody>
+      ${coverageGaps.map((gap) => `<tr>
+        <td style="${tdStyle}">${gap.attack}</td>
+        <td style="${tdStyle}">${gap.defense}</td>
+        <td style="${tdStyle}${monoStyle}">${gap.auc.toFixed(3)}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>
+</div>` : ""}
+
+${contracts.length > 0 ? `<div class="section">
+  <h2>${t.coverageGaps}</h2>
+  <table>
+    <thead><tr>
+      <th style="${thStyle}">Contract Key</th>
+      <th style="${thStyle}">Label</th>
+      <th style="${thStyle}">System Gap</th>
+      <th style="${thStyle}">Workspace</th>
+    </tr></thead>
+    <tbody>
+      ${contracts.map((contract) => `<tr>
+        <td style="${tdStyle}${monoStyle}">${contract.contractKey}</td>
+        <td style="${tdStyle}">${contract.label}</td>
+        <td style="${tdStyle}">${contract.systemGap}</td>
+        <td style="${tdStyle}">${contract.workspace}</td>
+      </tr>`).join("")}
+    </tbody>
   </table>
 </div>` : ""}
 
@@ -335,4 +422,34 @@ ${defenses.length > 0 ? `<div class="section">
 function avgTrackAuc(trackRows: ReportExportRow[]): string {
   const aucs = trackRows.map((r) => parseFloat(r.aucLabel)).filter((v) => !Number.isNaN(v));
   return aucs.length > 0 ? (aucs.reduce((a, b) => a + b, 0) / aucs.length).toFixed(3) : "n/a";
+}
+
+function computeComparePairs(rows: ReportExportRow[]) {
+  const grouped = new Map<string, { undefended?: number; defended: Array<{ defense: string; auc: number }> }>();
+
+  for (const row of rows) {
+    const key = `${row.attack}|||${row.model}`;
+    if (!grouped.has(key)) {
+      grouped.set(key, { defended: [] });
+    }
+    const bucket = grouped.get(key)!;
+    const auc = parseFloat(row.aucLabel);
+    if (Number.isNaN(auc)) {
+      continue;
+    }
+    if (row.defense === "none" || row.defense === "None") {
+      bucket.undefended = auc;
+    } else {
+      bucket.defended.push({ defense: row.defense, auc });
+    }
+  }
+
+  return Array.from(grouped.entries()).flatMap(([key, value]) => {
+    const [attack] = key.split("|||");
+    return value.defended.map((defendedRow) => ({
+      attack,
+      defense: defendedRow.defense,
+      deltaAuc: value.undefended !== undefined ? defendedRow.auc - value.undefended : null,
+    }));
+  });
 }

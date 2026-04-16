@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import {
   getStoredLocale,
-  LanguagePicker,
   type Locale,
 } from "@/components/language-picker";
 import { ParticleField } from "@/components/particle-field";
@@ -49,8 +48,10 @@ const HOME_COPY: Record<
       docs: NavItem;
     };
     hero: {
-      title: [string, string];
-      subtitle: string;
+      headline: string;
+      subheadline: string;
+      description: string;
+      subheadlineNoWrap?: boolean;
       primaryCtaLoggedIn: string;
       primaryCtaLoggedOut: string;
       secondaryCta: string;
@@ -251,8 +252,9 @@ const HOME_COPY: Record<
       },
     },
     hero: {
-      title: ["探明数据记忆边界", ""],
-      subtitle: "让生成模型的隐私风险与合规分析有迹可循。",
+      headline: "探明数据记忆边界",
+      subheadline: "让生成模型的隐私风险与合规分析有迹可循。",
+      description: "基于成员推断攻击（MIA）的生成式扩散模型隐私审计平台。",
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",
       secondaryCta: "查看能力范围",
@@ -476,8 +478,10 @@ const HOME_COPY: Record<
       },
     },
     hero: {
-      title: ["Audit diffusion models", "before they reach production."],
-      subtitle: "Membership inference attack platform for privacy-aware AI compliance.",
+      headline: "Audit diffusion models",
+      subheadline: "before they reach production.",
+      description: "Membership inference attack platform for privacy-aware AI compliance.",
+      subheadlineNoWrap: true,
       primaryCtaLoggedIn: "Open audit workspace",
       primaryCtaLoggedOut: "Sign in to start",
       secondaryCta: "Explore coverage",
@@ -578,20 +582,14 @@ function DropdownPanel({ item }: { item: NavItem | null }) {
 export function MarketingHome({
   loggedIn,
   workbenchUrl = "/workspace",
+  initialLocale,
 }: {
   loggedIn: boolean;
   workbenchUrl?: string;
+  initialLocale?: Locale;
 }) {
-  const [locale, setLocale] = useState<Locale>("en-US");
+  const [locale] = useState<Locale>(() => initialLocale ?? getStoredLocale());
   const [openNav, setOpenNav] = useState<string | null>(null);
-
-  useEffect(() => {
-    const stored = getStoredLocale();
-    if (stored !== locale) {
-      setLocale(stored);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -715,33 +713,28 @@ export function MarketingHome({
           </div>
 
           <div className="header-container" style={{ maxWidth: "900px" }}>
-            <h1 className="landing-main-header">
-              <span>{copy.hero.title[0]}</span>
-              {copy.hero.title[1] && <span>{copy.hero.title[1]}</span>}
-            </h1>
-            <p style={{
-              marginTop: "1.5rem",
-              fontSize: "clamp(16px, 2vw, 22px)",
-              fontWeight: 500,
-              color: "var(--muted-foreground)",
-              letterSpacing: "0.02em",
-              lineHeight: 1.6,
-            }}>
-              {copy.hero.subtitle}
-            </p>
+            <div className="landing-hero-copy">
+              <h1 className="landing-main-header">{copy.hero.headline}</h1>
+              <p
+                className={`landing-subheader${copy.hero.subheadlineNoWrap ? " landing-subheader-nowrap" : ""}`}
+              >
+                {copy.hero.subheadline}
+              </p>
+              <p className="landing-hero-body landing-hero-body-nowrap">{copy.hero.description}</p>
+            </div>
           </div>
 
-          <div className="welcome-cta" style={{ paddingTop: "2rem" }}>
+          <div className="welcome-cta">
             {loggedIn ? (
-              <Link href={workbenchUrl} className="hero-button hero-button-primary" style={{ borderRadius: "10px" }}>
+              <Link href={workbenchUrl} className="hero-button hero-button-primary">
                 {copy.hero.primaryCtaLoggedIn}
               </Link>
             ) : (
-              <Link href="/login" className="hero-button hero-button-primary" style={{ borderRadius: "10px" }}>
+              <Link href="/login" className="hero-button hero-button-primary">
                 {copy.hero.primaryCtaLoggedOut}
               </Link>
             )}
-            <a href="#coverage" className="hero-button hero-button-secondary" style={{ borderRadius: "10px" }}>
+            <a href="#coverage" className="hero-button hero-button-secondary">
               {copy.hero.secondaryCta}
             </a>
           </div>

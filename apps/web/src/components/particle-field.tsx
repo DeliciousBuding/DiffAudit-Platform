@@ -5,14 +5,14 @@ import { useEffect, useRef, useCallback } from "react";
 /**
  * Membership Inference Attack (MIA) visual metaphor particle system.
  *
- * - 350 particles, 10% are "members" (colored highlights)
+ * - 455 particles, 10% are "members" (muted colored highlights)
  * - Tangential force field creates laminar flow around center
  * - Audit pulse: member-to-member connections flash with signal frequency
  * - Diffusion cycle: noise ↔ structure oscillation
  * - Center exclusion zone keeps hero text readable
  */
 
-const PARTICLE_COUNT = 350;
+export const PARTICLE_COUNT = 455;
 const MEMBER_RATIO = 0.1;
 const CONNECT_DIST_NORMAL = 50;
 const CONNECT_DIST_MEMBER = 130;
@@ -20,11 +20,11 @@ const CONNECT_DIST_MEMBER = 130;
 const BASE_COLOR_LIGHT = { r: 156, g: 163, b: 175 }; // gray-400
 const BASE_COLOR_DARK = { r: 100, g: 116, b: 139 };  // slate-500
 
-const MEMBER_COLORS = [
-  { r: 139, g: 164, b: 249 }, // indigo-400
-  { r: 167, g: 139, b: 250 }, // violet-400
-  { r: 74, g: 222, b: 128 },  // green-400
-  { r: 251, g: 146, b: 60 },  // orange-400
+export const MEMBER_COLORS = [
+  { r: 119, g: 138, b: 214 },
+  { r: 148, g: 129, b: 216 },
+  { r: 96, g: 184, b: 124 },
+  { r: 214, g: 146, b: 92 },
 ];
 
 interface Particle {

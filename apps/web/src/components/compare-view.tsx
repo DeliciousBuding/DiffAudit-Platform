@@ -24,7 +24,7 @@ interface ComparePair {
   deltaTpr: number | null;
 }
 
-function computeComparePairs(rows: AttackDefenseRowViewModel[]): ComparePair[] {
+export function computeComparePairs(rows: AttackDefenseRowViewModel[]): ComparePair[] {
   // Group by attack + model
   const byAttackModel = new Map<string, { undefended: AttackDefenseRowViewModel[]; defended: AttackDefenseRowViewModel[] }>();
   for (const row of rows) {

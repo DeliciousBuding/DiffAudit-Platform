@@ -8,7 +8,6 @@ import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { ExportReportButton } from "@/components/export-report-button";
-import type { ReportExportRow } from "@/lib/risk-report";
 import { TableSkeleton } from "@/components/skeleton";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
@@ -16,9 +15,9 @@ import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
-import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { MetricLabel } from "@/components/metric-label";
+import { CompareView } from "@/components/compare-view";
 
 // Cache RSC responses for 60s — demo data doesn't change during a session
 export const revalidate = 60;
@@ -61,17 +60,8 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   const rows = table?.rows ?? [];
   const catalogSize = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
+  const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 6) ?? [];
   const localeCode = locale === "zh-CN" ? "zh-CN" : "en-US";
-  const exportRows: ReportExportRow[] = rows.map((r) => ({
-    track: r.track,
-    attack: r.attack,
-    defense: r.defense,
-    model: r.model,
-    aucLabel: r.aucLabel,
-    asrLabel: r.asrLabel,
-    tprLabel: r.tprLabel,
-    evidenceLevel: r.evidenceLevel,
-  }));
 
   // Build chart data
   const aucValues = rows
@@ -207,6 +197,49 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
         </section>
       )}
 
+      <CompareView rows={rows} locale={locale} />
+
+      <section className="border border-border bg-card">
+        <div className="border-b border-border bg-muted/20 px-3 py-2">
+          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {copy.sections.coverageGaps}
+          </h2>
+        </div>
+        <div className="overflow-auto">
+          {contracts.length > 0 ? (
+            <table className="w-full border-collapse text-xs">
+              <thead className="sticky top-0 bg-muted/30">
+                <tr className="border-b border-border">
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.contractKey}</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.label}</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.systemGap}</th>
+                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.workspace}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {contracts.map((entry, index) => (
+                  <tr
+                    key={entry.contractKey}
+                    className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+                      index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                    }`}
+                  >
+                    <td className="mono px-3 py-2 text-xs text-muted-foreground">{entry.contractKey}</td>
+                    <td className="px-3 py-2 font-medium">{entry.label}</td>
+                    <td className="px-3 py-2 text-muted-foreground max-w-xs">{entry.systemGap}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{entry.bestWorkspace}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+              {copy.emptyGaps}
+            </div>
+          )}
+        </div>
+      </section>
+
       <section className="rounded-lg border border-border bg-card" id="report-table">
         <div className="border-b border-border bg-muted/20 px-3 py-2">
           <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -284,68 +317,17 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
           <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
         </div>
         <ExportReportButton
-          rows={exportRows}
+          rows={rows}
           label={copy.exportSummary}
           locale={localeCode}
           catalogSize={catalogSize}
           defendedRows={defendedRows}
+          contracts={contracts}
         />
       </div>
 
-      {/* Tabbed content: Results + Compare — 7.3 */}
-      <ReportsClient rows={rows} locale={locale} resultsContent={resultsContent} />
+      {resultsContent}
     </>
-  );
-}
-
-/** Async server component that fetches and renders the coverage gaps table */
-async function CoverageGapsSection({ locale }: { locale: Locale }) {
-  const copy = WORKSPACE_COPY[locale].reports;
-  const th = copy.tableHeaders;
-  const catalog = await fetchCatalogDashboard();
-  const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 6) ?? [];
-
-  return (
-    <section className="border border-border bg-card">
-      <div className="border-b border-border bg-muted/20 px-3 py-2">
-        <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {copy.sections.coverageGaps}
-        </h2>
-      </div>
-      <div className="overflow-auto">
-        {contracts.length > 0 ? (
-          <table className="w-full border-collapse text-xs">
-            <thead className="sticky top-0 bg-muted/30">
-              <tr className="border-b border-border">
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.contractKey}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.label}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.systemGap}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.workspace}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contracts.map((entry, index) => (
-                <tr
-                  key={entry.contractKey}
-                  className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
-                    index % 2 === 0 ? "bg-background" : "bg-muted/10"
-                  }`}
-                >
-                  <td className="mono px-3 py-2 text-xs text-muted-foreground">{entry.contractKey}</td>
-                  <td className="px-3 py-2 font-medium">{entry.label}</td>
-                  <td className="px-3 py-2 text-muted-foreground max-w-xs">{entry.systemGap}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{entry.bestWorkspace}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-            {copy.emptyGaps}
-          </div>
-        )}
-      </div>
-    </section>
   );
 }
 
@@ -372,14 +354,6 @@ export default async function WorkspaceReportsPage({ locale }: { locale?: Locale
         </>
       }>
         <AuditResultsSection locale={resolvedLocale} />
-      </Suspense>
-
-      <Suspense fallback={
-        <section className="border border-border bg-card">
-          <TableSkeleton rows={6} cols={4} />
-        </section>
-      }>
-        <CoverageGapsSection locale={resolvedLocale} />
       </Suspense>
     </div>
   );
