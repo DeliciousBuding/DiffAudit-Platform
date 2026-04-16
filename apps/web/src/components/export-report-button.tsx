@@ -4,6 +4,7 @@ import { useState, useCallback, type ReactNode } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
 
 import { generateReportHTML } from "@/lib/risk-report";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -86,9 +87,17 @@ async function exportElementAsPdf(element: ReactNode, filenamePrefix: string) {
   const root = createRoot(tempDiv);
 
   try {
-    root.render(element);
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    const canvas = await html2canvas(tempDiv.firstElementChild as HTMLElement, {
+    flushSync(() => {
+      root.render(element);
+    });
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    const target = tempDiv.firstElementChild as HTMLElement | null;
+    if (!target) {
+      throw new Error("Printable report root did not mount");
+    }
+
+    const canvas = await html2canvas(target, {
       scale: 2,
       useCORS: true,
       logging: false,
@@ -122,7 +131,8 @@ export function ExportReportButton({
         <PrintableAuditReport locale={locale} rows={rows} contracts={contracts} />,
         "DiffAudit-Report",
       );
-    } catch {
+    } catch (error) {
+      console.error("DiffAudit printable export failed, falling back to HTML template", error);
       const fallbackHtml = generateReportHTML(rows, locale);
       await exportHtmlAsPdf(fallbackHtml, "DiffAudit-Report");
     } finally {

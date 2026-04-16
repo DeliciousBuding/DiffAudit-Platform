@@ -271,7 +271,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
               <tbody>
                 {rows.map((row, index) => (
                   <tr
-                    key={`${row.track}-${row.attack}-${row.defense}`}
+                    key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.evidenceLevel}-${index}`}
                     className={`table-row-hover border-b border-border transition-all duration-200 hover:bg-muted/30 ${
                       index % 2 === 0 ? "bg-background" : "bg-muted/10"
                     }`}

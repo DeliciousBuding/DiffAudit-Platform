@@ -10,7 +10,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
   const locale = resolveLocaleFromHeaderStore(await headers());
 
   return (
-    <main className="site-shell">
+    <main className="site-shell auth-layout-main">
       <header className="site-header">
         <div className="container site-header-inner">
           <BrandMark compact />
@@ -18,8 +18,10 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </div>
       </header>
 
-      <section className="container py-12 md:py-20 mt-12 md:mt-16">
-        {children}
+      <section className="auth-layout-shell">
+        <div className="container auth-layout-stage">
+          {children}
+        </div>
       </section>
     </main>
   );
