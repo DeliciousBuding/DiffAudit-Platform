@@ -47,6 +47,7 @@ describe("MarketingHome hero", () => {
     expect(markup).toContain("探明数据记忆边界");
     expect(markup).toContain("让生成模型的隐私风险与合规分析有迹可循。");
     expect(markup).toContain("基于成员推断攻击（MIA）的生成式扩散模型隐私审计平台。");
+    expect(markup).not.toContain("Audit diffusion models");
     expect(markup).toContain("landing-subheader");
     expect(markup).toContain("landing-hero-body landing-hero-body-nowrap");
   });

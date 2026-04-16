@@ -59,23 +59,45 @@ Executed on `apps/web`:
 - `npm run test` -> pass
   - Result: 28 passed test files, 93 passed tests, 0 failed
 
-## Branch and Sync Status (at note time)
+## Branch and Sync Status (final)
 
 - Local branch: `main`
-- Local is ahead of `origin/main` with stacked commits in this working sequence
-- Remotes configured:
-  - `origin` -> GitHub
-  - `gz2` -> runtime host bare repo
+- Commit: `bf9b648`
+- GitHub: `origin/main` synced to `bf9b648`
+- `gz2` remote: direct push to `main` was rejected due non-fast-forward divergence.
+  - Resolution used: pushed `main` to `gz2/deploy-sync-2026-04-17` and switched live worktree to that branch.
+- Current `gz2` live worktree branch: `deploy-sync-2026-04-17`
+- Current `gz2` live worktree commit: `bf9b648`
 
-## Push and Runtime Sync Plan
+## Runtime Sync Execution
 
-1. Commit this finalized fix/documentation set to `main`.
-2. Push `main` to `origin`.
-3. Push `main` to `gz2` (runtime remote) for server-side fast-forward sync.
-4. On `gz2` live worktree, fast-forward pull and restart only if service rollout is required.
-5. Re-verify:
-   - local web routes (`/`, `/login`, `/workspace`)
-   - public route headers via runbook sequence
+1. Pushed to GitHub:
+  - `git push origin main`
+2. Synced to `gz2` safely without force-pushing diverged branches:
+  - `git push gz2 main:deploy-sync-2026-04-17`
+  - on `gz2`: checked out `deploy-sync-2026-04-17`
+3. Built web runtime on `gz2`:
+  - first build failed due missing workspace dependencies
+  - resolved by running `npm --prefix apps/web install`
+  - second build succeeded
+4. Restarted web service:
+  - `sudo systemctl restart diffaudit-platform-web.service`
+5. Cleaned temporary working tree drift on `gz2`:
+  - reverted transient `package-lock.json` modification caused by install
+
+## Runtime Verification (completed)
+
+- `gz2` local checks:
+  - `http://127.0.0.1:3000/` -> `200`
+  - `http://127.0.0.1:3000/login` -> `200`
+  - `http://127.0.0.1:3000/workspace` -> `307` redirect to login
+  - `diffaudit-platform-web.service` -> `active`
+  - `diffaudit-platform-api.service` -> `active`
+  - `http://127.0.0.1:8780/health` -> `200`
+- Public checks:
+  - `https://diffaudit.vectorcontrol.tech/` -> `200`
+  - `https://diffaudit.vectorcontrol.tech/login` -> `200`
+  - `https://diffaudit.vectorcontrol.tech/workspace` -> `307`
 
 ## Handoff Essentials
 
