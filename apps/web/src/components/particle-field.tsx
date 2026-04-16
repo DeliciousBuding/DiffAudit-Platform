@@ -82,8 +82,6 @@ export function ParticleField({ className }: { className?: string }) {
 
       if (validPoints.length === 0) validPoints.push({ x: width/2, y: height/2 });
 
-      // Dynamically center based on actual visual bounding box
-      // (Bypasses SVG viewBox interior whitespace issues causing it to look left-heavy)
       let minX = width, maxX = 0;
       let minY = height, maxY = 0;
       for (const p of validPoints) {
@@ -95,7 +93,8 @@ export function ParticleField({ className }: { className?: string }) {
       
       const actualCenterX = (minX + maxX) / 2;
       const actualCenterY = (minY + maxY) / 2;
-      const offsetX = width / 2 - actualCenterX;
+      // Added a manual 4% visual weight offset to the right
+      const offsetX = width / 2 - actualCenterX + (width * 0.04);
       const offsetY = height / 2 - actualCenterY;
 
       for (const p of validPoints) {
