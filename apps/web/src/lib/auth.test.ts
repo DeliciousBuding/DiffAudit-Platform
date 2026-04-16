@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { eq } from "drizzle-orm";
-import OTPAuth from "otpauth";
+import { Secret, TOTP } from "otpauth";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
@@ -416,13 +416,13 @@ describe("auth route helpers", () => {
   it("enables TOTP 2FA with a valid code and returns recovery codes", async () => {
     const user = await createUser("delicious233", null, "DiffAuditTemp!2026");
     const setup = beginTwoFactorSetup(user.id, "DiffAudit", "delicious233");
-    const totp = new OTPAuth.TOTP({
+    const totp = new TOTP({
       issuer: "DiffAudit",
       label: "delicious233",
       algorithm: "SHA1",
       digits: 6,
       period: 30,
-      secret: OTPAuth.Secret.fromBase32(setup.secret),
+      secret: Secret.fromBase32(setup.secret),
     });
     const code = totp.generate();
 
@@ -451,13 +451,13 @@ describe("auth route helpers", () => {
   it("disables TOTP 2FA and clears the enabled status", async () => {
     const user = await createUser("delicious233", null, "DiffAuditTemp!2026");
     const setup = beginTwoFactorSetup(user.id, "DiffAudit", "delicious233");
-    const totp = new OTPAuth.TOTP({
+    const totp = new TOTP({
       issuer: "DiffAudit",
       label: "delicious233",
       algorithm: "SHA1",
       digits: 6,
       period: 30,
-      secret: OTPAuth.Secret.fromBase32(setup.secret),
+      secret: Secret.fromBase32(setup.secret),
     });
     enableTwoFactor(user.id, totp.generate());
 

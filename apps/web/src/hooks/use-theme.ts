@@ -76,5 +76,14 @@ export function useTheme() {
     setThemeState(nextTheme);
   }, []);
 
-  return { theme, toggle };
+  const setTheme = useCallback((nextTheme: ThemeMode) => {
+    if (nextTheme === "system") {
+      const resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      setThemeState(resolved);
+      return;
+    }
+    setThemeState(nextTheme);
+  }, []);
+
+  return { theme, resolvedTheme: theme, setTheme, toggle };
 }

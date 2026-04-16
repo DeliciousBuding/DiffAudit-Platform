@@ -9,6 +9,7 @@ import {
   type Locale,
 } from "@/components/language-picker";
 import { ParticleField } from "@/components/particle-field";
+import { UserAvatar } from "@/components/user-avatar";
 import { GithubIcon } from "@/components/platform-shell-icons";
 
 type NavLink = {
@@ -679,6 +680,7 @@ export function MarketingHome({
                 >
                   <GithubIcon />
                 </a>
+                <UserAvatar />
               </>
             ) : (
               <>
@@ -827,4 +829,3 @@ export function MarketingHome({
     </main>
   );
 }
-

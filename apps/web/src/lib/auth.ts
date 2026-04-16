@@ -1,6 +1,7 @@
 import { eq, and, ne, or } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
+import { Secret, TOTP } from "otpauth";
 
 import { getDb, schema } from "@/lib/db";
 
@@ -208,7 +209,22 @@ export type CurrentUserProfile = {
   bio: string | null;
   providers: string[];
   hasPassword: boolean;
+  twoFactorEnabled: boolean;
 };
+
+type TwoFactorEnableResult =
+  | { ok: true; recoveryCodes: string[] }
+  | { ok: false; reason: "not_initialized" | "invalid_code" };
+
+function generateRecoveryCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const raw = Array.from(crypto.randomBytes(8), (byte) => chars[byte % chars.length]).join("");
+  return `${raw.slice(0, 4)}-${raw.slice(4, 8)}`;
+}
+
+function generateRecoveryCodes(count: number): string[] {
+  return Array.from({ length: count }, () => generateRecoveryCode());
+}
 
 type EmailVerificationRequest = {
   token: string;
@@ -475,6 +491,101 @@ export function verifyEmailToken(token: string): EmailVerificationResult {
   };
 }
 
+export function beginTwoFactorSetup(
+  userId: string,
+  issuer: string,
+  label: string,
+): { secret: string; otpauthUrl: string } {
+  const db = getDb();
+  const now = new Date();
+
+  const secret = new Secret({ size: 20 });
+  const secretBase32 = secret.base32;
+  const totp = new TOTP({
+    issuer,
+    label,
+    algorithm: "SHA1",
+    digits: 6,
+    period: 30,
+    secret,
+  });
+
+  const existing = db.select().from(schema.twoFactorSettings).where(eq(schema.twoFactorSettings.userId, userId)).get();
+  if (existing) {
+    db.update(schema.twoFactorSettings)
+      .set({
+        totpSecret: secretBase32,
+        recoveryCodes: null,
+        enabled: false,
+        updatedAt: now,
+      })
+      .where(eq(schema.twoFactorSettings.userId, userId))
+      .run();
+  } else {
+    db.insert(schema.twoFactorSettings).values({
+      userId,
+      totpSecret: secretBase32,
+      recoveryCodes: null,
+      enabled: false,
+      createdAt: now,
+      updatedAt: now,
+    }).run();
+  }
+
+  return {
+    secret: secretBase32,
+    otpauthUrl: totp.toString(),
+  };
+}
+
+export function enableTwoFactor(userId: string, code: string): TwoFactorEnableResult {
+  const db = getDb();
+  const setting = db.select().from(schema.twoFactorSettings).where(eq(schema.twoFactorSettings.userId, userId)).get();
+
+  if (!setting?.totpSecret) {
+    return { ok: false, reason: "not_initialized" };
+  }
+
+  const totp = new TOTP({
+    algorithm: "SHA1",
+    digits: 6,
+    period: 30,
+    secret: Secret.fromBase32(setting.totpSecret),
+  });
+
+  const valid = totp.validate({ token: code, window: 1 }) !== null;
+  if (!valid) {
+    return { ok: false, reason: "invalid_code" };
+  }
+
+  const recoveryCodes = generateRecoveryCodes(8);
+  db.update(schema.twoFactorSettings)
+    .set({
+      enabled: true,
+      recoveryCodes: JSON.stringify(recoveryCodes),
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.twoFactorSettings.userId, userId))
+    .run();
+
+  return { ok: true, recoveryCodes };
+}
+
+export function disableTwoFactor(userId: string): { ok: true } {
+  const db = getDb();
+  db.update(schema.twoFactorSettings)
+    .set({
+      enabled: false,
+      totpSecret: null,
+      recoveryCodes: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.twoFactorSettings.userId, userId))
+    .run();
+
+  return { ok: true };
+}
+
 export function validateSession(
   token: string | undefined,
 ): { userId: string; username: string; avatarUrl: string | null } | null {
@@ -629,6 +740,12 @@ export function getCurrentUserProfile(token: string | undefined): CurrentUserPro
     .map((entry) => entry.provider)
     .sort();
 
+  const twoFactor = db
+    .select({ enabled: schema.twoFactorSettings.enabled })
+    .from(schema.twoFactorSettings)
+    .where(eq(schema.twoFactorSettings.userId, user.id))
+    .get();
+
   return {
     id: user.id,
     username: user.username,
@@ -640,6 +757,7 @@ export function getCurrentUserProfile(token: string | undefined): CurrentUserPro
     bio: user.bio,
     providers,
     hasPassword: Boolean(user.passwordHash),
+    twoFactorEnabled: Boolean(twoFactor?.enabled),
   };
 }
 
