@@ -120,8 +120,8 @@ export function ParticleField({ className }: { className?: string }) {
         };
       });
 
-      const CYCLE_MS = 24000;
-      const start = Date.now() - 5000; // offset so page loads right into noise!
+      const CYCLE_MS = 18000;
+      const start = Date.now() - 5000; 
 
       const draw = () => {
         const now = Date.now();
@@ -129,12 +129,10 @@ export function ParticleField({ className }: { className?: string }) {
         
         let noiseLevel = 0;
         if (t < 2500) {
-           // Snap away to noise extremely fast! 2.5 seconds
            noiseLevel = (t / 2500); 
         } else if (t < 7500) {
            noiseLevel = 1;
         } else if (t < 11500) {
-           // Fast, 4-second linear snap!
            let p = (t - 7500) / 4000; 
            noiseLevel = 1 - p; 
         } else {
