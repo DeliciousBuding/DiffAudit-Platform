@@ -929,26 +929,6 @@ html.dark .header-pill-primary:hover {
   -webkit-backdrop-filter: blur(18px);
 }
 
-.auth-layout-main {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-.auth-layout-shell {
-  flex: 1;
-  display: flex;
-  min-height: calc(100vh - 64px);
-  padding: 24px 0 32px;
-}
-
-.auth-layout-stage {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .auth-divider {
   position: relative;
   text-align: center;
@@ -1400,11 +1380,6 @@ html.dark .brand-logo-dark {
   .welcome-section {
     padding: 0 0 60px;
   }
-
-  .auth-layout-shell {
-    min-height: calc(100vh - 64px);
-    padding: 20px 0 28px;
-  }
 }
 
 @media (max-width: 767px) {
@@ -1441,15 +1416,6 @@ html.dark .brand-logo-dark {
 
   .footer-spacer {
     display: none;
-  }
-
-  .auth-layout-shell {
-    min-height: auto;
-    padding: 16px 0 24px;
-  }
-
-  .auth-layout-stage {
-    align-items: flex-start;
   }
 }
 

@@ -1,14 +1,22 @@
 import { headers } from "next/headers";
 
-import { githubOAuthConfigured } from "@/lib/auth";
+import { githubOAuthConfigured, googleOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
 import { RegisterForm } from "@/components/register-form";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-export default async function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirectTo?: string }>;
+}) {
+  const { redirectTo } = await searchParams;
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
-  const oauthEnabled = githubOAuthConfigured();
+  const oauthEnabled = {
+    google: googleOAuthConfigured(),
+    github: githubOAuthConfigured(),
+  };
 
   return (
     <div className="mx-auto grid max-w-[960px] gap-8 lg:grid-cols-[0.92fr_1.08fr]">
@@ -22,7 +30,12 @@ export default async function RegisterPage() {
         <div className="caption">{copy.registerPage.formEyebrow}</div>
         <h2 className="mt-3 text-[28px] font-[450] leading-tight">{copy.registerPage.formTitle}</h2>
         <div className="mt-6">
-          <RegisterForm copy={copy.registerForm} pageCopy={copy.registerPage} oauthEnabled={oauthEnabled} />
+          <RegisterForm
+            redirectTo={sanitizeRedirectPath(redirectTo)}
+            copy={copy.registerForm}
+            pageCopy={copy.registerPage}
+            oauthEnabled={oauthEnabled}
+          />
         </div>
       </div>
     </div>

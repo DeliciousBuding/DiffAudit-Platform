@@ -4,10 +4,10 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUserProfile, sanitizeRedirectPath, SESSION_COOKIE_NAME } from "@/lib/auth";
 
-const STATE_COOKIE = "diffaudit_oauth_state";
+const STATE_COOKIE = "diffaudit_google_oauth_state";
 
 export async function GET(request: Request) {
-  const clientId = process.env.GITHUB_CLIENT_ID;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
   const platformUrl = process.env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000";
   const requestUrl = new URL(request.url);
   const intent = requestUrl.searchParams.get("intent");
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   );
 
   if (!clientId) {
-    return NextResponse.json({ message: "GitHub OAuth is not configured." }, { status: 500 });
+    return NextResponse.json({ message: "Google OAuth is not configured." }, { status: 500 });
   }
 
   const state = crypto.randomBytes(16).toString("hex");
@@ -29,13 +29,13 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/login?redirectTo=${encodeURIComponent(redirectTo)}`, request.url));
   }
 
-  const payload = Buffer.from(JSON.stringify({
+  const storedState = Buffer.from(JSON.stringify({
     state,
     redirectTo,
     mode,
     userId: currentUser?.id ?? null,
   }), "utf8").toString("base64url");
-  cookieStore.set(STATE_COOKIE, payload, {
+  cookieStore.set(STATE_COOKIE, storedState, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -43,11 +43,15 @@ export async function GET(request: Request) {
     maxAge: 60 * 10,
   });
 
-  const url = new URL("https://github.com/login/oauth/authorize");
+  const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.searchParams.set("client_id", clientId);
-  url.searchParams.set("redirect_uri", `${platformUrl}/api/auth/github/callback`);
-  url.searchParams.set("scope", "read:user user:email");
+  url.searchParams.set("redirect_uri", `${platformUrl}/api/auth/google/callback`);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("scope", "openid email profile");
   url.searchParams.set("state", state);
+  url.searchParams.set("access_type", "online");
+  url.searchParams.set("include_granted_scopes", "true");
+  url.searchParams.set("prompt", "select_account");
 
   return NextResponse.redirect(url);
 }

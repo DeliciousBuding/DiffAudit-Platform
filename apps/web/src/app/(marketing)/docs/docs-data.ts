@@ -339,6 +339,80 @@ function zhContent(): DocsContent {
           },
         ],
       },
+      {
+        slug: "privacy",
+        group: "参考",
+        navLabel: "隐私政策",
+        eyebrow: "法律",
+        title: "DiffAudit 隐私政策",
+        summary: "本页面说明 DiffAudit 在认证、会话与审计工作台中的数据处理边界。",
+        sections: [
+          {
+            id: "collected",
+            label: "收集范围",
+            title: "我们收集什么",
+            paragraphs: [
+              "当你使用 Google、GitHub 或本地密码登录时，系统会保存必要的账户标识信息，包括用户名、显示名称、头像地址、邮箱和认证来源，用于工作台访问控制与账户展示。",
+              "系统不会读取超出 openid、email、profile 范围的第三方账号数据，也不会将 OAuth access token 持久化到前端页面。",
+            ],
+          },
+          {
+            id: "usage",
+            label: "使用方式",
+            title: "这些数据如何被使用",
+            paragraphs: [
+              "账户信息仅用于身份识别、会话建立、界面展示和后续安全能力（如 Passkey、双因素认证）的绑定准备。",
+              "审计任务、报告、运行状态与账户信息分开存储，结果展示不会主动向第三方身份提供方回传工作台内容。",
+            ],
+          },
+          {
+            id: "retention",
+            label: "保留与删除",
+            title: "数据保留",
+            paragraphs: [
+              "会话令牌按服务端有效期自动过期。账户资料会保留在平台数据库中，用于后续登录识别与账号绑定。",
+              "如需删除测试账号或重置绑定关系，应由平台管理员在部署环境中直接执行数据库清理。当前版本尚未开放自助删除入口。",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "terms",
+        group: "参考",
+        navLabel: "服务条款",
+        eyebrow: "法律",
+        title: "DiffAudit 服务条款",
+        summary: "本页面说明 DiffAudit 公开工作台的使用边界与责任划分。",
+        sections: [
+          {
+            id: "scope",
+            label: "适用范围",
+            title: "允许的使用方式",
+            paragraphs: [
+              "DiffAudit 用于扩散模型成员推断风险审计、结果分析与研究展示。你应仅在获得授权的模型、数据集和运行环境上使用本系统。",
+              "你不得利用工作台发起超出授权范围的任务，也不得将本平台误用为生产防御系统或自动化决策系统。",
+            ],
+          },
+          {
+            id: "accounts",
+            label: "账号使用",
+            title: "账号与访问控制",
+            paragraphs: [
+              "第三方 OAuth 登录在首次授权时会自动创建账户。你应确保提供的身份信息真实且受你控制。",
+              "如需共享演示访问，请通过受控密码或明确的团队流程进行，不得将持久访问权限公开扩散。",
+            ],
+          },
+          {
+            id: "availability",
+            label: "可用性",
+            title: "系统可用性与限制",
+            paragraphs: [
+              "平台按当前研究与演示阶段提供服务，不承诺持续无中断或适用于所有合规审查场景。",
+              "审计结论用于风险发现与辅助决策，不构成法律、合规或安全保证。",
+            ],
+          },
+        ],
+      },
     ],
   };
 }
@@ -617,6 +691,80 @@ function enContent(): DocsContent {
             paragraphs: [
               "Port 8780 is the API Gateway. Port 8765 is the Runtime-Server.",
               "The frontend routes through the API Gateway and does not directly access the Runtime-Server.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "privacy",
+        group: "Reference",
+        navLabel: "Privacy policy",
+        eyebrow: "Legal",
+        title: "DiffAudit Privacy Policy",
+        summary: "This page describes how DiffAudit handles identity, session, and workspace account data.",
+        sections: [
+          {
+            id: "collected",
+            label: "Collected data",
+            title: "What we collect",
+            paragraphs: [
+              "When you sign in with Google, GitHub, or a local password, the platform stores the account identifiers needed for access control and account display, including username, display name, avatar URL, email, and sign-in provider.",
+              "The platform does not request third-party data beyond openid, email, and profile, and it does not persist OAuth access tokens in the frontend workspace.",
+            ],
+          },
+          {
+            id: "usage",
+            label: "Usage",
+            title: "How the data is used",
+            paragraphs: [
+              "Account data is used only for identity verification, session creation, workspace display, and preparation for future security features such as passkeys and multi-factor authentication.",
+              "Audit tasks, reports, and runtime status are stored separately from account metadata. Workspace content is not pushed back to identity providers.",
+            ],
+          },
+          {
+            id: "retention",
+            label: "Retention",
+            title: "Retention and deletion",
+            paragraphs: [
+              "Session tokens expire automatically according to the server-side session policy. Account metadata remains in the platform database for future sign-in recognition and account linking.",
+              "Deleting or resetting test accounts currently requires administrator action in the deployment environment. Self-service deletion is not yet available.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "terms",
+        group: "Reference",
+        navLabel: "Terms",
+        eyebrow: "Legal",
+        title: "DiffAudit Terms of Service",
+        summary: "This page describes the permitted use of the public DiffAudit workspace.",
+        sections: [
+          {
+            id: "scope",
+            label: "Scope",
+            title: "Permitted use",
+            paragraphs: [
+              "DiffAudit is intended for diffusion-model membership inference audits, result analysis, and research demonstration. Use it only with models, datasets, and runtime environments you are authorized to assess.",
+              "You must not use the platform to launch tasks outside your authorized scope, or present it as a production defense or automated compliance decision system.",
+            ],
+          },
+          {
+            id: "accounts",
+            label: "Accounts",
+            title: "Account and access responsibilities",
+            paragraphs: [
+              "Third-party OAuth sign-in creates an account on first authorization. You are responsible for the identity information you use to access the workspace.",
+              "If shared demo access is required, it should be controlled through approved passwords or explicit team processes. Persistent access must not be publicly redistributed.",
+            ],
+          },
+          {
+            id: "availability",
+            label: "Availability",
+            title: "Service availability and limits",
+            paragraphs: [
+              "The platform is provided according to the current research and demo stage and is not guaranteed to be uninterrupted or fit for every compliance workflow.",
+              "Audit conclusions are provided for risk discovery and decision support. They are not legal advice, security guarantees, or regulatory approval.",
             ],
           },
         ],

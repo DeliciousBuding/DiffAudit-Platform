@@ -20,6 +20,10 @@ vi.mock("@/components/brand-mark", () => ({
   BrandMark: () => React.createElement("div", { "data-brand-mark": "true" }, "brand"),
 }));
 
+vi.mock("@/components/theme-toggle-button", () => ({
+  ThemeToggleButton: () => React.createElement("button", { "data-theme-toggle": "true" }, "theme"),
+}));
+
 describe("AuthLayout", () => {
   it("renders a centered auth stage below the header", async () => {
     const markup = renderToStaticMarkup(
@@ -30,5 +34,6 @@ describe("AuthLayout", () => {
     expect(markup).toContain("auth-layout-stage");
     expect(markup).toContain("auth-layout-shell");
     expect(markup).toContain("auth-form");
+    expect(markup).toContain("data-theme-toggle");
   });
 });

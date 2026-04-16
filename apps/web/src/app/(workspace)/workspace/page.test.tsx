@@ -8,7 +8,7 @@ describe("WorkspaceHomePage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders zh-CN copy with backend data", async () => {
+  it("renders zh-CN shell copy with suspense fallback", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -55,18 +55,18 @@ describe("WorkspaceHomePage", () => {
 
     const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态。");
     expect(markup).toContain("看看你的模型泄露了什么。");
-    expect(markup).toContain("工作台");
+    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态。");
+    expect(markup).toContain("animate-pulse");
   });
 
-  it("renders en-US copy when backend data is unavailable", async () => {
+  it("renders en-US shell copy when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
     const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "en-US" }));
 
-    expect(markup).toContain("Your workspace aggregates current audit tasks, recent results, and system status at a glance.");
     expect(markup).toContain("See what your model is leaking.");
-    expect(markup).toContain("Workspace");
+    expect(markup).toContain("Your workspace aggregates current audit tasks, recent results, and system status at a glance.");
+    expect(markup).toContain("animate-pulse");
   });
 });

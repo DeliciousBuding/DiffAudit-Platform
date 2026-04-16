@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { githubOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
+import { githubOAuthConfigured, googleOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
 import { LoginForm } from "@/components/login-form";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -13,7 +13,10 @@ export default async function LoginPage({
   const { redirectTo } = await searchParams;
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
-  const oauthEnabled = githubOAuthConfigured();
+  const oauthEnabled = {
+    google: googleOAuthConfigured(),
+    github: githubOAuthConfigured(),
+  };
 
   return (
     <div className="mx-auto grid max-w-[960px] gap-8 lg:grid-cols-[0.92fr_1.08fr]">
