@@ -106,9 +106,9 @@ export function ParticleField({ className }: { className?: string }) {
         const tx = pt.x + (Math.random() - 0.5) * 4;
         const ty = pt.y + (Math.random() - 0.5) * 4;
         
-        let color = isDark ? "rgba(148, 163, 184, 0.3)" : "rgba(51, 65, 85, 0.4)";
+        let color = isDark ? "rgba(148, 163, 184, 0.3)" : "rgba(100, 116, 139, 0.35)";
         if (Math.random() > 0.9) {
-           color = isDark ? "rgba(47, 109, 246, 0.45)" : "rgba(37, 99, 235, 0.55)";
+           color = isDark ? "rgba(47, 109, 246, 0.45)" : "rgba(37, 99, 235, 0.35)";
         }
 
         return {
@@ -133,10 +133,11 @@ export function ParticleField({ className }: { className?: string }) {
            noiseLevel = noiseLevel * noiseLevel; 
         } else if (t < 9000) {
            noiseLevel = 1;
-        } else if (t < 18000) {
-           let p = (t - 9000) / 9000; 
+        } else if (t < 16000) {
+           // Shortened formation time and reduced easing exponent to prevent dragging
+           let p = (t - 9000) / 7000; 
            noiseLevel = 1 - p; 
-           noiseLevel = Math.pow(noiseLevel, 2.5);
+           noiseLevel = Math.pow(noiseLevel, 1.8);
         } else {
            noiseLevel = 0;
         }
@@ -178,7 +179,7 @@ export function ParticleField({ className }: { className?: string }) {
   }, [theme]);
 
   return (
-    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className || ""}`} style={{ opacity: theme === "dark" ? 0.9 : 1.0 }}>
+    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className || ""}`} style={{ opacity: theme === "dark" ? 0.9 : 0.85 }}>
       <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
     </div>
   );
