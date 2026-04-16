@@ -93,7 +93,6 @@ export function ParticleField({ className }: { className?: string }) {
       
       const actualCenterX = (minX + maxX) / 2;
       const actualCenterY = (minY + maxY) / 2;
-      // Added a manual 4% visual weight offset to the right
       const offsetX = width / 2 - actualCenterX + (width * 0.04);
       const offsetY = height / 2 - actualCenterY;
 
@@ -122,7 +121,9 @@ export function ParticleField({ className }: { className?: string }) {
       });
 
       const CYCLE_MS = 24000;
-      const start = Date.now();
+      // Offset start time by 8000ms so it starts exactly in the high-noise state
+      // (User experiences denoising immediately upon page load)
+      const start = Date.now() - 8000;
 
       const draw = () => {
         const now = Date.now();
