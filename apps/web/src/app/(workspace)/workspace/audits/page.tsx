@@ -2,8 +2,6 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
 
-import { type Locale } from "@/components/language-picker";
-
 // Cache RSC responses for 60s — demo data doesn't change during a session
 export const revalidate = 60;
 
@@ -12,8 +10,8 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";
 import { TaskListClient } from "./TaskListClient";
 
-export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+export default async function WorkspaceAuditsPage() {
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 
   return (

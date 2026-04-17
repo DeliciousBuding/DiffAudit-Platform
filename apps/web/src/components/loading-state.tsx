@@ -1,6 +1,6 @@
 "use client";
 
-import { TableSkeleton, KpiRowSkeleton, ChartSkeleton } from "./skeleton";
+import { TableSkeleton, KpiRowSkeleton } from "./skeleton";
 
 interface LoadingStateProps {
   message?: string;
@@ -39,8 +39,7 @@ export function LoadingState({ message, type = "default", className }: LoadingSt
       </div>
       {type === "table" && <TableSkeleton rows={3} />}
       {type === "kpi" && <KpiRowSkeleton />}
-      {type === "chart" && <ChartSkeleton />}
-      {type === "default" && (
+      {(type === "chart" || type === "default") && (
         <div className="flex items-center justify-center py-8">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-[color:var(--accent-blue)] border-t-transparent" />
         </div>

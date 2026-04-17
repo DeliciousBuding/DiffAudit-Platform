@@ -498,8 +498,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function WorkspaceHomePage({ locale }: { locale?: Locale } = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+export default async function WorkspaceHomePage() {
+  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (

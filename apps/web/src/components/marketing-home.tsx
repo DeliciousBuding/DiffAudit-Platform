@@ -674,7 +674,7 @@ export function MarketingHome({
                 <Link href={workbenchUrl} className="header-pill header-pill-primary hidden sm:inline-flex">
                   {copy.header.openWorkspace}
                 </Link>
-                <LanguagePicker value={locale} onChange={setLocale} compact />
+                <LanguagePicker value={locale} onChange={setLocale} />
                 <ThemeToggleButton />
                 <a
                   href="https://github.com/DeliciousBuding/DiffAudit-Research"
@@ -692,7 +692,7 @@ export function MarketingHome({
                 <Link href="/login" className="header-pill header-pill-primary">
                   {copy.header.signIn}
                 </Link>
-                <LanguagePicker value={locale} onChange={setLocale} compact />
+                <LanguagePicker value={locale} onChange={setLocale} />
                 <ThemeToggleButton />
                 <a
                   href="https://github.com/DeliciousBuding/DiffAudit-Research"

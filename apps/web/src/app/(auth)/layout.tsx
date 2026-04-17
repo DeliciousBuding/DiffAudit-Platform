@@ -19,7 +19,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </div>
         <div className="flex items-center gap-2 pointer-events-auto">
           <ThemeToggleButton />
-          <LanguagePicker value={locale} reloadOnChange compact />
+          <LanguagePicker value={locale} reloadOnChange />
           <a
             href="https://github.com/DeliciousBuding/DiffAudit-Research"
             target="_blank"
