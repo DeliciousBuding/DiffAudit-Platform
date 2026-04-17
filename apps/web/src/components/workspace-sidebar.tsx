@@ -7,7 +7,7 @@ import { type Locale } from "@/components/language-picker";
 import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
 
-function SidebarIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "key" | "settings" }) {
+function SidebarIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" }) {
   const cls = "h-4 w-4 flex-shrink-0";
 
   if (icon === "spark") {
@@ -38,14 +38,6 @@ function SidebarIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "key" 
         <path d="M15 3.8V8h4.2" />
         <path d="M8.5 12h7" />
         <path d="M8.5 15.5h7" />
-      </svg>
-    );
-  }
-
-  if (icon === "key") {
-    return (
-      <svg viewBox="0 0 24 24" className={cls} fill="none" stroke="currentColor" strokeWidth={1.8}>
-        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
       </svg>
     );
   }

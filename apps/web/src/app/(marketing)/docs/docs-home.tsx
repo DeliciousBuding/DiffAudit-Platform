@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { type Locale, LanguagePicker, getStoredLocale } from "@/components/language-picker";
+import type { Locale } from "@/components/language-picker";
+import { getStoredLocale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "./docs-data";
 import { getDocsContent, getDocsPage } from "./docs-data";
+import { Tabs, TabPanel } from "@/components/tabs";
 import { DocsSearch } from "@/components/docs-search";
-import { BrandMark } from "@/components/brand-mark";
-import { GithubIcon } from "@/components/platform-shell-icons";
-import { ThemeToggleButton } from "@/components/theme-toggle-button";
-import { UserAvatar } from "@/components/user-avatar";
 
 type DocsHomeProps = {
   loggedIn: boolean;
@@ -19,7 +16,21 @@ type DocsHomeProps = {
 
 export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const router = useRouter();
-  const [locale] = useState<Locale>(getStoredLocale);
+  const [locale, setLocale] = useState<Locale>("en-US");
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    // Read initial theme from stored preference or system
+    const stored = localStorage.getItem("diffaudit-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDark(stored === "dark" || (!stored && prefersDark));
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("diffaudit-theme", dark ? "dark" : "light");
+  }, [dark]);
 
   const content = getDocsContent(locale);
   const [selectedSlug, setSelectedSlug] = useState(initialSlug ?? content.pages[0]?.slug ?? "");
@@ -30,11 +41,28 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const prevPage = currentPageIndex > 0 ? content.pages[currentPageIndex - 1] : null;
   const nextPage = currentPageIndex < content.pages.length - 1 ? content.pages[currentPageIndex + 1] : null;
 
+  // Compute active group tab from current page — 2.3.3
+  const activeGroupTab = page?.group ?? content.groups[0] ?? "";
+  const groupTabs = content.groups.map((g) => ({
+    value: g,
+    label: g,
+  }));
+
+  // Get pages for the active group
+  const groupPages = content.pages.filter((p) => p.group === activeGroupTab);
+
   // Navigate via Next.js router — 2.3.2
   const handleSelectSlug = useCallback((slug: string) => {
     setSelectedSlug(slug);
     router.push(`/docs/${slug}`);
-  }, [router, setSelectedSlug]);
+  }, [router]);
+
+  function handleGroupChange(groupValue: string) {
+    const firstPageInGroup = content.pages.find((p) => p.group === groupValue);
+    if (firstPageInGroup) {
+      setSelectedSlug(firstPageInGroup.slug);
+    }
+  }
 
   return (
     <DocsLayout
@@ -45,7 +73,13 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
       loggedIn={loggedIn}
       prevPage={prevPage}
       nextPage={nextPage}
+      groupTabs={groupTabs}
+      activeGroupTab={activeGroupTab}
+      onGroupChange={handleGroupChange}
+      groupPages={groupPages}
       locale={locale}
+      dark={dark}
+      setDark={setDark}
     />
   );
 }
@@ -60,8 +94,14 @@ type DocsLayoutProps = {
   nextPage: DocsPage | null;
 };
 
-function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, locale }: DocsLayoutProps & {
+function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, groupTabs, activeGroupTab, onGroupChange, groupPages, locale, dark, setDark }: DocsLayoutProps & {
+  groupTabs: Array<{ value: string; label: string }>;
+  activeGroupTab: string;
+  onGroupChange: (value: string) => void;
+  groupPages: DocsPage[];
   locale: Locale;
+  dark: boolean;
+  setDark: (v: boolean) => void;
 }) {
   // Group pages by their group
   const groupedPages = new Map<string, DocsPage[]>();
@@ -100,93 +140,95 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
   }
 
   return (
-    <div className="docs-surface min-h-screen bg-[var(--color-bg-primary)]">
+    <div className="min-h-screen bg-[var(--color-bg-primary)]">
       {/* Topbar */}
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-5">
-            <Link href="/" className="flex items-center gap-2" aria-label="DiffAudit Home">
-              <BrandMark compact />
-              <span className="hidden sm:inline text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)] border-l border-[var(--color-border-subtle)] pl-3 ml-1">
-                Docs
-              </span>
-            </Link>
-            <nav className="hidden gap-4 sm:flex ml-2">
-              <Link href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+          <div className="flex items-center gap-6">
+            <a href="/" className="text-sm font-semibold text-[var(--color-text-primary)]">
+              DiffAudit
+            </a>
+            <nav className="hidden gap-4 sm:flex">
+              <a href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
                 {content.header.home}
-              </Link>
-              <Link href="/#product" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+              </a>
+              <span className="text-sm font-medium text-[var(--color-text-primary)]">
                 {content.header.docs}
-              </Link>
+              </span>
             </nav>
           </div>
-          <div className="header-controls flex items-center gap-2">
-            {/* Search button */}
+          <div className="flex items-center gap-3">
+            {/* Dark mode toggle */}
+            <button
+              onClick={() => setDark(!dark)}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? (
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="12" cy="12" r="5"/>
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+              )}
+            </button>
+            {/* Search button — 2.3.1 */}
             <button
               onClick={() => {
                 const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true });
                 window.dispatchEvent(event);
               }}
-              className="header-pill hidden sm:inline-flex !h-[38px] gap-2 !px-3 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+              className="hidden sm:flex items-center gap-2 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-colors"
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />
                 <path d="M21 21l-4.35-4.35" />
               </svg>
               <span>{content.header.searchPlaceholder.split("、")[0] || "Search"}</span>
-              <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--color-text-muted)]">
+              <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-1.5 py-0.5 font-mono text-[10px]">
                 Ctrl+K
               </kbd>
             </button>
-            {loggedIn ? (
-              <>
-                <LanguagePicker value={locale} reloadOnChange compact />
-                <ThemeToggleButton />
-                <a
-                  href="https://github.com/DeliciousBuding/DiffAudit-Research"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="header-pill header-pill-icon text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-                  title="GitHub"
-                >
-                  <GithubIcon />
-                </a>
-                <UserAvatar />
-              </>
-            ) : (
-              <>
-                <a href="/login" className="header-pill header-pill-primary text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-                  {content.header.signIn}
-                </a>
-                <LanguagePicker value={locale} reloadOnChange compact />
-                <ThemeToggleButton />
-                <a
-                  href="https://github.com/DeliciousBuding/DiffAudit-Research"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="header-pill header-pill-icon text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-                  title="GitHub"
-                >
-                  <GithubIcon />
-                </a>
-              </>
+            {!loggedIn && (
+              <a href="/login" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+                {content.header.signIn}
+              </a>
+            )}
+            {loggedIn && (
+              <a href="/workspace" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+                {content.header.openWorkspace}
+              </a>
             )}
           </div>
         </div>
       </header>
 
-      {/* Top section anchors */}
+      {/* Group tab navigation — 2.3.3 */}
       <div className="sticky top-14 z-40 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-0">
-          {page && page.sections.length > 1 ? page.sections.map((section) => (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
-              className="whitespace-nowrap px-2 py-2.5 text-xs transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
-            >
-              {section.label}
-            </a>
-          )) : null}
+        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-0">
+          <Tabs
+            value={activeGroupTab}
+            onChange={onGroupChange}
+            tabs={groupTabs}
+            variant="inline"
+          />
+          {/* Sub-navigation: sections within the current page */}
+          {page && page.sections.length > 1 && (
+            <div className="hidden md:flex items-center gap-1 text-xs">
+              {page.sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className="px-2 py-2.5 transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+                >
+                  {section.label}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -200,9 +242,8 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                 return (
                   <h3
                     key={i}
-                    className="mt-6 mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]"
+                    className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]"
                   >
-                    <span className="inline-block h-3.5 w-0.5 rounded-full bg-[var(--color-accent-blue)]" />
                     {item.label}
                   </h3>
                 );
@@ -212,15 +253,12 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
                 <button
                   key={item.page.slug}
                   onClick={() => onSelectSlug(item.page.slug)}
-                  className={`relative block w-full rounded-md px-3 py-1.5 text-left text-sm transition-all duration-150 ${
+                  className={`block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors ${
                     isActive
                       ? "bg-[var(--color-bg-active)] text-[var(--color-text-primary)] font-medium"
                       : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
                   }`}
                 >
-                  {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] rounded-full bg-[var(--color-accent-blue)]" />
-                  )}
                   {item.page.navLabel}
                 </button>
               );
@@ -423,14 +461,14 @@ function SectionRenderer({ section }: { section: DocsSection }) {
             <a
               key={i}
               href={link.href}
-              className="group rounded-lg border border-[var(--color-border-subtle)] p-4 transition-all duration-200 hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)] hover:-translate-y-0.5 hover:shadow-md"
+              className="rounded-lg border border-[var(--color-border-subtle)] p-4 transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
             >
               <h3 className="mb-1 text-sm font-semibold text-[var(--color-text-primary)]">
                 {link.title}
               </h3>
               <p className="mb-3 text-sm text-[var(--color-text-secondary)]">{link.body}</p>
-              <span className="text-sm font-medium text-[var(--color-accent-blue)] group-hover:underline">
-                {link.cta} →
+              <span className="text-sm font-medium text-[var(--color-accent-blue)]">
+                {link.cta}
               </span>
             </a>
           ))}
@@ -454,24 +492,25 @@ function CodeBlock({ block }: { block: { language: string; title?: string; code:
   const highlightedCode = highlightBash(block.code);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-[var(--color-border-subtle)] bg-[#1a1b1e] shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)]">
       {block.title && (
-        <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2 bg-[#222326]">
+        <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-4 py-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[#9ca0aa]">{block.language}</span>
-            <span className="text-xs text-[#9ca0aa]">{block.title}</span>
+            <span className="text-xs font-medium text-[var(--color-text-muted)]">{block.language}</span>
+            <span className="text-xs text-[var(--color-text-muted)]">—</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">{block.title}</span>
           </div>
           <button
             onClick={handleCopy}
-            className="text-xs text-[#9ca0aa] hover:text-white transition-colors"
+            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-accent-blue)] transition-colors"
           >
-            {copied ? "✓ Copied" : "Copy"}
+            {copied ? "Copied!" : "Copy"}
           </button>
         </div>
       )}
       <pre className="p-4 overflow-x-auto text-sm leading-relaxed">
         <code
-          className="text-[#e0e4ec]"
+          className="text-[var(--color-text-primary)]"
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />
       </pre>

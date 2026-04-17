@@ -9,7 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { ChartEmptyState } from "./chart-empty-state";
 
 interface AucDistributionProps {
   data: { auc: number; count: number }[];
@@ -25,10 +24,6 @@ const chartTooltipStyle: React.CSSProperties = {
 };
 
 export function ChartAucDistribution({ data }: AucDistributionProps) {
-  if (!data || data.length === 0) {
-    return <ChartEmptyState message="No AUC data available / 暂无 AUC 数据" height={220} />;
-  }
-
   return (
     <ResponsiveContainer width="100%" height={220}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
@@ -10,7 +9,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { RiskBadge } from "@/components/risk-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
-import { classifyRisk } from "@/lib/risk-report";
+import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
@@ -45,14 +44,14 @@ function KpiCard({ label, value, note }: { label: string; value: string; note: s
 
 /** KPI card with trend arrow (up/down/flat) — 2.4.1 */
 function KpiCardWithTrend({ label, value, note, trend }: { label: string; value: string; note: string; trend?: "up" | "down" | "flat" }) {
-  const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : "→";
+  const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : "—";
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <span className="text-3xl font-semibold leading-none">{value}</span>
-        {trend && <span className={`text-base ${trendColor}`}>{trendIcon}</span>}
+        <span className={`text-base ${trendColor}`}>{trendIcon}</span>
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>
@@ -164,250 +163,138 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* Charts grid - 6 cards in 3x2 layout */}
-      <div className="grid gap-3 lg:grid-cols-3" role="region" aria-label="Dashboard overview">
-        {/* KPI Summary Card */}
-        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
-          <div className="h-0.5 bg-gradient-to-r from-[color:var(--accent-blue)] via-[color:var(--success)] to-[color:var(--warning)]" />
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.overview || "系统概览"}
-            </h2>
-          </div>
-          <div className="p-3 grid grid-cols-2 gap-3">
-            <div className="rounded-md bg-[color:var(--accent-blue)]/5 p-2.5">
-              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.liveContractsLabel}</div>
-              <div className="text-2xl font-bold leading-none text-[color:var(--accent-blue)]">{activeContracts}</div>
-            </div>
-            <div className="rounded-md bg-[color:var(--success)]/5 p-2.5">
-              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.defendedRowsLabel}</div>
-              <div className="text-2xl font-bold leading-none text-[color:var(--success)]">{defendedRows}</div>
-            </div>
-            <div className="rounded-md bg-[color:var(--warning)]/5 p-2.5">
-              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.avgAucLabel}</div>
-              <div className="text-2xl font-bold leading-none text-[color:var(--warning)]">{avgAuc}</div>
-            </div>
-            <div className="rounded-md bg-[color:var(--info)]/5 p-2.5">
-              <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{copy.kpis.defenseEvaluatedLabel}</div>
-              <div className="text-2xl font-bold leading-none text-[color:var(--info)]">{totalRows}</div>
-            </div>
-          </div>
-        </section>
-
-        {/* Risk Radar */}
-        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
-          <div className="h-0.5 bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--info)]" />
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.riskRadar}
-            </h2>
-          </div>
-          <div className="p-3">
-            <ChartRiskRadar data={radarData} height={220} />
-          </div>
-        </section>
-
-        {/* Attack Comparison */}
-        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
-          <div className="h-0.5 bg-gradient-to-r from-[color:var(--warning)] to-[color:var(--accent-coral)]" />
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.attackComparison}
-            </h2>
-          </div>
-          <div className="p-3">
-            <ChartAttackComparison data={attackComparisonData} />
-          </div>
-        </section>
-
-        {/* ROC Curve */}
-        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
-          <div className="h-0.5 bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--info)]" />
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.rocCurve}
-            </h2>
-          </div>
-          <div className="p-3">
-            <ChartRocCurve data={rocData} />
-          </div>
-        </section>
-
-        {/* AUC Distribution */}
-        <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
-          <div className="h-0.5 bg-gradient-to-r from-[color:var(--success)] to-[color:var(--accent-blue)]" />
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.aucDistribution}
-            </h2>
-          </div>
-          <div className="p-3">
-            {aucDistData.length > 0 ? (
-              <ChartAucDistribution data={aucDistData} />
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
-                {copy.sections.noAucData}
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Risk Distribution */}
-        {totalRisk > 0 && (
-          <section className="card-animate rounded-lg border border-border bg-card overflow-hidden">
-            <div className="h-0.5 bg-gradient-to-r from-[color:var(--risk-high)] via-[color:var(--risk-medium)] to-[color:var(--risk-low)]" />
-            <div className="border-b border-border bg-muted/20 px-3 py-2">
-              <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.chartTitles.riskDistribution}
-              </h2>
-            </div>
-            <div className="p-3">
-              <ChartRiskDistribution data={riskDistData} />
-            </div>
-          </section>
-        )}
+      {/* KPI row — with trend indicators 2.4.1 */}
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
+        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
+        <KpiCardWithTrend label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
+        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
       </div>
 
-      {/* Compact audit track quick-access cards */}
+      {/* Audit track quick-access cards — Platform Boost */}
       <div className="grid gap-3 md:grid-cols-3">
-        <Link href="/workspace/audits/new?track=black-box" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.blackBoxTitle} - ${copy.auditTracks.createAudit}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]" aria-hidden="true">1</span>
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
-          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
-          <div className="mt-2 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
+          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
-        </Link>
+        </a>
 
-        <Link href="/workspace/audits/new?track=gray-box" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.grayBoxTitle} - ${copy.auditTracks.createAudit}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]" aria-hidden="true">2</span>
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
           </div>
-          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
-          <div className="mt-2 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
+          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
-        </Link>
+        </a>
 
-        <Link href="/workspace/audits/new?track=white-box" className="group rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/40" aria-label={`${copy.auditTracks.whiteBoxTitle} - ${copy.auditTracks.createAudit}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]" aria-hidden="true">3</span>
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
+        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
+            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
           </div>
-          <h3 className="text-sm font-semibold mb-1 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
-          <div className="mt-2 flex items-center gap-1 text-[10px] text-[color:var(--accent-blue)] font-medium">
+          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
+          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
-        </Link>
+        </a>
       </div>
 
-      {/* Compact system progress bar */}
+      {/* System progress bar — audit coverage overview */}
       {totalRows > 0 && (
-        <section className="rounded-lg border border-border bg-card p-3">
-          <div className="flex items-center justify-between mb-1.5">
-            <h2 className="text-[9px] font-semibold uppercase tracking-wider text-foreground">{copy.coverageBar.title}</h2>
-            <span className="text-[10px] text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-foreground">{copy.coverageBar.title}</h2>
+            <span className="text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
           </div>
-          <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--success)] rounded-full transition-all" style={{ width: `${totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0}%` }} />
           </div>
-          <div className="mt-2 grid grid-cols-3 gap-3 text-[10px]">
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-blue)]" />
+          <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--accent-blue)]" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--warning)]" />
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--warning)]" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--success)]" />
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--success)]" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
           </div>
         </section>
       )}
 
-      {/* Empty workspace guidance or suggestions */}
+      {/* Empty workspace guidance — 7.2.3 */}
       {isEmpty ? (
         <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-4">
-          <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/15 mb-3">
-              <svg viewBox="0 0 24 24" className="h-5 w-5 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div className="flex items-start gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[color:var(--accent-blue)]" fill="none" stroke="currentColor" strokeWidth={2}>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
               </svg>
             </div>
-            <h3 className="text-base font-semibold mb-1.5 text-foreground">{localeData.emptyWorkspace.title}</h3>
-            <p className="text-xs text-muted-foreground mb-4 max-w-lg leading-relaxed">{localeData.emptyWorkspace.description}</p>
-
-            {/* Compact 3-step guide */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 w-full">
-              {localeData.emptyWorkspace.steps.map((step, idx) => (
-                <div key={step.step} className="relative flex flex-col items-center text-center p-3 rounded-lg bg-card/50 border border-border/50">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)] text-xs font-bold text-white mb-2">
-                    {step.step}
-                  </span>
-                  <div className="text-xs font-semibold mb-1 text-foreground">{step.title}</div>
-                  <div className="text-xs text-muted-foreground leading-snug">{step.desc}</div>
-                  {idx < 2 && (
-                    <svg viewBox="0 0 24 24" className="hidden sm:block absolute -right-1.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/30" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                      <path d="M9 5l7 7-7 7" />
-                    </svg>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-2">
-              <Link
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold mb-1">{localeData.emptyWorkspace.title}</h3>
+              <p className="text-xs text-muted-foreground mb-3">{localeData.emptyWorkspace.description}</p>
+              {/* 3-step guide */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                {localeData.emptyWorkspace.steps.map((step) => (
+                  <div key={step.step} className="flex items-start gap-2">
+                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20 text-[10px] font-semibold text-[color:var(--accent-blue)]">
+                      {step.step}
+                    </span>
+                    <div>
+                      <div className="text-sm font-medium">{step.title}</div>
+                      <div className="text-xs text-muted-foreground">{step.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* CTA */}
+              <a
                 href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </Link>
-              <button
-                onClick={() => {
-                  document.cookie = "platform-demo-mode=1; path=/; max-age=31536000";
-                  window.location.reload();
-                }}
-                className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-transparent px-4 py-2 text-xs font-semibold text-[color:var(--accent-blue)] transition-all hover:bg-[color:var(--accent-blue)]/10"
-              >
-                {localeData.emptyWorkspace.demoCta}
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
+              </a>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">{localeData.emptyWorkspace.demoNote}</p>
           </div>
         </section>
       ) : (
+        /* Suggested next step — 2.4.5 */
         suggestions.length > 0 && (
           <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 16v-4M12 8h.01" />
               </svg>
@@ -426,6 +313,111 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         )
       )}
 
+      {/* Risk distribution */}
+      {totalRisk > 0 && (
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div className="grid gap-3 grid-cols-3">
+            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {copy.sections.riskLabels.high}
+              </div>
+              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
+              <p className="mt-1 text-xs text-muted-foreground leading-tight">
+                {copy.riskInterpretations.high}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {copy.sections.riskLabels.medium}
+              </div>
+              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
+              <p className="mt-1 text-xs text-muted-foreground leading-tight">
+                {copy.riskInterpretations.medium}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {copy.sections.riskLabels.low}
+              </div>
+              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
+              <p className="mt-1 text-xs text-muted-foreground leading-tight">
+                {copy.riskInterpretations.low}
+              </p>
+            </div>
+          </div>
+
+          {/* Risk Radar — 7.1 */}
+          <section className="border border-border bg-card">
+            <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
+              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {copy.sections.chartTitles.riskRadar}
+              </h2>
+              <span className="text-xs text-muted-foreground">
+                {radarData.length} {copy.sections.radarDimensionsLabel}
+              </span>
+            </div>
+            <div className="p-2">
+              <ChartRiskRadar data={radarData} height={220} />
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* Charts grid */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.aucDistribution}
+            </h2>
+          </div>
+          <div className="p-3">
+            {aucDistData.length > 0 ? (
+              <ChartAucDistribution data={aucDistData} />
+            ) : (
+              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
+                {copy.sections.noAucData}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.rocCurve}
+            </h2>
+          </div>
+          <div className="p-3">
+            <ChartRocCurve data={rocData} />
+          </div>
+        </section>
+
+        {totalRisk > 0 && (
+          <section className="border border-border bg-card">
+            <div className="border-b border-border bg-muted/20 px-3 py-2">
+              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {copy.sections.chartTitles.riskDistribution}
+              </h2>
+            </div>
+            <div className="p-3">
+              <ChartRiskDistribution data={riskDistData} />
+            </div>
+          </section>
+        )}
+
+        <section className="border border-border bg-card">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.sections.chartTitles.attackComparison}
+            </h2>
+          </div>
+          <div className="p-3">
+            <ChartAttackComparison data={attackComparisonData} />
+          </div>
+        </section>
+      </div>
+
       {/* Main content grid */}
       <div className="grid gap-3 lg:grid-cols-3">
         {/* Recent results table */}
@@ -438,7 +430,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
               <table className="w-full border-collapse text-xs">
-                <thead className="sticky top-0 z-10 bg-muted/30">
+                <thead className="sticky top-0 bg-muted/30">
                   <tr className="border-b border-border">
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
                     <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
@@ -454,8 +446,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     const auc = parseFloat(row.aucLabel);
                     return (
                     <tr
-                      key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${index}`}
-                      className={`table-row-hover border-b border-border transition-all duration-200 hover:bg-muted/30 ${
+                      key={`${row.track}-${row.attack}-${row.defense}`}
+                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
                         index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
                     >
@@ -506,17 +498,17 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function WorkspaceHomePage() {
-  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
+export default async function WorkspaceHomePage({ locale }: { locale?: Locale } = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (
-    <div className="space-y-3 page-entrance">
-      {/* Page header — compact */}
-      <div className="pb-2">
+    <div className="space-y-4">
+      {/* Page header */}
+      <div className="border-b border-border pb-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-        <h1 className="mt-0.5 text-lg font-semibold">{copy.title}</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
+        <h1 className="mt-1 text-xl font-semibold">{copy.title}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{copy.description}</p>
       </div>
 
       <Suspense fallback={

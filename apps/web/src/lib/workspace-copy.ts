@@ -16,15 +16,6 @@ export const WORKSPACE_COPY: Record<
       githubTitle: string;
       signOut: string;
     };
-    userMenu: {
-      loggedIn: string;
-      themeLabel: string;
-      themeLight: string;
-      themeDark: string;
-      themeSystem: string;
-      settings: string;
-      signOut: string;
-    };
     nav: Array<{
       href: string;
       title: string;
@@ -60,7 +51,6 @@ export const WORKSPACE_COPY: Record<
         };
         noAucData: string;
         chartTitles: {
-          overview: string;
           aucDistribution: string;
           rocCurve: string;
           riskDistribution: string;
@@ -135,9 +125,7 @@ export const WORKSPACE_COPY: Record<
       emptyJobs: string;
       emptyResults: string;
       emptyTasks: string;
-      emptyTasksCta: string;
       emptyHistory: string;
-      emptyHistoryCta: string;
       retry: string;
       retrying: string;
       retryTitle: string;
@@ -151,9 +139,7 @@ export const WORKSPACE_COPY: Record<
         trackBlackBox: string;
         trackGrayBox: string;
         trackWhiteBox: string;
-        trackFilterLabel: string;
         searchPlaceholder: string;
-        searchLabel: string;
         activeFilters: string;
       };
     };
@@ -188,9 +174,6 @@ export const WORKSPACE_COPY: Record<
         whiteBoxNote: string;
       };
       labels: {
-        stepProgress: string;
-        stepOf: string;
-        complete: string;
         selectModel: string;
         modelPlaceholder: string;
         rounds: string;
@@ -238,7 +221,7 @@ export const WORKSPACE_COPY: Record<
       };
     };
     emptyWorkspace: {
-      title: string; description: string; cta: string; demoCta: string; demoNote: string;
+      title: string; description: string; cta: string;
       steps: Array<{ step: string; title: string; desc: string }>;
     };
     reports: {
@@ -303,11 +286,6 @@ export const WORKSPACE_COPY: Record<
         systemGap: string;
         workspace: string;
       };
-      metricTooltips: {
-        auc: string;
-        asr: string;
-        tpr: string;
-      };
     };
     settings: {
       eyebrow: string;
@@ -316,7 +294,7 @@ export const WORKSPACE_COPY: Record<
       sections: Array<{ title: string; copy: string }>;
       systemStatus: { title: string; runtime: string; demoMode: string; demoOn: string; demoOff: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string };
-      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; logout: string };
+      account: { title: string; username: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
       auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string };
@@ -331,16 +309,9 @@ export const WORKSPACE_COPY: Record<
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
-      passwordDivider: string;
-      hidePasswordCta: string;
-      providerHint: string;
       registerLink: string;
       registerCta: string;
-      google: string;
       github: string;
-      legalPrefix: string;
-      privacy: string;
-      terms: string;
     };
     registerPage: {
       eyebrow: string;
@@ -349,15 +320,9 @@ export const WORKSPACE_COPY: Record<
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
-      passwordDivider: string;
-      providerHint: string;
       loginLink: string;
       loginCta: string;
-      google: string;
       github: string;
-      legalPrefix: string;
-      privacy: string;
-      terms: string;
     };
     loginForm: {
       username: string;
@@ -370,6 +335,8 @@ export const WORKSPACE_COPY: Record<
     };
     registerForm: {
       username: string;
+      email: string;
+      emailPlaceholder: string;
       password: string;
       passwordPlaceholder: string;
       confirmPassword: string;
@@ -405,7 +372,6 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: string;
       noSummary: string;
-      errorHint: string;
     };
   }
 > = {
@@ -423,20 +389,10 @@ export const WORKSPACE_COPY: Record<
       githubTitle: "GitHub",
       signOut: "Sign out",
     },
-    userMenu: {
-      loggedIn: "Logged in",
-      themeLabel: "Theme",
-      themeLight: "Light",
-      themeDark: "Dark",
-      themeSystem: "System",
-      settings: "Settings",
-      signOut: "Sign out",
-    },
     nav: [
       { href: "/workspace", title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
       { href: "/workspace/audits", title: "Audits", subtitle: "Create jobs and review runs", shortLabel: "Audits" },
       { href: "/workspace/reports", title: "Reports", subtitle: "Summaries and exports", shortLabel: "Reports" },
-      { href: "/workspace/api-keys", title: "API Keys", subtitle: "Manage access credentials", shortLabel: "Keys" },
       { href: "/workspace/settings", title: "Settings", subtitle: "Team, keys, and preferences", shortLabel: "Settings" },
     ],
     workspace: {
@@ -468,7 +424,6 @@ export const WORKSPACE_COPY: Record<
         },
         noAucData: "No AUC data available",
         chartTitles: {
-          overview: "System Overview",
           aucDistribution: "AUC Distribution",
           rocCurve: "ROC Curve",
           riskDistribution: "Risk Distribution",
@@ -549,9 +504,7 @@ export const WORKSPACE_COPY: Record<
       emptyJobs: "No tasks running right now.",
       emptyResults: "No audit results yet.",
       emptyTasks: "No active tasks.",
-      emptyTasksCta: "Create your first audit",
       emptyHistory: "No task history yet.",
-      emptyHistoryCta: "Create an audit",
       retry: "Retry",
       retrying: "Retrying...",
       retryTitle: "Retry this job",
@@ -571,9 +524,7 @@ export const WORKSPACE_COPY: Record<
         trackBlackBox: "Black-box/Recon",
         trackGrayBox: "Gray-box/PIA",
         trackWhiteBox: "White-box/GSA",
-        trackFilterLabel: "Filter by track",
         searchPlaceholder: "Search contract key or job ID",
-        searchLabel: "Search contracts or jobs",
         activeFilters: "active",
       },
     },
@@ -608,9 +559,6 @@ export const WORKSPACE_COPY: Record<
         whiteBoxNote: "Requires full model weights and gradient access.",
       },
       labels: {
-        stepProgress: "Step",
-        stepOf: "of",
-        complete: "complete",
         selectModel: "Target model",
         modelPlaceholder: "Select a model from catalog",
         rounds: "Attack rounds",
@@ -707,15 +655,13 @@ export const WORKSPACE_COPY: Record<
       },
     },
     emptyWorkspace: {
-      title: "No audit results yet.",
-      description: "DiffAudit discovers privacy risks in ML models through three attack tracks: black-box, gray-box, and white-box.",
-      cta: "Create your first audit",
-      demoCta: "Try demo mode",
-      demoNote: "Explore with pre-loaded sample data",
+      title: "还没有审计结果。",
+      description: "DiffAudit helps you discover privacy risks in machine learning models through three attack lines: black-box, gray-box, and white-box.",
+      cta: "Create your first audit task",
       steps: [
-        { step: "1", title: "Choose attack track", desc: "Black-box (recommended), gray-box, or white-box." },
-        { step: "2", title: "Select target model", desc: "Pick a model from the contract directory to audit." },
-        { step: "3", title: "Wait for results", desc: "Submit and the system will run the audit automatically." },
+        { step: "1", title: "选择攻击方式", desc: "黑盒（推荐起点）、灰盒或白盒。" },
+        { step: "2", title: "选择目标模型", desc: "从合同目录中挑选要审计的模型。" },
+        { step: "3", title: "等待结果", desc: "提交后系统会自动运行审计，完成后在这里展示。" },
       ],
     },
     reports: {
@@ -780,11 +726,6 @@ export const WORKSPACE_COPY: Record<
         systemGap: "System Gap",
         workspace: "Workspace",
       },
-      metricTooltips: {
-        auc: "Area Under Curve - measures attack effectiveness (0-1, higher = more leakage)",
-        asr: "Attack Success Rate - percentage of successful attacks",
-        tpr: "True Positive Rate at 1% False Positive Rate - precision metric",
-      },
     },
     settings: {
       eyebrow: "Settings",
@@ -811,76 +752,6 @@ export const WORKSPACE_COPY: Record<
       account: {
         title: "Account",
         username: "Current user",
-        email: "Email",
-        pendingEmail: "Pending email",
-        pendingEmailNote: "Pending email stays out of password sign-in until it is verified.",
-        addEmail: "Add email",
-        changeEmail: "Change email",
-        emailPlaceholder: "name@example.com",
-        saveEmail: "Save email",
-        savingEmail: "Saving email...",
-        cancelEmailEdit: "Cancel",
-        emailSaved: "Email saved. Continue verification to use it as a password login ID.",
-        emailInvalid: "Enter a valid email address.",
-        emailInUse: "This email is already in use.",
-        generateVerificationLink: "Generate verification link",
-        generatingVerificationLink: "Generating link...",
-        verificationWorkspaceMode: "Until email delivery is connected, verification continues inside this workspace.",
-        verificationLinkReady: "Verification link ready. Open it in a new tab or copy it.",
-        openVerificationLink: "Open link",
-        copyVerificationLink: "Copy link",
-        showVerificationDetails: "Advanced options",
-        hideVerificationDetails: "Hide advanced options",
-        verificationLinkCopied: "Verification link copied.",
-        verificationRequestFailed: "Could not generate a verification link right now.",
-        verificationSuccess: "Email verified. This address is now your canonical sign-in email.",
-        verificationMissing: "Verification link is missing a token.",
-        verificationInvalid: "Verification link is invalid.",
-        verificationExpired: "Verification link expired. Generate a new one.",
-        verificationMissingPending: "This verification link no longer matches the pending email on your account.",
-        providers: "Connected sign-in methods",
-        connectGoogle: "Connect Google",
-        connectGithub: "Connect GitHub",
-        providerLinkedGoogle: "Google is now connected to this account.",
-        providerLinkedGithub: "GitHub is now connected to this account.",
-        providerAlreadyLinkedGoogle: "Google was already connected to this account.",
-        providerAlreadyLinkedGithub: "GitHub was already connected to this account.",
-        providerInUseGoogle: "This Google account is already linked to another user.",
-        providerInUseGithub: "This GitHub account is already linked to another user.",
-        accessSummary: "Account access",
-        accessSummaryPrefix: "You can currently sign in with",
-        accessSummaryPasswordOn: "Password sign-in is enabled.",
-        accessSummaryPasswordOff: "Password sign-in is not enabled yet.",
-        accessSummaryPendingEmail: "Verify the pending email to use it as a password login ID.",
-        accessSummaryNoProvider: "No OAuth providers are connected yet.",
-        password: "Password access",
-        passwordManage: "Password management",
-        passwordSet: "Configured",
-        passwordUnset: "Not configured",
-        loginId: "Password login ID",
-        loginIdPending: "Set a local password to use this ID.",
-        verified: "Verified",
-        unverified: "Unverified",
-        noEmail: "Not set",
-        securityNote: "Google and GitHub only read name, email, and avatar for account creation and sign-in.",
-        privacy: "Privacy policy",
-        terms: "Terms",
-        currentPassword: "Current password",
-        currentPasswordPlaceholder: "Enter current password",
-        newPassword: "New password",
-        newPasswordPlaceholder: "At least 8 characters",
-        confirmPassword: "Confirm password",
-        confirmPasswordPlaceholder: "Re-enter new password",
-        passwordHintNew: "Add a local password only if you need username/email + password access.",
-        passwordHintExisting: "You already have password access. Update it here if you need to rotate credentials.",
-        openPasswordCreate: "Add local password",
-        openPasswordChange: "Change password",
-        closePasswordEditor: "Hide password form",
-        savePassword: "Save password",
-        savingPassword: "Saving...",
-        passwordSaved: "Password updated",
-        passwordMismatch: "Passwords do not match.",
-        passwordTooShort: "Password must be at least 8 characters.",
         logout: "Sign out",
       },
       preferences: {
@@ -943,56 +814,45 @@ export const WORKSPACE_COPY: Record<
     loginPage: {
       eyebrow: "Sign in",
       title: "Access the DiffAudit workspace.",
-      description: "Password sign-in is the default. You can also continue with Google or GitHub to sign in quickly.",
+      description: "Use your account or continue with GitHub.",
       formEyebrow: "Workspace access",
-      formTitle: "Sign In",
+      formTitle: "Sign in to continue.",
       oauthDivider: "Or continue with",
-      passwordDivider: "Use username and password",
-      hidePasswordCta: "Use social sign-in",
-      providerHint: "Google/GitHub only read your name, email, and avatar for account access.",
-      registerLink: "Need a local account?",
-      registerCta: "Create one",
-      google: "Google",
-      github: "GitHub",
-      legalPrefix: "By continuing, you agree to the",
-      privacy: "Privacy Policy",
-      terms: "Terms",
+      registerLink: "New to DiffAudit?",
+      registerCta: "Create an account",
+      github: "Continue with GitHub",
     },
     registerPage: {
-      eyebrow: "Local account",
-      title: "Create a local DiffAudit account.",
-      description: "Use this page only when you explicitly need a dedicated local username/password account. It fits recovery access, internal demos, or cases where OAuth is unavailable.",
-      formEyebrow: "Local account setup",
-      formTitle: "Create an account",
-      oauthDivider: "Prefer OAuth?",
-      passwordDivider: "Or create a local account",
-      providerHint: "Use the main sign-in page for Google or GitHub.",
+      eyebrow: "Register",
+      title: "Create a DiffAudit account.",
+      description: "Set up an account to access audits, reports, and workspace settings.",
+      formEyebrow: "Account setup",
+      formTitle: "Register to continue.",
+      oauthDivider: "Or continue with",
       loginLink: "Already have an account?",
       loginCta: "Sign in",
-      google: "Google",
-      github: "GitHub",
-      legalPrefix: "Access is governed by the",
-      privacy: "Privacy Policy",
-      terms: "Terms",
+      github: "Continue with GitHub",
     },
     loginForm: {
-      username: "Username or email",
+      username: "Username",
       password: "Password",
       passwordPlaceholder: "Enter password",
       submit: "Sign in",
       pending: "Signing in...",
-      hint: "You can use either your username or email.",
+      hint: "You'll enter the workspace after signing in.",
       error: "Sign in failed. Check your credentials.",
     },
     registerForm: {
       username: "Username",
+      email: "Email",
+      emailPlaceholder: "Enter email",
       password: "Password",
       passwordPlaceholder: "At least 8 characters",
       confirmPassword: "Confirm password",
       confirmPasswordPlaceholder: "Re-enter password",
-      submit: "Create local account",
+      submit: "Create account",
       pending: "Creating account...",
-      hint: "This creates a local account and signs you in immediately. Use your username first; email only becomes a password sign-in ID after verification.",
+      hint: "After registration, you can sign in to the workspace.",
       error: "Registration failed. Please try again.",
       passwordMismatch: "Passwords do not match.",
     },
@@ -1021,7 +881,6 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: "Just updated",
       noSummary: "Summary path will appear after the run completes.",
-      errorHint: "Unable to load audit jobs. Please check if Runtime-Server is running.",
     },
   },
   "zh-CN": {
@@ -1038,20 +897,10 @@ export const WORKSPACE_COPY: Record<
       githubTitle: "GitHub",
       signOut: "退出登录",
     },
-    userMenu: {
-      loggedIn: "已登录",
-      themeLabel: "主题",
-      themeLight: "浅色",
-      themeDark: "深色",
-      themeSystem: "跟随系统",
-      settings: "设置",
-      signOut: "退出登录",
-    },
     nav: [
       { href: "/workspace", title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
       { href: "/workspace/audits", title: "审计流程", subtitle: "创建审计任务，查看运行结果", shortLabel: "审计" },
       { href: "/workspace/reports", title: "报告", subtitle: "结果汇总与导出", shortLabel: "报告" },
-      { href: "/workspace/api-keys", title: "API 密钥", subtitle: "管理访问凭据", shortLabel: "密钥" },
       { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥和偏好设置", shortLabel: "设置" },
     ],
     workspace: {
@@ -1083,7 +932,6 @@ export const WORKSPACE_COPY: Record<
         },
         noAucData: "暂无 AUC 数据",
         chartTitles: {
-          overview: "系统概览",
           aucDistribution: "AUC 分布",
           rocCurve: "ROC 曲线",
           riskDistribution: "风险分布",
@@ -1164,9 +1012,7 @@ export const WORKSPACE_COPY: Record<
       emptyJobs: "当前没有运行中的任务。",
       emptyResults: "还没有审计结果。",
       emptyTasks: "当前没有活跃任务。",
-      emptyTasksCta: "创建第一个审计任务",
       emptyHistory: "还没有历史任务。",
-      emptyHistoryCta: "创建审计任务",
       retry: "重试",
       retrying: "重试中...",
       retryTitle: "重试此任务",
@@ -1186,9 +1032,7 @@ export const WORKSPACE_COPY: Record<
         trackBlackBox: "黑盒/Recon",
         trackGrayBox: "灰盒/PIA",
         trackWhiteBox: "白盒/GSA",
-        trackFilterLabel: "按轨道筛选",
         searchPlaceholder: "搜索合同项或任务 ID",
-        searchLabel: "搜索合同或任务",
         activeFilters: "个筛选",
       },
     },
@@ -1223,9 +1067,6 @@ export const WORKSPACE_COPY: Record<
         whiteBoxNote: "需要完整的模型权重和梯度信息。",
       },
       labels: {
-        stepProgress: "步骤",
-        stepOf: "共",
-        complete: "完成",
         selectModel: "目标模型",
         modelPlaceholder: "从目录中选择模型",
         rounds: "攻击轮次",
@@ -1325,8 +1166,6 @@ export const WORKSPACE_COPY: Record<
       title: "还没有审计结果。",
       description: "DiffAudit 通过三条攻击线（黑盒、灰盒、白盒）帮助你发现机器学习模型中的隐私风险。",
       cta: "创建第一个审计任务",
-      demoCta: "试用演示模式",
-      demoNote: "使用预加载的示例数据体验系统",
       steps: [
         { step: "1", title: "选择攻击方式", desc: "黑盒（推荐起点）、灰盒或白盒。" },
         { step: "2", title: "选择目标模型", desc: "从合同目录中挑选要审计的模型。" },
@@ -1395,11 +1234,6 @@ export const WORKSPACE_COPY: Record<
         systemGap: "系统缺口",
         workspace: "工作区",
       },
-      metricTooltips: {
-        auc: "曲线下面积 - 衡量攻击有效性 (0-1，越高表示泄露越严重)",
-        asr: "攻击成功率 - 成功攻击的百分比",
-        tpr: "1% 假阳性率下的真阳性率 - 精确度指标",
-      },
     },
     settings: {
       eyebrow: "设置",
@@ -1426,76 +1260,6 @@ export const WORKSPACE_COPY: Record<
       account: {
         title: "账户",
         username: "当前用户",
-        email: "邮箱",
-        pendingEmail: "待确认邮箱",
-        pendingEmailNote: "待确认邮箱在验证完成前不会进入密码登录标识。",
-        addEmail: "添加邮箱",
-        changeEmail: "修改邮箱",
-        emailPlaceholder: "name@example.com",
-        saveEmail: "保存邮箱",
-        savingEmail: "保存中...",
-        cancelEmailEdit: "取消",
-        emailSaved: "邮箱已保存。完成验证后即可把它作为密码登录标识使用。",
-        emailInvalid: "请输入有效的邮箱地址。",
-        emailInUse: "这个邮箱已被占用。",
-        generateVerificationLink: "生成验证链接",
-        generatingVerificationLink: "生成中...",
-        verificationWorkspaceMode: "在邮件通道接入前，邮箱验证会先在当前工作区内完成。",
-        verificationLinkReady: "验证链接已生成。你可以直接打开，或复制后在新标签页完成验证。",
-        openVerificationLink: "打开链接",
-        copyVerificationLink: "复制链接",
-        showVerificationDetails: "高级操作",
-        hideVerificationDetails: "收起高级操作",
-        verificationLinkCopied: "验证链接已复制。",
-        verificationRequestFailed: "暂时无法生成验证链接。",
-        verificationSuccess: "邮箱已验证，现已成为你的正式登录邮箱。",
-        verificationMissing: "验证链接缺少必要参数。",
-        verificationInvalid: "验证链接无效。",
-        verificationExpired: "验证链接已过期，请重新生成。",
-        verificationMissingPending: "这个验证链接已不再匹配你当前账户上的待确认邮箱。",
-        providers: "已连接登录方式",
-        connectGoogle: "绑定 Google",
-        connectGithub: "绑定 GitHub",
-        providerLinkedGoogle: "Google 已绑定到当前账户。",
-        providerLinkedGithub: "GitHub 已绑定到当前账户。",
-        providerAlreadyLinkedGoogle: "Google 已经绑定在当前账户上。",
-        providerAlreadyLinkedGithub: "GitHub 已经绑定在当前账户上。",
-        providerInUseGoogle: "这个 Google 账号已绑定到其他用户。",
-        providerInUseGithub: "这个 GitHub 账号已绑定到其他用户。",
-        accessSummary: "访问方式概览",
-        accessSummaryPrefix: "你当前可以通过以下方式登录：",
-        accessSummaryPasswordOn: "密码登录已启用。",
-        accessSummaryPasswordOff: "密码登录尚未启用。",
-        accessSummaryPendingEmail: "待确认邮箱验证完成后，才能作为密码登录标识使用。",
-        accessSummaryNoProvider: "还没有连接 OAuth 登录方式。",
-        password: "密码访问",
-        passwordManage: "密码管理",
-        passwordSet: "已配置",
-        passwordUnset: "未配置",
-        loginId: "密码登录标识",
-        loginIdPending: "设置本地密码后即可使用这些标识登录。",
-        verified: "已验证",
-        unverified: "未验证",
-        noEmail: "未设置",
-        securityNote: "Google 和 GitHub 仅会读取名称、邮箱和头像，用于建号与登录。",
-        privacy: "隐私政策",
-        terms: "服务条款",
-        currentPassword: "当前密码",
-        currentPasswordPlaceholder: "输入当前密码",
-        newPassword: "新密码",
-        newPasswordPlaceholder: "至少 8 位",
-        confirmPassword: "确认新密码",
-        confirmPasswordPlaceholder: "再次输入新密码",
-        passwordHintNew: "只有在你需要账号/邮箱 + 密码登录时，才需要补设本地密码。",
-        passwordHintExisting: "你已经启用了密码访问。如果需要轮换凭据，可以在这里更新。",
-        openPasswordCreate: "添加本地密码",
-        openPasswordChange: "修改密码",
-        closePasswordEditor: "收起密码表单",
-        savePassword: "保存密码",
-        savingPassword: "保存中...",
-        passwordSaved: "密码已更新",
-        passwordMismatch: "两次输入的密码不一致。",
-        passwordTooShort: "密码长度至少为 8 位。",
         logout: "退出登录",
       },
       preferences: {
@@ -1557,57 +1321,46 @@ export const WORKSPACE_COPY: Record<
     },
     loginPage: {
       eyebrow: "登录",
-      title: "登录 DiffAudit 工作区",
-      description: "默认使用账号密码登录。也支持通过 Google 或 GitHub 快速继续。",
+      title: "进入 DiffAudit 工作台。",
+      description: "使用账号登录，或通过 GitHub 继续。",
       formEyebrow: "工作台访问",
-      formTitle: "登录工作台",
+      formTitle: "登录后继续。",
       oauthDivider: "或使用以下方式继续",
-      passwordDivider: "使用账号密码登录",
-      hidePasswordCta: "改用第三方登录",
-      providerHint: "Google/GitHub 仅会读取名称、邮箱和头像用于账号访问。",
-      registerLink: "需要本地账号？",
-      registerCta: "创建一个",
-      google: "Google",
-      github: "GitHub",
-      legalPrefix: "继续即表示你同意",
-      privacy: "隐私政策",
-      terms: "服务条款",
+      registerLink: "还没有账号？",
+      registerCta: "创建账号",
+      github: "使用 GitHub 继续",
     },
     registerPage: {
-      eyebrow: "本地账号",
-      title: "创建本地账户",
-      description: "只有在你明确需要独立的本地账号/密码入口时，才使用这个页面。它更适合恢复访问、内部演示或没有 OAuth 的场景。",
-      formEyebrow: "本地账号设置",
-      formTitle: "创建 DiffAudit 账号",
-      oauthDivider: "更倾向 OAuth？",
-      passwordDivider: "或创建本地账号",
-      providerHint: "如需 Google 或 GitHub，请回到主登录页。",
+      eyebrow: "注册",
+      title: "创建 DiffAudit 账号。",
+      description: "注册后即可进入审计、报告和工作台设置。",
+      formEyebrow: "账号创建",
+      formTitle: "注册后继续。",
+      oauthDivider: "或使用以下方式继续",
       loginLink: "已有账号？",
       loginCta: "去登录",
-      google: "Google",
-      github: "GitHub",
-      legalPrefix: "账号访问受",
-      privacy: "隐私政策",
-      terms: "服务条款",
+      github: "使用 GitHub 继续",
     },
     loginForm: {
-      username: "账号或邮箱",
+      username: "账号",
       password: "密码",
       passwordPlaceholder: "输入密码",
       submit: "登录",
       pending: "登录中...",
-      hint: "可使用账号或邮箱登录。",
+      hint: "登录后进入工作台。",
       error: "登录失败，请检查账号信息。",
     },
     registerForm: {
       username: "账号",
+      email: "邮箱",
+      emailPlaceholder: "输入邮箱",
       password: "密码",
       passwordPlaceholder: "至少 8 位",
       confirmPassword: "确认密码",
       confirmPasswordPlaceholder: "再次输入密码",
-      submit: "创建本地账号",
+      submit: "创建账号",
       pending: "创建中...",
-      hint: "这会创建一个本地账号，并直接登录进入工作台。先用用户名登录；邮箱验证完成后才会进入邮箱登录标识。",
+      hint: "注册完成后即可登录工作台。",
       error: "注册失败，请稍后重试。",
       passwordMismatch: "两次输入的密码不一致。",
     },
@@ -1636,10 +1389,6 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: "刚刚更新",
       noSummary: "运行完成后会显示 summary 路径。",
-      errorHint: "无法加载审计任务。请检查 Runtime-Server 是否正在运行。",
     },
   },
 };
-
-
-

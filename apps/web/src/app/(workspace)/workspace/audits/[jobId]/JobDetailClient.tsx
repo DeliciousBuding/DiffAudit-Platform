@@ -8,8 +8,12 @@ import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/skeleton";
 import { Modal } from "@/components/modal";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { getStatusTone } from "@/lib/status-utils";
-import { getErrorMessage } from "@/lib/error-messages";
+
+const JOB_TYPE_TO_TRACK: Record<string, "black-box" | "gray-box" | "white-box"> = {
+  "recon_artifact_mainline": "black-box",
+  "pia_runtime_mainline": "gray-box",
+  "gsa_runtime_mainline": "white-box",
+};
 
 // Extended job record — the detail API may return stdout/stderr tails
 interface JobDetail {
@@ -24,6 +28,14 @@ interface JobDetail {
   error?: string | null;
   stdout_tail?: string | null;
   stderr_tail?: string | null;
+}
+
+function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
+  if (status === "completed") return "success";
+  if (status === "failed") return "warning";
+  if (status === "running") return "info";
+  if (status === "cancelled") return "neutral";
+  return "primary";
 }
 
 function statusLabel(status: string, labels: Record<string, string>): string {
@@ -70,9 +82,9 @@ function LogTail({ label, content, linesLabel }: { label: string; content: strin
         <span className="mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
-        <span className="text-xs text-muted-foreground">{tail.length} {linesLabel}</span>
+        <span className="text-[10px] text-muted-foreground">{tail.length} {linesLabel}</span>
       </div>
-      <pre className="mono text-xs leading-relaxed p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
+      <pre className="mono text-[10px] leading-relaxed p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
         {tail.join("\n")}
       </pre>
     </div>
@@ -92,12 +104,11 @@ export function JobDetailClient({
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
-  const fetchJob = useCallback(async (signal?: AbortSignal) => {
+  const fetchJob = useCallback(async () => {
     try {
-      const res = await fetch(`/api/v1/audit/jobs/${jobId}`, { signal });
+      const res = await fetch(`/api/v1/audit/jobs/${jobId}`);
       if (!res.ok) {
-        const errorMsg = getErrorMessage(res.status, locale);
-        setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed}: ${errorMsg}`);
+        setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed} (HTTP ${res.status})`);
         return null;
       }
       const data = await res.json();
@@ -105,16 +116,13 @@ export function JobDetailClient({
       setJob(jobData);
       setFetchError(null);
       return jobData;
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        return null;
-      }
+    } catch {
       setFetchError(WORKSPACE_COPY[locale].jobDetail.labels.apiUnreachable);
       return null;
     } finally {
       setLoading(false);
     }
-  }, [jobId, locale]);
+  }, [jobId]);
 
   const handleCancelJob = useCallback(async () => {
     setCancelling(true);
@@ -134,11 +142,12 @@ export function JobDetailClient({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let cancelled = false;
 
     async function loop() {
-      const current = await fetchJob(controller.signal);
-      if (controller.signal.aborted) return;
+      if (cancelled) return;
+      const current = await fetchJob();
+      if (cancelled) return;
       if (current && (current.status === "queued" || current.status === "running")) {
         timerRef.current = setTimeout(loop, 3000);
       }
@@ -147,7 +156,7 @@ export function JobDetailClient({
     void loop();
 
     return () => {
-      controller.abort();
+      cancelled = true;
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [fetchJob]);
@@ -206,18 +215,9 @@ export function JobDetailClient({
       {/* Header: job ID + status badge */}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="mono text-sm font-medium">{job.job_id}</span>
-        <StatusBadge tone={getStatusTone(job.status)} compact>
+        <StatusBadge tone={statusTone(job.status)} compact>
           {statusLabel(job.status, copy.jobDetail.statusLabels)}
         </StatusBadge>
-        {(job.status === "queued" || job.status === "running") && (
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium text-[color:var(--accent-blue)] bg-[color:var(--accent-blue)]/10 rounded-md">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--accent-blue)] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[color:var(--accent-blue)]"></span>
-            </span>
-            LIVE
-          </span>
-        )}
       </div>
 
       {/* Detail fields */}
@@ -255,7 +255,7 @@ export function JobDetailClient({
           <div className="text-[10px] font-semibold uppercase tracking-wider text-warning mb-1">
             {copy.jobDetail.labels.error}
           </div>
-          <pre className="mono text-xs text-warning whitespace-pre-wrap break-all">
+          <pre className="mono text-[10px] text-warning whitespace-pre-wrap break-all">
             {job.error}
           </pre>
         </div>

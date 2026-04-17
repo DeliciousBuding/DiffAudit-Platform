@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import type { Locale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "@/app/(marketing)/docs/docs-data";
 import { getDocsContent } from "@/app/(marketing)/docs/docs-data";
@@ -21,6 +21,7 @@ interface DocsSearchProps {
 export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -29,18 +30,6 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
 
   // Build searchable index
   const index = buildIndex(content);
-
-  // Search on query change - use useMemo instead of state
-  const results = useMemo(() => {
-    if (query.length < 2) return [];
-    return search(index, query);
-  }, [query, index]);
-
-  // Handler to update query and reset selected index together
-  const handleQueryChange = useCallback((newQuery: string) => {
-    setQuery(newQuery);
-    setSelectedIndex(0);
-  }, []);
 
   // Ctrl+K / Cmd+K shortcut
   useEffect(() => {
@@ -57,11 +46,27 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  // Reset state when opened
+  // Focus input when opened
   useEffect(() => {
-    if (!open) return;
-    setTimeout(() => inputRef.current?.focus(), 50);
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+      setQuery("");
+      setResults([]);
+      setSelectedIndex(0);
+    }
   }, [open]);
+
+  // Search on query change
+  useEffect(() => {
+    if (query.length < 2) {
+      setResults([]);
+      setSelectedIndex(0);
+      return;
+    }
+    const matches = search(index, query);
+    setResults(matches);
+    setSelectedIndex(0);
+  }, [query, index]);
 
   // Keyboard navigation within results
   const handleKeyDown = useCallback(
@@ -93,12 +98,11 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]" role="dialog" aria-modal="true" aria-label={content.header.searchPlaceholder}>
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={() => setOpen(false)}
-        aria-hidden="true"
       />
 
       {/* Search panel */}
@@ -113,7 +117,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => handleQueryChange(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={content.header.searchPlaceholder}
             className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
@@ -128,7 +132,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
           <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
             {results.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
-                {content.header.searchNoResults} &quot;{query}&quot;
+                {content.header.searchNoResults} "{query}"
               </div>
             ) : (
               <div className="space-y-1">

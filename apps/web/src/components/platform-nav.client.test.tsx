@@ -37,7 +37,7 @@ describe("platform nav prefetch", () => {
 
     expect(linkMock).toHaveBeenCalled();
     for (const call of linkMock.mock.calls) {
-      expect(call[0].prefetch).toBeUndefined();
+      expect(call[0].prefetch).toBe(false);
     }
   });
 
@@ -48,7 +48,7 @@ describe("platform nav prefetch", () => {
 
     expect(linkMock).toHaveBeenCalled();
     for (const call of linkMock.mock.calls) {
-      expect(call[0].prefetch).toBeUndefined();
+      expect(call[0].prefetch).toBe(false);
     }
   });
 });

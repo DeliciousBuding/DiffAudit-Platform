@@ -12,11 +12,12 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";
 import { TaskListClient } from "./TaskListClient";
 
-async function WorkspaceAuditsPageContent(resolvedLocale: Locale) {
+export default async function WorkspaceAuditsPage({ locale }: { locale?: Locale } = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 
   return (
-    <div className="space-y-4 page-entrance">
+    <div className="space-y-4">
       {/* Page header */}
       <div className="border-b border-border pb-3">
         <div className="flex items-start justify-between gap-4">
@@ -77,9 +78,4 @@ async function WorkspaceAuditsPageContent(resolvedLocale: Locale) {
       </section>
     </div>
   );
-}
-
-export default async function WorkspaceAuditsPage() {
-  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
-  return WorkspaceAuditsPageContent(resolvedLocale);
 }

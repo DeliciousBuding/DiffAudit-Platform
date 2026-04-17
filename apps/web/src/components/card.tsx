@@ -7,10 +7,10 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles: Record<CardVariant, string> = {
-  default: "rounded-lg border border-border bg-card",
+  default: "border border-border bg-card",
   elevated: "rounded-lg border border-border bg-card shadow-sm",
-  bordered: "rounded-lg border-2 border-border bg-card",
-  ghost: "rounded-lg bg-transparent",
+  bordered: "border-2 border-border bg-card",
+  ghost: "bg-transparent",
 };
 
 /**

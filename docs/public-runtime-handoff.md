@@ -33,13 +33,11 @@
   - `/etc/nginx/sites-enabled/diffaudit.vectorcontrol.tech`
 - web service:
   - `diffaudit-platform-web.service`
-  - working tree: `/home/ubuntu/projects/diffaudit/platform-web`
+  - working tree: `/home/ubuntu/projects/DiffAudit-Platform-deploy-next`
   - listen: `0.0.0.0:3000`
   - env: `/etc/diffaudit-platform-web.env`
 - api service:
   - `diffaudit-platform-api.service`
-  - working tree: `/home/ubuntu/projects/diffaudit/platform-web/apps/api-go`
-  - exec: `apps/api-go/bin/platform-api-linux-amd64` should be the canonical deployment target
   - listen: `127.0.0.1:8780`
   - public snapshot root: `apps/api-go/data/public`
 - Runtime:
@@ -53,8 +51,6 @@
 每次 handoff 至少写清：
 
 - `gz2` 当前 web service 名称
-- `gz2` 当前实际工作树
-- `3000` / `8780` 当前进程占用情况
 - `DIFFAUDIT_API_BASE_URL` 当前值
 - `hk -> gz2` 的单站转发关系
 - `apps/web` 是唯一前端运行时

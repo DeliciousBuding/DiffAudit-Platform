@@ -4,8 +4,6 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { InputIcon, ProviderIcon } from "@/components/auth-icons";
-
 type LoginFormCopy = {
   username: string;
   password: string;
@@ -18,16 +16,9 @@ type LoginFormCopy = {
 
 type LoginPageCopy = {
   oauthDivider: string;
-  passwordDivider: string;
-  hidePasswordCta: string;
   registerLink: string;
   registerCta: string;
-  providerHint: string;
-  google: string;
   github: string;
-  privacy: string;
-  terms: string;
-  legalPrefix: string;
 };
 
 export function LoginForm({
@@ -39,7 +30,7 @@ export function LoginForm({
   redirectTo: string;
   copy: LoginFormCopy;
   pageCopy: LoginPageCopy;
-  oauthEnabled: { google: boolean; github: boolean };
+  oauthEnabled: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -72,122 +63,73 @@ export function LoginForm({
   }
 
   const oauthError = searchParams.get("error");
-  const showProviderButtons = true;
 
   return (
-    <div className="flex flex-col gap-6">
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-        {error ? (
-          <div className="rounded-lg bg-risk-high-bg p-3 text-sm text-risk-high">
-            {error}
-          </div>
-        ) : oauthError ? (
-          <div className="rounded-lg bg-risk-high-bg p-3 text-sm text-risk-high">
-            {copy.error}
-          </div>
-        ) : null}
+    <div className="grid gap-5">
+      <form className="grid gap-5" onSubmit={handleSubmit}>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="login-username">
+            {copy.username}
+          </label>
+          <input
+            id="login-username"
+            className="portal-input h-[58px]"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            autoComplete="username"
+            placeholder={copy.username}
+            required
+          />
+        </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="grid gap-1.5">
-            <label className="text-[13px] font-medium text-foreground" htmlFor="login-username">
-              {copy.username}
-            </label>
-            <div className="auth-input-shell">
-              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
-              <input
-                id="login-username"
-                className="portal-input auth-input-field h-[48px] text-[15px]"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                autoComplete="username"
-                placeholder={copy.username}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-1.5">
-            <label className="text-[13px] font-medium text-foreground" htmlFor="login-password">
-              {copy.password}
-            </label>
-            <div className="auth-input-shell">
-              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="lock" /></span>
-              <input
-                id="login-password"
-                type="password"
-                className="portal-input auth-input-field h-[48px] text-[15px]"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="current-password"
-                placeholder={copy.passwordPlaceholder}
-                required
-              />
-            </div>
-          </div>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="login-password">
+            {copy.password}
+          </label>
+          <input
+            id="login-password"
+            type="password"
+            className="portal-input h-[58px]"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
+            placeholder={copy.passwordPlaceholder}
+            required
+          />
         </div>
 
         <button
           type="submit"
           disabled={pending}
-          className="hero-button-primary flex h-[48px] items-center justify-center rounded-[14px] text-[15px] font-medium shadow-sm transition-all hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55"
         >
           {pending ? copy.pending : copy.submit}
         </button>
-
-        {showProviderButtons ? (
-          <div className="mt-4 flex flex-col gap-3">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {oauthEnabled.google ? (
-                <a
-                  href={`/api/auth/google?redirectTo=${encodeURIComponent(redirectTo)}`}
-                  className="auth-provider-button transition-transform"
-                >
-                  <span className="auth-provider-icon"><ProviderIcon provider="google" /></span>
-                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.google}</span>
-                </a>
-              ) : (
-                <span className="auth-provider-button is-disabled" aria-disabled="true" title="Google OAuth is not configured">
-                  <span className="auth-provider-icon"><ProviderIcon provider="google" /></span>
-                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.google}</span>
-                </span>
-              )}
-              {oauthEnabled.github ? (
-                <a
-                  href={`/api/auth/github?redirectTo=${encodeURIComponent(redirectTo)}`}
-                  className="auth-provider-button transition-transform"
-                >
-                  <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
-                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.github}</span>
-                </a>
-              ) : (
-                <span className="auth-provider-button is-disabled" aria-disabled="true" title="GitHub OAuth is not configured">
-                  <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
-                  <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.github}</span>
-                </span>
-              )}
-            </div>
-          </div>
-        ) : null}
       </form>
 
-      <div className="flex flex-col items-center gap-4 2xl:gap-6 mt-8 2xl:mt-12">
-        <p className="text-[16px] 2xl:text-[18px] text-muted-foreground">
-          {pageCopy.registerLink}{" "}
-          <Link href={`/register?redirectTo=${encodeURIComponent(redirectTo)}`} className="text-foreground font-medium transition-colors hover:underline underline-offset-4">
-            {pageCopy.registerCta}
-          </Link>
-        </p>
-        <p className="text-center text-[14.5px] 2xl:text-[16px] leading-relaxed text-muted-foreground/60">
-          {pageCopy.legalPrefix}{" "}
-          <Link href="/docs/privacy" className="font-medium transition-colors hover:text-foreground">{pageCopy.privacy}</Link>
-          {" · "}
-          <Link href="/docs/terms" className="font-medium transition-colors hover:text-foreground">{pageCopy.terms}</Link>
-        </p>
-      </div>
+      {oauthEnabled ? (
+        <div className="grid gap-4">
+          <div className="auth-divider">{pageCopy.oauthDivider}</div>
+          <a href="/api/auth/github" className="auth-provider-button">
+            {pageCopy.github}
+          </a>
+        </div>
+      ) : null}
+
+      {error ? (
+        <p className="text-sm text-[#bf2f2f]">{error}</p>
+      ) : oauthError ? (
+        <p className="text-sm text-[#bf2f2f]">{copy.error}</p>
+      ) : (
+        <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
+      )}
+
+      <p className="text-sm leading-7 text-muted-foreground">
+        {pageCopy.registerLink} {" "}
+        <Link href="/register" className="auth-inline-link">
+          {pageCopy.registerCta}
+        </Link>
+      </p>
     </div>
   );
 }
-
-
-
-

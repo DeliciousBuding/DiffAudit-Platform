@@ -3,20 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import WorkspaceAuditsPage from "./page";
 
-const resolveLocaleFromHeaderStoreMock = vi.fn();
-
-vi.mock("next/headers", () => ({
-  headers: vi.fn(async () => new Headers()),
-}));
-
-vi.mock("@/lib/locale", () => ({
-  resolveLocaleFromHeaderStore: (...args: unknown[]) => resolveLocaleFromHeaderStoreMock(...args),
-}));
-
 describe("WorkspaceAuditsPage", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    resolveLocaleFromHeaderStoreMock.mockReset();
   });
 
   it("renders zh-CN copy without blocking on live jobs", async () => {
@@ -43,12 +32,11 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    resolveLocaleFromHeaderStoreMock.mockReturnValue("zh-CN");
-    const markup = renderToStaticMarkup(await WorkspaceAuditsPage());
+    const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "zh-CN" }));
 
-    expect(markup).toContain("创建任务，跟踪进度，查看结果。");
+    expect(markup).toContain("创建任务、跟踪运行、查看结果。");
     expect(markup).toContain("创建任务");
-    expect(markup).toContain("运行中的任务");
+    expect(markup).toContain("活跃任务");
     expect(markup).toContain("历史任务");
   });
 
@@ -73,12 +61,11 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    resolveLocaleFromHeaderStoreMock.mockReturnValue("en-US");
-    const markup = renderToStaticMarkup(await WorkspaceAuditsPage());
+    const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "en-US" }));
 
-    expect(markup).toContain("Create tasks, track progress, review results.");
+    expect(markup).toContain("Create tasks, track runs, review results.");
     expect(markup).toContain("Create task");
-    expect(markup).toContain("Running tasks");
-    expect(markup).toContain("History");
+    expect(markup).toContain("Active tasks");
+    expect(markup).toContain("Task history");
   });
 });

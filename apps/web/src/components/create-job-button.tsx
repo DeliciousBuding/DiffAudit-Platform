@@ -108,7 +108,7 @@ export function CreateJobButton({ contractKey, label }: CreateJobButtonProps) {
     }
   };
 
-  const messageClass = status === "error" ? "text-xs text-[color:var(--warning)]" : "text-xs text-muted-foreground";
+  const messageClass = status === "error" ? "text-xs text-red-500" : "text-xs text-muted-foreground";
 
   return (
     <div className="flex flex-col items-end gap-1">

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { githubOAuthConfigured, googleOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
+import { githubOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
 import { LoginForm } from "@/components/login-form";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -13,57 +13,28 @@ export default async function LoginPage({
   const { redirectTo } = await searchParams;
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
-  const oauthEnabled = {
-    google: googleOAuthConfigured(),
-    github: githubOAuthConfigured(),
-  };
+  const oauthEnabled = githubOAuthConfigured();
 
   return (
-    <>
-      <div className="relative hidden w-full lg:flex lg:w-[45%] xl:w-[50%] flex-col overflow-hidden bg-muted/10 border-r border-border">
-        {/* Glow accents */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-accent-blue/15 blur-[80px]" />
-        
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_10%,transparent_100%)]"></div>
-
-        <div className="relative z-10 w-full h-full flex flex-col justify-center px-12 xl:px-24 pb-32">
-          <div className="w-full max-w-[500px] 2xl:max-w-[700px] mx-auto ">
-            <div className="mb-6 inline-flex rounded-full bg-accent-blue/10 border border-accent-blue/20 px-[16px] py-1.5 text-[13px] font-medium tracking-wide text-accent-blue uppercase shadow-sm">
-              {copy.loginPage.eyebrow}
-            </div>
-            <h1 className="text-[38px] font-semibold leading-[1.15] text-foreground xl:text-[46px] 2xl:text-[54px]">
-              {copy.loginPage.title}
-            </h1>
-            <p className="mt-6 text-[16px] leading-[1.6] text-muted-foreground/80 xl:text-[17px] 2xl:text-[20px]">
-              {copy.loginPage.description}
-            </p>
-          </div>
-        </div>
-
-        <div className="absolute -bottom-10 -left-10 text-[180px] 2xl:text-[240px] font-bold leading-none text-foreground/[0.03] select-none pointer-events-none whitespace-nowrap">
-          DiffAudit
-        </div>
+    <div className="mx-auto grid max-w-[960px] gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+      <div className="workspace-highlight">
+        <div className="caption">{copy.loginPage.eyebrow}</div>
+        <h1 className="mt-3 text-[34px] font-[450] leading-tight">{copy.loginPage.title}</h1>
+        <p className="mt-4 max-w-[48ch] text-sm leading-7 text-muted-foreground">{copy.loginPage.description}</p>
       </div>
 
-      <div className="flex w-full lg:w-[55%] xl:w-[50%] items-center justify-center p-8 lg:p-12 xl:p-24 min-h-[100svh]">
-        <div className="w-full max-w-[420px] 2xl:max-w-[480px]  flex flex-col">
-          <div className="mb-8 flex flex-col gap-2">
-            <h2 className="text-[28px] 2xl:text-[34px] font-semibold text-foreground">
-              {copy.loginPage.formTitle}
-            </h2>
-            <p className="text-[15px] 2xl:text-[17px] text-muted-foreground">
-              {String(copy.loginPage.description).split('。')[0] || "Welcome back to your workspace."}
-            </p>
-          </div>
-          <LoginForm redirectTo={sanitizeRedirectPath(redirectTo)} copy={copy.loginForm} pageCopy={copy.loginPage} oauthEnabled={oauthEnabled} />
+      <div className="surface-card p-6 md:p-8">
+        <div className="caption">{copy.loginPage.formEyebrow}</div>
+        <h2 className="mt-3 text-[28px] font-[450] leading-tight">{copy.loginPage.formTitle}</h2>
+        <div className="mt-6">
+          <LoginForm
+            redirectTo={sanitizeRedirectPath(redirectTo)}
+            copy={copy.loginForm}
+            pageCopy={copy.loginPage}
+            oauthEnabled={oauthEnabled}
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 }
-
-
-
-
-
-

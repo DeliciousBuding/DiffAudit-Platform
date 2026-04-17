@@ -6,7 +6,6 @@ import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
-import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -35,22 +34,18 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
 
       <div className="workspace-main-area">
         <header className="workspace-topbar">
-          <div className="header-controls flex items-center gap-2">
-            <ThemeToggleButton />
-            <LanguagePicker value={locale} reloadOnChange compact />
+          <div className="flex items-center gap-2">
+            <LanguagePicker value={locale} reloadOnChange />
             <a
-              href="https://github.com/DeliciousBuding/DiffAudit-Research"
+              href="https://github.com/DeliciousBuding/DiffAudit-Platform"
               target="_blank"
               rel="noreferrer"
-              className="header-pill header-pill-icon text-muted-foreground hover:text-foreground"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition hover:text-foreground"
               title={copy.shell.githubTitle}
             >
               <GithubIcon />
             </a>
-            <LogoutButton
-              label={copy.shell.signOut}
-              className="header-pill header-pill-primary !h-[38px] !px-4 text-foreground"
-            />
+            <LogoutButton label={copy.shell.signOut} />
           </div>
         </header>
         <main className="workspace-main-content">{children}</main>

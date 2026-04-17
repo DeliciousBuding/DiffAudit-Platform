@@ -4,10 +4,10 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { InputIcon } from "@/components/auth-icons";
-
 type RegisterFormCopy = {
   username: string;
+  email: string;
+  emailPlaceholder: string;
   password: string;
   passwordPlaceholder: string;
   confirmPassword: string;
@@ -21,31 +21,23 @@ type RegisterFormCopy = {
 
 type RegisterPageCopy = {
   oauthDivider: string;
-  passwordDivider: string;
   loginLink: string;
   loginCta: string;
-  providerHint: string;
-  google: string;
   github: string;
-  privacy: string;
-  terms: string;
-  legalPrefix: string;
 };
 
 export function RegisterForm({
-  redirectTo,
   copy,
   pageCopy,
   oauthEnabled,
 }: {
-  redirectTo: string;
   copy: RegisterFormCopy;
   pageCopy: RegisterPageCopy;
-  oauthEnabled: { google: boolean; github: boolean };
+  oauthEnabled: boolean;
 }) {
   const router = useRouter();
-  const hasOauthOption = oauthEnabled.google || oauthEnabled.github;
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pending, setPending] = useState(false);
@@ -65,7 +57,7 @@ export function RegisterForm({
     const response = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ username, password, redirectTo }),
+      body: JSON.stringify({ username, email, password }),
     });
 
     if (!response.ok) {
@@ -76,71 +68,55 @@ export function RegisterForm({
     }
 
     setPending(false);
-    router.replace(redirectTo);
+    router.replace("/login");
     router.refresh();
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-        {error ? (
-          <div className="rounded-lg bg-risk-high-bg p-3 text-sm text-risk-high">
-            {error}
-          </div>
-        ) : null}
-        
-        <div className="flex flex-col gap-4">
-          <div className="grid gap-1.5">
-            <label className="text-[13px] font-medium text-foreground" htmlFor="register-username">{copy.username}</label>
-            <div className="auth-input-shell">
-              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
-              <input id="register-username" className="portal-input auth-input-field h-[48px] text-[15px]" value={username} onChange={(event) => setUsername(event.target.value)} required />
-            </div>
-          </div>
-          <div className="grid gap-1.5">
-            <label className="text-[13px] font-medium text-foreground" htmlFor="register-password">{copy.password}</label>
-            <div className="auth-input-shell">
-              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="lock" /></span>
-              <input id="register-password" type="password" className="portal-input auth-input-field h-[48px] text-[15px]" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={copy.passwordPlaceholder} required />
-            </div>
-          </div>
-          <div className="grid gap-1.5">
-            <label className="text-[13px] font-medium text-foreground" htmlFor="register-confirm-password">{copy.confirmPassword}</label>
-            <div className="auth-input-shell">
-              <span className="auth-input-icon text-muted-foreground"><InputIcon icon="shield" /></span>
-              <input id="register-confirm-password" type="password" className="portal-input auth-input-field h-[48px] text-[15px]" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={copy.confirmPasswordPlaceholder} required />
-            </div>
-          </div>
+    <div className="grid gap-5">
+      <form className="grid gap-5" onSubmit={handleSubmit}>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="register-username">{copy.username}</label>
+          <input id="register-username" className="portal-input h-[58px]" value={username} onChange={(event) => setUsername(event.target.value)} required />
         </div>
-
-        <button type="submit" disabled={pending} className="hero-button-primary mt-2 flex h-[48px] items-center justify-center rounded-[14px] text-[15px] font-medium shadow-sm transition-all hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50">
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="register-email">{copy.email}</label>
+          <input id="register-email" type="email" className="portal-input h-[58px]" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={copy.emailPlaceholder} />
+        </div>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="register-password">{copy.password}</label>
+          <input id="register-password" type="password" className="portal-input h-[58px]" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={copy.passwordPlaceholder} required />
+        </div>
+        <div className="grid gap-2">
+          <label className="caption" htmlFor="register-confirm-password">{copy.confirmPassword}</label>
+          <input id="register-confirm-password" type="password" className="portal-input h-[58px]" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={copy.confirmPasswordPlaceholder} required />
+        </div>
+        <button type="submit" disabled={pending} className="portal-pill portal-pill-primary mt-2 h-[58px] w-full disabled:cursor-not-allowed disabled:opacity-55">
           {pending ? copy.pending : copy.submit}
         </button>
       </form>
 
-      <div className="flex flex-col items-center gap-4 2xl:gap-6 mt-8 2xl:mt-12">
-        {!error && (
-          <p className="text-[16px] 2xl:text-[18px] text-muted-foreground">{copy.hint}</p>
-        )}
-        
-        <p className="text-[13px] text-muted-foreground mt-2">
-          {pageCopy.loginLink}{" "}
-          <Link href={`/login?redirectTo=${encodeURIComponent(redirectTo)}`} className="text-foreground font-medium transition-colors hover:underline underline-offset-4">
-            {pageCopy.loginCta}
-          </Link>
-        </p>
+      {oauthEnabled ? (
+        <div className="grid gap-4">
+          <div className="auth-divider">{pageCopy.oauthDivider}</div>
+          <a href="/api/auth/github" className="auth-provider-button">
+            {pageCopy.github}
+          </a>
+        </div>
+      ) : null}
 
-        <p className="text-center text-[12px] leading-relaxed text-muted-foreground/60 mt-1">
-          {pageCopy.legalPrefix}{" "}
-          <Link href="/docs/privacy" className="font-medium transition-colors hover:text-foreground">{pageCopy.privacy}</Link>
-          {" · "}
-          <Link href="/docs/terms" className="font-medium transition-colors hover:text-foreground">{pageCopy.terms}</Link>
-        </p>
-      </div>
+      {error ? (
+        <p className="text-sm text-[#bf2f2f]">{error}</p>
+      ) : (
+        <p className="text-sm leading-7 text-muted-foreground">{copy.hint}</p>
+      )}
+
+      <p className="text-sm leading-7 text-muted-foreground">
+        {pageCopy.loginLink} {" "}
+        <Link href="/login" className="auth-inline-link">
+          {pageCopy.loginCta}
+        </Link>
+      </p>
     </div>
   );
 }
-
-
-
-

@@ -23,13 +23,14 @@ export function Tooltip({
   delayHide = 100,
 }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [mounted] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tooltipRect, setTooltipRect] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
+    setMounted(true);
     return () => {
       if (showTimer.current) clearTimeout(showTimer.current);
       if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -99,7 +100,7 @@ export function Tooltip({
 
   const tooltipElement = visible ? (
     <div
-      className={`pointer-events-none fixed z-[50] ${positionClasses[position]}`}
+      className={`pointer-events-none fixed z-[200] ${positionClasses[position]}`}
       style={{
         top: tooltipRect.top,
         left: tooltipRect.left,
@@ -123,7 +124,6 @@ export function Tooltip({
         onFocus={handleEnter}
         onBlur={handleLeave}
         className="inline-flex"
-        aria-hidden="true"
       >
         {children}
       </span>

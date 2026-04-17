@@ -6,26 +6,21 @@ describe("fetchWithTimeout", () => {
   it("aborts when the timeout elapses", async () => {
     vi.useFakeTimers();
 
-    let abortHandler: (() => void) | null = null;
     const fetchMock = vi.fn((_input: RequestInfo | URL, init?: RequestInit) => {
       return new Promise<Response>((_resolve, reject) => {
-        abortHandler = () => reject(new Error("aborted"));
-        init?.signal?.addEventListener("abort", abortHandler);
+        init?.signal?.addEventListener("abort", () => {
+          reject(new Error("aborted"));
+        });
       });
     });
 
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
 
-    // Start the fetch with timeout and immediately catch to prevent unhandled rejection
-    const promise = fetchWithTimeout("https://example.invalid", undefined, { timeoutMs: 30 }).catch(
+    // Attach a handler immediately to avoid an unhandled-rejection window.
+    const error = await fetchWithTimeout("https://example.invalid", undefined, { timeoutMs: 30 }).catch(
       (err: unknown) => err as Error,
     );
-
-    // Advance timers to trigger the timeout
     await vi.advanceTimersByTimeAsync(35);
-
-    // Now await the promise which should have the error
-    const error = await promise;
 
     expect(error).toBeInstanceOf(Error);
     expect((error as Error).message).toBe("aborted");

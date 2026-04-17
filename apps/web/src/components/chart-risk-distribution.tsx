@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { ChartEmptyState } from "./chart-empty-state";
 
 interface RiskDistributionProps {
   data: { key: string; label: string; count: number }[];
@@ -32,12 +31,6 @@ const chartTooltipStyle: React.CSSProperties = {
 };
 
 export function ChartRiskDistribution({ data }: RiskDistributionProps) {
-  const totalRisk = data?.reduce((sum, item) => sum + item.count, 0) ?? 0;
-
-  if (!data || data.length === 0 || totalRisk === 0) {
-    return <ChartEmptyState message="No risk data available / 暂无风险数据" height={220} />;
-  }
-
   return (
     <ResponsiveContainer width="100%" height={220}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>

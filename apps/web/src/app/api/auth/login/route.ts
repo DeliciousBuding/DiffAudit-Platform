@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     | null;
 
   if (!payload?.username || !payload.password) {
-    return NextResponse.json({ message: "Username/email and password are required." }, { status: 400 });
+    return NextResponse.json({ message: "Username and password are required." }, { status: 400 });
   }
 
   await ensureLegacySharedUser();

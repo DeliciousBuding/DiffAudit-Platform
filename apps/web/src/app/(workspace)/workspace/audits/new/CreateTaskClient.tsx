@@ -1,22 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-
-// Spinner component for loading states
-function Spinner({ className = "h-4 w-4" }: { className?: string }) {
-  return (
-    <svg className={`animate-spin ${className}`} viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-    </svg>
-  );
-}
 
 type AttackType = "black-box" | "gray-box" | "white-box";
 
@@ -72,18 +62,6 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [catalogLoading, setCatalogLoading] = useState(false);
-  const [stepTransitioning, setStepTransitioning] = useState(false);
-  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Cleanup timers on unmount
-  useEffect(() => {
-    return () => {
-      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
-      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    };
-  }, []);
 
   // Filter models by selected attack type track
   const filteredModels = useMemo(() => {
@@ -98,34 +76,20 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   }, [form.selectedContractKey, availableModels]);
 
   const setStep = useCallback((step: number) => {
-    setStepTransitioning(true);
     setForm((prev) => ({ ...prev, step }));
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    transitionTimerRef.current = setTimeout(() => setStepTransitioning(false), 300);
   }, []);
 
   const selectAttackType = useCallback((type: AttackType) => {
-    setCatalogLoading(true);
-    setStepTransitioning(true);
     setForm((prev) => ({
       ...prev,
       attackType: type,
       selectedContractKey: null, // Reset model when attack type changes
       step: 2,
     }));
-    // Simulate catalog loading time
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    transitionTimerRef.current = setTimeout(() => {
-      setCatalogLoading(false);
-      setStepTransitioning(false);
-    }, 300);
   }, []);
 
   const selectModel = useCallback((contractKey: string) => {
-    setStepTransitioning(true);
     setForm((prev) => ({ ...prev, selectedContractKey: contractKey, step: 3 }));
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    transitionTimerRef.current = setTimeout(() => setStepTransitioning(false), 300);
   }, []);
 
   const handleSubmit = useCallback(async () => {
@@ -190,7 +154,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setSubmitState("success");
 
       // Redirect after a short delay
-      redirectTimerRef.current = setTimeout(() => {
+      setTimeout(() => {
         router.push("/workspace/audits");
       }, 1500);
     } catch (err) {
@@ -198,15 +162,6 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setErrorMessage(err instanceof Error ? err.message : labels.submissionFailed);
     }
   }, [form.attackType, form.selectedContractKey, form.rounds, form.batchSize, form.adaptiveSampling, router]);
-
-  // Cleanup redirect timer on unmount
-  useEffect(() => {
-    return () => {
-      if (redirectTimerRef.current) {
-        clearTimeout(redirectTimerRef.current);
-      }
-    };
-  }, []);
 
   // Step indicator
   const steps = [
@@ -220,16 +175,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
     switch (form.step) {
       case 1: return form.attackType !== null;
       case 2: return form.selectedContractKey !== null;
-      case 3: return (
-        typeof form.rounds === 'number' &&
-        !Number.isNaN(form.rounds) &&
-        form.rounds >= 1 &&
-        form.rounds <= 1000 &&
-        typeof form.batchSize === 'number' &&
-        !Number.isNaN(form.batchSize) &&
-        form.batchSize >= 1 &&
-        form.batchSize <= 512
-      );
+      case 3: return true;
       case 4: return false;
       default: return false;
     }
@@ -239,27 +185,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
     <div className="space-y-4">
       {/* Step indicator */}
       <div className="border border-border bg-card">
-        {/* Progress header */}
-        <div className="px-4 py-3 border-b border-border bg-muted/10">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-foreground">
-              {labels.stepProgress || "Step"} {form.step} {labels.stepOf || "of"} {steps.length}
-            </span>
-            <span className="text-[10px] text-muted-foreground">
-              {Math.round((form.step / steps.length) * 100)}% {labels.complete || "complete"}
-            </span>
-          </div>
-          {/* Progress bar */}
-          <div className="h-1.5 bg-muted/40 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[var(--accent-blue)] transition-all duration-300 ease-out"
-              style={{ width: `${(form.step / steps.length) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Step tabs */}
-        <div className="flex items-center gap-0 border-b border-border bg-muted/20 overflow-x-auto snap-x snap-mandatory scrollbar-thin">
+        <div className="flex items-center gap-0 border-b border-border bg-muted/20">
           {steps.map((step, index) => {
             const isActive = form.step === index + 1;
             const isCompleted = form.step > index + 1;
@@ -270,10 +196,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 onClick={() => {
                   if (isCompleted) setStep(index + 1);
                 }}
-                disabled={!isCompleted && !isActive}
-                aria-label={`${step.title}${isCompleted ? ' (completed)' : isActive ? ' (current)' : ''}`}
-                aria-current={isActive ? 'step' : undefined}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 snap-start ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors ${
                   isActive
                     ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
                     : isCompleted
@@ -292,7 +215,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 >
                   {isCompleted ? "\u2713" : step.label}
                 </span>
-                <span className="hidden sm:inline">{step.title}</span>
+                {step.title}
               </button>
             );
           })}
@@ -302,7 +225,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
         <div className="p-4">
           {/* Step 1: Attack type selection */}
           {form.step === 1 && (
-            <div className={`space-y-3 transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
+            <div className="space-y-3">
               <div className="text-xs text-muted-foreground mb-3">{copy.steps.step1Desc}</div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                 {(
@@ -333,7 +256,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       key={card.type}
                       type="button"
                       onClick={() => selectAttackType(card.type)}
-                      className={`text-left rounded-lg border p-4 transition-all duration-200 ${
+                      className={`text-left rounded-lg border p-4 transition-all ${
                         isSelected
                           ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                           : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
@@ -341,7 +264,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     >
                       <div className="text-sm font-semibold mb-1.5">{card.title}</div>
                       <div className="text-xs text-muted-foreground mb-2 leading-relaxed">{card.desc}</div>
-                      <div className="text-xs text-muted-foreground italic">{card.note}</div>
+                      <div className="text-[10px] text-muted-foreground italic">{card.note}</div>
                     </button>
                   );
                 })}
@@ -378,14 +301,9 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
           {/* Step 2: Target model selection */}
           {form.step === 2 && (
-            <div className={`space-y-3 transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
+            <div className="space-y-3">
               <div className="text-xs text-muted-foreground mb-3">{copy.steps.step2Desc}</div>
-              {catalogLoading ? (
-                <div className="flex flex-col items-center justify-center py-12 gap-3">
-                  <Spinner className="h-8 w-8 text-[var(--accent-blue)]" />
-                  <div className="text-xs text-muted-foreground">Loading model catalog...</div>
-                </div>
-              ) : filteredModels.length === 0 ? (
+              {filteredModels.length === 0 ? (
                 <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded-lg">
                   {labels.disabled}
                 </div>
@@ -398,8 +316,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         key={model.contractKey}
                         type="button"
                         onClick={() => selectModel(model.contractKey)}
-                        disabled={catalogLoading}
-                        className={`text-left rounded-lg border p-3 transition-all duration-200 disabled:opacity-50 ${
+                        className={`text-left rounded-lg border p-3 transition-all ${
                           isSelected
                             ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                             : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
@@ -418,7 +335,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                                 : labels.availabilityDisabled}
                           </StatusBadge>
                         </div>
-                        <div className="mono text-xs text-muted-foreground">{model.contractKey}</div>
+                        <div className="mono text-[10px] text-muted-foreground">{model.contractKey}</div>
                         <div className="text-xs text-muted-foreground mt-1">{model.capabilityLabel}</div>
                       </button>
                     );
@@ -430,8 +347,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  disabled={catalogLoading}
-                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40"
                 >
                   &larr; {copy.steps.step1Title}
                 </button>
@@ -441,7 +357,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
           {/* Step 3: Configure parameters */}
           {form.step === 3 && (
-            <div className={`space-y-4 max-w-md transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
+            <div className="space-y-4 max-w-md">
               <div className="text-xs text-muted-foreground mb-3">{copy.steps.step3Desc}</div>
 
               {/* Rounds */}
@@ -455,17 +371,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   max={1000}
                   value={form.rounds}
                   onChange={(e) => {
-                    const rawValue = e.target.value;
-                    if (rawValue === '') {
-                      setForm((prev) => ({ ...prev, rounds: 1 }));
-                      return;
-                    }
-                    const val = parseInt(rawValue, 10);
-                    if (Number.isNaN(val) || val < 1) {
-                      setForm((prev) => ({ ...prev, rounds: 1 }));
-                    } else if (val > 1000) {
-                      setForm((prev) => ({ ...prev, rounds: 1000 }));
-                    } else {
+                    const val = parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val > 0) {
                       setForm((prev) => ({ ...prev, rounds: val }));
                     }
                   }}
@@ -484,17 +391,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   max={512}
                   value={form.batchSize}
                   onChange={(e) => {
-                    const rawValue = e.target.value;
-                    if (rawValue === '') {
-                      setForm((prev) => ({ ...prev, batchSize: 1 }));
-                      return;
-                    }
-                    const val = parseInt(rawValue, 10);
-                    if (Number.isNaN(val) || val < 1) {
-                      setForm((prev) => ({ ...prev, batchSize: 1 }));
-                    } else if (val > 512) {
-                      setForm((prev) => ({ ...prev, batchSize: 512 }));
-                    } else {
+                    const val = parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val > 0) {
                       setForm((prev) => ({ ...prev, batchSize: val }));
                     }
                   }}
@@ -514,7 +412,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   }`}
                 >
                   <span
-                    className={`inline-block h-3.5 w-3.5 rounded-full bg-[var(--color-bg-primary)] shadow transition-transform ${
+                    className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
                       form.adaptiveSampling ? "translate-x-4" : "translate-x-0.5"
                     }`}
                   />
@@ -547,7 +445,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
           {/* Step 4: Review & submit */}
           {form.step === 4 && (
-            <div className={`space-y-4 max-w-lg transition-opacity duration-300 ${stepTransitioning ? "opacity-50" : "opacity-100"}`}>
+            <div className="space-y-4 max-w-lg">
               <div className="text-xs text-muted-foreground mb-3">{labels.reviewSummary}</div>
 
               {/* Review card */}
@@ -632,16 +530,9 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitState === "submitting"}
-                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-70"
                   >
-                    {submitState === "submitting" ? (
-                      <>
-                        <Spinner className="h-3 w-3" />
-                        {labels.submitting}
-                      </>
-                    ) : (
-                      labels.submitButton
-                    )}
+                    {submitState === "submitting" ? labels.submitting : labels.submitButton}
                   </button>
                 )}
               </div>

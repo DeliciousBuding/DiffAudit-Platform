@@ -6,18 +6,10 @@ interface CompetitionData {
   catalogSize: number;
   defendedRows: number;
   locale: string;
-  contracts?: CompetitionContract[];
-}
-
-export interface CompetitionContract {
-  contractKey: string;
-  label: string;
-  systemGap: string;
-  workspace: string;
 }
 
 export function generateCompetitionReportHTML(data: CompetitionData): string {
-  const { rows, catalogSize, defendedRows, locale, contracts = [] } = data;
+  const { rows, catalogSize, defendedRows, locale } = data;
   const isZh = locale === "zh-CN";
 
   // Compute statistics
@@ -52,16 +44,6 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
 
   const defenses = Array.from(defenseMap.keys()).filter((d) => d !== "none" && d !== "None");
   const attacks = Array.from(new Set(rows.map((r) => r.attack)));
-  const comparePairs = computeComparePairs(rows);
-  const effectiveCount = comparePairs.filter((pair) => pair.deltaAuc !== null && pair.deltaAuc < -0.1).length;
-  const avgDelta = comparePairs.length > 0
-    ? comparePairs.reduce((sum, pair) => sum + (pair.deltaAuc ?? 0), 0) / comparePairs.length
-    : 0;
-  const coverageGaps = rows
-    .map((row) => ({ attack: row.attack, defense: row.defense, auc: parseFloat(row.aucLabel) }))
-    .filter((row) => !Number.isNaN(row.auc) && row.auc >= 0.7)
-    .sort((a, b) => b.auc - a.auc)
-    .slice(0, 8);
 
   const now = new Date().toLocaleDateString(isZh ? "zh-CN" : "en-US", {
     year: "numeric",
@@ -117,14 +99,6 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
         ],
     // Risk
     riskOverview: isZh ? "风险分布" : "Risk Distribution",
-    aucDistribution: isZh ? "AUC 分数分布" : "AUC Score Distribution",
-    rocCurve: isZh ? "ROC 曲线" : "ROC Curve",
-    attackComparison: isZh ? "攻击效果对比" : "Attack Comparison",
-    defenseEffectiveness: isZh ? "防御效果对比" : "Defense Effectiveness",
-    coverageGaps: isZh ? "覆盖缺口" : "Coverage gaps",
-    summaryPairs: isZh ? "对比组数" : "Comparison Pairs",
-    summaryEffective: isZh ? "有效防御" : "Effective Defense",
-    summaryAvgChange: isZh ? "AUC 平均变化" : "Avg AUC Change",
     high: riskLabel("high", locale),
     medium: riskLabel("medium", locale),
     low: riskLabel("low", locale),
@@ -178,27 +152,15 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
   const overallRisk = riskCounts.high > 0 ? "high" : riskCounts.medium > 0 ? "medium" : "low";
   const riskColor = overallRisk === "high" ? "#dc2626" : overallRisk === "medium" ? "#f59e0b" : "#22c55e";
 
-  const timestamp = new Date().toISOString();
-  const version = "v0.1.0";
-  const githubUrl = "github.com/DeliciousBuding/DiffAudit-Research";
-
   return `<!DOCTYPE html>
 <html lang="${isZh ? "zh-CN" : "en"}">
 <head>
 <meta charset="utf-8">
 <title>${t.title}</title>
 <style>
-  @media print{
-    body{padding:20px}
-    .no-print{display:none}
-    table{page-break-inside:avoid}
-    .risk-item,.summary-card,.attack-line,.innovation-list li{page-break-inside:avoid}
-    .cover{min-height:auto;padding:40px 0}
-  }
   body{font-family:-apple-system,"Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;max-width:900px;margin:0 auto;padding:40px 32px;color:#1a1a2e;background:#fff}
   /* Cover page */
   .cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:60px 0;page-break-after:always}
-  .cover .logo{width:80px;height:80px;background:linear-gradient(135deg,#e94560,#ff6b6b);border-radius:20px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:36px;margin:0 auto 24px}
   .cover h1{font-size:36px;font-weight:700;color:#1a1a2e;margin:0 0 12px;letter-spacing:1px}
   .cover .subtitle{font-size:18px;color:#e94560;margin-bottom:32px;font-weight:500}
   .cover .meta{font-size:14px;color:#6b7280;line-height:2}
@@ -208,19 +170,19 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
   .section{margin-bottom:32px;page-break-inside:avoid}
   /* Summary cards */
   .summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
-  .summary-card{padding:16px;background:#f8f9fa;border-radius:8px;text-align:center;page-break-inside:avoid}
+  .summary-card{padding:16px;background:#f8f9fa;border-radius:8px;text-align:center}
   .summary-card .value{font-size:24px;font-weight:700;color:#1a1a2e}
   .summary-card .label{font-size:11px;color:#6b7280;margin-top:4px}
   /* Risk overview */
   .risk-bar{display:flex;gap:12px;margin-bottom:24px}
-  .risk-item{flex:1;padding:14px;border-radius:8px;text-align:center;page-break-inside:avoid}
+  .risk-item{flex:1;padding:14px;border-radius:8px;text-align:center}
   .risk-item .count{font-size:22px;font-weight:700}
   .risk-item .label{font-size:11px;margin-top:4px}
   .risk-high{background:#fef2f2;color:#dc2626}
   .risk-medium{background:#fffbeb;color:#f59e0b}
   .risk-low{background:#f0fdf4;color:#22c55e}
   /* Attack line cards */
-  .attack-line{padding:16px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:12px;border-left:4px solid;page-break-inside:avoid}
+  .attack-line{padding:16px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:12px;border-left:4px solid}
   .attack-line.black-box{border-left-color:#2f6df6}
   .attack-line.gray-box{border-left-color:#b67619}
   .attack-line.white-box{border-left-color:#ff5f46}
@@ -228,24 +190,19 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
   .attack-line .title{font-weight:600;font-size:14px}
   .attack-line .auc{font-family:monospace;font-size:16px;font-weight:700}
   /* Defense table */
-  table{width:100%;border-collapse:collapse;margin:12px 0;page-break-inside:avoid}
+  table{width:100%;border-collapse:collapse;margin:12px 0}
   thead{background:#1a1a2e}
-  tbody tr:nth-child(even){background:#f9fafb}
-  tbody tr:hover{background:#f3f4f6}
   /* Innovations */
   .innovation-list{list-style:none;padding:0;margin:0}
-  .innovation-list li{padding:10px 14px;margin-bottom:6px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;font-size:14px;line-height:1.6;page-break-inside:avoid}
+  .innovation-list li{padding:10px 14px;margin-bottom:6px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;font-size:14px;line-height:1.6}
   /* Footer */
-  footer{margin-top:40px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center;line-height:1.6}
-  footer a{color:#3b82f6;text-decoration:none}
-  footer a:hover{text-decoration:underline}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center}
 </style>
 </head>
 <body>
 
 <!-- Cover page -->
 <div class="cover">
-  <div class="logo">DA</div>
   <h1>${t.title}</h1>
   <div class="subtitle">${t.subtitle}</div>
   <div class="divider"></div>
@@ -289,15 +246,6 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
   </div>
 </div>
 
-<div class="section">
-  <h2>${t.aucDistribution}</h2>
-  <p>${aucValues.map((value) => value.toFixed(3)).join(" / ") || "n/a"}</p>
-  <h2>${t.rocCurve}</h2>
-  <p>${isZh ? "基于平均 AUC 生成的导出曲线摘要。" : "Derived export curve summary based on average AUC."}</p>
-  <h2>${t.attackComparison}</h2>
-  <p>Recon ${reconAuc} | PIA ${piaAuc} | GSA ${gsaAuc}</p>
-</div>
-
 <!-- Three Attack Lines -->
 <div class="section">
   <h2>${t.attackLines}</h2>
@@ -338,21 +286,7 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
 
 <!-- Defense Comparison -->
 ${defenses.length > 0 ? `<div class="section">
-  <h2>${t.defenseEffectiveness}</h2>
-  <div class="summary-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
-    <div class="summary-card">
-      <div class="value">${comparePairs.length}</div>
-      <div class="label">${t.summaryPairs}</div>
-    </div>
-    <div class="summary-card">
-      <div class="value">${avgDelta >= 0 ? "+" : ""}${avgDelta.toFixed(3)}</div>
-      <div class="label">${t.summaryAvgChange}</div>
-    </div>
-    <div class="summary-card">
-      <div class="value">${effectiveCount}/${comparePairs.length || 0}</div>
-      <div class="label">${t.summaryEffective}</div>
-    </div>
-  </div>
+  <h2>${t.defenseComparison}</h2>
   <table>
     <thead><tr>
       <th style="${thStyle}">${t.defense}</th>
@@ -365,44 +299,6 @@ ${defenses.length > 0 ? `<div class="section">
   </table>
 </div>` : ""}
 
-${coverageGaps.length > 0 ? `<div class="section">
-  <h2>${t.coverageGaps}</h2>
-  <table>
-    <thead><tr>
-      <th style="${thStyle}">${t.attack}</th>
-      <th style="${thStyle}">${t.defense}</th>
-      <th style="${thStyle}">${t.auc}</th>
-    </tr></thead>
-    <tbody>
-      ${coverageGaps.map((gap) => `<tr>
-        <td style="${tdStyle}">${gap.attack}</td>
-        <td style="${tdStyle}">${gap.defense}</td>
-        <td style="${tdStyle}${monoStyle}">${gap.auc.toFixed(3)}</td>
-      </tr>`).join("")}
-    </tbody>
-  </table>
-</div>` : ""}
-
-${contracts.length > 0 ? `<div class="section">
-  <h2>${t.coverageGaps}</h2>
-  <table>
-    <thead><tr>
-      <th style="${thStyle}">Contract Key</th>
-      <th style="${thStyle}">Label</th>
-      <th style="${thStyle}">System Gap</th>
-      <th style="${thStyle}">Workspace</th>
-    </tr></thead>
-    <tbody>
-      ${contracts.map((contract) => `<tr>
-        <td style="${tdStyle}${monoStyle}">${contract.contractKey}</td>
-        <td style="${tdStyle}">${contract.label}</td>
-        <td style="${tdStyle}">${contract.systemGap}</td>
-        <td style="${tdStyle}">${contract.workspace}</td>
-      </tr>`).join("")}
-    </tbody>
-  </table>
-</div>` : ""}
-
 <!-- Innovation Highlights -->
 <div class="section">
   <h2>${t.innovations}</h2>
@@ -411,10 +307,7 @@ ${contracts.length > 0 ? `<div class="section">
   </ul>
 </div>
 
-<footer>
-  Generated by DiffAudit ${version} | ${timestamp}<br>
-  <a href="https://${githubUrl}" target="_blank">${githubUrl}</a>
-</footer>
+<footer>${t.footer}</footer>
 </body>
 </html>`;
 }
@@ -422,34 +315,4 @@ ${contracts.length > 0 ? `<div class="section">
 function avgTrackAuc(trackRows: ReportExportRow[]): string {
   const aucs = trackRows.map((r) => parseFloat(r.aucLabel)).filter((v) => !Number.isNaN(v));
   return aucs.length > 0 ? (aucs.reduce((a, b) => a + b, 0) / aucs.length).toFixed(3) : "n/a";
-}
-
-function computeComparePairs(rows: ReportExportRow[]) {
-  const grouped = new Map<string, { undefended?: number; defended: Array<{ defense: string; auc: number }> }>();
-
-  for (const row of rows) {
-    const key = `${row.attack}|||${row.model}`;
-    if (!grouped.has(key)) {
-      grouped.set(key, { defended: [] });
-    }
-    const bucket = grouped.get(key)!;
-    const auc = parseFloat(row.aucLabel);
-    if (Number.isNaN(auc)) {
-      continue;
-    }
-    if (row.defense === "none" || row.defense === "None") {
-      bucket.undefended = auc;
-    } else {
-      bucket.defended.push({ defense: row.defense, auc });
-    }
-  }
-
-  return Array.from(grouped.entries()).flatMap(([key, value]) => {
-    const [attack] = key.split("|||");
-    return value.defended.map((defendedRow) => ({
-      attack,
-      defense: defendedRow.defense,
-      deltaAuc: value.undefended !== undefined ? defendedRow.auc - value.undefended : null,
-    }));
-  });
 }

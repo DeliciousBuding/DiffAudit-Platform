@@ -43,10 +43,15 @@ export function RiskBadge({ auc, label, compact = false, locale = "en-US" }: Ris
   if (compact) {
     return (
       <span
-        className="inline-block h-2 w-2 rounded-full flex-shrink-0"
+        className="risk-badge-compact"
         title={displayLabel}
         style={{
+          display: "inline-block",
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
           background: config.color,
+          flexShrink: 0,
         }}
       />
     );
@@ -54,17 +59,30 @@ export function RiskBadge({ auc, label, compact = false, locale = "en-US" }: Ris
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold leading-none whitespace-nowrap"
+      className="risk-badge"
       style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        borderRadius: 9999,
+        padding: "2px 10px",
+        fontSize: 11,
+        fontWeight: 600,
+        lineHeight: 1,
+        whiteSpace: "nowrap",
         color: config.color,
         background: config.bg,
         border: `1px solid ${config.bg}`,
       }}
     >
       <span
-        className="inline-block h-[7px] w-[7px] rounded-full flex-shrink-0"
         style={{
+          display: "inline-block",
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
           background: config.color,
+          flexShrink: 0,
         }}
       />
       {displayLabel}

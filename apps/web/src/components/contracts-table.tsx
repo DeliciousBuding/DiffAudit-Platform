@@ -60,7 +60,7 @@ export function ContractsTable({ contracts, locale }: ContractsTableProps) {
               >
                 <td className="px-3 py-2">
                   <div className="font-medium">{entry.label}</div>
-                  <div className="mono mt-0.5 text-xs text-muted-foreground">{entry.contractKey}</div>
+                  <div className="mono mt-0.5 text-[10px] text-muted-foreground">{entry.contractKey}</div>
                 </td>
                 <td className="px-3 py-2">
                   <StatusBadge

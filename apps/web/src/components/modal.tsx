@@ -18,7 +18,6 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   useEffect(() => {
     if (!open) return;
     previousFocusRef.current = document.activeElement as HTMLElement;
-
     // Focus the first interactive element in the modal
     const timer = setTimeout(() => {
       contentRef.current?.querySelector<HTMLElement>(
@@ -26,53 +25,16 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       )?.focus();
     }, 0);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-        return;
-      }
-
-      // Focus trap: handle Tab and Shift+Tab
-      if (e.key === "Tab") {
-        if (!contentRef.current) return;
-
-        const focusableElements = contentRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const focusableArray = Array.from(focusableElements);
-
-        if (focusableArray.length === 0) return;
-
-        const firstElement = focusableArray[0];
-        const lastElement = focusableArray[focusableArray.length - 1];
-
-        if (e.shiftKey) {
-          // Shift+Tab: if on first element, wrap to last
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          }
-        } else {
-          // Tab: if on last element, wrap to first
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        }
-      }
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
     };
-
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleEsc);
     document.body.style.overflow = "hidden";
-
     return () => {
       clearTimeout(timer);
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleEsc);
       document.body.style.overflow = "";
-      // Only restore focus if the element still exists in the DOM
-      if (previousFocusRef.current && document.contains(previousFocusRef.current)) {
-        previousFocusRef.current.focus();
-      }
+      previousFocusRef.current?.focus();
     };
   }, [open, onClose]);
 
@@ -84,7 +46,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       style={{ animation: "modal-backdrop-in 0.15s ease-out forwards" }}
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose();

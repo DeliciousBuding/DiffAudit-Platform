@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { ChartEmptyState } from "./chart-empty-state";
 
 interface RiskRadarData {
   dimension: string;
@@ -23,13 +22,11 @@ interface ChartRiskRadarProps {
   height?: number;
 }
 
-/** Shared tooltip style for charts */
+/** Shared tooltip style for charts — avoids duplication */
 const chartTooltipStyle: React.CSSProperties = {
   fontSize: 11,
-  borderRadius: 6,
-  border: "1px solid var(--border)",
-  background: "var(--card)",
-  color: "var(--foreground)",
+  borderRadius: 4,
+  padding: "4px 8px",
 };
 
 export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
@@ -56,31 +53,22 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
     return () => observer.disconnect();
   }, []);
 
-  if (!data || data.length === 0) {
-    return <ChartEmptyState message="No radar data available / 暂无雷达数据" height={height} />;
-  }
-
   const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(33, 34, 38, 0.1)";
+  const axisColor = isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(33, 34, 38, 0.4)";
   const tickColor = isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(33, 34, 38, 0.6)";
-  const tickFont = {
-    fill: tickColor,
-    fontSize: 10,
-    fontFamily: "\"PingFang SC\", \"Microsoft YaHei\", \"Segoe UI\", sans-serif",
-    fontWeight: 500,
-  };
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <RadarChart data={data} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+      <RadarChart data={data}>
         <PolarGrid stroke={gridColor} />
         <PolarAngleAxis
           dataKey="label"
-          tick={tickFont}
+          tick={{ fill: tickColor, fontSize: 10 }}
           tickLine={false}
         />
         <PolarRadiusAxis
           domain={[0, 1]}
-          tick={{ ...tickFont, fontSize: 9 }}
+          tick={{ fill: tickColor, fontSize: 9 }}
           tickCount={5}
           axisLine={false}
           tickLine={false}
@@ -99,7 +87,7 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
             if (!payload?.length) return null;
             const p = payload[0];
             return (
-              <div style={{ ...chartTooltipStyle, padding: "6px 10px" }}>
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4, padding: "6px 10px", ...chartTooltipStyle }}>
                 <div style={{ fontWeight: 600 }}>{p.payload?.label ?? p.name}</div>
                 <div style={{ color: "var(--muted-foreground)" }}>{(p.value as number)?.toFixed(2)}</div>
               </div>
