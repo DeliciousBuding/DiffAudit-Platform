@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
@@ -33,6 +33,11 @@ export function ThemeToggleButton() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -61,8 +66,13 @@ export function ThemeToggleButton() {
     },
   ];
 
-  const activeOption = options.find((option) => option.value === theme) ?? options[0];
-  const previewIcon = theme === "system"
+  const fallbackOption = options.find((option) => option.value === "system") ?? options[0];
+  const activeOption = mounted
+    ? options.find((option) => option.value === theme) ?? options[0]
+    : fallbackOption;
+  const previewIcon = !mounted
+    ? fallbackOption.icon
+    : theme === "system"
     ? (
       <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
         <rect x="3.5" y="4.5" width="17" height="12" rx="2" />

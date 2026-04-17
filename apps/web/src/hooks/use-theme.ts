@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import {
   DEFAULT_THEME,
@@ -33,37 +33,48 @@ function getInitialTheme(): ThemeMode {
   return DEFAULT_THEME;
 }
 
+function subscribeToSystemTheme(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = () => onStoreChange();
+
+  if (typeof mediaQuery.addEventListener === "function") {
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }
+
+  mediaQuery.addListener(handler);
+  return () => mediaQuery.removeListener(handler);
+}
+
 export function useTheme() {
   const [theme, setThemeState] = useState<ThemeMode>(getInitialTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(() =>
-    getInitialTheme() === "system" ? getSystemTheme() : (getInitialTheme() as "light" | "dark"),
+  const systemTheme = useSyncExternalStore(
+    subscribeToSystemTheme,
+    getSystemTheme,
+    () => "light",
   );
+  const resolvedTheme = theme === "system" ? systemTheme : theme;
 
   useEffect(() => {
-    if (theme === "system") {
-      setResolvedTheme(getSystemTheme());
-      return;
-    }
-    setResolvedTheme(theme);
-  }, [theme]);
+    function handleStorage(event: StorageEvent) {
+      if (
+        event.key
+        && !SHARED_THEME_STORAGE_KEYS.includes(event.key as (typeof SHARED_THEME_STORAGE_KEYS)[number])
+      ) {
+        return;
+      }
 
-  useEffect(() => {
-    if (theme !== "system") {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const update = () => setResolvedTheme(mediaQuery.matches ? "dark" : "light");
-    update();
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", update);
-      return () => mediaQuery.removeEventListener("change", update);
+      const nextTheme = getInitialTheme();
+      setThemeState((currentTheme) => (currentTheme === nextTheme ? currentTheme : nextTheme));
     }
 
-    mediaQuery.addListener(update);
-    return () => mediaQuery.removeListener(update);
-  }, [theme]);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -77,10 +88,10 @@ export function useTheme() {
   }, [theme, resolvedTheme]);
 
   const toggle = useCallback(() => {
-    const root = document.documentElement;
-    const nextTheme: ThemeMode = resolveThemeMode(root.classList.contains("dark") ? "light" : "dark");
+    const currentResolvedTheme = theme === "system" ? systemTheme : theme;
+    const nextTheme: ThemeMode = resolveThemeMode(currentResolvedTheme === "dark" ? "light" : "dark");
     setThemeState(nextTheme);
-  }, []);
+  }, [systemTheme, theme]);
 
   const setTheme = useCallback((nextTheme: ThemeMode) => {
     setThemeState(nextTheme);

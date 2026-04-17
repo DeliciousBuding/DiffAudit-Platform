@@ -41,6 +41,12 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
 
       <div className="workspace-main-area">
         <header className="workspace-topbar">
+          <div className="flex items-center gap-2 flex-wrap">
+            <StatusBadge tone={dataMode === "demo" ? "warning" : "success"}>
+              {dataMode === "demo" ? copy.shell.demoMode : copy.shell.liveMode}
+            </StatusBadge>
+            <RuntimeStatusBadge locale={locale} />
+          </div>
           <div className="flex items-center gap-2">
             <LanguagePicker value={locale} reloadOnChange />
             <ThemeToggleButton />

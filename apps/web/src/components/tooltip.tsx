@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 type TooltipPosition = "top" | "bottom" | "left" | "right";
@@ -23,14 +23,17 @@ export function Tooltip({
   delayHide = 100,
 }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tooltipRect, setTooltipRect] = useState({ top: 0, left: 0 });
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
-    setMounted(true);
     return () => {
       if (showTimer.current) clearTimeout(showTimer.current);
       if (hideTimer.current) clearTimeout(hideTimer.current);

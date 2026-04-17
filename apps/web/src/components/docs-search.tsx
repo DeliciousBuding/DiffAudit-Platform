@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "@/app/(marketing)/docs/docs-data";
 import { getDocsContent } from "@/app/(marketing)/docs/docs-data";
@@ -21,52 +21,58 @@ interface DocsSearchProps {
 export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const content = getDocsContent(locale);
+  const content = useMemo(() => getDocsContent(locale), [locale]);
+  const index = useMemo(() => buildIndex(content), [content]);
+  const results = useMemo(() => {
+    if (query.length < 2) {
+      return [];
+    }
+    return search(index, query);
+  }, [index, query]);
+  const activeIndex = results[selectedIndex] ? selectedIndex : 0;
 
-  // Build searchable index
-  const index = buildIndex(content);
+  const closeSearch = useCallback(() => {
+    setOpen(false);
+    setQuery("");
+    setSelectedIndex(0);
+  }, []);
+
+  const toggleSearch = useCallback(() => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        setQuery("");
+        setSelectedIndex(0);
+      }
+      return next;
+    });
+  }, []);
 
   // Ctrl+K / Cmd+K shortcut
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setOpen((prev) => !prev);
+        toggleSearch();
       }
       if (e.key === "Escape" && open) {
-        setOpen(false);
+        closeSearch();
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open]);
+  }, [closeSearch, open, toggleSearch]);
 
   // Focus input when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery("");
-      setResults([]);
-      setSelectedIndex(0);
-    }
+    if (!open) return;
+    const timer = window.setTimeout(() => inputRef.current?.focus(), 50);
+    return () => window.clearTimeout(timer);
   }, [open]);
-
-  // Search on query change
-  useEffect(() => {
-    if (query.length < 2) {
-      setResults([]);
-      setSelectedIndex(0);
-      return;
-    }
-    const matches = search(index, query);
-    setResults(matches);
-    setSelectedIndex(0);
-  }, [query, index]);
 
   // Keyboard navigation within results
   const handleKeyDown = useCallback(
@@ -77,23 +83,23 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedIndex((prev) => Math.max(prev - 1, 0));
-      } else if (e.key === "Enter" && results[selectedIndex]) {
+      } else if (e.key === "Enter" && results[activeIndex]) {
         e.preventDefault();
-        const r = results[selectedIndex];
+        const r = results[activeIndex];
         onSelect(r.page.slug, r.section?.id);
-        setOpen(false);
+        closeSearch();
       }
     },
-    [results, selectedIndex, onSelect]
+    [activeIndex, closeSearch, onSelect, results]
   );
 
   // Scroll selected item into view
   useEffect(() => {
     if (listRef.current) {
-      const selected = listRef.current.querySelector(`[data-index="${selectedIndex}"]`);
+      const selected = listRef.current.querySelector(`[data-index="${activeIndex}"]`);
       selected?.scrollIntoView({ block: "nearest" });
     }
-  }, [selectedIndex]);
+  }, [activeIndex]);
 
   if (!open) return null;
 
@@ -102,7 +108,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={() => setOpen(false)}
+        onClick={closeSearch}
       />
 
       {/* Search panel */}
@@ -117,7 +123,10 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(0);
+            }}
             onKeyDown={handleKeyDown}
             placeholder={content.header.searchPlaceholder}
             className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)]"
@@ -132,7 +141,7 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
           <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
             {results.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
-                {content.header.searchNoResults} "{query}"
+                {content.header.searchNoResults} &ldquo;{query}&rdquo;
               </div>
             ) : (
               <div className="space-y-1">
@@ -142,11 +151,11 @@ export function DocsSearch({ locale, onSelect }: DocsSearchProps) {
                     data-index={i}
                     onClick={() => {
                       onSelect(r.page.slug, r.section?.id);
-                      setOpen(false);
+                      closeSearch();
                     }}
                     onMouseEnter={() => setSelectedIndex(i)}
                     className={`w-full rounded-md px-3 py-2.5 text-left transition-colors ${
-                      i === selectedIndex
+                      i === activeIndex
                         ? "bg-[var(--color-bg-active)]"
                         : "hover:bg-[var(--color-bg-hover)]"
                     }`}

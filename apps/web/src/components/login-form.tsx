@@ -154,13 +154,13 @@ export function LoginForm({
               {oauthEnabled.github ? (
                 <a
                   href={`/api/auth/github?redirectTo=${encodeURIComponent(redirectTo)}`}
-                  className="auth-provider-button transition-transform"
+                  className="auth-provider-button transition-transform text-[#121317] dark:text-white"
                 >
                   <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
                   <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.github}</span>
                 </a>
               ) : (
-                <span className="auth-provider-button is-disabled" aria-disabled="true" title="GitHub OAuth is not configured">
+                <span className="auth-provider-button is-disabled text-[#121317] dark:text-white" aria-disabled="true" title="GitHub OAuth is not configured">
                   <span className="auth-provider-icon text-[#121317] dark:text-white"><ProviderIcon provider="github" /></span>
                   <span className="auth-provider-label text-[14.5px] font-medium">{pageCopy.github}</span>
                 </span>

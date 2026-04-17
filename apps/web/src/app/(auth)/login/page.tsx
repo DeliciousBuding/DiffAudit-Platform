@@ -20,7 +20,7 @@ export default async function LoginPage({
 
   return (
     <>
-      <div className="relative hidden w-full lg:flex lg:w-[45%] xl:w-[50%] flex-col overflow-hidden bg-muted/10 border-r border-border">
+      <div className="relative hidden w-full lg:flex lg:w-[45%] xl:w-[50%] flex-col overflow-hidden bg-muted/10 border-r border-border [container-type:inline-size]">
         <div className="pointer-events-none absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-accent-blue/15 blur-[80px]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_10%,transparent_100%)]"></div>
 
@@ -39,8 +39,12 @@ export default async function LoginPage({
         </div>
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden">
-          <div className="translate-y-[24%] px-8 xl:px-12 2xl:px-16">
-            <div className="text-[120px] xl:text-[144px] 2xl:text-[168px] font-bold leading-none tracking-[-0.08em] text-foreground/[0.03] select-none whitespace-nowrap">
+          <div className="-translate-y-[5%]">
+            <div
+              aria-hidden="true"
+              className="-translate-x-[0.05em] whitespace-nowrap font-[700] leading-none tracking-[-0.08em] text-black/[0.34] dark:text-white/[0.12] [font-family:'Segoe_UI',Arial,Helvetica,sans-serif]"
+              style={{ fontSize: "clamp(176px, 24.5cqw, 312px)" }}
+            >
               DiffAudit
             </div>
           </div>

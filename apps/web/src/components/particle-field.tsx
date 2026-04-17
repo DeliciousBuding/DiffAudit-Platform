@@ -69,8 +69,6 @@ export function ParticleField({ className }: { className?: string }) {
   }, []);
 
   useEffect(() => {
-    refreshMetrics();
-
     const observer = typeof ResizeObserver !== "undefined" && containerRef.current
       ? new ResizeObserver(() => refreshMetrics())
       : null;
