@@ -13,7 +13,7 @@ type WorkspaceAuditsPageOptions = {
   locale?: "en-US" | "zh-CN";
 };
 
-export async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions = {}) {
+async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 

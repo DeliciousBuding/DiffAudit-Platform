@@ -505,7 +505,7 @@ type WorkspaceHomePageOptions = {
   locale?: Locale;
 };
 
-export async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}) {
+async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 

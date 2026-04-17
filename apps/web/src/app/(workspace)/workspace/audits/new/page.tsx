@@ -10,7 +10,7 @@ type CreateTaskPageOptions = {
   locale?: Locale;
 };
 
-export async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
+async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].createTask;
 

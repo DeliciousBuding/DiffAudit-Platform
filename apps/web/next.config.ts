@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: resolveTurbopackRoot(__dirname),
   },
+  serverExternalPackages: ["better-sqlite3"],
   // 3.3.2: Production optimizations
   experimental: {
     optimizePackageImports: ["recharts", "lucide-react"],

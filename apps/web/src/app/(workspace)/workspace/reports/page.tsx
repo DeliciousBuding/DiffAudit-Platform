@@ -344,7 +344,7 @@ type WorkspaceReportsPageOptions = {
   locale?: Locale;
 };
 
-export async function renderWorkspaceReportsPage({ locale }: WorkspaceReportsPageOptions = {}) {
+async function renderWorkspaceReportsPage({ locale }: WorkspaceReportsPageOptions = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
 
   return (
