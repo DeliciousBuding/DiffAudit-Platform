@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import WorkspaceReportsPage from "./page";
+import { renderWorkspaceReportsPage } from "./page";
 
 describe("WorkspaceReportsPage", () => {
   afterEach(() => {
@@ -53,7 +53,7 @@ describe("WorkspaceReportsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceReportsPage({ locale: "zh-CN" }));
+    const markup = renderToStaticMarkup(await renderWorkspaceReportsPage({ locale: "zh-CN" }));
 
     expect(markup).toContain("结果汇总、覆盖缺口与报告导出。");
     expect(markup).toContain("审计结果");
@@ -66,7 +66,7 @@ describe("WorkspaceReportsPage", () => {
   it("renders en-US empty states when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await WorkspaceReportsPage({ locale: "en-US" }));
+    const markup = renderToStaticMarkup(await renderWorkspaceReportsPage({ locale: "en-US" }));
 
     expect(markup).toContain("Result summaries, coverage gaps, and report exports.");
     expect(markup).toContain("No audit results yet.");

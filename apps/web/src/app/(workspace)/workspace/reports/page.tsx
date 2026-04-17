@@ -341,8 +341,12 @@ async function CoverageGapsSection({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function WorkspaceReportsPage() {
-  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
+type WorkspaceReportsPageOptions = {
+  locale?: Locale;
+};
+
+export async function renderWorkspaceReportsPage({ locale }: WorkspaceReportsPageOptions = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
 
   return (
     <div className="space-y-4">
@@ -370,4 +374,8 @@ export default async function WorkspaceReportsPage() {
       </Suspense>
     </div>
   );
+}
+
+export default async function WorkspaceReportsPage() {
+  return renderWorkspaceReportsPage();
 }

@@ -499,7 +499,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 }
 
 export default async function WorkspaceHomePage() {
-  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
+  return renderWorkspaceHomePage();
+}
+
+type WorkspaceHomePageOptions = {
+  locale?: Locale;
+};
+
+export async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (

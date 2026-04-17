@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import WorkspaceHomePage from "./page";
+import { renderWorkspaceHomePage } from "./page";
 
 describe("WorkspaceHomePage", () => {
   afterEach(() => {
@@ -53,7 +53,7 @@ describe("WorkspaceHomePage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "zh-CN" }));
+    const markup = renderToStaticMarkup(await renderWorkspaceHomePage({ locale: "zh-CN" }));
 
     expect(markup).toContain("待办、审计结果和关键指标。");
     expect(markup).toContain("当前待办");
@@ -66,7 +66,7 @@ describe("WorkspaceHomePage", () => {
   it("renders en-US copy when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await WorkspaceHomePage({ locale: "en-US" }));
+    const markup = renderToStaticMarkup(await renderWorkspaceHomePage({ locale: "en-US" }));
 
     expect(markup).toContain("Tasks, audit results, and key metrics.");
     expect(markup).toContain("Current tasks");

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import WorkspaceAuditsPage from "./page";
+import { renderWorkspaceAuditsPage } from "./page";
 
 describe("WorkspaceAuditsPage", () => {
   afterEach(() => {
@@ -32,7 +32,7 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "zh-CN" }));
+    const markup = renderToStaticMarkup(await renderWorkspaceAuditsPage({ locale: "zh-CN" }));
 
     expect(markup).toContain("创建任务、跟踪运行、查看结果。");
     expect(markup).toContain("创建任务");
@@ -61,7 +61,7 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await WorkspaceAuditsPage({ locale: "en-US" }));
+    const markup = renderToStaticMarkup(await renderWorkspaceAuditsPage({ locale: "en-US" }));
 
     expect(markup).toContain("Create tasks, track runs, review results.");
     expect(markup).toContain("Create task");

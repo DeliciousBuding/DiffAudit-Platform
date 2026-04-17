@@ -6,8 +6,12 @@ import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { CreateTaskClient } from "./CreateTaskClient";
 
-export default async function CreateTaskPage() {
-  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
+type CreateTaskPageOptions = {
+  locale?: Locale;
+};
+
+export async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].createTask;
 
   // Fetch catalog for model selection step
@@ -41,4 +45,8 @@ export default async function CreateTaskPage() {
       />
     </div>
   );
+}
+
+export default async function CreateTaskPage() {
+  return renderCreateTaskPage();
 }

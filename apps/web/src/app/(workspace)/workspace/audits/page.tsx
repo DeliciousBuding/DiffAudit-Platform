@@ -10,8 +10,12 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";
 import { TaskListClient } from "./TaskListClient";
 
-export default async function WorkspaceAuditsPage() {
-  const resolvedLocale = resolveLocaleFromHeaderStore(await headers());
+type WorkspaceAuditsPageOptions = {
+  locale?: "en-US" | "zh-CN";
+};
+
+export async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions = {}) {
+  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 
   return (
@@ -76,4 +80,8 @@ export default async function WorkspaceAuditsPage() {
       </section>
     </div>
   );
+}
+
+export default async function WorkspaceAuditsPage() {
+  return renderWorkspaceAuditsPage();
 }
