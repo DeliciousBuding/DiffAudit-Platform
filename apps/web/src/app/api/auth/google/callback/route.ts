@@ -9,15 +9,30 @@ import {
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/auth";
 
-const STATE_COOKIE = "diffaudit_oauth_state";
+const STATE_COOKIE = "diffaudit_google_oauth_state";
 
-type GitHubTokenResponse = { access_token?: string; error?: string };
-type GitHubUserResponse = {
-  id: number;
-  login: string;
-  avatar_url: string | null;
-  email: string | null;
+type GoogleTokenResponse = {
+  access_token?: string;
+  error?: string;
 };
+
+type GoogleUserResponse = {
+  sub: string;
+  name?: string;
+  email?: string;
+  picture?: string;
+};
+
+function buildUsername(email: string | undefined, name: string | undefined, subject: string) {
+  const seed = email?.split("@")[0] ?? name ?? `google-${subject.slice(0, 8)}`;
+  const normalized = seed
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 24);
+
+  return normalized || `google-${subject.slice(0, 8)}`;
+}
 
 function readStoredState(raw: string | undefined) {
   if (!raw) return null;
@@ -35,16 +50,16 @@ function readStoredState(raw: string | undefined) {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
-  const clientId = process.env.GITHUB_CLIENT_ID;
-  const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+  const returnedState = url.searchParams.get("state");
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   const platformUrl = process.env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000";
 
   const cookieStore = await cookies();
   const storedState = readStoredState(cookieStore.get(STATE_COOKIE)?.value);
   cookieStore.delete(STATE_COOKIE);
 
-  if (!code || !state || !storedState || state !== storedState.state) {
+  if (!code || !returnedState || !storedState || returnedState !== storedState.state) {
     return NextResponse.redirect(new URL("/login?error=oauth_state", request.url));
   }
 
@@ -52,31 +67,28 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=oauth_config", request.url));
   }
 
-  const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
+  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: JSON.stringify({
+    body: new URLSearchParams({
       client_id: clientId,
       client_secret: clientSecret,
       code,
-      redirect_uri: `${platformUrl}/api/auth/github/callback`,
-      state,
+      grant_type: "authorization_code",
+      redirect_uri: `${platformUrl}/api/auth/google/callback`,
     }),
   });
 
-  const tokenPayload = (await tokenRes.json()) as GitHubTokenResponse;
+  const tokenPayload = (await tokenRes.json()) as GoogleTokenResponse;
   if (!tokenPayload.access_token) {
     return NextResponse.redirect(new URL("/login?error=oauth_token", request.url));
   }
 
-  const userRes = await fetch("https://api.github.com/user", {
+  const userRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
     headers: {
       Authorization: `Bearer ${tokenPayload.access_token}`,
-      Accept: "application/vnd.github+json",
-      "User-Agent": "DiffAudit-Platform",
     },
   });
 
@@ -84,27 +96,11 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=oauth_user", request.url));
   }
 
-  const user = (await userRes.json()) as GitHubUserResponse;
-
-  let email = user.email;
-  if (!email) {
-    const emailRes = await fetch("https://api.github.com/user/emails", {
-      headers: {
-        Authorization: `Bearer ${tokenPayload.access_token}`,
-        Accept: "application/vnd.github+json",
-        "User-Agent": "DiffAudit-Platform",
-      },
-    });
-    if (emailRes.ok) {
-      const emails = (await emailRes.json()) as Array<{ email: string; primary: boolean; verified: boolean }>;
-      email = emails.find((item) => item.primary)?.email ?? emails[0]?.email ?? null;
-    }
-  }
-
-  const appUser = findOrCreateOAuthUser("github", String(user.id), {
-    username: user.login,
-    email,
-    avatarUrl: user.avatar_url,
+  const user = (await userRes.json()) as GoogleUserResponse;
+  const appUser = findOrCreateOAuthUser("google", user.sub, {
+    username: buildUsername(user.email, user.name, user.sub),
+    email: user.email ?? null,
+    avatarUrl: user.picture ?? null,
   });
 
   const token = createSession(appUser.id);

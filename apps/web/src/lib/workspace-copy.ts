@@ -323,9 +323,16 @@ export const WORKSPACE_COPY: Record<
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
+      passwordDivider: string;
+      hidePasswordCta: string;
+      providerHint: string;
       registerLink: string;
       registerCta: string;
+      google: string;
       github: string;
+      legalPrefix: string;
+      privacy: string;
+      terms: string;
     };
     registerPage: {
       eyebrow: string;
@@ -334,9 +341,15 @@ export const WORKSPACE_COPY: Record<
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
+      passwordDivider: string;
+      providerHint: string;
       loginLink: string;
       loginCta: string;
+      google: string;
       github: string;
+      legalPrefix: string;
+      privacy: string;
+      terms: string;
     };
     loginForm: {
       username: string;
@@ -349,8 +362,6 @@ export const WORKSPACE_COPY: Record<
     };
     registerForm: {
       username: string;
-      email: string;
-      emailPlaceholder: string;
       password: string;
       passwordPlaceholder: string;
       confirmPassword: string;
@@ -841,46 +852,57 @@ export const WORKSPACE_COPY: Record<
     },
     loginPage: {
       eyebrow: "Sign in",
-      title: "Access the DiffAudit workspace.",
-      description: "Use your account or continue with GitHub.",
+      title: "Sign in to the DiffAudit workspace",
+      description: "Use your account and password by default. You can also continue with Google or GitHub.",
       formEyebrow: "Workspace access",
-      formTitle: "Sign in to continue.",
+      formTitle: "Sign in to continue",
       oauthDivider: "Or continue with",
-      registerLink: "New to DiffAudit?",
-      registerCta: "Create an account",
+      passwordDivider: "Use account and password",
+      hidePasswordCta: "Switch back to OAuth",
+      providerHint: "Google and GitHub only read your name, email, and avatar for account access.",
+      registerLink: "Need a local account?",
+      registerCta: "Create one",
+      google: "Google",
       github: "Continue with GitHub",
+      legalPrefix: "By continuing, you agree to the",
+      privacy: "Privacy Policy",
+      terms: "Terms",
     },
     registerPage: {
-      eyebrow: "Register",
-      title: "Create a DiffAudit account.",
-      description: "Set up an account to access audits, reports, and workspace settings.",
-      formEyebrow: "Account setup",
-      formTitle: "Register to continue.",
-      oauthDivider: "Or continue with",
+      eyebrow: "Local account",
+      title: "Create a local account",
+      description: "Use this page only when you explicitly need an independent local account/password entry. It fits recovery access, internal demos, or environments without OAuth.",
+      formEyebrow: "Local account setup",
+      formTitle: "Create a DiffAudit account",
+      oauthDivider: "Prefer OAuth?",
+      passwordDivider: "Or create a local account",
+      providerHint: "If you want Google or GitHub, go back to the main sign-in page.",
       loginLink: "Already have an account?",
       loginCta: "Sign in",
-      github: "Continue with GitHub",
+      google: "Google",
+      github: "GitHub",
+      legalPrefix: "Account access is governed by the",
+      privacy: "Privacy Policy",
+      terms: "Terms",
     },
     loginForm: {
-      username: "Username",
+      username: "Username or email",
       password: "Password",
       passwordPlaceholder: "Enter password",
       submit: "Sign in",
       pending: "Signing in...",
-      hint: "You'll enter the workspace after signing in.",
+      hint: "You can sign in with either your username or your email.",
       error: "Sign in failed. Check your credentials.",
     },
     registerForm: {
       username: "Username",
-      email: "Email",
-      emailPlaceholder: "Enter email",
       password: "Password",
       passwordPlaceholder: "At least 8 characters",
       confirmPassword: "Confirm password",
       confirmPasswordPlaceholder: "Re-enter password",
-      submit: "Create account",
+      submit: "Create local account",
       pending: "Creating account...",
-      hint: "After registration, you can sign in to the workspace.",
+      hint: "This creates a local account and signs you into the workspace directly.",
       error: "Registration failed. Please try again.",
       passwordMismatch: "Passwords do not match.",
     },
@@ -1363,46 +1385,57 @@ export const WORKSPACE_COPY: Record<
     },
     loginPage: {
       eyebrow: "登录",
-      title: "进入 DiffAudit 工作台。",
-      description: "使用账号登录，或通过 GitHub 继续。",
+      title: "登录 DiffAudit 工作区",
+      description: "默认使用账号密码登录。也支持通过 Google 或 GitHub 快速继续。",
       formEyebrow: "工作台访问",
-      formTitle: "登录后继续。",
+      formTitle: "登录工作台",
       oauthDivider: "或使用以下方式继续",
-      registerLink: "还没有账号？",
-      registerCta: "创建账号",
-      github: "使用 GitHub 继续",
+      passwordDivider: "使用账号密码登录",
+      hidePasswordCta: "改用第三方登录",
+      providerHint: "Google/GitHub 仅会读取名称、邮箱和头像用于账号访问。",
+      registerLink: "需要本地账号？",
+      registerCta: "创建一个",
+      google: "Google",
+      github: "GitHub",
+      legalPrefix: "继续即表示你同意",
+      privacy: "隐私政策",
+      terms: "服务条款",
     },
     registerPage: {
-      eyebrow: "注册",
-      title: "创建 DiffAudit 账号。",
-      description: "注册后即可进入审计、报告和工作台设置。",
-      formEyebrow: "账号创建",
-      formTitle: "注册后继续。",
-      oauthDivider: "或使用以下方式继续",
+      eyebrow: "本地账号",
+      title: "创建本地账户",
+      description: "只有在你明确需要独立的本地账号/密码入口时，才使用这个页面。它更适合恢复访问、内部演示或没有 OAuth 的场景。",
+      formEyebrow: "本地账号设置",
+      formTitle: "创建 DiffAudit 账号",
+      oauthDivider: "更倾向 OAuth？",
+      passwordDivider: "或创建本地账号",
+      providerHint: "如需 Google 或 GitHub，请回到主登录页。",
       loginLink: "已有账号？",
       loginCta: "去登录",
-      github: "使用 GitHub 继续",
+      google: "Google",
+      github: "GitHub",
+      legalPrefix: "账号访问受",
+      privacy: "隐私政策",
+      terms: "服务条款",
     },
     loginForm: {
-      username: "账号",
+      username: "账号或邮箱",
       password: "密码",
       passwordPlaceholder: "输入密码",
       submit: "登录",
       pending: "登录中...",
-      hint: "登录后进入工作台。",
+      hint: "可使用账号或邮箱登录。",
       error: "登录失败，请检查账号信息。",
     },
     registerForm: {
       username: "账号",
-      email: "邮箱",
-      emailPlaceholder: "输入邮箱",
       password: "密码",
       passwordPlaceholder: "至少 8 位",
       confirmPassword: "确认密码",
       confirmPasswordPlaceholder: "再次输入密码",
-      submit: "创建账号",
+      submit: "创建本地账号",
       pending: "创建中...",
-      hint: "注册完成后即可登录工作台。",
+      hint: "这会创建一个本地账号，并直接登录进入工作台。",
       error: "注册失败，请稍后重试。",
       passwordMismatch: "两次输入的密码不一致。",
     },

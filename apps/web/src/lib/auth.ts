@@ -42,10 +42,21 @@ type GitHubOAuthEnv = {
   GITHUB_CLIENT_SECRET?: string;
 };
 
+type GoogleOAuthEnv = {
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+};
+
 export function githubOAuthConfigured(
   env: GitHubOAuthEnv = process.env as GitHubOAuthEnv,
 ): boolean {
   return Boolean(env.GITHUB_CLIENT_ID?.trim() && env.GITHUB_CLIENT_SECRET?.trim());
+}
+
+export function googleOAuthConfigured(
+  env: GoogleOAuthEnv = process.env as GoogleOAuthEnv,
+): boolean {
+  return Boolean(env.GOOGLE_CLIENT_ID?.trim() && env.GOOGLE_CLIENT_SECRET?.trim());
 }
 
 type LegacySharedAuthEnv = {

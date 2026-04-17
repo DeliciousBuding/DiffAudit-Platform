@@ -1,6 +1,7 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { createUser } from "@/lib/auth";
+import { createSession, createUser, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const payload = (await request.json().catch(() => null)) as
@@ -17,6 +18,9 @@ export async function POST(request: Request) {
 
   try {
     const user = await createUser(payload.username, payload.email ?? null, payload.password);
+    const token = createSession(user.id);
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
     return NextResponse.json({ ok: true, user });
   } catch {
     return NextResponse.json({ message: "Username or email already exists." }, { status: 409 });
