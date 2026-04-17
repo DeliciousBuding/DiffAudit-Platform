@@ -33,6 +33,20 @@ function computeCoverageGaps(rows: Array<{ attack: string; defense: string; aucL
     .slice(0, 10);
 }
 
+function evidenceAccent(evidenceLevel: string) {
+  const normalized = evidenceLevel.trim().toLowerCase();
+  if (normalized.includes("admitted")) {
+    return { border: "#bbf7d0", background: "#f0fdf4", color: "#15803d" };
+  }
+  if (normalized.includes("mainline")) {
+    return { border: "#bfdbfe", background: "#eff6ff", color: "#1d4ed8" };
+  }
+  if (normalized.includes("challenger")) {
+    return { border: "#fde68a", background: "#fffbeb", color: "#b45309" };
+  }
+  return { border: "#dbe1ea", background: "#f8fafc", color: "#475569" };
+}
+
 export function PrintableAuditReport({
   locale,
   rows,
@@ -259,7 +273,44 @@ export function PrintableAuditReport({
                 <td style={{ padding: "7px 10px", borderBottom: "1px solid #eef2f7" }}>
                   <StatusBadge tone="info">{row.track}</StatusBadge>
                 </td>
-                <td style={{ padding: "7px 10px", borderBottom: "1px solid #eef2f7" }}>{row.evidenceLevel}</td>
+                <td style={{ padding: "7px 10px", borderBottom: "1px solid #eef2f7", verticalAlign: "top" }}>
+                  <div style={{ display: "grid", gap: "4px" }}>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        width: "fit-content",
+                        alignItems: "center",
+                        borderRadius: "999px",
+                        border: `1px solid ${evidenceAccent(row.evidenceLevel).border}`,
+                        background: evidenceAccent(row.evidenceLevel).background,
+                        color: evidenceAccent(row.evidenceLevel).color,
+                        fontSize: "10px",
+                        fontWeight: 600,
+                        lineHeight: 1,
+                        padding: "3px 8px",
+                      }}
+                    >
+                      {row.evidenceLevel}
+                    </span>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        width: "fit-content",
+                        maxWidth: "240px",
+                        alignItems: "center",
+                        borderRadius: "999px",
+                        border: "1px solid #dbe1ea",
+                        background: "#f8fafc",
+                        color: "#64748b",
+                        fontSize: "10px",
+                        lineHeight: 1.4,
+                        padding: "3px 8px",
+                      }}
+                    >
+                      {copy.tableHeaders.qualityCost}: {row.qualityCost}
+                    </span>
+                  </div>
+                </td>
                 <td style={{ padding: "7px 10px", borderBottom: "1px solid #eef2f7", textAlign: "right", fontFamily: "monospace" }}>{row.aucLabel}</td>
                 <td style={{ padding: "7px 10px", borderBottom: "1px solid #eef2f7", textAlign: "right", fontFamily: "monospace" }}>{row.asrLabel}</td>
                 <td style={{ padding: "7px 10px", borderBottom: "1px solid #eef2f7", textAlign: "right", fontFamily: "monospace" }}>{row.tprLabel}</td>

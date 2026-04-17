@@ -28,6 +28,10 @@ interface JobDetail {
   error?: string | null;
   stdout_tail?: string | null;
   stderr_tail?: string | null;
+  state_history?: Array<{
+    state: string;
+    timestamp: string;
+  }>;
 }
 
 function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
@@ -87,6 +91,54 @@ function LogTail({ label, content, linesLabel }: { label: string; content: strin
       <pre className="mono text-[10px] leading-relaxed p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
         {tail.join("\n")}
       </pre>
+    </div>
+  );
+}
+
+function StateHistory({
+  entries,
+  locale,
+  labels,
+  statusLabels,
+}: {
+  entries: Array<{ state: string; timestamp: string }>;
+  locale: Locale;
+  labels: {
+    stateHistory: string;
+    stateTimestamp: string;
+    noStateHistory: string;
+  };
+  statusLabels: Record<string, string>;
+}) {
+  if (entries.length === 0) {
+    return (
+      <div className="text-xs text-muted-foreground text-center py-4">
+        {labels.noStateHistory}
+      </div>
+    );
+  }
+
+  return (
+    <div className="border border-border bg-card rounded-md overflow-hidden">
+      <div className="border-b border-border bg-muted/20 px-3 py-1.5">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {labels.stateHistory}
+        </span>
+      </div>
+      <div className="divide-y divide-border">
+        {entries.map((entry, index) => (
+          <div key={`${entry.state}-${entry.timestamp}-${index}`} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+            <div className="flex items-center gap-2">
+              <StatusBadge tone={statusTone(entry.state)} compact>
+                {statusLabel(entry.state, statusLabels)}
+              </StatusBadge>
+            </div>
+            <div className="mono text-[10px] text-muted-foreground" title={`${labels.stateTimestamp}: ${entry.timestamp}`}>
+              {formatTime(entry.timestamp, locale)}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -260,6 +312,17 @@ export function JobDetailClient({
           </pre>
         </div>
       )}
+
+      <StateHistory
+        entries={job.state_history ?? []}
+        locale={locale}
+        labels={{
+          stateHistory: copy.jobDetail.labels.stateHistory,
+          stateTimestamp: copy.jobDetail.labels.stateTimestamp,
+          noStateHistory: copy.jobDetail.labels.noStateHistory,
+        }}
+        statusLabels={copy.jobDetail.statusLabels}
+      />
 
       {/* Stdout / Stderr tails */}
       <div className="space-y-3">

@@ -1,18 +1,35 @@
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToReadableStream } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { renderWorkspaceHomePage } from "./page";
+const headersMock = vi.fn();
+
+vi.mock("next/headers", () => ({
+  headers: headersMock,
+}));
+
+async function renderMarkup(element: React.ReactNode) {
+  const stream = await renderToReadableStream(element);
+  await stream.allReady;
+  return await new Response(stream).text();
+}
 
 describe("WorkspaceHomePage", () => {
   afterEach(() => {
+    headersMock.mockReset();
     vi.unstubAllGlobals();
+    vi.resetModules();
   });
 
   it("renders zh-CN copy with backend data", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(
+    const fetchMock = vi.fn(async (input: string | URL | Request) => {
+      const url = typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.toString()
+          : input.url;
+
+      if (url.includes("/api/v1/catalog")) {
+        return new Response(
           JSON.stringify([
             {
               contract_key: "black-box/recon/sd15-ddim",
@@ -27,10 +44,11 @@ describe("WorkspaceHomePage", () => {
             },
           ]),
           { status: 200, headers: { "content-type": "application/json" } },
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(
+        );
+      }
+
+      if (url.includes("/api/v1/evidence/attack-defense-table")) {
+        return new Response(
           JSON.stringify({
             rows: [
               {
@@ -48,30 +66,37 @@ describe("WorkspaceHomePage", () => {
             ],
           }),
           { status: 200, headers: { "content-type": "application/json" } },
-        ),
-      );
+        );
+      }
+
+      throw new Error(`Unexpected fetch URL: ${url}`);
+    });
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await renderWorkspaceHomePage({ locale: "zh-CN" }));
+    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "zh-CN"]]));
+    const { default: WorkspaceHomePage } = await import("./page");
+    const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("待办、审计结果和关键指标。");
-    expect(markup).toContain("当前待办");
+    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态。");
+    expect(markup).toContain("当前任务");
     expect(markup).toContain("最近结果");
     expect(markup).toContain("PIA GPU512 baseline");
-    expect(markup).toContain("活跃合同");
-    expect(markup).toContain("已防御行");
+    expect(markup).toContain("可审计合同");
+    expect(markup).toContain("已防御结果");
   });
 
   it("renders en-US copy when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await renderWorkspaceHomePage({ locale: "en-US" }));
+    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "en-US"]]));
+    const { default: WorkspaceHomePage } = await import("./page");
+    const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("Tasks, audit results, and key metrics.");
-    expect(markup).toContain("Current tasks");
+    expect(markup).toContain("Your workspace aggregates current audit tasks, recent results, and system status at a glance.");
+    expect(markup).toContain("Active tasks");
     expect(markup).toContain("Recent results");
-    expect(markup).toContain("No audit results yet. Create a job in the audits page.");
-    expect(markup).toContain("Live contracts");
+    expect(markup).toContain("No audit results yet — create a task to get started.");
+    expect(markup).toContain("Auditable contracts");
   });
 });

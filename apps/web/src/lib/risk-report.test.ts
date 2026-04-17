@@ -31,8 +31,9 @@ describe("generateReportHTML", () => {
     );
 
     expect(html).toContain("Detailed Results");
-    expect(html).toContain("Defense Comparison");
     expect(html).toContain("Risk Overview");
+    expect(html).toContain("Conclusions & Recommendations");
+    expect(html).toContain("Avg. Attack AUC");
     expect(html).toContain("Recon");
     expect(html).toContain("PIA");
   });

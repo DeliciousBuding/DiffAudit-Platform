@@ -40,14 +40,12 @@ describe("generateCompetitionReportHTML", () => {
       ],
     });
 
-    expect(html).toContain("AUC Score Distribution");
-    expect(html).toContain("ROC Curve");
+    expect(html).toContain("Audit Summary");
     expect(html).toContain("Risk Distribution");
-    expect(html).toContain("Attack Comparison");
-    expect(html).toContain("Defense Effectiveness");
-    expect(html).toContain("Comparison Pairs");
-    expect(html).toContain("Effective Defense");
-    expect(html).toContain("Coverage gaps");
-    expect(html).toContain("recon_artifact_mainline");
+    expect(html).toContain("Three Attack Line Results");
+    expect(html).toContain("Defense Comparison");
+    expect(html).toContain("Innovation Highlights");
+    expect(html).toContain("Auditable Contracts");
+    expect(html).toContain("Avg. Attack Success Rate");
   });
 });

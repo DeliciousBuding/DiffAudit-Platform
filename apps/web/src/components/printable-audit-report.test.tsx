@@ -39,7 +39,7 @@ describe("PrintableAuditReport", () => {
             asrLabel: "0.510",
             tprLabel: "1.000",
             evidenceLevel: "admitted",
-            qualityCost: "",
+            qualityCost: "100 public samples per split",
             note: "",
             riskLevel: "medium",
           },
@@ -70,6 +70,7 @@ describe("PrintableAuditReport", () => {
     expect(markup).toContain("Coverage gaps");
     expect(markup).toContain("Defense Effectiveness");
     expect(markup).toContain("Audit results");
+    expect(markup).toContain("100 public samples per split");
     expect(markup).toContain("recon_artifact_mainline");
     expect(markup).toContain("width:794px");
   });

@@ -1,18 +1,35 @@
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToReadableStream } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { renderWorkspaceReportsPage } from "./page";
+const headersMock = vi.fn();
+
+vi.mock("next/headers", () => ({
+  headers: headersMock,
+}));
+
+async function renderMarkup(element: React.ReactNode) {
+  const stream = await renderToReadableStream(element);
+  await stream.allReady;
+  return await new Response(stream).text();
+}
 
 describe("WorkspaceReportsPage", () => {
   afterEach(() => {
+    headersMock.mockReset();
     vi.unstubAllGlobals();
+    vi.resetModules();
   });
 
   it("renders zh-CN copy with backend data", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(
+    const fetchMock = vi.fn(async (input: string | URL | Request) => {
+      const url = typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.toString()
+          : input.url;
+
+      if (url.includes("/api/v1/catalog")) {
+        return new Response(
           JSON.stringify([
             {
               contract_key: "black-box/recon/sd15-ddim",
@@ -27,10 +44,11 @@ describe("WorkspaceReportsPage", () => {
             },
           ]),
           { status: 200, headers: { "content-type": "application/json" } },
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(
+        );
+      }
+
+      if (url.includes("/api/v1/evidence/attack-defense-table")) {
+        return new Response(
           JSON.stringify({
             rows: [
               {
@@ -48,29 +66,37 @@ describe("WorkspaceReportsPage", () => {
             ],
           }),
           { status: 200, headers: { "content-type": "application/json" } },
-        ),
-      );
+        );
+      }
+
+      throw new Error(`Unexpected fetch URL: ${url}`);
+    });
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await renderWorkspaceReportsPage({ locale: "zh-CN" }));
+    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "zh-CN"]]));
+    const { default: WorkspaceReportsPage } = await import("./page");
+    const markup = await renderMarkup(await WorkspaceReportsPage());
 
-    expect(markup).toContain("结果汇总、覆盖缺口与报告导出。");
+    expect(markup).toContain("审计结果和覆盖缺口。");
+    expect(markup).toContain("这里汇总了所有审计结果，帮你发现模型防御的薄弱环节。");
     expect(markup).toContain("审计结果");
     expect(markup).toContain("覆盖缺口");
     expect(markup).toContain("recon DDIM public-100 step30");
-    expect(markup).toContain("surface semantic limits cleanly");
-    expect(markup).toContain("导出报告摘要");
+    expect(markup).toContain("导出报告");
   });
 
   it("renders en-US empty states when backend data is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED")));
 
-    const markup = renderToStaticMarkup(await renderWorkspaceReportsPage({ locale: "en-US" }));
+    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "en-US"]]));
+    const { default: WorkspaceReportsPage } = await import("./page");
+    const markup = await renderMarkup(await WorkspaceReportsPage());
 
-    expect(markup).toContain("Result summaries, coverage gaps, and report exports.");
+    expect(markup).toContain("Audit results and coverage gaps.");
+    expect(markup).toContain("Aggregate audit results and identify weak spots in your model&#x27;s defenses.");
     expect(markup).toContain("No audit results yet.");
     expect(markup).toContain("No coverage gap data.");
-    expect(markup).toContain("Export report summary");
+    expect(markup).toContain("Export report");
   });
 });

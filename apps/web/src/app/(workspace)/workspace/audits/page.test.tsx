@@ -1,11 +1,23 @@
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToReadableStream } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { renderWorkspaceAuditsPage } from "./page";
+const headersMock = vi.fn();
+
+vi.mock("next/headers", () => ({
+  headers: headersMock,
+}));
+
+async function renderMarkup(element: React.ReactNode) {
+  const stream = await renderToReadableStream(element);
+  await stream.allReady;
+  return await new Response(stream).text();
+}
 
 describe("WorkspaceAuditsPage", () => {
   afterEach(() => {
+    headersMock.mockReset();
     vi.unstubAllGlobals();
+    vi.resetModules();
   });
 
   it("renders zh-CN copy without blocking on live jobs", async () => {
@@ -32,11 +44,13 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await renderWorkspaceAuditsPage({ locale: "zh-CN" }));
+    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "zh-CN"]]));
+    const { default: WorkspaceAuditsPage } = await import("./page");
+    const markup = await renderMarkup(await WorkspaceAuditsPage());
 
-    expect(markup).toContain("创建任务、跟踪运行、查看结果。");
+    expect(markup).toContain("创建任务，跟踪进度，查看结果。");
     expect(markup).toContain("创建任务");
-    expect(markup).toContain("活跃任务");
+    expect(markup).toContain("运行中的任务");
     expect(markup).toContain("历史任务");
   });
 
@@ -61,11 +75,13 @@ describe("WorkspaceAuditsPage", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const markup = renderToStaticMarkup(await renderWorkspaceAuditsPage({ locale: "en-US" }));
+    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "en-US"]]));
+    const { default: WorkspaceAuditsPage } = await import("./page");
+    const markup = await renderMarkup(await WorkspaceAuditsPage());
 
-    expect(markup).toContain("Create tasks, track runs, review results.");
+    expect(markup).toContain("Create tasks, track progress, review results.");
     expect(markup).toContain("Create task");
-    expect(markup).toContain("Active tasks");
-    expect(markup).toContain("Task history");
+    expect(markup).toContain("Running tasks");
+    expect(markup).toContain("History");
   });
 });

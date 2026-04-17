@@ -1,10 +1,12 @@
 # DiffAudit Platform 综合开发 ROADMAP
 
-> Last updated: 2026-04-17 — All sprints 1.1-7.4 complete | Demo-ready | Part 11 verified | Runtime E2E recon verified (AUC=0.849) | Part 12: 分支整合进行中
+> Last updated: 2026-04-17 (post chief-designer override: Axis A packaging deferred, continue product-ization)
+> 状态: Sprints 1.1-7.4 complete | Demo-ready | Part 11 verified | Runtime E2E recon verified (AUC=0.849) | Part 12: 分支整合进行中（12.5 blocked） | Part 13/14: 新建
 > Deadline: 2026-04-19（计算机设计大赛）
+> Posture: 演示能力维持 demo-ready；不进行提交包 docx/hash/zip 打包动作
 > Hardware: RTX 4070 Laptop 8GB + CPU
 > 本 ROADMAP 覆盖 Platform + Runtime-Server 全部工程任务。
-> **Research 相关任务由 Codex 独立执行，不在本文档范围内。**
+> **Research 相关任务由 Codex 独立执行，不在本文档范围内**；但根 ROADMAP §4 `B-M0` 产出若改动消费面，Platform 侧按 Part 13.2 + 规则 6 响应。
 
 ---
 
@@ -76,6 +78,10 @@ Go 端点:
 | ~~无页面切换动效~~ | ~~体验生硬~~ | ✅ **已修复** |
 | Runtime 无 Docker 隔离 | 跑模型有环境污染风险 | **P2** ⏭️ 赛后 |
 | ~~Runtime job 执行逻辑不完整~~ | ~~是否真正启动 Runner 需确认~~ | ✅ **已修复** |
+| Part 13.2 Research packet 消费面预检 | `evidence_level / quality_cost` 已完成前向兼容消费；`boundary` 仍待 Research producer 落地 | **P1** 持续跟进 |
+| Part 13.3 Runtime contract 稳态验证 | `recon / pia` 冒烟通过；`gsa` 在最小空资产树下稳定 blocked；Runtime 已写入并前端已展示 `job.state_history`；剩余缺口仅为 `gsa` 资产完备性 blocker | **P1** 进行中（剩 `gsa` 资产 blocker） |
+| Part 12 分支整合收尾 | 12.5 验收阻塞：`gz2` 缺失 `v0.1.0-stable` tag；`remotes/gz2/deploy-sync-2026-04-17` 残留；tag commit 与 Part 11 验收快照不一致 | **P0** Part 12 保持进行中 |
+| Part 14.1 报告详情页长期化首轮脚手架 | 新增 `/workspace/reports/[track]` 双视图脚手架；默认展示视图已落地，审计视图可读 provenance 但 producer 侧仍缺 `seed / fixture_version / stable history` | ✅ **进行中（脚手架完成）** |
 
 ### 0.4 参考设计
 
@@ -634,6 +640,7 @@ Go 端点:
 ## Part 12: 分支整合与仓库清理（2026-04-17）
 
 > 目标：将所有有价值的分支工作合并到 main，清理过期分支，统一三端（本地/origin/gz2）状态。
+> 2026-04-17 16:56:54 +08:00 Part 12.5 验收：`main` 三端一致、`gz2/deploy` 已追平、三端构建通过；但 `gz2` 缺失 `v0.1.0-stable`、本地仍见 `remotes/gz2/deploy-sync-2026-04-17` 残留，且 tag commit 与 Part 11 验收快照不一致。Part 12 保持进行中。
 
 ### 12.1 分支现状审计
 
@@ -672,6 +679,99 @@ Go 端点:
 - 只保留 `main` 一个活跃分支 + `v0.1.0-stable` tag + 历史 archive tags
 - 所有有价值的工作不丢失
 
+### 12.5 Part 12 收尾验收清单（2026-04-17 新增）
+
+收尾前逐项核对；全部 ✅ 后在 Part 12 标题后打 ✅：
+
+- [x] 本地 / `origin` / `gz2` 三处 `main` HEAD hash 一致：`11acc8760548e79439bf2ab3202742f257fd33c1`
+- [ ] `v0.1.0-stable` tag 存在且已推送到 `origin` 与 `gz2`
+  - 当前状态：本地与 `origin` 均为 `306f7aa9830df1c91a370242e0d0d899bb3b0d8f`，`gz2` 未返回该 tag
+- [x] `gz2/deploy` 指向最新 `main`
+  - 当前状态：`gz2/deploy = gz2/main = 11acc8760548e79439bf2ab3202742f257fd33c1`
+- [ ] 临时 / backup / cleanup 分支已删除并归档到 archive tag（`archive/*`, `backup/*`, `cleanup/*`, `deploy-gz2`）
+  - 当前状态：`backup|cleanup|temp|wip` 过滤结果为空，但 `git branch -a` 仍见 `remotes/gz2/deploy-sync-2026-04-17` 残留；本地仅见 `archive/pre-squash-20260414` 与 `backup/phase2-20260416` 两个历史 tag
+- [x] 构建回放 clean：`apps/web` `npm run build` + `apps/api-go` `go build ./...` + `Runtime-Server` `go build ./...` 三端零错
+- [ ] `v0.1.0-stable` tag commit 上 `git log -1 --stat` 与 Part 11 验收快照一致
+  - 当前状态：tag commit 为 `306f7aa9830df1c91a370242e0d0d899bb3b0d8f`（2026-04-16 `feat: v4 hero redesign...`），不对应 Part 11 的 2026-04-15 验收快照
+
+---
+
+## Part 13: 4.17–4.19 持续推进（非打包冲刺模式，2026-04-17 新增）
+
+定位：不进行 4C 打包动作、也不停 Platform 工程推进；维持 demo-ready 同时为 Research 新 packet 消费面做准备。根 ROADMAP §0 chief-designer override 下的 Platform 具体落地。
+
+当前推荐执行顺序（2026-04-17 晚）：
+
+1. 先收 `Part 12.5`：`v0.1.0-stable` / `gz2` / remote residue / `Part 11` 验收快照对齐。
+2. 再跑 `Sprint 13.1` 每日 demo smoke，守住 `/workspace -> /workspace/audits -> /workspace/reports/[track] -> /workspace/settings`。
+3. `Part 14.1` 只维持现有 audit-view 脚手架，不抢做 `run log / summary jump`，直到 producer 稳定给出 `seed / fixture_version / history chain / log-tail link`。
+
+### Sprint 13.1 演示能力无回归体检
+
+- [ ] 每日一次 demo mode 冷启动冒烟：`npm run dev` + Go API `:8780` + Runtime `:8765` 同时起，走一遍 `/workspace → /workspace/audits → /workspace/reports/[track] → /workspace/settings`
+- [ ] `/workspace/reports/[track]` 在 snapshot 切换（`apps/api-go/data/public/*.json` 被 Research 新快照覆盖）时无 401 / 空态 / 字段缺失
+- [ ] Runtime fallback 路径 toast 文案完整：`:8765` 未启或不可达时，前端给出明确 fallback 提示而非静默
+- [ ] `apps/web` 构建产物 hash 与当前 main HEAD 对齐，`npm run build` 无警告升级
+
+### Sprint 13.2 Research packet 消费面预检
+
+- [x] 审查 `apps/api-go/data/public/attack-defense-table.json` schema，确认是否暴露根 ROADMAP §2.2 + Research §X-85 新增的 `evidence_level` / `quality_cost` / `boundary` 字段
+- [x] 前端 `/workspace/reports/*` 读侧添加 `evidence_level` / `quality_cost` 兜底读取（缺字段不崩）
+- [x] Risk badge / attack-defense-table 组件对 `evidence_level = "admitted" | "mainline" | "challenger"` 三值可视化；`quality_cost` 值展示为辅助气泡
+- [x] 不阻塞 demo；纯向前兼容修改；完成后在本 Sprint 末尾打 ✅
+
+结果（2026-04-17）: 已确认当前 snapshot 含 `evidence_level / quality_cost`、不含 `boundary`；`/workspace/reports` 与 printable 报告已完成前向兼容消费与可视化；`boundary` 暂记 `pending Research producer`；`npm run build` 通过（存在现有 `middleware` deprecation warning），`go build ./...` 通过。
+
+### Sprint 13.3 Runtime contract 稳态验证
+
+- [ ] [blocked: `gsa` fastest-path smoke 在最小空 `assets_root` 下稳定 failed；缺 `datasets/*` / `checkpoints/*` / `manifests` / `sources`] `Runtime-Server/runners/{recon,pia,gsa}` 三条 runner 冒烟脚本产出结构化日志（`queued → running → completed/failed` 全链路 timestamp）
+- [x] job lifecycle 每一跳写入 `job.state_history`，前端详情页 `/workspace/audits/[jobId]` 按顺序展示
+  - 当前状态：Runtime 已补 `job.state_history` + RFC3339Nano timestamp，并经 `recon / pia / gsa` 三条 job 路径验证；前端详情页现已完成消费、按顺序展示，并补上最小 Vitest 覆盖
+- [x] 若根 ROADMAP §4 `B-M0` 产出新 packet（e.g., bounded shadow-LR 或 I-C white-gray bridge），runtime 能以现有 schema 接入，不需要紧急 schema 改动；若需要，记入 Sprint 13.2 当 sprint 解决
+
+结果（2026-04-17）: 已在隔离 Runtime 实例上完成 `recon / pia / gsa` 冒烟；`recon` 与 `pia` 直跑 + Runtime job 均完成，`gsa` 在最小空资产树下稳定返回 blocked/failed，但生命周期时间线完整。`Runtime-Server/internal/api/server.go` 已最小补丁为每次状态跳转写入 `job.state_history`。额外用带未知字段 `gray_box_composite_summary` 的合成 `summary.json` 走 `/api/v1/experiments/{workspace}/summary` 读路径验证，当前 ingestion 对未知字段前向兼容，无需紧急 schema 改动。详见 `D:/Code/DiffAudit/tmp/platform-part13-3-runtime-smoke.md`。
+
+---
+
+## Part 14: 4.20 起 Track G2 产品化入口（2026-04-17 新增）
+
+定位：对标根 ROADMAP §5 Track G2（平台产品化）。本 Part 是 4.19 之后的迁移入口，不在 4.17–4.19 窗口执行，但需要在 4.19 前完成条目编排以免比赛后散掉。
+
+### Sprint 14.1 报告详情页长期化
+
+- [x] 把当前 `/workspace/reports/[track]` 比赛展示页拆分为「展示视图」+「长期审计视图」两种形态
+- [x] 长期审计视图增加：实验溯源（run 目录 / seed / schedule）、历史对照（同 track 前后 verdict diff）
+- [ ] 支持跳转到具体 run 的日志尾巴 / summary.json
+
+结果摘要（2026-04-17）：
+- 已新增 `/workspace/reports/[track]?view=display|audit`，默认 `display` 保持展示形态，`audit` 为长期化脚手架。
+- 已补 `ReportDisplayView` / `ReportAuditView` 与最小 Vitest；缺失 provenance 字段按 `—` 退化。
+- 未完成项：snapshot producer 目前没有稳定提供 `seed / fixture_version / history chain / log-tail link`，因此 run 日志跳转仍保留到后续 Sprint。
+
+### Sprint 14.2 筛选 / 比较 / 追溯
+
+- [ ] 攻防表支持按 `threat_model × defense × evidence_level` 三维过滤
+- [ ] 双列对比视图：任意两条 row 并排看 `AUC / ASR / TPR@1%FPR / TPR@0.1%FPR` 差
+- [ ] 组合过滤可生成可分享 URL（query string 序列化）
+
+### Sprint 14.3 admitted / mainline / challenger 增量消费
+
+- [ ] 目前 `apps/api-go/data/public/` 是 snapshot 全量覆盖；升级为 append-only + per-entry version
+- [ ] 新 Research verdict 落地后不需要整包替换
+- [ ] 前端根据 `version` 做增量缓存失效
+
+### Sprint 14.4 Runtime snapshot vs live 边界硬化（Track G3 先手）
+
+- [ ] 在前端清楚标识 `Source: snapshot (frozen)` 或 `Source: live runtime (job-id ...)`
+- [ ] 避免评委/用户混淆：badge + tooltip 两层提示
+- [ ] 对接根 ROADMAP §5 Track G3 Runtime 工程化方向
+
+### Sprint 14.5 移动端导航（P3 → P2）
+
+- [ ] sidebar 在 `<1024px` 下必须有 drawer 替代（当前直接消失）
+- [ ] 触摸优化：所有主 CTA 最小 44x44
+- [ ] 国创阶段需要在手机演示，因此本 Sprint 在 Part 14 内部属 P1
+
 ---
 
 ## 附：状态更新规则
@@ -682,3 +782,4 @@ Go 端点:
 3. 如果发现新任务，添加到对应 Part
 4. 如果某条路走不通，标注原因并标记为 skip
 5. 更新 Part 10 的时间线
+6. 根 ROADMAP §4 `B-M0` GPU release 若落地 verdict，Platform 侧需在 48h 内完成 Part 13.2 schema 对齐与 Part 13.3 runtime 冒烟；若 verdict 改动消费面，记入 Sprint 13.2 当窗口处理，不延后到 Part 14

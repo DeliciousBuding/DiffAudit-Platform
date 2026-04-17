@@ -227,6 +227,7 @@ export const WORKSPACE_COPY: Record<
         created: string; duration: string; updated: string; error: string;
         stdoutTail: string; stderrTail: string; lines: string;
         noLogOutput: string; jobNotFound: string; loadFailed: string; apiUnreachable: string;
+        stateHistory: string; stateTimestamp: string; noStateHistory: string;
       };
     };
     emptyWorkspace: {
@@ -286,6 +287,7 @@ export const WORKSPACE_COPY: Record<
         model: string;
         track: string;
         evidence: string;
+        qualityCost: string;
         auc: string;
         asr: string;
         tpr: string;
@@ -671,6 +673,9 @@ export const WORKSPACE_COPY: Record<
         jobNotFound: "Job not found.",
         loadFailed: "Failed to load job",
         apiUnreachable: "Unable to reach the API.",
+        stateHistory: "State history",
+        stateTimestamp: "Timestamp",
+        noStateHistory: "No state history available.",
       },
       nextSteps: {
         completed: [
@@ -752,6 +757,7 @@ export const WORKSPACE_COPY: Record<
         model: "Model",
         track: "Track",
         evidence: "Evidence",
+        qualityCost: "Quality / Cost",
         auc: "AUC",
         asr: "ASR",
         tpr: "TPR",
@@ -1151,13 +1157,13 @@ export const WORKSPACE_COPY: Record<
         queued: "排队中",
         running: "运行中",
         completed: "已完成",
-        failed: "已失败",
+        failed: "失败",
         cancelled: "已取消",
       },
       filters: {
         statusAll: "全部",
         statusCompleted: "已完成",
-        statusFailed: "已失败",
+        statusFailed: "失败",
         statusRunning: "运行中",
         trackAll: "全部轨道",
         trackBlackBox: "黑盒/Recon",
@@ -1275,6 +1281,9 @@ export const WORKSPACE_COPY: Record<
         jobNotFound: "任务不存在。",
         loadFailed: "加载任务失败",
         apiUnreachable: "无法连接到 API 服务。",
+        stateHistory: "状态变更历史",
+        stateTimestamp: "时间戳",
+        noStateHistory: "暂无状态变更记录。",
       },
       nextSteps: {
         completed: [
@@ -1356,6 +1365,7 @@ export const WORKSPACE_COPY: Record<
         model: "目标模型",
         track: "攻击线",
         evidence: "证据等级",
+        qualityCost: "质量 / 成本",
         auc: "AUC",
         asr: "ASR",
         tpr: "TPR",
