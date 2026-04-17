@@ -82,30 +82,40 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=oauth_config", request.url));
   }
 
-  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
-      code,
-      grant_type: "authorization_code",
-      redirect_uri: `${platformUrl}/api/auth/google/callback`,
-    }),
-  });
+  let tokenRes: Response;
+  try {
+    tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        grant_type: "authorization_code",
+        redirect_uri: `${platformUrl}/api/auth/google/callback`,
+      }),
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=oauth_network_google", request.url));
+  }
 
   const tokenPayload = (await tokenRes.json()) as GoogleTokenResponse;
   if (!tokenPayload.access_token) {
     return NextResponse.redirect(new URL("/login?error=oauth_token", request.url));
   }
 
-  const userRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-    headers: {
-      Authorization: `Bearer ${tokenPayload.access_token}`,
-    },
-  });
+  let userRes: Response;
+  try {
+    userRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+      headers: {
+        Authorization: `Bearer ${tokenPayload.access_token}`,
+      },
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=oauth_network_google", request.url));
+  }
 
   if (!userRes.ok) {
     return NextResponse.redirect(new URL("/login?error=oauth_user", request.url));

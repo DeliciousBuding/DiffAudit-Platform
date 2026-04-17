@@ -66,33 +66,43 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=oauth_config", request.url));
   }
 
-  const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-      code,
-      redirect_uri: `${platformUrl}/api/auth/github/callback`,
-      state,
-    }),
-  });
+  let tokenRes: Response;
+  try {
+    tokenRes = await fetch("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        redirect_uri: `${platformUrl}/api/auth/github/callback`,
+        state,
+      }),
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=oauth_network_github", request.url));
+  }
 
   const tokenPayload = (await tokenRes.json()) as GitHubTokenResponse;
   if (!tokenPayload.access_token) {
     return NextResponse.redirect(new URL("/login?error=oauth_token", request.url));
   }
 
-  const userRes = await fetch("https://api.github.com/user", {
-    headers: {
-      Authorization: `Bearer ${tokenPayload.access_token}`,
-      Accept: "application/vnd.github+json",
-      "User-Agent": "DiffAudit-Platform",
-    },
-  });
+  let userRes: Response;
+  try {
+    userRes = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${tokenPayload.access_token}`,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "DiffAudit-Platform",
+      },
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=oauth_network_github", request.url));
+  }
 
   if (!userRes.ok) {
     return NextResponse.redirect(new URL("/login?error=oauth_user", request.url));
@@ -103,13 +113,18 @@ export async function GET(request: Request) {
   let email = user.email;
   let emailVerified = false;
   if (!email) {
-    const emailRes = await fetch("https://api.github.com/user/emails", {
-      headers: {
-        Authorization: `Bearer ${tokenPayload.access_token}`,
-        Accept: "application/vnd.github+json",
-        "User-Agent": "DiffAudit-Platform",
-      },
-    });
+    let emailRes: Response;
+    try {
+      emailRes = await fetch("https://api.github.com/user/emails", {
+        headers: {
+          Authorization: `Bearer ${tokenPayload.access_token}`,
+          Accept: "application/vnd.github+json",
+          "User-Agent": "DiffAudit-Platform",
+        },
+      });
+    } catch {
+      return NextResponse.redirect(new URL("/login?error=oauth_network_github", request.url));
+    }
     if (emailRes.ok) {
       const emails = (await emailRes.json()) as Array<{ email: string; primary: boolean; verified: boolean }>;
       const preferred = emails.find((item) => item.primary) ?? emails[0];
