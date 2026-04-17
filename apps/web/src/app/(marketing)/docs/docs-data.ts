@@ -103,7 +103,7 @@ function zhContent(): DocsContent {
             rows: [
               { eyebrow: "入口", title: "统一站点入口", body: "首页、登录、文档和工作台共用同一品牌入口与导航体系。", tone: "blue" },
               { eyebrow: "执行", title: "任务发起", body: "在 Audits 页面选择目标模型、攻击类型和执行参数后提交任务。", tone: "neutral" },
-              { eyebrow: "解释", title: "结果解释", body: "AUC、ASR、TPR 和风险等级在 Workspace 与 Reports 页面汇总展示，并支持 CSV/PDF 导出。", tone: "amber" },
+              { eyebrow: "解释", title: "结果解释", body: "AUC、ASR、TPR 和风险等级会在 Workspace 与 Reports 页面汇总展示，并支持直接导出 PDF 审计报告。", tone: "amber" },
             ],
           },
           {
@@ -153,7 +153,7 @@ function zhContent(): DocsContent {
             rows: [
               { eyebrow: "总览", title: "Workspace", body: "KPI 指标、风险分布雷达图、最近结果表和下一步建议。", tone: "blue" },
               { eyebrow: "执行", title: "Audits", body: "任务创建向导、活跃任务列表和历史任务记录。", tone: "neutral" },
-              { eyebrow: "分析", title: "Reports", body: "AUC/ROC 分布图、风险等级分布、攻击效果对比和 CSV 导出。", tone: "amber" },
+              { eyebrow: "分析", title: "Reports", body: "AUC/ROC 分布图、风险等级分布、攻击效果对比，以及可直接导出的 PDF 审计报告。", tone: "amber" },
               { eyebrow: "配置", title: "Settings", body: "默认参数设置、系统连接状态和关于系统说明。", tone: "green" },
             ],
           },
@@ -282,7 +282,7 @@ function zhContent(): DocsContent {
             rows: [
               { title: "任务创建", body: "选择攻击类型、目标模型和执行参数，提交后任务自动执行。", tone: "neutral" },
               { title: "状态跟踪", body: "任务状态通过 3 秒轮询更新，支持取消和重试操作。", tone: "blue" },
-              { title: "报告导出", body: "支持 CSV 数据导出和 PDF 比赛报告（含封面、图表、表格）。", tone: "green" },
+              { title: "报告导出", body: "支持直接导出 PDF 审计报告，内含封面、曲线图、风险分布与规范表格。", tone: "green" },
             ],
           },
         ],
@@ -459,7 +459,7 @@ function enContent(): DocsContent {
             rows: [
               { eyebrow: "Entry", title: "Unified site entry", body: "Home, sign-in, docs, and workspace share the same brand and navigation frame.", tone: "blue" },
               { eyebrow: "Execution", title: "Task initiation", body: "Select attack type, target model, and execution parameters in the Audits page.", tone: "neutral" },
-              { eyebrow: "Analysis", title: "Result interpretation", body: "AUC, ASR, TPR, and risk levels are displayed in the Workspace and Reports pages with CSV/PDF export.", tone: "amber" },
+              { eyebrow: "Analysis", title: "Result interpretation", body: "AUC, ASR, TPR, and risk levels are summarized in Workspace and Reports, with direct PDF audit report export.", tone: "amber" },
             ],
           },
           {
@@ -509,7 +509,7 @@ function enContent(): DocsContent {
             rows: [
               { eyebrow: "Overview", title: "Workspace", body: "KPI metrics, risk radar chart, recent results table, and next-step suggestions.", tone: "blue" },
               { eyebrow: "Execution", title: "Audits", body: "Task creation wizard, active task list, and historical task records.", tone: "neutral" },
-              { eyebrow: "Analysis", title: "Reports", body: "AUC/ROC distribution charts, risk level distribution, attack comparison, and CSV export.", tone: "amber" },
+              { eyebrow: "Analysis", title: "Reports", body: "AUC/ROC distribution charts, risk breakdown, attack comparison, and direct PDF audit report export.", tone: "amber" },
               { eyebrow: "Config", title: "Settings", body: "Default parameters, system connection status, and system information.", tone: "green" },
             ],
           },
@@ -638,7 +638,7 @@ function enContent(): DocsContent {
             rows: [
               { title: "Task creation", body: "Select attack type, target model, and parameters. The task executes automatically after submission.", tone: "neutral" },
               { title: "Status tracking", body: "Task status updates via 3-second polling. Cancel and retry operations are supported.", tone: "blue" },
-              { title: "Report export", body: "Supports CSV data export and PDF competition reports (cover, charts, tables).", tone: "green" },
+              { title: "Report export", body: "Supports direct PDF audit report export with cover page, charts, risk analysis, and structured tables.", tone: "green" },
             ],
           },
         ],

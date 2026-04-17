@@ -419,8 +419,6 @@ export const WORKSPACE_COPY: Record<
     };
     exportButton: {
       exporting: string;
-      competition: string;
-      competitionTitle: string;
     };
     liveJobsPanel: {
       justUpdated: string;
@@ -1057,8 +1055,6 @@ export const WORKSPACE_COPY: Record<
     },
     exportButton: {
       exporting: "Exporting...",
-      competition: "Competition",
-      competitionTitle: "Export competition materials",
     },
     liveJobsPanel: {
       justUpdated: "Just updated",
@@ -1694,8 +1690,6 @@ export const WORKSPACE_COPY: Record<
     },
     exportButton: {
       exporting: "导出中...",
-      competition: "比赛材料",
-      competitionTitle: "一键导出比赛材料",
     },
     liveJobsPanel: {
       justUpdated: "刚刚更新",

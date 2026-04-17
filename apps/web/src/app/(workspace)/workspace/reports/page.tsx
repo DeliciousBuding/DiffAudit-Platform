@@ -6,7 +6,6 @@ import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { ExportReportButton } from "@/components/export-report-button";
-import type { ReportExportRow } from "@/lib/risk-report";
 import { TableSkeleton } from "@/components/skeleton";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
@@ -72,19 +71,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
     getWorkspaceCatalogData(),
   ]);
   const rows = table?.rows ?? [];
-  const catalogSize = catalog?.stats.total ?? 0;
-  const defendedRows = table?.stats.defended ?? 0;
-  const localeCode = locale === "zh-CN" ? "zh-CN" : "en-US";
-  const exportRows: ReportExportRow[] = rows.map((r) => ({
-    track: r.track,
-    attack: r.attack,
-    defense: r.defense,
-    model: r.model,
-    aucLabel: r.aucLabel,
-    asrLabel: r.asrLabel,
-    tprLabel: r.tprLabel,
-    evidenceLevel: r.evidenceLevel,
-  }));
+  const contracts = catalog?.tracks.flatMap((track) => track.entries) ?? [];
 
   // Build chart data
   const aucValues = rows
@@ -302,11 +289,10 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
       description={copy.description}
       actions={
         <ExportReportButton
-          rows={exportRows}
+          rows={rows}
+          contracts={contracts}
           label={copy.exportSummary}
-          locale={localeCode}
-          catalogSize={catalogSize}
-          defendedRows={defendedRows}
+          locale={locale}
         />
       }
     >
