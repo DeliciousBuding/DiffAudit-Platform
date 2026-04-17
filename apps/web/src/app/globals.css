@@ -1074,6 +1074,54 @@ html.dark .header-pill-primary:hover {
   box-shadow: none;
 }
 
+.workspace-page-container {
+  width: 100%;
+}
+
+.workspace-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-blue);
+  background: var(--accent-blue);
+  color: white;
+  transition:
+    background-color var(--duration-normal) var(--easing-standard),
+    border-color var(--duration-normal) var(--easing-standard),
+    color var(--duration-normal) var(--easing-standard);
+}
+
+.workspace-btn-primary:hover {
+  background: var(--accent-blue-hover);
+}
+
+.workspace-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--foreground);
+  transition:
+    background-color var(--duration-normal) var(--easing-standard),
+    border-color var(--duration-normal) var(--easing-standard),
+    color var(--duration-normal) var(--easing-standard);
+}
+
+.workspace-btn-secondary:hover {
+  background: rgba(47, 109, 246, 0.06);
+  border-color: rgba(47, 109, 246, 0.22);
+}
+
+.workspace-btn-secondary:active {
+  transform: none;
+  box-shadow: none;
+}
+
 .auth-divider {
   position: relative;
   text-align: center;
@@ -1457,6 +1505,25 @@ html.dark .header-pill-primary:hover {
 }
 
 .settings-input:focus {
+  border-color: rgba(47, 109, 246, 0.52);
+  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.08);
+}
+
+.workspace-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--input);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 450;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.workspace-input:focus {
   border-color: rgba(47, 109, 246, 0.52);
   box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.08);
 }
@@ -2061,6 +2128,18 @@ html[data-theme="dark"] .workspace-input,
 html.dark .workspace-input {
   background: var(--palette-grey-10);
   border-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .workspace-btn-secondary,
+html.dark .workspace-btn-secondary {
+  background: rgba(42, 42, 45, 0.78);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .workspace-btn-secondary:hover,
+html.dark .workspace-btn-secondary:hover {
+  background: rgba(91, 142, 249, 0.12);
+  border-color: rgba(91, 142, 249, 0.24);
 }
 
 /* Unified section card (DESIGN.md §11.1) */

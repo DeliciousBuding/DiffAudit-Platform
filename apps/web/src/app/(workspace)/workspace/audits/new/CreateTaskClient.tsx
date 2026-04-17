@@ -435,7 +435,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(4)}
-                  className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
+                  className="workspace-btn-primary px-3 py-1.5 text-xs font-medium"
                 >
                   {copy.steps.step4Title} &rarr;
                 </button>
@@ -530,7 +530,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitState === "submitting"}
-                    className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] disabled:opacity-70"
+                    className="workspace-btn-primary px-4 py-1.5 text-xs font-medium disabled:opacity-70"
                   >
                     {submitState === "submitting" ? labels.submitting : labels.submitButton}
                   </button>

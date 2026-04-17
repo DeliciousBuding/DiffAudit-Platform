@@ -26,7 +26,7 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
       actions={
         <Link
           href="/workspace/audits/new"
-          className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] shrink-0"
+          className="workspace-btn-primary px-3 py-1.5 text-xs font-medium shrink-0"
         >
           <span className="text-sm leading-none">+</span>
           {copy.createTaskButton}

@@ -44,14 +44,14 @@ function KpiCard({ label, value, note }: { label: string; value: string; note: s
 
 /** KPI card with trend arrow (up/down/flat) — 2.4.1 */
 function KpiCardWithTrend({ label, value, note, trend }: { label: string; value: string; note: string; trend?: "up" | "down" | "flat" }) {
-  const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : "—";
+  const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <span className="text-3xl font-semibold leading-none">{value}</span>
-        <span className={`text-base ${trendColor}`}>{trendIcon}</span>
+        {trendIcon ? <span className={`text-base ${trendColor}`}>{trendIcon}</span> : null}
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>

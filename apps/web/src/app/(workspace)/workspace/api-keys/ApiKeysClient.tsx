@@ -81,7 +81,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         {!showCreate && !createdKey ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:border-[var(--accent-blue)] hover:shadow-md"
+            className="workspace-btn-secondary px-4 py-2.5 text-sm font-medium hover:border-[var(--accent-blue)] hover:shadow-md"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M12 5v14M5 12h14" />
@@ -100,7 +100,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
                 placeholder={copy.keyNamePlaceholder}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/30 transition-all"
+                className="workspace-input text-sm text-foreground placeholder:text-muted-foreground/50"
               />
             </div>
             <div className="mb-5">
@@ -118,13 +118,13 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               <button
                 onClick={handleCreate}
                 disabled={!newKeyName.trim()}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-foreground px-4 py-2 text-sm font-medium text-background transition-all hover:opacity-90 disabled:opacity-40"
+                className="workspace-btn-primary px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
               >
                 {copy.generate}
               </button>
               <button
                 onClick={() => setShowCreate(false)}
-                className="rounded-xl px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="workspace-btn-secondary px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
               >
                 {copy.cancel}
               </button>
@@ -149,7 +149,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                   </code>
                   <button
                     onClick={handleCopy}
-                    className="shrink-0 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground transition-all hover:border-[var(--accent-blue)]"
+                    className="workspace-btn-secondary shrink-0 px-3 py-2 text-xs font-medium hover:border-[var(--accent-blue)]"
                   >
                     {copied ? copy.copied : copy.copy}
                   </button>

@@ -9,6 +9,7 @@ import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale } from "@/components/language-picker";
+import { WorkspacePageFrame } from "@/components/workspace-frame";
 import type { CurrentUserProfile } from "@/lib/auth";
 import { setDemoModeClient } from "@/lib/demo-mode-client";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -128,7 +129,9 @@ export function SettingsClient({
   oauthEnabled,
   mode = "settings",
 }: SettingsClientProps) {
-  const copy = WORKSPACE_COPY[locale].settings;
+  const localeCopy = WORKSPACE_COPY[locale];
+  const copy = localeCopy.settings;
+  const shellCopy = localeCopy.shell;
   const router = useRouter();
   const isAccountMode = mode === "account";
   const pageEyebrow = isAccountMode ? copy.account.title : copy.eyebrow;
@@ -425,40 +428,87 @@ export function SettingsClient({
   const accessSummary = getAccessSummary(profile, copy.account);
 
   return (
-    <div className="space-y-4">
-      {/* Page header */}
-      <div className="border-b border-border pb-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {pageEyebrow}
-        </div>
-        <h1 className="mt-1 text-lg font-semibold">{pageTitle}</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">{pageDescription}</p>
-      </div>
-
-      {/* Settings cards */}
+    <WorkspacePageFrame
+      eyebrow={pageEyebrow}
+      title={pageTitle}
+      description={pageDescription}
+      titleClassName="text-lg"
+      descriptionClassName="text-xs"
+    >
       <div className={`grid gap-3 ${isAccountMode ? "" : "lg:grid-cols-3"}`}>
         {!isAccountMode ? (
           <>
+        {/* About System — 置顶，作为设置入口的系统说明 */}
+        <section className="order-1 border border-border bg-card lg:col-span-2">
+          <div className="border-b border-border bg-muted/20 px-3 py-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.aboutSystem.title}
+            </h2>
+          </div>
+          <div className="p-3 space-y-4">
+            <div>
+              <h3 className="mb-2 text-xs font-medium">{copy.aboutSystem.useCases}</h3>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {copy.aboutSystem.useCaseItems.map((item) => (
+                  <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
+                    <div className="text-xs font-medium">{item.title}</div>
+                    <div className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-1.5 text-xs font-medium">{copy.aboutSystem.systemBoundary}</h3>
+              <p className="border-l-2 border-[var(--accent-blue)] pl-2 text-[10px] leading-relaxed text-muted-foreground">
+                {copy.aboutSystem.boundaryNote}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-xs font-medium">{copy.aboutSystem.framework}</h3>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {copy.aboutSystem.frameworkItems.map((item, index) => (
+                  <div key={item.tier} className="rounded border border-border px-2.5 py-2">
+                    <div className="mb-1 flex items-center gap-1.5">
+                      <span
+                        className={`inline-block h-1.5 w-1.5 rounded-full ${
+                          index === 0
+                            ? "bg-[var(--accent-blue)]"
+                            : index === 1
+                              ? "bg-[var(--warning)]"
+                              : "bg-[var(--accent-coral)]"
+                        }`}
+                      />
+                      <span className="text-xs font-medium">{item.tier}</span>
+                    </div>
+                    <div className="text-[10px] leading-relaxed text-muted-foreground">{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* System status */}
-        <section className="border border-border bg-card">
+        <section className="order-2 border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.systemStatus.title}
             </h2>
           </div>
-          <div className="p-3">
-            {/* Runtime connection */}
+          <div className="space-y-3 p-3">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">{copy.systemStatus.runtime}</span>
               <RuntimeStatusBadge locale={locale} />
             </div>
 
-            {/* Demo mode toggle */}
-            <div className="mt-3 flex items-center justify-between">
-              <div className="flex items-start gap-2">
-                <span className={`mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full ${
+            <div className="rounded-[18px] border border-border bg-muted/10 p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                <span className={`mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full ${
                   demoMode
-                    ? "bg-[color:var(--accent-blue)]/12 text-[color:var(--accent-blue)]"
+                    ? "bg-[color:var(--accent-blue)]/14 text-[color:var(--accent-blue)]"
                     : "bg-muted/20 text-muted-foreground"
                 }`}>
                   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -467,39 +517,51 @@ export function SettingsClient({
                   </svg>
                 </span>
                 <div>
-                  <div className="text-xs text-foreground">{copy.systemStatus.demoMode}</div>
+                  <div className="text-xs font-medium text-foreground">{copy.systemStatus.demoMode}</div>
                   <div className="mt-1 text-[11px] leading-5 text-muted-foreground">
-                    {demoMode ? copy.systemStatus.demoHintOn : copy.systemStatus.demoHintOff}
-                  </div>
-                  <div className="mt-2">
-                    <StatusBadge tone={demoMode ? "info" : "neutral"} compact>
-                      {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
-                    </StatusBadge>
+                    {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
                   </div>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => handleDemoModeToggle(!demoMode)}
-                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-                  demoMode
-                    ? "bg-[color:var(--accent-blue)]"
-                    : "bg-[color:var(--border)]"
-                }`}
-                aria-label={`${copy.systemStatus.demoMode}: ${demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
-                    demoMode ? "translate-x-[1.45rem]" : "translate-x-1"
+                <StatusBadge tone={demoMode ? "info" : "neutral"} compact>
+                  {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
+                </StatusBadge>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2 rounded-xl border border-border bg-background/70 p-1">
+                <button
+                  type="button"
+                  onClick={() => handleDemoModeToggle(false)}
+                  aria-pressed={!demoMode}
+                  className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                    !demoMode
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/20"
                   }`}
-                />
-              </button>
+                >
+                  {shellCopy.liveMode}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDemoModeToggle(true)}
+                  aria-pressed={demoMode}
+                  className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                    demoMode
+                      ? "bg-[color:var(--accent-blue)] text-white shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/20"
+                  }`}
+                >
+                  {shellCopy.demoMode}
+                </button>
+              </div>
+              <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+                {demoMode ? copy.systemStatus.demoHintOn : copy.systemStatus.demoHintOff}
+              </p>
             </div>
           </div>
         </section>
 
         {/* Audit configuration */}
-        <section className="border border-border bg-card">
+        <section className="order-4 border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditConfig.title}
@@ -546,7 +608,7 @@ export function SettingsClient({
         </section>
 
         {/* Runtime Connection — 2.2.2 */}
-        <section className="border border-border bg-card">
+        <section className="order-3 border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.runtimeConfig.title}
@@ -590,7 +652,7 @@ export function SettingsClient({
               <button
                 onClick={handleTestRuntime}
                 disabled={runtimeTesting}
-                className="flex-1 rounded-md bg-[color:var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 transition-colors"
+                className="workspace-btn-primary flex-1 px-3 py-1.5 text-xs font-medium hover:opacity-90 disabled:opacity-50"
               >
                 {runtimeTesting ? copy.runtimeConfig.testing : copy.runtimeConfig.testConnection}
               </button>
@@ -605,7 +667,7 @@ export function SettingsClient({
         </section>
 
         {/* Audit Templates — 2.2.3 */}
-        <section className="border border-border bg-card">
+        <section className="order-5 border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditTemplates.title}
@@ -630,59 +692,10 @@ export function SettingsClient({
                   showSaved(copy.auditTemplates.saved);
                 } catch {}
               }}
-              className="w-full rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-colors"
+              className="workspace-btn-secondary w-full px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
             >
               {copy.auditTemplates.saveCurrent}
             </button>
-          </div>
-        </section>
-
-        {/* About System — Day 4: use cases + system boundary */}
-        <section className="border border-border bg-card lg:col-span-2">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.aboutSystem.title}
-            </h2>
-          </div>
-          <div className="p-3 space-y-4">
-            {/* Use cases */}
-            <div>
-              <h3 className="text-xs font-medium mb-2">{copy.aboutSystem.useCases}</h3>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {copy.aboutSystem.useCaseItems.map((item) => (
-                  <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
-                    <div className="text-xs font-medium">{item.title}</div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* System boundary */}
-            <div>
-              <h3 className="text-xs font-medium mb-1.5">{copy.aboutSystem.systemBoundary}</h3>
-              <p className="text-[10px] text-muted-foreground leading-relaxed border-l-2 border-[var(--accent-blue)] pl-2">
-                {copy.aboutSystem.boundaryNote}
-              </p>
-            </div>
-
-            {/* Framework */}
-            <div>
-              <h3 className="text-xs font-medium mb-2">{copy.aboutSystem.framework}</h3>
-              <div className="flex gap-2">
-                {copy.aboutSystem.frameworkItems.map((item, i) => (
-                  <div key={item.tier} className="flex-1 rounded border border-border px-2.5 py-2">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className={`inline-block h-1.5 w-1.5 rounded-full ${
-                        i === 0 ? "bg-[var(--accent-blue)]" : i === 1 ? "bg-[var(--warning)]" : "bg-[var(--accent-coral)]"
-                      }`} />
-                      <span className="text-xs font-medium">{item.tier}</span>
-                    </div>
-                    <div className="text-[10px] text-muted-foreground leading-relaxed">{item.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
           </>
@@ -695,15 +708,15 @@ export function SettingsClient({
               {copy.account.title}
             </h2>
           </div>
-          <div className="grid gap-4 p-3 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="grid gap-4 p-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             {/* Username with avatar */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <span className="text-xs text-muted-foreground">{copy.account.username}</span>
               {profile ? (
                 <>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3 rounded-[22px] border border-border bg-[linear-gradient(180deg,rgba(47,109,246,0.08),rgba(47,109,246,0.02))] p-4">
                     <div
-                      className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[color:var(--primary)]/10 text-[11px] font-semibold text-[color:var(--primary)]"
+                      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-border bg-[color:var(--primary)]/10 text-sm font-semibold text-[color:var(--primary)]"
                       style={
                         profile.avatarUrl
                           ? {
@@ -718,11 +731,12 @@ export function SettingsClient({
                       {profile.avatarUrl ? null : profile.displayName[0]?.toUpperCase() ?? "?"}
                     </div>
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-medium">{profile.displayName}</div>
-                      <div className="truncate text-[11px] text-muted-foreground">@{profile.username}</div>
+                      <div className="truncate text-base font-semibold">{profile.displayName}</div>
+                      <div className="truncate text-xs text-muted-foreground">@{profile.username}</div>
+                      <div className="mt-1 text-[11px] leading-5 text-muted-foreground">{accessSummary}</div>
                     </div>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 rounded-[18px] border border-border bg-card p-4">
                     <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                       {copy.account.email}
                     </div>
@@ -742,7 +756,7 @@ export function SettingsClient({
                           setEmailError(null);
                           setEmailInput(profile.pendingEmail ?? profile.email ?? "");
                         }}
-                        className="btn-quiet rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                        className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                       >
                         {profile.email || profile.pendingEmail ? copy.account.changeEmail : copy.account.addEmail}
                       </button>
@@ -771,7 +785,7 @@ export function SettingsClient({
                           type="button"
                           onClick={handleEmailSave}
                           disabled={emailPending}
-                          className="flex-1 rounded-md bg-[color:var(--accent-blue)] px-3 py-2 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="workspace-btn-primary flex-1 px-3 py-2 text-xs font-medium hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {emailPending ? copy.account.savingEmail : copy.account.saveEmail}
                         </button>
@@ -782,7 +796,7 @@ export function SettingsClient({
                             setEmailError(null);
                             setEmailInput(profile.pendingEmail ?? profile.email ?? "");
                           }}
-                          className="btn-quiet rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                          className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                         >
                           {copy.account.cancelEmailEdit}
                         </button>
@@ -813,7 +827,7 @@ export function SettingsClient({
                           type="button"
                           onClick={handleGenerateVerificationLink}
                           disabled={verificationPending}
-                          className="rounded-md bg-[color:var(--accent-blue)] px-3 py-2 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="workspace-btn-primary px-3 py-2 text-xs font-medium hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {verificationPending
                             ? copy.account.generatingVerificationLink
@@ -823,7 +837,7 @@ export function SettingsClient({
                             <button
                               type="button"
                               onClick={() => setShowVerificationDetails((current) => !current)}
-                              className="btn-quiet rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                              className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                             >
                               {showVerificationDetails
                                 ? copy.account.hideVerificationDetails
@@ -846,7 +860,7 @@ export function SettingsClient({
                           <button
                             type="button"
                             onClick={handleCopyVerificationLink}
-                            className="btn-quiet rounded-md border border-border bg-muted/20 px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                            className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                           >
                             {copy.account.copyVerificationLink}
                           </button>
@@ -896,8 +910,8 @@ export function SettingsClient({
               )}
             </div>
 
-            <div className="space-y-3 rounded-[18px] border border-border bg-muted/10 p-4">
-              <div className="space-y-1 rounded-[14px] border border-border bg-card p-3">
+            <div className="space-y-3 rounded-[22px] border border-border bg-muted/10 p-4">
+              <div className="space-y-1 rounded-[16px] border border-border bg-card p-3">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                   {copy.account.accessSummary}
                 </div>
@@ -932,7 +946,7 @@ export function SettingsClient({
                       <a
                         key={provider.key}
                         href={`/api/auth/${provider.key}?intent=connect&redirectTo=${encodeURIComponent("/workspace/account")}`}
-                        className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                        className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                       >
                         <ProviderIcon provider={provider.key} className="h-4 w-4" />
                         <span>{provider.label}</span>
@@ -980,7 +994,7 @@ export function SettingsClient({
                       setPasswordError(null);
                       setShowPasswordEditor(true);
                     }}
-                    className="btn-quiet w-full rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                    className="workspace-btn-secondary w-full px-3 py-2 text-xs font-medium"
                   >
                     {profile?.hasPassword ? copy.account.openPasswordChange : copy.account.openPasswordCreate}
                   </button>
@@ -1039,7 +1053,7 @@ export function SettingsClient({
                         type="button"
                         onClick={handlePasswordSave}
                         disabled={passwordPending}
-                        className="flex-1 rounded-md bg-[color:var(--accent-blue)] px-3 py-2 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="workspace-btn-primary flex-1 px-3 py-2 text-xs font-medium hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {passwordPending ? copy.account.savingPassword : copy.account.savePassword}
                       </button>
@@ -1049,7 +1063,7 @@ export function SettingsClient({
                           setShowPasswordEditor(false);
                           setPasswordError(null);
                         }}
-                        className="btn-quiet rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
+                        className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                       >
                         {copy.account.closePasswordEditor}
                       </button>
@@ -1066,6 +1080,6 @@ export function SettingsClient({
         </section>
         ) : null}
       </div>
-    </div>
+    </WorkspacePageFrame>
   );
 }
