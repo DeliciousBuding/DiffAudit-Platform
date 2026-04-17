@@ -55,11 +55,15 @@ function readStoredState(raw: string | undefined) {
 function buildRedirectWithProviderStatus(
   redirectTo: string | undefined,
   providerLink: string,
-  requestUrl: string,
+  platformUrl: string,
 ) {
-  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), requestUrl);
+  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), platformUrl);
   target.searchParams.set("providerLink", providerLink);
   return target;
+}
+
+function buildPlatformRedirect(path: string, platformUrl: string) {
+  return new URL(path, platformUrl);
 }
 
 export async function GET(request: Request) {
@@ -75,11 +79,11 @@ export async function GET(request: Request) {
   cookieStore.delete(STATE_COOKIE);
 
   if (!code || !returnedState || !storedState || returnedState !== storedState.state) {
-    return NextResponse.redirect(new URL("/login?error=oauth_state", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_state", platformUrl));
   }
 
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(new URL("/login?error=oauth_config", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_config", platformUrl));
   }
 
   let tokenRes: Response;
@@ -98,12 +102,12 @@ export async function GET(request: Request) {
       }),
     });
   } catch {
-    return NextResponse.redirect(new URL("/login?error=oauth_network_google", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_google", platformUrl));
   }
 
   const tokenPayload = (await tokenRes.json()) as GoogleTokenResponse;
   if (!tokenPayload.access_token) {
-    return NextResponse.redirect(new URL("/login?error=oauth_token", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_token", platformUrl));
   }
 
   let userRes: Response;
@@ -114,11 +118,11 @@ export async function GET(request: Request) {
       },
     });
   } catch {
-    return NextResponse.redirect(new URL("/login?error=oauth_network_google", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_google", platformUrl));
   }
 
   if (!userRes.ok) {
-    return NextResponse.redirect(new URL("/login?error=oauth_user", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_user", platformUrl));
   }
 
   const user = (await userRes.json()) as GoogleUserResponse;
@@ -137,7 +141,7 @@ export async function GET(request: Request) {
         buildRedirectWithProviderStatus(
           storedState.redirectTo,
           result.reason === "provider_in_use" ? "google_in_use" : "google_already_connected",
-          request.url,
+          platformUrl,
         ),
       );
     }
@@ -146,7 +150,7 @@ export async function GET(request: Request) {
       buildRedirectWithProviderStatus(
         storedState.redirectTo,
         result.status === "already_linked" ? "google_already_connected" : "google_connected",
-        request.url,
+        platformUrl,
       ),
     );
   }
@@ -157,6 +161,6 @@ export async function GET(request: Request) {
   cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
 
   return NextResponse.redirect(
-    new URL(sanitizeRedirectPath(storedState.redirectTo), request.url),
+    buildPlatformRedirect(sanitizeRedirectPath(storedState.redirectTo), platformUrl),
   );
 }

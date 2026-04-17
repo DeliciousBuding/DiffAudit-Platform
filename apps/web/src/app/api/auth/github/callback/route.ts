@@ -39,11 +39,15 @@ function readStoredState(raw: string | undefined) {
 function buildRedirectWithProviderStatus(
   redirectTo: string | undefined,
   providerLink: string,
-  requestUrl: string,
+  platformUrl: string,
 ) {
-  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), requestUrl);
+  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), platformUrl);
   target.searchParams.set("providerLink", providerLink);
   return target;
+}
+
+function buildPlatformRedirect(path: string, platformUrl: string) {
+  return new URL(path, platformUrl);
 }
 
 export async function GET(request: Request) {
@@ -59,11 +63,11 @@ export async function GET(request: Request) {
   cookieStore.delete(STATE_COOKIE);
 
   if (!code || !state || !storedState || state !== storedState.state) {
-    return NextResponse.redirect(new URL("/login?error=oauth_state", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_state", platformUrl));
   }
 
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(new URL("/login?error=oauth_config", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_config", platformUrl));
   }
 
   let tokenRes: Response;
@@ -83,12 +87,12 @@ export async function GET(request: Request) {
       }),
     });
   } catch {
-    return NextResponse.redirect(new URL("/login?error=oauth_network_github", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_github", platformUrl));
   }
 
   const tokenPayload = (await tokenRes.json()) as GitHubTokenResponse;
   if (!tokenPayload.access_token) {
-    return NextResponse.redirect(new URL("/login?error=oauth_token", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_token", platformUrl));
   }
 
   let userRes: Response;
@@ -101,11 +105,11 @@ export async function GET(request: Request) {
       },
     });
   } catch {
-    return NextResponse.redirect(new URL("/login?error=oauth_network_github", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_github", platformUrl));
   }
 
   if (!userRes.ok) {
-    return NextResponse.redirect(new URL("/login?error=oauth_user", request.url));
+    return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_user", platformUrl));
   }
 
   const user = (await userRes.json()) as GitHubUserResponse;
@@ -123,7 +127,7 @@ export async function GET(request: Request) {
         },
       });
     } catch {
-      return NextResponse.redirect(new URL("/login?error=oauth_network_github", request.url));
+      return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_github", platformUrl));
     }
     if (emailRes.ok) {
       const emails = (await emailRes.json()) as Array<{ email: string; primary: boolean; verified: boolean }>;
@@ -148,7 +152,7 @@ export async function GET(request: Request) {
         buildRedirectWithProviderStatus(
           storedState.redirectTo,
           result.reason === "provider_in_use" ? "github_in_use" : "github_already_connected",
-          request.url,
+          platformUrl,
         ),
       );
     }
@@ -157,7 +161,7 @@ export async function GET(request: Request) {
       buildRedirectWithProviderStatus(
         storedState.redirectTo,
         result.status === "already_linked" ? "github_already_connected" : "github_connected",
-        request.url,
+        platformUrl,
       ),
     );
   }
@@ -168,6 +172,6 @@ export async function GET(request: Request) {
   cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
 
   return NextResponse.redirect(
-    new URL(sanitizeRedirectPath(storedState.redirectTo), request.url),
+    buildPlatformRedirect(sanitizeRedirectPath(storedState.redirectTo), platformUrl),
   );
 }
