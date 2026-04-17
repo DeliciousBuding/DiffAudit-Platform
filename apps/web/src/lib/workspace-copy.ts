@@ -286,6 +286,11 @@ export const WORKSPACE_COPY: Record<
         systemGap: string;
         workspace: string;
       };
+      metricTooltips: {
+        auc: string;
+        asr: string;
+        tpr: string;
+      };
     };
     settings: {
       eyebrow: string;
@@ -725,6 +730,11 @@ export const WORKSPACE_COPY: Record<
         label: "Label",
         systemGap: "System Gap",
         workspace: "Workspace",
+      },
+      metricTooltips: {
+        auc: "Area Under the ROC Curve - measures membership inference attack effectiveness",
+        asr: "Attack Success Rate - percentage of successful privacy attacks",
+        tpr: "True Positive Rate - sensitivity of the attack at detecting members",
       },
     },
     settings: {
@@ -1233,6 +1243,11 @@ export const WORKSPACE_COPY: Record<
         label: "名称",
         systemGap: "系统缺口",
         workspace: "工作区",
+      },
+      metricTooltips: {
+        auc: "ROC 曲线下面积 - 衡量成员推断攻击的有效性",
+        asr: "攻击成功率 - 隐私攻击成功的百分比",
+        tpr: "真阳性率 - 攻击检测成员的灵敏度",
       },
     },
     settings: {
