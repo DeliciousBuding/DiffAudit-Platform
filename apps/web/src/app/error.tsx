@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function GlobalError({
   error,
   reset,
@@ -42,24 +44,24 @@ export default function GlobalError({
               >
                 重试
               </button>
-              <a
+              <Link
                 href="/"
                 className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-px hover:bg-muted/30"
               >
                 首页
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/docs/quick-start"
                 className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-px hover:bg-muted/30"
               >
                 Docs
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/workspace"
                 className="inline-flex items-center justify-center rounded-xl border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-[var(--accent-blue-hover)]"
               >
                 工作台
-              </a>
+              </Link>
             </div>
           </div>
         </div>

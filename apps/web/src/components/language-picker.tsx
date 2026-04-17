@@ -116,7 +116,10 @@ export function LanguagePicker({
       startTransition(() => {
         router.refresh();
       });
+      return;
     }
+
+    router.refresh();
   }
 
   return (

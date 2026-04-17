@@ -88,7 +88,7 @@ export function ThemeToggleButton() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 min-w-[172px] rounded-2xl border border-border bg-card p-1.5 shadow-xl">
+        <div className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[172px] rounded-2xl p-1.5">
           {options.map((option) => {
             const selected = theme === option.value;
             return (

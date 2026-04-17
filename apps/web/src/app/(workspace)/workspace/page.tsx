@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
+import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
 import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
@@ -172,7 +173,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* Audit track quick-access cards — Platform Boost */}
       <div className="grid gap-3 md:grid-cols-3">
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
@@ -186,9 +187,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
-        </a>
+        </Link>
 
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
@@ -202,9 +203,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
-        </a>
+        </Link>
 
-        <a href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
@@ -218,7 +219,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </div>
-        </a>
+        </Link>
       </div>
 
       {/* System progress bar — audit coverage overview */}
@@ -276,7 +277,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 ))}
               </div>
               {/* CTA */}
-              <a
+              <Link
                 href="/workspace/audits/new"
                 className="inline-flex items-center gap-1.5 rounded border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
@@ -284,7 +285,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </a>
+              </Link>
             </div>
           </div>
         </section>

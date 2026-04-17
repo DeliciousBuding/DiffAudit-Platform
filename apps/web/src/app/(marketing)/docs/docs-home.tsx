@@ -98,8 +98,8 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, prevPage, nextP
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       {/* Topbar */}
       <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur-xl">
-        <div className="mx-auto grid h-14 max-w-7xl grid-cols-[18rem_minmax(320px,1fr)_auto] items-center">
-          <div className="flex items-center gap-3 justify-self-start px-4">
+        <div className="mx-auto grid h-14 max-w-7xl grid-cols-[minmax(12rem,1fr)_minmax(20rem,32rem)_minmax(12rem,1fr)] items-center gap-4 px-4">
+          <div className="flex min-w-0 items-center gap-3 justify-self-start">
             <Link href="/" className="flex items-center gap-2" aria-label="DiffAudit Home">
               <BrandMark compact />
               <span className="ml-1 hidden border-l border-[var(--color-border-subtle)] pl-3 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)] sm:inline">
@@ -107,13 +107,13 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, prevPage, nextP
               </span>
             </Link>
           </div>
-          <div className="hidden w-full justify-self-center pr-4 sm:block">
+          <div className="hidden min-w-0 items-center justify-center md:flex">
             <button
               onClick={() => {
                 const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true });
                 window.dispatchEvent(event);
               }}
-              className="flex w-full items-center gap-3 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-4 py-2 text-sm text-[var(--color-text-muted)] hover:border-[var(--color-accent-blue)] hover:text-[var(--color-text-primary)] transition-colors"
+              className="mx-auto flex w-full max-w-[32rem] items-center gap-3 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-4 py-2 text-sm text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent-blue)] hover:text-[var(--color-text-primary)]"
             >
               <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />
@@ -125,7 +125,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, prevPage, nextP
               </kbd>
             </button>
           </div>
-          <div className="flex items-center gap-3 justify-self-end px-4">
+          <div className="flex min-w-0 items-center justify-end gap-3 justify-self-end">
             <LanguagePicker value={locale} reloadOnChange />
             <ThemeToggleButton />
           </div>
@@ -358,19 +358,35 @@ function SectionRenderer({ section }: { section: DocsSection }) {
       {section.links && (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {section.links.map((link, i) => (
-            <a
-              key={i}
-              href={link.href}
-              className="rounded-lg border border-[var(--color-border-subtle)] p-4 transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
-            >
-              <h3 className="mb-1 text-sm font-semibold text-[var(--color-text-primary)]">
-                {link.title}
-              </h3>
-              <p className="mb-3 text-sm text-[var(--color-text-secondary)]">{link.body}</p>
-              <span className="text-sm font-medium text-[var(--color-accent-blue)]">
-                {link.cta}
-              </span>
-            </a>
+            link.href.startsWith("/") ? (
+              <Link
+                key={i}
+                href={link.href}
+                className="rounded-lg border border-[var(--color-border-subtle)] p-4 transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
+              >
+                <h3 className="mb-1 text-sm font-semibold text-[var(--color-text-primary)]">
+                  {link.title}
+                </h3>
+                <p className="mb-3 text-sm text-[var(--color-text-secondary)]">{link.body}</p>
+                <span className="text-sm font-medium text-[var(--color-accent-blue)]">
+                  {link.cta}
+                </span>
+              </Link>
+            ) : (
+              <a
+                key={i}
+                href={link.href}
+                className="rounded-lg border border-[var(--color-border-subtle)] p-4 transition-colors hover:border-[var(--color-accent-blue)] hover:bg-[var(--color-bg-hover)]"
+              >
+                <h3 className="mb-1 text-sm font-semibold text-[var(--color-text-primary)]">
+                  {link.title}
+                </h3>
+                <p className="mb-3 text-sm text-[var(--color-text-secondary)]">{link.body}</p>
+                <span className="text-sm font-medium text-[var(--color-accent-blue)]">
+                  {link.cta}
+                </span>
+              </a>
+            )
           ))}
         </div>
       )}

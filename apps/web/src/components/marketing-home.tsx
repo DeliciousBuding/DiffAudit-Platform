@@ -545,7 +545,13 @@ const HOME_COPY: Record<
   },
 };
 
-function DropdownPanel({ item }: { item: NavItem | null }) {
+function DropdownPanel({
+  item,
+  onNavigate,
+}: {
+  item: NavItem | null;
+  onNavigate: () => void;
+}) {
   if (!item) {
     return null;
   }
@@ -560,20 +566,39 @@ function DropdownPanel({ item }: { item: NavItem | null }) {
         <div className="dropdown-panel-right">
           <div className="subnav">
             {item.dropdown.links.map((link, index) => (
-              <a
-                key={link.title}
-                href={link.href}
-                className="subnav-link"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <span className="link-arrow" aria-hidden="true">
-                  →
-                </span>
-                <span className="subnav-copy">
-                  <span className="subnav-title">{link.title}</span>
-                  <span className="subnav-description">{link.description}</span>
-                </span>
-              </a>
+              link.href.startsWith("/") ? (
+                <Link
+                  key={link.title}
+                  href={link.href}
+                  className="subnav-link"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                  onClick={onNavigate}
+                >
+                  <span className="link-arrow" aria-hidden="true">
+                    →
+                  </span>
+                  <span className="subnav-copy">
+                    <span className="subnav-title">{link.title}</span>
+                    <span className="subnav-description">{link.description}</span>
+                  </span>
+                </Link>
+              ) : (
+                <a
+                  key={link.title}
+                  href={link.href}
+                  className="subnav-link"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                  onClick={onNavigate}
+                >
+                  <span className="link-arrow" aria-hidden="true">
+                    →
+                  </span>
+                  <span className="subnav-copy">
+                    <span className="subnav-title">{link.title}</span>
+                    <span className="subnav-description">{link.description}</span>
+                  </span>
+                </a>
+              )
             ))}
           </div>
         </div>
@@ -748,7 +773,7 @@ export function MarketingHome({
 
         {hasOpenDropdown ? (
           <div onMouseEnter={clearCloseTimer} onMouseLeave={() => scheduleClose(120)}>
-            <DropdownPanel item={openNavItem} />
+            <DropdownPanel item={openNavItem} onNavigate={closeDropdownNow} />
           </div>
         ) : null}
       </header>

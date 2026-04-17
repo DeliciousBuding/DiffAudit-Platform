@@ -7,6 +7,7 @@ import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
+import { PlatformNavMobile } from "@/components/platform-nav.client";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -52,6 +53,8 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
         </header>
         <main className="workspace-main-content">{children}</main>
       </div>
+
+      <PlatformNavMobile locale={locale} />
     </div>
   );
 }
