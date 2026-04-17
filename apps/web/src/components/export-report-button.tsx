@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 
 import type { CatalogEntryViewModel } from "@/lib/catalog";
 import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
@@ -19,26 +17,92 @@ interface ExportReportButtonProps {
   locale: Locale;
 }
 
+async function waitForPrintableWindow(printWindow: Window) {
+  if ("fonts" in printWindow.document) {
+    await printWindow.document.fonts.ready.catch(() => undefined);
+  }
+
+  await new Promise<void>((resolve) => {
+    printWindow.requestAnimationFrame(() => {
+      printWindow.setTimeout(() => resolve(), 320);
+    });
+  });
+}
+
 export function ExportReportButton({ rows, contracts, label, locale }: ExportReportButtonProps) {
   const copy = WORKSPACE_COPY[locale].exportButton;
   const [isExporting, setIsExporting] = useState(false);
 
-  const renderPrintableCanvas = useCallback(async () => {
-    const host = document.createElement("div");
-    host.style.position = "fixed";
-    host.style.left = "-200vw";
-    host.style.top = "0";
-    host.style.width = "900px";
-    host.style.pointerEvents = "none";
-    host.style.opacity = "0";
-    host.setAttribute("aria-hidden", "true");
-    document.body.appendChild(host);
+  const exportAsPdf = useCallback(async () => {
+    setIsExporting(true);
 
-    const root = createRoot(host);
+    let printWindow: Window | null = null;
+    let root: ReturnType<typeof createRoot> | null = null;
 
     try {
+      printWindow = window.open("", "_blank", "width=1120,height=900");
+      if (!printWindow) {
+        throw new Error("Print window could not be opened.");
+      }
+
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html>
+<html lang="${locale}">
+  <head>
+    <meta charset="utf-8" />
+    <title>DiffAudit Report</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #dfe5ec;
+      }
+      body {
+        min-height: 100vh;
+      }
+      #print-root {
+        display: grid;
+        justify-content: center;
+        gap: 18px;
+        padding: 24px 0 40px;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        html, body {
+          background: #ffffff;
+        }
+        #print-root {
+          display: block;
+          padding: 0;
+        }
+        [data-print-page] {
+          page-break-after: always;
+          break-after: page;
+        }
+        [data-print-page]:last-child {
+          page-break-after: auto;
+          break-after: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="print-root"></div>
+  </body>
+</html>`);
+      printWindow.document.close();
+
+      const mountNode = printWindow.document.getElementById("print-root");
+      if (!mountNode) {
+        throw new Error("Printable report mount node is missing.");
+      }
+
+      root = createRoot(mountNode);
       flushSync(() => {
-        root.render(
+        root!.render(
           <PrintableAuditReport
             locale={locale}
             rows={rows}
@@ -47,66 +111,26 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
         );
       });
 
-      if ("fonts" in document) {
-        await document.fonts.ready.catch(() => undefined);
-      }
+      await waitForPrintableWindow(printWindow);
 
-      await new Promise((resolve) => window.setTimeout(resolve, 180));
+      const cleanup = () => {
+        root?.unmount();
+        root = null;
+        printWindow?.close();
+        printWindow = null;
+      };
 
-      const pageEls = Array.from(host.querySelectorAll("[data-print-page]")) as HTMLElement[];
-      if (pageEls.length === 0) {
-        throw new Error("Printable report did not render.");
-      }
-
-      const canvases: HTMLCanvasElement[] = [];
-      for (const pageEl of pageEls) {
-        const canvas = await html2canvas(pageEl, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: "#ffffff",
-          windowWidth: 900,
-        });
-        canvases.push(canvas);
-      }
-
-      return canvases;
-    } finally {
-      root.unmount();
-      document.body.removeChild(host);
-    }
-  }, [contracts, locale, rows]);
-
-  const exportAsPdf = useCallback(async () => {
-    setIsExporting(true);
-
-    try {
-      const canvases = await renderPrintableCanvas();
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = 210;
-      const pageHeight = 297;
-
-      canvases.forEach((canvas, index) => {
-        if (index > 0) {
-          pdf.addPage();
-        }
-        const imgData = canvas.toDataURL("image/png");
-        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
-      });
-
-      if (canvases.length === 0) {
-        throw new Error("Printable report export produced no pages.");
-      }
-
-      const now = new Date();
-      const dateStr = now.toISOString().slice(0, 10);
-      pdf.save(`DiffAudit-Report-${dateStr}.pdf`);
-    } catch (err) {
-      console.error("Printable PDF export failed:", err);
+      printWindow.onafterprint = cleanup;
+      printWindow.focus();
+      printWindow.print();
+    } catch (error) {
+      console.error("Printable PDF export failed:", error);
+      root?.unmount();
+      printWindow?.close();
     } finally {
       setIsExporting(false);
     }
-  }, [renderPrintableCanvas]);
+  }, [contracts, locale, rows]);
 
   return (
     <button
