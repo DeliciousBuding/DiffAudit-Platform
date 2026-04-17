@@ -1,6 +1,6 @@
 # DiffAudit Platform 综合开发 ROADMAP
 
-> Last updated: 2026-04-15 — All sprints 1.1-7.4 complete | Demo-ready | Part 11 verified | Runtime E2E recon verified (AUC=0.849)
+> Last updated: 2026-04-17 — All sprints 1.1-7.4 complete | Demo-ready | Part 11 verified | Runtime E2E recon verified (AUC=0.849) | Part 12: 分支整合进行中
 > Deadline: 2026-04-19（计算机设计大赛）
 > Hardware: RTX 4070 Laptop 8GB + CPU
 > 本 ROADMAP 覆盖 Platform + Runtime-Server 全部工程任务。
@@ -628,6 +628,49 @@ Go 端点:
 - **问题**: TaskListClient.tsx 状态标签（"Queued/Running/Completed/Failed/Cancelled"）、重试按钮（"Retry"/"Retrying..."）、重试提示（"Retry this job"）；workspace/page.tsx 结果表 AUC/ASR/TPR 列标题、"No AUC data available" 空状态；CreateTaskClient.tsx "Submission failed" 错误回退
 - **修复**: 新增 `audits.statusLabels`（5 个状态双语）+ `audits.retry/retrying/retryTitle` + `workspace.sections.tableHeaders.auc/asr/tpr` + `workspace.sections.noAucData` + `createTask.labels.submissionFailed`，替换全部硬编码为 i18n 引用
 - **文件**: `workspace-copy.ts`, `TaskListClient.tsx`, `workspace/page.tsx`, `CreateTaskClient.tsx`
+
+---
+
+## Part 12: 分支整合与仓库清理（2026-04-17）
+
+> 目标：将所有有价值的分支工作合并到 main，清理过期分支，统一三端（本地/origin/gz2）状态。
+
+### 12.1 分支现状审计
+
+| 分支 | 位置 | 领先 main | 状态 | 处置 |
+|------|------|-----------|------|------|
+| `cleanup/branch-and-docs-consolidation` | 本地 | 0 | 与 main 完全一致 | 删除 |
+| `deploy-gz2` | 本地 | 18 | gz2/feat 的子集 | 删除 |
+| `codex/audit-template-flow-20260414` | 本地+origin | 2(本地)/5(origin) | audit 模板 + figma 文档，5 文件冲突 | 合并 |
+| `backup/phase2-snapshot-20260416` | 本地 | 19 | phase2 中间快照 | tag 后删除 |
+| `archive/platform-main-pre-squash-20260414` | 本地 | 11 | 压缩前历史 | tag 后删除 |
+| `gz2/feat/demo-mode-and-snapshot-data` | gz2 | 29 | 最完整功能分支（i18n/a11y/perf） | 合并 |
+| `origin/feat/demo-mode-and-snapshot-data` | origin | 5 | 安全补丁 + bug fix | cherry-pick |
+| `origin/runtime-closeout-20260414` | origin | 2 | 已被 main 包含 | 删除 |
+| `gz2/deploy` | gz2 | 19 | 落后 54 commits | 重置到 main |
+| `gz2/main` | gz2 | 17 | 落后 54 commits | 重置到 main |
+| `gz2/deploy-sync-2026-04-17` | gz2 | 0 | 临时同步分支 | 删除 |
+| `gz2/backup/pre-main-sync-20260416-1237` | gz2 | 17 | 与 gz2/main 相同 | 删除 |
+
+### 12.2 合并计划（按顺序）
+
+1. ✅ 合并 `gz2/feat/demo-mode-and-snapshot-data` → main（29 commits，含 i18n/dark mode/a11y/性能优化）
+2. ✅ 合并 `codex/audit-template-flow-20260414` → main（audit 模板 + figma 文档）
+3. ✅ cherry-pick `origin/feat/demo-mode-and-snapshot-data` 独有的安全补丁（如不在 gz2 版本中）
+
+### 12.3 清理计划
+
+1. 本地旧分支打 tag 后删除：`archive/*`, `backup/*`, `cleanup/*`, `deploy-gz2`
+2. origin 删除已合并分支：`runtime-closeout-20260414`, `feat/demo-mode-and-snapshot-data`, `codex/audit-template-flow-20260414`
+3. gz2 重置 main/deploy 到最新，删除临时分支
+4. 本地构建验证 → gz2 部署验证
+
+### 12.4 最终目标状态
+
+- 本地/origin/gz2 三处 `main` 一致
+- gz2 `deploy` 指向最新 main
+- 只保留 `main` 一个活跃分支 + `v0.1.0-stable` tag + 历史 archive tags
+- 所有有价值的工作不丢失
 
 ---
 
