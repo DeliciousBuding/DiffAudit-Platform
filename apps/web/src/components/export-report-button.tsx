@@ -53,18 +53,24 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
 
       await new Promise((resolve) => window.setTimeout(resolve, 180));
 
-      const reportEl = host.firstElementChild as HTMLElement | null;
-      if (!reportEl) {
+      const pageEls = Array.from(host.querySelectorAll("[data-print-page]")) as HTMLElement[];
+      if (pageEls.length === 0) {
         throw new Error("Printable report did not render.");
       }
 
-      return await html2canvas(reportEl, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        windowWidth: 900,
-      });
+      const canvases: HTMLCanvasElement[] = [];
+      for (const pageEl of pageEls) {
+        const canvas = await html2canvas(pageEl, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: "#ffffff",
+          windowWidth: 900,
+        });
+        canvases.push(canvas);
+      }
+
+      return canvases;
     } finally {
       root.unmount();
       document.body.removeChild(host);
@@ -75,24 +81,21 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
     setIsExporting(true);
 
     try {
-      const canvas = await renderPrintableCanvas();
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const pageHeight = 297;
-      const imgData = canvas.toDataURL("image/png");
+      const canvases = await renderPrintableCanvas();
       const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = 210;
+      const pageHeight = 297;
 
-      let heightLeft = imgHeight;
-      let position = 0;
+      canvases.forEach((canvas, index) => {
+        if (index > 0) {
+          pdf.addPage();
+        }
+        const imgData = canvas.toDataURL("image/png");
+        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+      });
 
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position -= pageHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+      if (canvases.length === 0) {
+        throw new Error("Printable report export produced no pages.");
       }
 
       const now = new Date();
