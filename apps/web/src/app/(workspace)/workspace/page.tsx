@@ -3,8 +3,6 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
-import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
-import { fetchCatalogDashboard } from "@/lib/catalog";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { RiskBadge } from "@/components/risk-badge";
@@ -16,6 +14,8 @@ import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { ChartRiskRadar } from "@/components/chart-risk-radar";
+import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
+import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 
 export const dynamic = "force-dynamic";
 
@@ -63,8 +63,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const localeData = WORKSPACE_COPY[locale];
   const copy = localeData.workspace;
   const [catalog, table] = await Promise.all([
-    fetchCatalogDashboard(),
-    fetchAttackDefenseTable(),
+    getWorkspaceCatalogData(),
+    getWorkspaceAttackDefenseData(),
   ]);
 
   const activeContracts = catalog?.stats.total ?? 0;
@@ -224,9 +224,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* System progress bar — audit coverage overview */}
       {totalRows > 0 && (
-        <section className="rounded-lg border border-border bg-card p-4">
+        <WorkspaceSectionCard title={copy.coverageBar.title} className="rounded-lg">
+          <div className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-foreground">{copy.coverageBar.title}</h2>
             <span className="text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
           </div>
           <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
@@ -246,7 +246,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
           </div>
-        </section>
+          </div>
+        </WorkspaceSectionCard>
       )}
 
       {/* Empty workspace guidance — 7.2.3 */}
@@ -347,30 +348,20 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
 
           {/* Risk Radar — 7.1 */}
-          <section className="border border-border bg-card">
-            <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.chartTitles.riskRadar}
-              </h2>
-              <span className="text-xs text-muted-foreground">
-                {radarData.length} {copy.sections.radarDimensionsLabel}
-              </span>
-            </div>
+          <WorkspaceSectionCard
+            title={copy.sections.chartTitles.riskRadar}
+            actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
+          >
             <div className="p-2">
               <ChartRiskRadar data={radarData} height={220} />
             </div>
-          </section>
+          </WorkspaceSectionCard>
         </div>
       )}
 
       {/* Charts grid */}
       <div className="grid gap-3 lg:grid-cols-2">
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.aucDistribution}
-            </h2>
-          </div>
+        <WorkspaceSectionCard title={copy.sections.chartTitles.aucDistribution}>
           <div className="p-3">
             {aucDistData.length > 0 ? (
               <ChartAucDistribution data={aucDistData} />
@@ -380,53 +371,33 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </div>
             )}
           </div>
-        </section>
+        </WorkspaceSectionCard>
 
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.rocCurve}
-            </h2>
-          </div>
+        <WorkspaceSectionCard title={copy.sections.chartTitles.rocCurve}>
           <div className="p-3">
             <ChartRocCurve data={rocData} />
           </div>
-        </section>
+        </WorkspaceSectionCard>
 
         {totalRisk > 0 && (
-          <section className="border border-border bg-card">
-            <div className="border-b border-border bg-muted/20 px-3 py-2">
-              <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.chartTitles.riskDistribution}
-              </h2>
-            </div>
+          <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution}>
             <div className="p-3">
               <ChartRiskDistribution data={riskDistData} />
             </div>
-          </section>
+          </WorkspaceSectionCard>
         )}
 
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.chartTitles.attackComparison}
-            </h2>
-          </div>
+        <WorkspaceSectionCard title={copy.sections.chartTitles.attackComparison}>
           <div className="p-3">
             <ChartAttackComparison data={attackComparisonData} />
           </div>
-        </section>
+        </WorkspaceSectionCard>
       </div>
 
       {/* Main content grid */}
       <div className="grid gap-3 lg:grid-cols-3">
         {/* Recent results table */}
-        <section className="lg:col-span-2 border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.recentResults}
-            </h2>
-          </div>
+        <WorkspaceSectionCard title={copy.sections.recentResults} className="lg:col-span-2">
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
               <table className="w-full border-collapse text-xs">
@@ -473,15 +444,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </div>
             )}
           </div>
-        </section>
+        </WorkspaceSectionCard>
 
         {/* Tasks panel */}
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.sections.tasks}
-            </h2>
-          </div>
+        <WorkspaceSectionCard title={copy.sections.tasks}>
           <div className="p-3">
             {copy.todoItems.map((item, index) => (
               <div key={item} className="flex items-start gap-2 border-b border-border py-2 last:border-0">
@@ -492,7 +458,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </div>
             ))}
           </div>
-        </section>
+        </WorkspaceSectionCard>
       </div>
     </>
   );
@@ -511,14 +477,13 @@ async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}
   const copy = WORKSPACE_COPY[resolvedLocale].workspace;
 
   return (
-    <div className="space-y-4">
-      {/* Page header */}
-      <div className="border-b border-border pb-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-        <h1 className="mt-1 text-xl font-semibold">{copy.title}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{copy.description}</p>
-      </div>
-
+    <WorkspacePageFrame
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      description={copy.description}
+      titleClassName="text-xl"
+      descriptionClassName="text-sm"
+    >
       <Suspense fallback={
         <>
           <KpiRowSkeleton />
@@ -538,6 +503,6 @@ async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}
       }>
         <WorkspaceData locale={resolvedLocale} />
       </Suspense>
-    </div>
+    </WorkspacePageFrame>
   );
 }

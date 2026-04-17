@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const intent = requestUrl.searchParams.get("intent");
   const redirectTo = sanitizeRedirectPath(
     requestUrl.searchParams.get("redirectTo"),
-    intent === "connect" ? "/workspace/settings" : undefined,
+    intent === "connect" ? "/workspace/account" : undefined,
   );
 
   if (!clientId) {

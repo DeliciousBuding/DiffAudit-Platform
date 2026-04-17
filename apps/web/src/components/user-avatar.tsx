@@ -93,6 +93,7 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
 
   const initial = user?.username?.[0]?.toUpperCase() ?? "?";
   const copy = WORKSPACE_COPY[locale].userMenu;
+  const accountLabel = WORKSPACE_COPY[locale].settings.account.title;
 
   return (
     <div className="relative" ref={menuRef}>
@@ -147,6 +148,17 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
 
           {/* Menu items */}
           <div className="p-1.5">
+            <Link
+              href="/workspace/account"
+              className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
+              onClick={() => setShowMenu(false)}
+            >
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path d="M12 3.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 0 1 0-6.4Z" />
+                <path d="M4.5 19.2c1.8-3.1 4.3-4.6 7.5-4.6s5.7 1.5 7.5 4.6" />
+              </svg>
+              {accountLabel}
+            </Link>
             <Link
               href="/workspace/settings"
               className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"

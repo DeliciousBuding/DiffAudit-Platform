@@ -3,9 +3,9 @@ import { cookies, headers } from "next/headers";
 import { githubOAuthConfigured, googleOAuthConfigured } from "@/lib/auth";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { getCurrentUserProfile, SESSION_COOKIE_NAME } from "@/lib/auth";
-import { SettingsClient } from "./SettingsClient";
+import { SettingsClient } from "../settings/SettingsClient";
 
-export default async function WorkspaceSettingsPage({
+export default async function WorkspaceAccountPage({
   searchParams,
 }: {
   searchParams?: Promise<{ emailVerified?: string; providerLink?: string }>;
@@ -26,7 +26,7 @@ export default async function WorkspaceSettingsPage({
   return (
     <SettingsClient
       locale={locale}
-      mode="settings"
+      mode="account"
       initialProfile={profile}
       oauthEnabled={{
         google: googleOAuthConfigured(),

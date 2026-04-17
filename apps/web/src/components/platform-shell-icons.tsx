@@ -4,7 +4,7 @@ export function BrandMark() {
   return <SiteBrandMark compact href="/" prefetch={false} />;
 }
 
-export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" | "key" }) {
+export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" | "key" | "account" }) {
   if (icon === "key") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
@@ -53,6 +53,19 @@ export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "se
         <path d="M15 3.8V8h4.2" />
         <path d="M8.5 12h7" />
         <path d="M8.5 15.5h7" />
+      </svg>
+    );
+  }
+
+  if (icon === "account") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
+      >
+        <path d="M12 3.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 0 1 0-6.4Z" />
+        <path d="M4.5 19.2c1.8-3.1 4.3-4.6 7.5-4.6s5.7 1.5 7.5 4.6" />
       </svg>
     );
   }

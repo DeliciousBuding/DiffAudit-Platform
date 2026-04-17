@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Inter } from "next/font/google";
+import { RouteRecovery } from "@/components/route-recovery";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import "./globals.css";
 
@@ -27,7 +28,10 @@ export default async function RootLayout({
 
   return (
     <html lang={locale === "zh-CN" ? "zh-CN" : "en-US"} className={`h-full antialiased ${inter.variable}`}>
-      <body className="min-h-full bg-background text-foreground font-sans">{children}</body>
+      <body className="min-h-full bg-background text-foreground font-sans">
+        <RouteRecovery />
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,8 +2,6 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 
 import { type Locale } from "@/components/language-picker";
-import { fetchAttackDefenseTable } from "@/lib/attack-defense-table";
-import { fetchCatalogDashboard } from "@/lib/catalog";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -17,6 +15,8 @@ import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
+import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
+import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 
 export const dynamic = "force-dynamic";
 
@@ -68,8 +68,8 @@ function evidenceTone(
 async function AuditResultsSection({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].reports;
   const [table, catalog] = await Promise.all([
-    fetchAttackDefenseTable(),
-    fetchCatalogDashboard(),
+    getWorkspaceAttackDefenseData(),
+    getWorkspaceCatalogData(),
   ]);
   const rows = table?.rows ?? [];
   const catalogSize = catalog?.stats.total ?? 0;
@@ -296,14 +296,11 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   );
 
   return (
-    <>
-      {/* Header with export buttons */}
-      <div className="flex items-start justify-between border-b border-border pb-3">
-        <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-          <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
-        </div>
+    <WorkspacePageFrame
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      description={copy.description}
+      actions={
         <ExportReportButton
           rows={exportRows}
           label={copy.exportSummary}
@@ -311,11 +308,10 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
           catalogSize={catalogSize}
           defendedRows={defendedRows}
         />
-      </div>
-
-      {/* Tabbed content: Results + Compare — 7.3 */}
+      }
+    >
       <ReportsClient rows={rows} locale={locale} resultsContent={resultsContent} />
-    </>
+    </WorkspacePageFrame>
   );
 }
 
@@ -323,16 +319,11 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
 async function CoverageGapsSection({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].reports;
   const th = copy.tableHeaders;
-  const catalog = await fetchCatalogDashboard();
+  const catalog = await getWorkspaceCatalogData();
   const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 6) ?? [];
 
   return (
-    <section className="border border-border bg-card">
-      <div className="border-b border-border bg-muted/20 px-3 py-2">
-        <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {copy.sections.coverageGaps}
-        </h2>
-      </div>
+    <WorkspaceSectionCard title={copy.sections.coverageGaps}>
       <div className="overflow-auto">
         {contracts.length > 0 ? (
           <table className="w-full border-collapse text-xs">
@@ -366,7 +357,7 @@ async function CoverageGapsSection({ locale }: { locale: Locale }) {
           </div>
         )}
       </div>
-    </section>
+    </WorkspaceSectionCard>
   );
 }
 

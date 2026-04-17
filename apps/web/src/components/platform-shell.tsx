@@ -9,11 +9,13 @@ import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
 import { PlatformNavMobile } from "@/components/platform-nav.client";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { getWorkspaceDataMode } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export async function PlatformShell({ children }: { children: React.ReactNode }) {
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
+  const dataMode = await getWorkspaceDataMode();
 
   return (
     <div className="workspace-layout">
@@ -25,8 +27,11 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
           <WorkspaceSidebar locale={locale} />
         </div>
         <div className="workspace-sidebar-footer">
-          <div className="flex items-center gap-2 px-3 py-2">
+          <div className="flex items-center gap-2 px-3 py-2 flex-wrap">
             <StatusBadge tone="info">{copy.shell.siteBadge}</StatusBadge>
+            <StatusBadge tone={dataMode === "demo" ? "warning" : "success"}>
+              {dataMode === "demo" ? copy.shell.demoMode : copy.shell.liveMode}
+            </StatusBadge>
           </div>
           <div className="flex items-center gap-1 px-3 pb-3">
             <RuntimeStatusBadge locale={locale} />

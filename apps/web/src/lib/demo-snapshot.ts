@@ -5,6 +5,29 @@
 import type { CatalogEntryPayload } from "@/lib/catalog";
 import type { AttackDefenseRowPayload } from "@/lib/attack-defense-table";
 
+export type DemoJobRecord = {
+  job_id: string;
+  status: string;
+  contract_key: string;
+  workspace_name: string;
+  job_type: string;
+  created_at: string;
+  updated_at: string;
+  target_model?: string | null;
+  metrics?: {
+    auc?: number;
+    asr?: number;
+    tpr?: number;
+  };
+  error?: string | null;
+  stdout_tail?: string | null;
+  stderr_tail?: string | null;
+  state_history?: Array<{
+    state: string;
+    timestamp: string;
+  }>;
+};
+
 /** Demo catalog entries — pre-seeded with realistic attack model data */
 export const DEMO_CATALOG_ENTRIES: CatalogEntryPayload[] = [
   // Black-box track
@@ -81,6 +104,42 @@ export const DEMO_CATALOG_ENTRIES: CatalogEntryPayload[] = [
     availability: "ready",
     evidence_level: "catalog",
     system_gap: "Cross-model gradient transfer.",
+  },
+  {
+    contract_key: "recon_photo_runtime",
+    track: "black-box",
+    attack_family: "recon",
+    target_key: "photo-real-xl",
+    label: "Recon + PhotoReal XL",
+    backend: "runtime-go",
+    scheduler: "local",
+    availability: "ready",
+    evidence_level: "challenger",
+    system_gap: "High-confidence leakage on photoreal face prompts.",
+  },
+  {
+    contract_key: "pia_medmnist_runtime",
+    track: "gray-box",
+    attack_family: "PIA",
+    target_key: "medmnist-derma-v3",
+    label: "PIA + MedMNIST Derma v3",
+    backend: "runtime-go",
+    scheduler: "local",
+    availability: "ready",
+    evidence_level: "mainline",
+    system_gap: "Posterior drift reveals member presence on rare dermatology classes.",
+  },
+  {
+    contract_key: "gsa_audio_runtime",
+    track: "white-box",
+    attack_family: "GSA",
+    target_key: "audio-diffusion-s",
+    label: "GSA + Audio Diffusion S",
+    backend: "runtime-go",
+    scheduler: "local",
+    availability: "partial",
+    evidence_level: "challenger",
+    system_gap: "Gradient signatures remain unstable across audio token windows.",
   },
 ];
 
@@ -205,5 +264,180 @@ export const DEMO_ATTACK_DEFENSE_ROWS: AttackDefenseRowPayload[] = [
     tpr_at_1pct_fpr: 0.15,
     evidence_level: "catalog",
     note: "W-1 effective on PixelArt as well.",
+  },
+  {
+    track: "black-box",
+    attack: "recon",
+    defense: "none",
+    model: "photo-real-xl",
+    auc: 0.901,
+    asr: 0.58,
+    tpr_at_1pct_fpr: 0.97,
+    evidence_level: "challenger",
+    note: "Photoreal face generations show stronger memorization on member portraits.",
+  },
+  {
+    track: "black-box",
+    attack: "recon",
+    defense: "clip-sanitization",
+    model: "photo-real-xl",
+    auc: 0.744,
+    asr: 0.42,
+    tpr_at_1pct_fpr: 0.81,
+    quality_cost: "CLIP score drop: 2.8%",
+    evidence_level: "challenger",
+    note: "Clip-guided sanitization lowers leakage while keeping prompt fidelity acceptable.",
+  },
+  {
+    track: "gray-box",
+    attack: "PIA",
+    defense: "none",
+    model: "medmnist-derma-v3",
+    auc: 0.814,
+    asr: 0.71,
+    tpr_at_1pct_fpr: 0.92,
+    evidence_level: "mainline",
+    note: "Rare-class lesion samples remain highly vulnerable to posterior attacks.",
+  },
+  {
+    track: "gray-box",
+    attack: "PIA",
+    defense: "stochastic-dropout",
+    model: "medmnist-derma-v3",
+    auc: 0.702,
+    asr: 0.55,
+    tpr_at_1pct_fpr: 0.74,
+    quality_cost: "Inference overhead: +9%",
+    evidence_level: "mainline",
+    note: "Dropout narrows the posterior gap on rare classes with manageable latency increase.",
+  },
+  {
+    track: "white-box",
+    attack: "GSA",
+    defense: "none",
+    model: "audio-diffusion-s",
+    auc: 0.873,
+    asr: 0.63,
+    tpr_at_1pct_fpr: 0.89,
+    evidence_level: "challenger",
+    note: "White-box gradients expose memorized waveform fragments without mitigation.",
+  },
+  {
+    track: "white-box",
+    attack: "GSA",
+    defense: "W-1",
+    model: "audio-diffusion-s",
+    auc: 0.611,
+    asr: 0.41,
+    tpr_at_1pct_fpr: 0.56,
+    quality_cost: "SNR drop: 0.8dB",
+    evidence_level: "challenger",
+    note: "W-1 helps on audio, but residual gradient structure still leaks signal.",
+  },
+];
+
+export const DEMO_JOBS: DemoJobRecord[] = [
+  {
+    job_id: "job_demo_001",
+    status: "running",
+    contract_key: "recon_photo_runtime",
+    workspace_name: "photo-redteam-lab",
+    job_type: "recon_artifact_mainline",
+    created_at: "2026-04-17T12:20:00.000Z",
+    updated_at: "2026-04-17T12:24:12.000Z",
+    target_model: "photo-real-xl",
+    stdout_tail: "[12:24:12] sampling audit batches\n[12:24:13] entropy probe ready\n[12:24:14] member score delta rising",
+    stderr_tail: "",
+    state_history: [
+      { state: "queued", timestamp: "2026-04-17T12:20:00.000Z" },
+      { state: "running", timestamp: "2026-04-17T12:20:09.000Z" },
+    ],
+  },
+  {
+    job_id: "job_demo_002",
+    status: "running",
+    contract_key: "pia_medmnist_runtime",
+    workspace_name: "clinical-audit-sprint",
+    job_type: "pia_runtime_mainline",
+    created_at: "2026-04-17T11:52:00.000Z",
+    updated_at: "2026-04-17T12:23:01.000Z",
+    target_model: "medmnist-derma-v3",
+    stdout_tail: "[12:22:41] extracting posterior vectors\n[12:22:49] evaluating rare-class slices\n[12:23:01] confidence drift confirmed",
+    stderr_tail: "",
+    state_history: [
+      { state: "queued", timestamp: "2026-04-17T11:52:00.000Z" },
+      { state: "running", timestamp: "2026-04-17T11:52:16.000Z" },
+    ],
+  },
+  {
+    job_id: "job_demo_003",
+    status: "completed",
+    contract_key: "gsa_runtime_mainline",
+    workspace_name: "whitebox-defense-pass",
+    job_type: "gsa_runtime_mainline",
+    created_at: "2026-04-17T09:14:00.000Z",
+    updated_at: "2026-04-17T09:29:44.000Z",
+    target_model: "stable-diffusion-v1-4",
+    metrics: { auc: 0.489, asr: 0.499, tpr: 0.12 },
+    stdout_tail: "[09:29:41] applying W-1 defense\n[09:29:43] attack collapsed to chance level\n[09:29:44] exporting summary",
+    stderr_tail: "",
+    state_history: [
+      { state: "queued", timestamp: "2026-04-17T09:14:00.000Z" },
+      { state: "running", timestamp: "2026-04-17T09:14:12.000Z" },
+      { state: "completed", timestamp: "2026-04-17T09:29:44.000Z" },
+    ],
+  },
+  {
+    job_id: "job_demo_004",
+    status: "completed",
+    contract_key: "recon_artifact_mainline",
+    workspace_name: "baseline-blackbox-pass",
+    job_type: "recon_artifact_mainline",
+    created_at: "2026-04-17T08:08:00.000Z",
+    updated_at: "2026-04-17T08:19:05.000Z",
+    target_model: "stable-diffusion-v1-4",
+    metrics: { auc: 0.849, asr: 0.51, tpr: 1.0 },
+    stdout_tail: "[08:18:59] sampled 100 public references\n[08:19:02] score separation stable\n[08:19:05] result admitted",
+    stderr_tail: "",
+    state_history: [
+      { state: "queued", timestamp: "2026-04-17T08:08:00.000Z" },
+      { state: "running", timestamp: "2026-04-17T08:08:11.000Z" },
+      { state: "completed", timestamp: "2026-04-17T08:19:05.000Z" },
+    ],
+  },
+  {
+    job_id: "job_demo_005",
+    status: "failed",
+    contract_key: "gsa_audio_runtime",
+    workspace_name: "audio-gradient-check",
+    job_type: "gsa_runtime_mainline",
+    created_at: "2026-04-17T07:40:00.000Z",
+    updated_at: "2026-04-17T07:51:18.000Z",
+    target_model: "audio-diffusion-s",
+    error: "Gradient window diverged after token 6144; check runtime memory cap.",
+    stdout_tail: "[07:50:54] gradient tensor expanding\n[07:51:02] retrying checkpoint shard",
+    stderr_tail: "[07:51:18] OOM on shard 3\n[07:51:18] aborting white-box pass",
+    state_history: [
+      { state: "queued", timestamp: "2026-04-17T07:40:00.000Z" },
+      { state: "running", timestamp: "2026-04-17T07:40:21.000Z" },
+      { state: "failed", timestamp: "2026-04-17T07:51:18.000Z" },
+    ],
+  },
+  {
+    job_id: "job_demo_006",
+    status: "cancelled",
+    contract_key: "pia_runtime_pixel",
+    workspace_name: "pixelart-ablation",
+    job_type: "pia_runtime_mainline",
+    created_at: "2026-04-16T19:22:00.000Z",
+    updated_at: "2026-04-16T19:34:10.000Z",
+    target_model: "pixel-art-v2",
+    stdout_tail: "[19:33:51] posterior slices complete\n[19:34:01] user cancellation received",
+    stderr_tail: "",
+    state_history: [
+      { state: "queued", timestamp: "2026-04-16T19:22:00.000Z" },
+      { state: "running", timestamp: "2026-04-16T19:22:14.000Z" },
+      { state: "cancelled", timestamp: "2026-04-16T19:34:10.000Z" },
+    ],
   },
 ];

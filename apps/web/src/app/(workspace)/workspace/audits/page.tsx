@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { TableSkeleton, JobsListSkeleton } from "@/components/skeleton";
+import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
 import { TaskListClient } from "./TaskListClient";
 
 type WorkspaceAuditsPageOptions = {
@@ -18,33 +19,26 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
 
   return (
-    <div className="space-y-4">
-      {/* Page header */}
-      <div className="border-b border-border pb-3">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.eyebrow}</div>
-            <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
-            <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
-          </div>
-          <Link
-            href="/workspace/audits/new"
-            className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] shrink-0"
-          >
-            <span className="text-sm leading-none">+</span>
-            {copy.createTaskButton}
-          </Link>
-        </div>
-      </div>
+    <WorkspacePageFrame
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      description={copy.description}
+      actions={
+        <Link
+          href="/workspace/audits/new"
+          className="inline-flex items-center gap-1.5 rounded border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)] shrink-0"
+        >
+          <span className="text-sm leading-none">+</span>
+          {copy.createTaskButton}
+        </Link>
+      }
+    >
 
       {/* Active tasks section */}
-      <section className="border border-border bg-card">
-        <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {copy.sections.activeTasks}
-          </h2>
-          <span className="inline-flex h-1.5 w-1.5 rounded-full bg-info animate-pulse" />
-        </div>
+      <WorkspaceSectionCard
+        title={copy.sections.activeTasks}
+        actions={<span className="inline-flex h-1.5 w-1.5 rounded-full bg-info animate-pulse" />}
+      >
         <div className="overflow-auto max-h-[420px]">
           <Suspense fallback={<JobsListSkeleton />}>
             <TaskListClient
@@ -53,15 +47,10 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
             />
           </Suspense>
         </div>
-      </section>
+      </WorkspaceSectionCard>
 
       {/* Task history section */}
-      <section className="border border-border bg-card">
-        <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {copy.sections.taskHistory}
-          </h2>
-        </div>
+      <WorkspaceSectionCard title={copy.sections.taskHistory}>
         <div className="overflow-auto">
           <Suspense
             fallback={
@@ -76,8 +65,8 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
             />
           </Suspense>
         </div>
-      </section>
-    </div>
+      </WorkspaceSectionCard>
+    </WorkspacePageFrame>
   );
 }
 

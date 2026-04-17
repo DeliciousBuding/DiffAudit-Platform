@@ -43,7 +43,7 @@ export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
 
   return (
     <nav
-      className="fixed bottom-4 left-4 right-4 z-40 hidden grid-cols-5 gap-2 rounded-[24px] border border-border bg-[var(--color-bg-primary)]/92 p-2 shadow-[0_20px_60px_rgba(18,19,23,0.12)] backdrop-blur-[20px] max-lg:grid"
+      className="fixed bottom-4 left-4 right-4 z-40 hidden grid-cols-6 gap-2 rounded-[24px] border border-border bg-[var(--color-bg-primary)]/92 p-2 shadow-[0_20px_60px_rgba(18,19,23,0.12)] backdrop-blur-[20px] max-lg:grid"
       aria-label="Mobile navigation"
     >
       {items.map((item) => {

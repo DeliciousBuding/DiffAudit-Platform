@@ -7,13 +7,13 @@ export async function GET(request: Request) {
   const token = url.searchParams.get("token");
 
   if (!token) {
-    return NextResponse.redirect(new URL("/workspace/settings?emailVerified=missing", request.url));
+    return NextResponse.redirect(new URL("/workspace/account?emailVerified=missing", request.url));
   }
 
   const result = verifyEmailToken(token);
   if (!result.ok) {
-    return NextResponse.redirect(new URL(`/workspace/settings?emailVerified=${result.reason}`, request.url));
+    return NextResponse.redirect(new URL(`/workspace/account?emailVerified=${result.reason}`, request.url));
   }
 
-  return NextResponse.redirect(new URL("/workspace/settings?emailVerified=1", request.url));
+  return NextResponse.redirect(new URL("/workspace/account?emailVerified=1", request.url));
 }

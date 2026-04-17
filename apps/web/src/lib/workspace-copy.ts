@@ -1,10 +1,13 @@
 import { type Locale } from "@/components/language-picker";
+import type { WorkspaceNavKey } from "@/lib/workspace-registry";
 
 export const WORKSPACE_COPY: Record<
   Locale,
   {
     shell: {
       siteBadge: string;
+      liveMode: string;
+      demoMode: string;
       runtimeChecking: string;
       runtimeConnected: string;
       runtimeDisconnected: string;
@@ -25,8 +28,7 @@ export const WORKSPACE_COPY: Record<
       settings: string;
       signOut: string;
     };
-    nav: Array<{
-      href: string;
+    nav: Record<WorkspaceNavKey, {
       title: string;
       subtitle: string;
       shortLabel: string;
@@ -303,12 +305,36 @@ export const WORKSPACE_COPY: Record<
         tpr: string;
       };
     };
+    apiKeys: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      create: string;
+      createTitle: string;
+      keyName: string;
+      keyNamePlaceholder: string;
+      permissions: string;
+      generate: string;
+      cancel: string;
+      createdTitle: string;
+      createdBody: string;
+      copy: string;
+      copied: string;
+      done: string;
+      activeKeys: string;
+      createdAt: string;
+      lastUsed: string;
+      revoke: string;
+      active: string;
+      revoked: string;
+      usageExample: string;
+    };
     settings: {
       eyebrow: string;
       title: string;
       description: string;
       sections: Array<{ title: string; copy: string }>;
-      systemStatus: { title: string; runtime: string; demoMode: string; demoOn: string; demoOff: string };
+      systemStatus: { title: string; runtime: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string };
       account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
@@ -405,6 +431,8 @@ export const WORKSPACE_COPY: Record<
   "en-US": {
     shell: {
       siteBadge: "Single-site workspace",
+      liveMode: "Live data",
+      demoMode: "Demo snapshot",
       runtimeChecking: "Runtime checking",
       runtimeConnected: "Runtime connected",
       runtimeDisconnected: "Runtime disconnected",
@@ -425,13 +453,14 @@ export const WORKSPACE_COPY: Record<
       settings: "Settings",
       signOut: "Sign out",
     },
-    nav: [
-      { href: "/workspace", title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
-      { href: "/workspace/audits", title: "Audits", subtitle: "Create jobs and review runs", shortLabel: "Audits" },
-      { href: "/workspace/reports", title: "Reports", subtitle: "Summaries and exports", shortLabel: "Reports" },
-      { href: "/workspace/api-keys", title: "API Keys", subtitle: "Manage access credentials", shortLabel: "Keys" },
-      { href: "/workspace/settings", title: "Settings", subtitle: "Team, keys, and preferences", shortLabel: "Settings" },
-    ],
+    nav: {
+      workspace: { title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
+      audits: { title: "Audits", subtitle: "Create jobs and review runs", shortLabel: "Audits" },
+      reports: { title: "Reports", subtitle: "Summaries and exports", shortLabel: "Reports" },
+      apiKeys: { title: "API Keys", subtitle: "Manage access credentials", shortLabel: "Keys" },
+      account: { title: "Account", subtitle: "Profile, password, and sign-in methods", shortLabel: "Account" },
+      settings: { title: "Settings", subtitle: "Runtime, defaults, and workspace config", shortLabel: "Settings" },
+    },
     workspace: {
       eyebrow: "Workspace",
       title: "See what your model is leaking.",
@@ -773,6 +802,30 @@ export const WORKSPACE_COPY: Record<
         tpr: "True Positive Rate - sensitivity of the attack at detecting members",
       },
     },
+    apiKeys: {
+      eyebrow: "API Keys",
+      title: "Manage API access credentials.",
+      description: "Create and manage API keys to access the DiffAudit platform programmatically. Keys are scoped to specific permissions and can be revoked at any time.",
+      create: "Create new key",
+      createTitle: "Create a new API key",
+      keyName: "Key name",
+      keyNamePlaceholder: "e.g. Production Runner, CI Pipeline",
+      permissions: "Permissions",
+      generate: "Generate key",
+      cancel: "Cancel",
+      createdTitle: "Key created successfully",
+      createdBody: "Copy your key now. You will not be able to see it again.",
+      copy: "Copy",
+      copied: "Copied",
+      done: "Done",
+      activeKeys: "Active keys",
+      createdAt: "Created",
+      lastUsed: "Last used",
+      revoke: "Revoke",
+      active: "Active",
+      revoked: "Revoked",
+      usageExample: "API usage example",
+    },
     settings: {
       eyebrow: "Settings",
       title: "Team, keys, and preferences.",
@@ -788,6 +841,8 @@ export const WORKSPACE_COPY: Record<
         demoMode: "Demo mode",
         demoOn: "On",
         demoOff: "Off",
+        demoHintOn: "Using snapshot contracts, jobs, and reports across the workspace.",
+        demoHintOff: "Using live Runtime and API responses instead of snapshot data.",
       },
       auditConfig: {
         title: "Audit defaults",
@@ -1013,6 +1068,8 @@ export const WORKSPACE_COPY: Record<
   "zh-CN": {
     shell: {
       siteBadge: "单站工作台",
+      liveMode: "实时数据",
+      demoMode: "演示快照",
       runtimeChecking: "Runtime 检查中",
       runtimeConnected: "Runtime 已连接",
       runtimeDisconnected: "Runtime 未连接",
@@ -1033,13 +1090,14 @@ export const WORKSPACE_COPY: Record<
       settings: "设置",
       signOut: "退出登录",
     },
-    nav: [
-      { href: "/workspace", title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
-      { href: "/workspace/audits", title: "审计流程", subtitle: "创建审计任务，查看运行结果", shortLabel: "审计" },
-      { href: "/workspace/reports", title: "报告", subtitle: "结果汇总与导出", shortLabel: "报告" },
-      { href: "/workspace/api-keys", title: "API 密钥", subtitle: "管理访问凭证", shortLabel: "密钥" },
-      { href: "/workspace/settings", title: "设置", subtitle: "团队、密钥和偏好设置", shortLabel: "设置" },
-    ],
+    nav: {
+      workspace: { title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
+      audits: { title: "审计流程", subtitle: "创建审计任务，查看运行结果", shortLabel: "审计" },
+      reports: { title: "报告", subtitle: "结果汇总与导出", shortLabel: "报告" },
+      apiKeys: { title: "API 密钥", subtitle: "管理访问凭证", shortLabel: "密钥" },
+      account: { title: "账户", subtitle: "资料、密码与登录方式", shortLabel: "账户" },
+      settings: { title: "设置", subtitle: "运行配置、默认值与工作区设置", shortLabel: "设置" },
+    },
     workspace: {
       eyebrow: "工作台",
       title: "看看你的模型泄露了什么。",
@@ -1381,6 +1439,30 @@ export const WORKSPACE_COPY: Record<
         tpr: "真阳性率 - 攻击检测成员的灵敏度",
       },
     },
+    apiKeys: {
+      eyebrow: "API 密钥",
+      title: "管理 API 访问凭证。",
+      description: "在这里创建和管理 DiffAudit 的 API 密钥。每个密钥都有明确权限范围，并且可以随时吊销。",
+      create: "创建新密钥",
+      createTitle: "创建新的 API 密钥",
+      keyName: "密钥名称",
+      keyNamePlaceholder: "例如：生产 Runner、CI 流水线",
+      permissions: "权限范围",
+      generate: "生成密钥",
+      cancel: "取消",
+      createdTitle: "密钥已创建",
+      createdBody: "请立即复制这串密钥。离开当前提示后将无法再次看到完整内容。",
+      copy: "复制",
+      copied: "已复制",
+      done: "完成",
+      activeKeys: "启用中的密钥",
+      createdAt: "创建于",
+      lastUsed: "最近使用",
+      revoke: "吊销",
+      active: "启用",
+      revoked: "已吊销",
+      usageExample: "API 调用示例",
+    },
     settings: {
       eyebrow: "设置",
       title: "团队、密钥和个人偏好。",
@@ -1396,6 +1478,8 @@ export const WORKSPACE_COPY: Record<
         demoMode: "演示模式",
         demoOn: "开启",
         demoOff: "关闭",
+        demoHintOn: "当前工作台统一使用演示快照：合同、任务、报告都会显示模拟数据。",
+        demoHintOff: "当前使用实时 Runtime / API 数据，不再显示演示快照。",
       },
       auditConfig: {
         title: "审计默认值",

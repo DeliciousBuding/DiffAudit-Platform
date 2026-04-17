@@ -1,21 +1,24 @@
 import { type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_NAV_REGISTRY, type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
 
 export type NavItem = {
+  key: WorkspaceNavKey;
   href: string;
   title: string;
   subtitle: string;
   badge?: string;
-  icon: "spark" | "dashboard" | "report" | "key" | "settings";
+  icon: WorkspaceNavIcon;
   shortLabel: string;
 };
 
-const NAV_ICONS: Array<NavItem["icon"]> = ["dashboard", "spark", "report", "key", "settings"];
-
 export function getNavItems(locale: Locale): NavItem[] {
-  return WORKSPACE_COPY[locale].nav.map((item, i) => ({
-    ...item,
-    icon: NAV_ICONS[i],
+  const localized = WORKSPACE_COPY[locale].nav;
+  return WORKSPACE_NAV_REGISTRY.map((entry) => ({
+    key: entry.key,
+    href: entry.href,
+    icon: entry.icon,
+    ...localized[entry.key],
   }));
 }
 

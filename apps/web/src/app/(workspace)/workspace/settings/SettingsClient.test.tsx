@@ -1,13 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { SettingsClient } from "./SettingsClient";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: () => {} }),
+}));
 
 describe("SettingsClient account verification", () => {
   it("renders a verification entry point for pending email addresses", () => {
     const markup = renderToStaticMarkup(
       <SettingsClient
         locale="en-US"
+        mode="account"
         oauthEnabled={{ google: true, github: true }}
         initialProfile={{
           id: "user-1",
@@ -34,6 +39,7 @@ describe("SettingsClient account verification", () => {
     const markup = renderToStaticMarkup(
       <SettingsClient
         locale="en-US"
+        mode="account"
         oauthEnabled={{ google: true, github: true }}
         initialProfile={{
           id: "user-1",
@@ -59,6 +65,7 @@ describe("SettingsClient account verification", () => {
     const markup = renderToStaticMarkup(
       <SettingsClient
         locale="en-US"
+        mode="account"
         oauthEnabled={{ google: true, github: true }}
         initialProfile={{
           id: "user-1",
@@ -85,6 +92,7 @@ describe("SettingsClient account verification", () => {
     const markup = renderToStaticMarkup(
       <SettingsClient
         locale="en-US"
+        mode="account"
         oauthEnabled={{ google: true, github: true }}
         initialProviderLinkStatus="github_connected"
         initialProfile={{

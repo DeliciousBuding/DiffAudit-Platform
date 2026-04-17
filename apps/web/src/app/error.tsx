@@ -9,6 +9,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const showLocalDetails = typeof window !== "undefined"
+    && (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost");
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
       <div className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-border bg-card/85 shadow-[0_24px_80px_rgba(0,0,0,0.16)] backdrop-blur">
@@ -35,6 +38,19 @@ export default function GlobalError({
               <div className="mt-4 rounded-2xl border border-border bg-background/80 px-4 py-3 text-xs leading-6 text-muted-foreground">
                 Error digest: <span className="font-mono text-foreground">{error.digest}</span>
               </div>
+            ) : null}
+            {showLocalDetails && error.message ? (
+              <div className="mt-4 rounded-2xl border border-[#bf2f2f]/20 bg-[#bf2f2f]/8 px-4 py-3 text-xs leading-6 text-[#bf2f2f]">
+                Local error: <span className="font-mono break-all">{error.message}</span>
+              </div>
+            ) : null}
+            {showLocalDetails && error.stack ? (
+              <details className="mt-3 rounded-2xl border border-border bg-background/80 px-4 py-3 text-xs leading-6 text-muted-foreground">
+                <summary className="cursor-pointer font-medium text-foreground">Stack trace</summary>
+                <pre className="mt-3 overflow-x-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-5">
+                  {error.stack}
+                </pre>
+              </details>
             ) : null}
             <div className="mt-6 grid gap-3 sm:grid-cols-4">
               <button

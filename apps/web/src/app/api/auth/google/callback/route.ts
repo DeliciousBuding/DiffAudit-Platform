@@ -57,7 +57,7 @@ function buildRedirectWithProviderStatus(
   providerLink: string,
   platformUrl: string,
 ) {
-  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), platformUrl);
+  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/account"), platformUrl);
   target.searchParams.set("providerLink", providerLink);
   return target;
 }

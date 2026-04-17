@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 
 import { ProviderIcon } from "@/components/auth-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
-import { type Locale, setStoredLocale, getStoredLocale } from "@/components/language-picker";
+import { StatusBadge } from "@/components/status-badge";
+import { type Locale } from "@/components/language-picker";
 import type { CurrentUserProfile } from "@/lib/auth";
+import { setDemoModeClient } from "@/lib/demo-mode-client";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const STORAGE_KEYS = {
@@ -16,10 +19,8 @@ const STORAGE_KEYS = {
   DEFAULT_BATCH_SIZE: "platform-default-batch-size-v1",
   RUNTIME_HOST: "platform-runtime-host-v1",
   RUNTIME_PORT: "platform-runtime-port-v1",
-  THEME: "platform-theme-v1",
 } as const;
 
-type ThemeMode = "light" | "dark" | "system";
 type EmailVerificationStatus = "1" | "missing" | "invalid" | "expired" | "missing_pending_email";
 type ProviderLinkStatus =
   | "google_connected"
@@ -32,6 +33,7 @@ type EmailVerificationNotice = {
   tone: "success" | "error";
   message: string;
 };
+type SettingsMode = "settings" | "account";
 
 function formatProviderName(provider: string) {
   if (provider === "google") return "Google";
@@ -115,6 +117,7 @@ interface SettingsClientProps {
   initialEmailVerificationStatus?: EmailVerificationStatus | null;
   initialProviderLinkStatus?: ProviderLinkStatus | null;
   oauthEnabled: { google: boolean; github: boolean };
+  mode?: SettingsMode;
 }
 
 export function SettingsClient({
@@ -123,8 +126,14 @@ export function SettingsClient({
   initialEmailVerificationStatus,
   initialProviderLinkStatus,
   oauthEnabled,
+  mode = "settings",
 }: SettingsClientProps) {
   const copy = WORKSPACE_COPY[locale].settings;
+  const router = useRouter();
+  const isAccountMode = mode === "account";
+  const pageEyebrow = isAccountMode ? copy.account.title : copy.eyebrow;
+  const pageTitle = isAccountMode ? copy.account.title : copy.title;
+  const pageDescription = isAccountMode ? copy.account.securityNote : copy.description;
 
   const [demoMode, setDemoMode] = useState(false);
   const [defaultRounds, setDefaultRounds] = useState("10");
@@ -150,10 +159,6 @@ export function SettingsClient({
   const [providerLinkNotice, setProviderLinkNotice] = useState<EmailVerificationNotice | null>(
     getProviderLinkNotice(initialProviderLinkStatus, copy.account),
   );
-
-  // Preferences
-  const [currentLocale, setCurrentLocale] = useState<Locale>(locale);
-  const [theme, setTheme] = useState<ThemeMode>("light");
 
   // Runtime config
   const [runtimeHost, setRuntimeHost] = useState("http://127.0.0.1");
@@ -182,22 +187,6 @@ export function SettingsClient({
     try {
       const port = window.localStorage.getItem(STORAGE_KEYS.RUNTIME_PORT);
       if (port) setRuntimePort(port);
-    } catch {}
-    try {
-      const savedLocale = getStoredLocale();
-      setCurrentLocale(savedLocale);
-    } catch {}
-    try {
-      const savedTheme = window.localStorage.getItem(STORAGE_KEYS.THEME) as ThemeMode | null;
-      if (savedTheme) {
-        setTheme(savedTheme);
-        const resolved = savedTheme === "system"
-          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-          : savedTheme;
-        document.documentElement.setAttribute("data-theme", resolved);
-        document.documentElement.classList.toggle("dark", resolved === "dark");
-        document.documentElement.style.colorScheme = resolved;
-      }
     } catch {}
   }, []);
 
@@ -239,9 +228,8 @@ export function SettingsClient({
 
   function handleDemoModeToggle(checked: boolean) {
     setDemoMode(checked);
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.DEMO_MODE, checked ? "1" : "0");
-    } catch {}
+    setDemoModeClient(checked);
+    router.refresh();
   }
 
   function handleRoundsChange(value: string) {
@@ -256,40 +244,6 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, value);
     } catch {}
-  }
-
-  function handleLocaleChange(newLocale: Locale) {
-    setCurrentLocale(newLocale);
-    try {
-      setStoredLocale(newLocale);
-    } catch {}
-    showSaved(copy.preferences.language);
-  }
-
-  function handleThemeChange(newTheme: ThemeMode) {
-    setTheme(newTheme);
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
-      const resolved = newTheme === "system"
-        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-        : newTheme;
-      document.documentElement.setAttribute("data-theme", resolved);
-      document.documentElement.classList.toggle("dark", resolved === "dark");
-      document.documentElement.style.colorScheme = resolved;
-
-      // Listen for OS theme changes when "system" is selected
-      if (newTheme === "system") {
-        const mq = window.matchMedia("(prefers-color-scheme: dark)");
-        const handler = (e: MediaQueryListEvent) => {
-          const next = e.matches ? "dark" : "light";
-          document.documentElement.setAttribute("data-theme", next);
-          document.documentElement.classList.toggle("dark", next === "dark");
-          document.documentElement.style.colorScheme = next;
-        };
-        mq.addEventListener("change", handler);
-      }
-    } catch {}
-    showSaved(copy.preferences.theme);
   }
 
   async function handleTestRuntime() {
@@ -475,14 +429,16 @@ export function SettingsClient({
       {/* Page header */}
       <div className="border-b border-border pb-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {copy.eyebrow}
+          {pageEyebrow}
         </div>
-        <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">{copy.description}</p>
+        <h1 className="mt-1 text-lg font-semibold">{pageTitle}</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground">{pageDescription}</p>
       </div>
 
       {/* Settings cards */}
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className={`grid gap-3 ${isAccountMode ? "" : "lg:grid-cols-3"}`}>
+        {!isAccountMode ? (
+          <>
         {/* System status */}
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
@@ -499,20 +455,42 @@ export function SettingsClient({
 
             {/* Demo mode toggle */}
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{copy.systemStatus.demoMode}</span>
+              <div className="flex items-start gap-2">
+                <span className={`mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full ${
+                  demoMode
+                    ? "bg-[color:var(--accent-blue)]/12 text-[color:var(--accent-blue)]"
+                    : "bg-muted/20 text-muted-foreground"
+                }`}>
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path d="M5 7.5h14M8 5v5M16 5v5M6 11h12l-1 7H7l-1-7Z" />
+                    <path d="M10 14.5h4" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs text-foreground">{copy.systemStatus.demoMode}</div>
+                  <div className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                    {demoMode ? copy.systemStatus.demoHintOn : copy.systemStatus.demoHintOff}
+                  </div>
+                  <div className="mt-2">
+                    <StatusBadge tone={demoMode ? "info" : "neutral"} compact>
+                      {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
+                    </StatusBadge>
+                  </div>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => handleDemoModeToggle(!demoMode)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
                   demoMode
-                    ? "bg-[color:var(--success)]"
+                    ? "bg-[color:var(--accent-blue)]"
                     : "bg-[color:var(--border)]"
                 }`}
                 aria-label={`${copy.systemStatus.demoMode}: ${demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}`}
               >
                 <span
-                  className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
-                    demoMode ? "translate-x-[1.125rem]" : "translate-x-1"
+                  className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                    demoMode ? "translate-x-[1.45rem]" : "translate-x-1"
                   }`}
                 />
               </button>
@@ -563,65 +541,6 @@ export function SettingsClient({
                 max={1024}
                 className="settings-input"
               />
-            </div>
-          </div>
-        </section>
-
-        {/* Preferences — 2.2.1 */}
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.preferences.title}
-            </h2>
-          </div>
-          <div className="p-3 space-y-4">
-            {/* Language selector */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.preferences.language}
-              </label>
-              <p className="text-[10px] text-muted-foreground">{copy.preferences.languageNote}</p>
-              <div className="flex gap-1">
-                {(["zh-CN", "en-US"] as Locale[]).map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => handleLocaleChange(l)}
-                    className={`flex-1 rounded px-3 py-1.5 text-xs transition-colors ${
-                      currentLocale === l
-                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
-                        : "text-muted-foreground hover:bg-muted/30"
-                    }`}
-                  >
-                    {l === "zh-CN" ? "中文" : "English"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Theme selector */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                {copy.preferences.theme}
-              </label>
-              <div className="flex gap-1">
-                {([
-                  { key: "light" as const, label: copy.preferences.themeLight },
-                  { key: "dark" as const, label: copy.preferences.themeDark },
-                  { key: "system" as const, label: copy.preferences.themeSystem },
-                ]).map((t) => (
-                  <button
-                    key={t.key}
-                    onClick={() => handleThemeChange(t.key)}
-                    className={`flex-1 rounded px-3 py-1.5 text-xs transition-colors ${
-                      theme === t.key
-                        ? "bg-[color:var(--accent-blue)]/10 text-[color:var(--accent-blue)] font-medium"
-                        : "text-muted-foreground hover:bg-muted/30"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </section>
@@ -766,9 +685,11 @@ export function SettingsClient({
             </div>
           </div>
         </section>
+          </>
+        ) : null}
 
-        {/* Account — 2.2.4 */}
-        <section className="border border-border bg-card lg:col-span-2">
+        {isAccountMode ? (
+        <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.account.title}
@@ -1010,7 +931,7 @@ export function SettingsClient({
                     {availableProviderConnectors.map((provider) => (
                       <a
                         key={provider.key}
-                        href={`/api/auth/${provider.key}?intent=connect&redirectTo=${encodeURIComponent("/workspace/settings")}`}
+                        href={`/api/auth/${provider.key}?intent=connect&redirectTo=${encodeURIComponent("/workspace/account")}`}
                         className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/30"
                       >
                         <ProviderIcon provider={provider.key} className="h-4 w-4" />
@@ -1143,6 +1064,7 @@ export function SettingsClient({
             </div>
           </div>
         </section>
+        ) : null}
       </div>
     </div>
   );

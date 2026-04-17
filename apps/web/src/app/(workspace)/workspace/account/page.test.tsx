@@ -23,7 +23,7 @@ vi.mock("@/lib/auth", () => ({
   SESSION_COOKIE_NAME: "diffaudit_session",
 }));
 
-describe("WorkspaceSettingsPage locale", () => {
+describe("WorkspaceAccountPage locale", () => {
   afterEach(() => {
     headersMock.mockReset();
     cookiesMock.mockReset();
@@ -33,7 +33,7 @@ describe("WorkspaceSettingsPage locale", () => {
     vi.resetModules();
   });
 
-  it("renders zh-CN copy from the locale cookie", async () => {
+  it("renders zh-CN account copy from the locale cookie", async () => {
     headersMock.mockResolvedValue(new Headers([["cookie", "platform-locale-v2=zh-CN; diffaudit_session=test-session"]]));
     cookiesMock.mockResolvedValue({
       get: (name: string) => (name === "diffaudit_session" ? { value: "test-session" } : undefined),
@@ -42,11 +42,9 @@ describe("WorkspaceSettingsPage locale", () => {
     googleOAuthConfiguredMock.mockReturnValue(true);
     getCurrentUserProfileMock.mockReturnValue(null);
 
-    // page.tsx is a server component that renders SettingsClient
-    const { default: WorkspaceSettingsPage } = await import("./page");
-    const markup = renderToStaticMarkup(await WorkspaceSettingsPage({}));
+    const { default: WorkspaceAccountPage } = await import("./page");
+    const markup = renderToStaticMarkup(await WorkspaceAccountPage({}));
 
-    // SettingsClient renders the settings content for zh-CN
-    expect(markup).toContain("设置");
+    expect(markup).toContain("账户");
   });
 });
