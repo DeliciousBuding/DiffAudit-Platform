@@ -578,13 +578,13 @@ html.dark .header-pill-primary:hover {
   width: 100%;
   z-index: 20;
   transition: transform 0.3s ease-in-out;
-  background: rgba(var(--background-rgb), 0.85);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  background: rgba(var(--background-rgb), 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .header.dropdown-open {
-  background: var(--background);
+  background: rgba(var(--background-rgb), 0.72);
 }
 
 .header-content {
@@ -1721,12 +1721,12 @@ html.dark .surface-card {
 
 html[data-theme="dark"] .header,
 html.dark .header {
-  background: rgba(30, 30, 32, 0.85);
+  background: rgba(30, 30, 32, 0.52);
 }
 
 html[data-theme="dark"] .header.dropdown-open,
 html.dark .header.dropdown-open {
-  background: #1e1e20;
+  background: rgba(30, 30, 32, 0.7);
 }
 
 html[data-theme="dark"] .dropdown-panel,

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import {
   createSession,
   findOrCreateOAuthUser,
+  linkOAuthAccount,
   sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
@@ -13,6 +14,7 @@ const STATE_COOKIE = "diffaudit_google_oauth_state";
 
 type GoogleTokenResponse = {
   access_token?: string;
+  id_token?: string;
   error?: string;
 };
 
@@ -20,6 +22,7 @@ type GoogleUserResponse = {
   sub: string;
   name?: string;
   email?: string;
+  email_verified?: boolean;
   picture?: string;
 };
 
@@ -41,10 +44,22 @@ function readStoredState(raw: string | undefined) {
     return JSON.parse(Buffer.from(raw, "base64url").toString("utf8")) as {
       state: string;
       redirectTo?: string;
+      mode?: "login" | "connect";
+      userId?: string | null;
     };
   } catch {
     return null;
   }
+}
+
+function buildRedirectWithProviderStatus(
+  redirectTo: string | undefined,
+  providerLink: string,
+  requestUrl: string,
+) {
+  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), requestUrl);
+  target.searchParams.set("providerLink", providerLink);
+  return target;
 }
 
 export async function GET(request: Request) {
@@ -97,11 +112,36 @@ export async function GET(request: Request) {
   }
 
   const user = (await userRes.json()) as GoogleUserResponse;
-  const appUser = findOrCreateOAuthUser("google", user.sub, {
+  const profile = {
     username: buildUsername(user.email, user.name, user.sub),
+    displayName: user.name ?? user.email ?? "Google user",
     email: user.email ?? null,
+    emailVerified: Boolean(user.email_verified),
     avatarUrl: user.picture ?? null,
-  });
+  };
+
+  if (storedState.mode === "connect" && storedState.userId) {
+    const result = linkOAuthAccount(storedState.userId, "google", user.sub, profile);
+    if (!result.ok) {
+      return NextResponse.redirect(
+        buildRedirectWithProviderStatus(
+          storedState.redirectTo,
+          result.reason === "provider_in_use" ? "google_in_use" : "google_already_connected",
+          request.url,
+        ),
+      );
+    }
+
+    return NextResponse.redirect(
+      buildRedirectWithProviderStatus(
+        storedState.redirectTo,
+        result.status === "already_linked" ? "google_already_connected" : "google_connected",
+        request.url,
+      ),
+    );
+  }
+
+  const appUser = findOrCreateOAuthUser("google", user.sub, profile);
 
   const token = createSession(appUser.id);
   cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);

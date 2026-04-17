@@ -76,40 +76,9 @@ export function useTheme() {
     }
   }, [theme, resolvedTheme]);
 
-  const toggle = useCallback((x?: number, y?: number) => {
+  const toggle = useCallback(() => {
     const root = document.documentElement;
     const nextTheme: ThemeMode = resolveThemeMode(root.classList.contains("dark") ? "light" : "dark");
-
-    const originX = x ?? 40;
-    const originY = y ?? window.innerHeight - 40;
-    const endRadius = Math.hypot(
-      Math.max(originX, window.innerWidth - originX),
-      Math.max(originY, window.innerHeight - originY),
-    );
-
-    if ("startViewTransition" in document && typeof document.startViewTransition === "function") {
-      const transition = document.startViewTransition(() => {
-        setThemeState(nextTheme);
-      });
-
-      transition.ready.then(() => {
-        root.animate(
-          {
-            clipPath: [
-              `circle(0px at ${originX}px ${originY}px)`,
-              `circle(${endRadius}px at ${originX}px ${originY}px)`,
-            ],
-          },
-          {
-            duration: 500,
-            easing: "ease-out",
-            pseudoElement: "::view-transition-new(root)",
-          },
-        );
-      });
-      return;
-    }
-
     setThemeState(nextTheme);
   }, []);
 

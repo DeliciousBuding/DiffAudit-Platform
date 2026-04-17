@@ -1,36 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Locale } from "@/components/language-picker";
-import { getStoredLocale } from "@/components/language-picker";
+import { LanguagePicker, type Locale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "./docs-data";
 import { getDocsContent, getDocsPage } from "./docs-data";
-import { Tabs, TabPanel } from "@/components/tabs";
 import { DocsSearch } from "@/components/docs-search";
+import { BrandMark } from "@/components/brand-mark";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
 
 type DocsHomeProps = {
-  loggedIn: boolean;
+  locale: Locale;
   initialSlug?: string;
 };
 
-export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
+export function DocsHome({ locale, initialSlug }: DocsHomeProps) {
   const router = useRouter();
-  const [locale, setLocale] = useState<Locale>("en-US");
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    setLocale(getStoredLocale());
-    // Read initial theme from stored preference or system
-    const stored = localStorage.getItem("diffaudit-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDark(stored === "dark" || (!stored && prefersDark));
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("diffaudit-theme", dark ? "dark" : "light");
-  }, [dark]);
 
   const content = getDocsContent(locale);
   const [selectedSlug, setSelectedSlug] = useState(initialSlug ?? content.pages[0]?.slug ?? "");
@@ -42,26 +28,9 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
   const nextPage = currentPageIndex < content.pages.length - 1 ? content.pages[currentPageIndex + 1] : null;
 
   // Compute active group tab from current page — 2.3.3
-  const activeGroupTab = page?.group ?? content.groups[0] ?? "";
-  const groupTabs = content.groups.map((g) => ({
-    value: g,
-    label: g,
-  }));
-
-  // Get pages for the active group
-  const groupPages = content.pages.filter((p) => p.group === activeGroupTab);
-
-  // Navigate via Next.js router — 2.3.2
-  const handleSelectSlug = useCallback((slug: string) => {
+  function handleSelectSlug(slug: string) {
     setSelectedSlug(slug);
     router.push(`/docs/${slug}`);
-  }, [router]);
-
-  function handleGroupChange(groupValue: string) {
-    const firstPageInGroup = content.pages.find((p) => p.group === groupValue);
-    if (firstPageInGroup) {
-      setSelectedSlug(firstPageInGroup.slug);
-    }
   }
 
   return (
@@ -70,16 +39,9 @@ export function DocsHome({ loggedIn, initialSlug }: DocsHomeProps) {
       page={page}
       selectedSlug={selectedSlug}
       onSelectSlug={handleSelectSlug}
-      loggedIn={loggedIn}
       prevPage={prevPage}
       nextPage={nextPage}
-      groupTabs={groupTabs}
-      activeGroupTab={activeGroupTab}
-      onGroupChange={handleGroupChange}
-      groupPages={groupPages}
       locale={locale}
-      dark={dark}
-      setDark={setDark}
     />
   );
 }
@@ -89,19 +51,12 @@ type DocsLayoutProps = {
   page: DocsPage | null;
   selectedSlug: string;
   onSelectSlug: (slug: string) => void;
-  loggedIn: boolean;
   prevPage: DocsPage | null;
   nextPage: DocsPage | null;
 };
 
-function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevPage, nextPage, groupTabs, activeGroupTab, onGroupChange, groupPages, locale, dark, setDark }: DocsLayoutProps & {
-  groupTabs: Array<{ value: string; label: string }>;
-  activeGroupTab: string;
-  onGroupChange: (value: string) => void;
-  groupPages: DocsPage[];
+function DocsLayout({ content, page, selectedSlug, onSelectSlug, prevPage, nextPage, locale }: DocsLayoutProps & {
   locale: Locale;
-  dark: boolean;
-  setDark: (v: boolean) => void;
 }) {
   // Group pages by their group
   const groupedPages = new Map<string, DocsPage[]>();
@@ -142,95 +97,40 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, loggedIn, prevP
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       {/* Topbar */}
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-6">
-            <a href="/" className="text-sm font-semibold text-[var(--color-text-primary)]">
-              DiffAudit
-            </a>
-            <nav className="hidden gap-4 sm:flex">
-              <a href="/" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-                {content.header.home}
-              </a>
-              <span className="text-sm font-medium text-[var(--color-text-primary)]">
-                {content.header.docs}
+      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur-xl">
+        <div className="mx-auto grid h-14 max-w-7xl grid-cols-[18rem_minmax(320px,1fr)_auto] items-center">
+          <div className="flex items-center gap-3 justify-self-start px-4">
+            <Link href="/" className="flex items-center gap-2" aria-label="DiffAudit Home">
+              <BrandMark compact />
+              <span className="ml-1 hidden border-l border-[var(--color-border-subtle)] pl-3 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)] sm:inline">
+                Docs
               </span>
-            </nav>
+            </Link>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Dark mode toggle */}
-            <button
-              onClick={() => setDark(!dark)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {dark ? (
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <circle cx="12" cy="12" r="5"/>
-                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                </svg>
-              )}
-            </button>
-            {/* Search button — 2.3.1 */}
+          <div className="hidden w-full justify-self-center pr-4 sm:block">
             <button
               onClick={() => {
                 const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true });
                 window.dispatchEvent(event);
               }}
-              className="hidden sm:flex items-center gap-2 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent-blue)] transition-colors"
+              className="flex w-full items-center gap-3 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-4 py-2 text-sm text-[var(--color-text-muted)] hover:border-[var(--color-accent-blue)] hover:text-[var(--color-text-primary)] transition-colors"
             >
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />
                 <path d="M21 21l-4.35-4.35" />
               </svg>
-              <span>{content.header.searchPlaceholder.split("、")[0] || "Search"}</span>
+              <span className="min-w-0 flex-1 truncate text-left">{content.header.searchPlaceholder}</span>
               <kbd className="rounded border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-1.5 py-0.5 font-mono text-[10px]">
                 Ctrl+K
               </kbd>
             </button>
-            {!loggedIn && (
-              <a href="/login" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-                {content.header.signIn}
-              </a>
-            )}
-            {loggedIn && (
-              <a href="/workspace" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-                {content.header.openWorkspace}
-              </a>
-            )}
+          </div>
+          <div className="flex items-center gap-3 justify-self-end px-4">
+            <LanguagePicker value={locale} reloadOnChange />
+            <ThemeToggleButton />
           </div>
         </div>
       </header>
-
-      {/* Group tab navigation — 2.3.3 */}
-      <div className="sticky top-14 z-40 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-0">
-          <Tabs
-            value={activeGroupTab}
-            onChange={onGroupChange}
-            tabs={groupTabs}
-            variant="inline"
-          />
-          {/* Sub-navigation: sections within the current page */}
-          {page && page.sections.length > 1 && (
-            <div className="hidden md:flex items-center gap-1 text-xs">
-              {page.sections.map((section) => (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="px-2 py-2.5 transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
-                >
-                  {section.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Main layout: left nav + content + right TOC */}
       <div className="mx-auto flex max-w-7xl">

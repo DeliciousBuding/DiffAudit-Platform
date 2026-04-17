@@ -6,11 +6,11 @@ export type NavItem = {
   title: string;
   subtitle: string;
   badge?: string;
-  icon: "spark" | "dashboard" | "report" | "settings";
+  icon: "spark" | "dashboard" | "report" | "key" | "settings";
   shortLabel: string;
 };
 
-const NAV_ICONS: Array<NavItem["icon"]> = ["dashboard", "spark", "report", "settings"];
+const NAV_ICONS: Array<NavItem["icon"]> = ["dashboard", "spark", "report", "key", "settings"];
 
 export function getNavItems(locale: Locale): NavItem[] {
   return WORKSPACE_COPY[locale].nav.map((item, i) => ({

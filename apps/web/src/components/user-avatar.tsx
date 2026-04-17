@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
-import { useTheme } from "@/hooks/use-theme";
-import type { ThemeMode } from "@/lib/theme";
 import { LOCALE_STORAGE_KEY, type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -19,17 +18,17 @@ const USERNAME_STORAGE_KEY = "platform-custom-username-v1";
  * User avatar displayed in the topbar.
  * Supports: default initial, GitHub avatar, and custom avatar URL.
  */
-export function UserAvatar() {
+export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [locale] = useState<Locale>(() => {
+  const [storedLocale] = useState<Locale>(() => {
     if (typeof window === 'undefined') return "en-US";
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
     return (stored === "zh-CN" || stored === "en-US") ? stored : "en-US";
   });
   const [avatarError, setAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
+  const locale = localeProp ?? storedLocale;
 
   // Fetch user info
   useEffect(() => {
@@ -56,14 +55,14 @@ export function UserAvatar() {
           credentials: "include",
         });
         if (res.ok) {
-          const data = (await res.json()) as { username?: string; avatar_url?: string };
-          if (data.username) {
+          const data = (await res.json()) as { user?: { username?: string; avatarUrl?: string | null } | null };
+          if (data.user?.username) {
             // Try GitHub avatar as fallback
-            let avatarUrl = data.avatar_url;
-            if (!avatarUrl && data.username) {
-              avatarUrl = `https://github.com/${data.username}.png?size=80`;
+            let avatarUrl = data.user.avatarUrl ?? undefined;
+            if (!avatarUrl && data.user.username) {
+              avatarUrl = `https://github.com/${data.user.username}.png?size=80`;
             }
-            setUser({ username: data.username, avatarUrl });
+            setUser({ username: data.user.username, avatarUrl });
           }
         }
       } catch {
@@ -148,79 +147,7 @@ export function UserAvatar() {
 
           {/* Menu items */}
           <div className="p-1.5">
-            {/* Language selector */}
-            <div className="flex items-center justify-between px-2.5 py-1.5">
-              <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{locale === "zh-CN" ? "语言" : "Language"}</span>
-              <div className="flex items-center gap-1 rounded-full p-0.5" style={{ border: "1px solid var(--border)", background: "var(--muted)" }}>
-                {([
-                  { value: "en-US" as Locale, label: "EN" },
-                  { value: "zh-CN" as Locale, label: "中" },
-                ]).map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => {
-                      if (opt.value !== locale) {
-                        window.localStorage.setItem(LOCALE_STORAGE_KEY, opt.value);
-                        document.cookie = `${LOCALE_STORAGE_KEY}=${opt.value}; path=/; max-age=31536000; samesite=lax`;
-                        window.location.reload();
-                      }
-                    }}
-                    className="btn-reset flex items-center justify-center h-6 rounded-full px-2.5 text-[11px] font-medium transition-all"
-                    style={locale === opt.value
-                      ? { background: "var(--foreground)", color: "var(--background)" }
-                      : { color: "var(--muted-foreground)" }
-                    }
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Theme selector */}
-            <div className="flex items-center justify-between px-2.5 py-1.5">
-              <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{copy.themeLabel}</span>
-              <div className="grid grid-cols-3 items-center gap-1 rounded-full p-0.5" style={{ border: "1px solid var(--border)", background: "var(--muted)" }}>
-                {([
-                  { value: "light" as ThemeMode, icon: "sun", label: copy.themeLight },
-                  { value: "dark" as ThemeMode, icon: "moon", label: copy.themeDark },
-                  { value: "system" as ThemeMode, icon: "system", label: copy.themeSystem },
-                ]).map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setTheme(option.value)}
-                    className="btn-reset flex min-w-[62px] items-center justify-center gap-1 rounded-full px-2 py-1.5 text-[10px] font-semibold transition-all"
-                    style={theme === option.value
-                      ? { background: "var(--foreground)", color: "var(--background)" }
-                      : { color: "var(--muted-foreground)" }
-                    }
-                    title={option.label}
-                    aria-label={option.label}
-                  >
-                    {option.icon === "sun" ? (
-                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07-7.07l-1.41 1.41M8.34 15.66l-1.41 1.41m12.14 0l-1.41-1.41M8.34 8.34L6.93 6.93" />
-                      </svg>
-                    ) : option.icon === "moon" ? (
-                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
-                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <rect x="2" y="3" width="20" height="14" rx="2" />
-                        <path d="M8 21h8m-4-4v4" />
-                      </svg>
-                    )}
-                    <span>{option.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="my-1 border-t border-border" />
-
-            <a
+            <Link
               href="/workspace/settings"
               className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
               onClick={() => setShowMenu(false)}
@@ -230,7 +157,7 @@ export function UserAvatar() {
                 <circle cx="12" cy="12" r="3" />
               </svg>
               {copy.settings}
-            </a>
+            </Link>
             <div className="mt-1 pt-1 border-t border-border">
               <div className="px-2.5 py-1.5">
                 <LogoutButton label={copy.signOut} />

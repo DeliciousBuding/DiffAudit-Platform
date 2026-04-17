@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import {
   createSession,
   findOrCreateOAuthUser,
+  linkOAuthAccount,
   sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
@@ -15,6 +16,7 @@ type GitHubTokenResponse = { access_token?: string; error?: string };
 type GitHubUserResponse = {
   id: number;
   login: string;
+  name?: string | null;
   avatar_url: string | null;
   email: string | null;
 };
@@ -26,10 +28,22 @@ function readStoredState(raw: string | undefined) {
     return JSON.parse(Buffer.from(raw, "base64url").toString("utf8")) as {
       state: string;
       redirectTo?: string;
+      mode?: "login" | "connect";
+      userId?: string | null;
     };
   } catch {
     return null;
   }
+}
+
+function buildRedirectWithProviderStatus(
+  redirectTo: string | undefined,
+  providerLink: string,
+  requestUrl: string,
+) {
+  const target = new URL(sanitizeRedirectPath(redirectTo, "/workspace/settings"), requestUrl);
+  target.searchParams.set("providerLink", providerLink);
+  return target;
 }
 
 export async function GET(request: Request) {
@@ -87,6 +101,7 @@ export async function GET(request: Request) {
   const user = (await userRes.json()) as GitHubUserResponse;
 
   let email = user.email;
+  let emailVerified = false;
   if (!email) {
     const emailRes = await fetch("https://api.github.com/user/emails", {
       headers: {
@@ -97,15 +112,42 @@ export async function GET(request: Request) {
     });
     if (emailRes.ok) {
       const emails = (await emailRes.json()) as Array<{ email: string; primary: boolean; verified: boolean }>;
-      email = emails.find((item) => item.primary)?.email ?? emails[0]?.email ?? null;
+      const preferred = emails.find((item) => item.primary) ?? emails[0];
+      email = preferred?.email ?? null;
+      emailVerified = Boolean(preferred?.verified);
     }
   }
 
-  const appUser = findOrCreateOAuthUser("github", String(user.id), {
+  const profile = {
     username: user.login,
+    displayName: user.name ?? user.login,
     email,
+    emailVerified,
     avatarUrl: user.avatar_url,
-  });
+  };
+
+  if (storedState.mode === "connect" && storedState.userId) {
+    const result = linkOAuthAccount(storedState.userId, "github", String(user.id), profile);
+    if (!result.ok) {
+      return NextResponse.redirect(
+        buildRedirectWithProviderStatus(
+          storedState.redirectTo,
+          result.reason === "provider_in_use" ? "github_in_use" : "github_already_connected",
+          request.url,
+        ),
+      );
+    }
+
+    return NextResponse.redirect(
+      buildRedirectWithProviderStatus(
+        storedState.redirectTo,
+        result.status === "already_linked" ? "github_already_connected" : "github_connected",
+        request.url,
+      ),
+    );
+  }
+
+  const appUser = findOrCreateOAuthUser("github", String(user.id), profile);
 
   const token = createSession(appUser.id);
   cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);

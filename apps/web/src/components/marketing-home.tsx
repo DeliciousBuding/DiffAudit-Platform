@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
@@ -593,10 +593,42 @@ export function MarketingHome({
 }) {
   const [locale, setLocale] = useState<Locale>(() => initialLocale ?? getStoredLocale());
   const [openNav, setOpenNav] = useState<string | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  const closeDropdownNow = useCallback(() => {
+    clearCloseTimer();
+    setOpenNav(null);
+  }, [clearCloseTimer]);
+
+  const scheduleClose = useCallback((delay = 120) => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      setOpenNav(null);
+      closeTimerRef.current = null;
+    }, delay);
+  }, [clearCloseTimer]);
+
+  const openDropdown = useCallback((id: string) => {
+    clearCloseTimer();
+    setOpenNav(id);
+  }, [clearCloseTimer]);
+
+  useEffect(() => {
+    return () => {
+      clearCloseTimer();
+    };
+  }, [clearCloseTimer]);
 
   const copy = HOME_COPY[locale];
   const navItems: NavItem[] = [
@@ -624,16 +656,17 @@ export function MarketingHome({
     <main id="top" className="portal-shell">
       <div
         className={`dropdown-overlay ${hasOpenDropdown ? "open" : ""}`}
-        onMouseEnter={() => setOpenNav(null)}
+        onMouseEnter={closeDropdownNow}
         aria-hidden="true"
       />
 
       <header
         className={`header ${hasOpenDropdown ? "dropdown-open" : ""}`}
-        onMouseLeave={() => setOpenNav(null)}
+        onMouseLeave={() => scheduleClose(120)}
+        onMouseEnter={clearCloseTimer}
       >
         <div className="header-content">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-8" onMouseEnter={() => scheduleClose(80)}>
             <a
               href={BRAND_HOME_URL}
               aria-label={copy.header.brandAriaLabel}
@@ -641,12 +674,17 @@ export function MarketingHome({
             >
               <BrandMark compact />
             </a>
-            <nav className="hidden lg:flex items-center gap-6" aria-label={copy.header.navAriaLabel}>
+            <nav
+              className="hidden lg:flex items-center gap-6"
+              aria-label={copy.header.navAriaLabel}
+              onMouseEnter={clearCloseTimer}
+              onMouseLeave={() => scheduleClose(140)}
+            >
               {navItems.map((item) => (
                 <div
                   key={item.id}
                   className="nav-item-wrapper"
-                  onMouseEnter={() => setOpenNav(item.id)}
+                  onMouseEnter={() => openDropdown(item.id)}
                 >
                   {item.href.startsWith("/") ? (
                     <Link
@@ -668,7 +706,7 @@ export function MarketingHome({
             </nav>
           </div>
 
-          <div className="header-controls flex items-center gap-2">
+          <div className="header-controls flex items-center gap-2" onMouseEnter={() => scheduleClose(80)}>
             {loggedIn ? (
               <>
                 <Link href={workbenchUrl} className="header-pill header-pill-primary hidden sm:inline-flex">
@@ -685,7 +723,7 @@ export function MarketingHome({
                 >
                   <GithubIcon />
                 </a>
-                <UserAvatar />
+                <UserAvatar locale={locale} />
               </>
             ) : (
               <>
@@ -708,7 +746,11 @@ export function MarketingHome({
           </div>
         </div>
 
-        {hasOpenDropdown ? <DropdownPanel item={openNavItem} /> : null}
+        {hasOpenDropdown ? (
+          <div onMouseEnter={clearCloseTimer} onMouseLeave={() => scheduleClose(120)}>
+            <DropdownPanel item={openNavItem} />
+          </div>
+        ) : null}
       </header>
 
       <div className="welcome-wrapper">

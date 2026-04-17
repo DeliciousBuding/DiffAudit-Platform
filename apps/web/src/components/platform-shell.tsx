@@ -1,7 +1,8 @@
 import { headers } from "next/headers";
 
 import { LanguagePicker } from "@/components/language-picker";
-import { LogoutButton } from "@/components/logout-button";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
+import { UserAvatar } from "@/components/user-avatar";
 import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
@@ -36,16 +37,17 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
         <header className="workspace-topbar">
           <div className="flex items-center gap-2">
             <LanguagePicker value={locale} reloadOnChange />
+            <ThemeToggleButton />
             <a
               href="https://github.com/DeliciousBuding/DiffAudit-Platform"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition hover:text-foreground"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background/50 text-muted-foreground backdrop-blur-sm transition hover:bg-muted/50 hover:text-foreground"
               title={copy.shell.githubTitle}
             >
               <GithubIcon />
             </a>
-            <LogoutButton label={copy.shell.signOut} />
+            <UserAvatar locale={locale} />
           </div>
         </header>
         <main className="workspace-main-content">{children}</main>

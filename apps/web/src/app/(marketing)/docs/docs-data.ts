@@ -339,6 +339,80 @@ function zhContent(): DocsContent {
           },
         ],
       },
+      {
+        slug: "privacy",
+        group: "参考",
+        navLabel: "隐私政策",
+        eyebrow: "法律",
+        title: "隐私政策",
+        summary: "说明 DiffAudit 在登录、工作台和文档场景下读取、保存和展示哪些账号与运行时信息。",
+        sections: [
+          {
+            id: "account-data",
+            label: "账户数据",
+            title: "账户与身份信息",
+            paragraphs: [
+              "当你使用 Google 或 GitHub 登录时，DiffAudit 仅读取完成账户识别所需的最小字段：名称、邮箱、头像和 provider 标识。",
+              "这些字段仅用于创建或关联 DiffAudit 账户、显示当前登录用户、以及在工作台中恢复你的访问状态。",
+            ],
+          },
+          {
+            id: "runtime-data",
+            label: "运行数据",
+            title: "任务与运行时数据",
+            paragraphs: [
+              "工作台会展示任务状态、目标模型、审计指标和报告摘要。这些数据用于成员推理风险评估，不会作为第三方广告或推荐用途。",
+              "本地偏好设置如主题、语言、默认参数和 Runtime 地址会保存在浏览器本地存储中，以便你下次访问时恢复界面状态。",
+            ],
+          },
+          {
+            id: "security",
+            label: "安全边界",
+            title: "安全与边界",
+            paragraphs: [
+              "DiffAudit 是风险审计平台，不会主动替你执行防御措施或将模型数据共享给外部服务。",
+              "若系统启用了邮件验证、API 密钥或外部 Runtime 连接，这些能力也仅在当前部署边界内使用。",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "terms",
+        group: "参考",
+        navLabel: "服务条款",
+        eyebrow: "法律",
+        title: "服务条款",
+        summary: "说明 DiffAudit 工作台、文档和实验入口的使用边界，以及用户在平台中的操作责任。",
+        sections: [
+          {
+            id: "usage-scope",
+            label: "使用范围",
+            title: "使用范围",
+            paragraphs: [
+              "DiffAudit 用于成员推理审计、风险评估和比赛/研究演示，不应被误认为自动防御系统或生产监控替代品。",
+              "你应仅在已授权的数据集、模型和实验环境中使用本系统。任何超出授权范围的操作，都不属于平台设计目标。",
+            ],
+          },
+          {
+            id: "user-responsibility",
+            label: "用户责任",
+            title: "用户责任",
+            paragraphs: [
+              "用户应自行确认任务参数、目标模型、Runtime 地址和导出内容的准确性，避免将错误配置带入正式演示或报告。",
+              "如果你使用 OAuth、本地密码、API 密钥或 Runtime 连接能力，应妥善保管相关凭据，并在不再需要时及时轮换或撤销。",
+            ],
+          },
+          {
+            id: "service-notice",
+            label: "服务说明",
+            title: "服务说明",
+            paragraphs: [
+              "平台可能在版本整合、文档重构或界面调整期间发生功能变更。发布前应通过本地构建、关键页面回归和运行链路验证完成确认。",
+              "DiffAudit 保留对工作台文案、文档结构、指标解释和界面样式进行迭代优化的权利，但不会改变其核心审计定位。",
+            ],
+          },
+        ],
+      },
     ],
   };
 }
@@ -617,6 +691,80 @@ function enContent(): DocsContent {
             paragraphs: [
               "Port 8780 is the API Gateway. Port 8765 is the Runtime-Server.",
               "The frontend routes through the API Gateway and does not directly access the Runtime-Server.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "privacy",
+        group: "Reference",
+        navLabel: "Privacy policy",
+        eyebrow: "Legal",
+        title: "Privacy policy",
+        summary: "What DiffAudit reads, stores, and displays across login, workspace, and docs flows.",
+        sections: [
+          {
+            id: "account-data",
+            label: "Account data",
+            title: "Account and identity data",
+            paragraphs: [
+              "When you sign in with Google or GitHub, DiffAudit reads only the minimum fields required for account identification: name, email, avatar, and provider identity.",
+              "These fields are used only to create or link your DiffAudit account, display the signed-in user, and restore access state inside the workspace.",
+            ],
+          },
+          {
+            id: "runtime-data",
+            label: "Runtime data",
+            title: "Task and runtime data",
+            paragraphs: [
+              "The workspace displays task status, target model, audit metrics, and report summaries. This data is used for membership inference risk evaluation only.",
+              "Local preferences such as theme, language, default parameters, and Runtime endpoint are stored in browser-local storage so the UI can restore your last-used state.",
+            ],
+          },
+          {
+            id: "security",
+            label: "Security",
+            title: "Security boundary",
+            paragraphs: [
+              "DiffAudit is an audit platform. It does not automatically deploy defenses or share your model data with external services.",
+              "If email verification, API keys, or external Runtime integration are enabled, those capabilities remain bounded to the current deployment environment.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "terms",
+        group: "Reference",
+        navLabel: "Terms",
+        eyebrow: "Legal",
+        title: "Terms of service",
+        summary: "Usage boundaries and operator responsibilities for the DiffAudit workspace, docs, and audit entry points.",
+        sections: [
+          {
+            id: "usage-scope",
+            label: "Scope",
+            title: "Usage scope",
+            paragraphs: [
+              "DiffAudit is intended for membership inference auditing, risk assessment, and research or competition demonstrations. It is not a substitute for a defense system or production monitoring stack.",
+              "You should only use the platform with authorized datasets, models, and experiment environments.",
+            ],
+          },
+          {
+            id: "user-responsibility",
+            label: "Responsibilities",
+            title: "User responsibilities",
+            paragraphs: [
+              "Operators are responsible for checking task parameters, target models, Runtime endpoints, and exported report content before formal use.",
+              "If you use OAuth, local passwords, API keys, or Runtime connectivity, you are responsible for protecting and rotating those credentials when needed.",
+            ],
+          },
+          {
+            id: "service-notice",
+            label: "Notice",
+            title: "Service notice",
+            paragraphs: [
+              "The platform may evolve during branch consolidation, documentation rewrites, or UI refinements. Local build and regression verification should be completed before deployment.",
+              "DiffAudit may update wording, documentation structure, metric explanations, and visual presentation, while keeping the product anchored to its audit-focused purpose.",
             ],
           },
         ],

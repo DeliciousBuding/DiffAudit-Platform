@@ -7,8 +7,16 @@ import { type Locale } from "@/components/language-picker";
 import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
 
-function SidebarIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" }) {
+function SidebarIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "key" | "settings" }) {
   const cls = "h-4 w-4 flex-shrink-0";
+
+  if (icon === "key") {
+    return (
+      <svg viewBox="0 0 24 24" className={cls} fill="none" stroke="currentColor" strokeWidth={1.8}>
+        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+      </svg>
+    );
+  }
 
   if (icon === "spark") {
     return (
@@ -60,12 +68,13 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
       {items.map((item) => {
         const active = current.href === item.href;
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={active ? "page" : undefined}
-            className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
-            title={item.subtitle}
+        <Link
+          key={item.href}
+          href={item.href}
+          prefetch={false}
+          aria-current={active ? "page" : undefined}
+          className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
+          title={item.subtitle}
           >
             <SidebarIcon icon={item.icon} />
             <div className="flex flex-col min-w-0">

@@ -2,8 +2,7 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
 
-// Cache RSC responses for 60s — demo data doesn't change during a session
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";

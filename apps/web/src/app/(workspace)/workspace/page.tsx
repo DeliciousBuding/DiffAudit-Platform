@@ -16,8 +16,7 @@ import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { ChartRiskRadar } from "@/components/chart-risk-radar";
 
-// Cache RSC responses for 60s — demo data doesn't change during a session
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 /** Generate synthetic ROC curve points given a target AUC */
 function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
