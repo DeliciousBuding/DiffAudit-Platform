@@ -38,8 +38,12 @@ export default async function LoginPage({
           </div>
         </div>
 
-        <div className="absolute -bottom-10 -left-10 text-[180px] 2xl:text-[240px] font-bold leading-none tracking-tighter text-foreground/[0.03] select-none pointer-events-none whitespace-nowrap">
-          DiffAudit
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden">
+          <div className="translate-y-[24%] px-8 xl:px-12 2xl:px-16">
+            <div className="text-[120px] xl:text-[144px] 2xl:text-[168px] font-bold leading-none tracking-[-0.08em] text-foreground/[0.03] select-none whitespace-nowrap">
+              DiffAudit
+            </div>
+          </div>
         </div>
       </div>
 
