@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
-import { classifyRisk } from "@/lib/risk-report";
+
 
 type CompareViewProps = {
   rows: AttackDefenseRowViewModel[];

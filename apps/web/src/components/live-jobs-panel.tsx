@@ -141,7 +141,7 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [auditsCopy.statusLabels, locale, panelCopy.justUpdated, panelCopy.noSummary]);
 
   if (state.kind === "loading") {
     return (

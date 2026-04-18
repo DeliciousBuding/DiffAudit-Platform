@@ -36,7 +36,6 @@ export function RegisterForm({
   redirectTo,
   copy,
   pageCopy,
-  oauthEnabled,
 }: {
   redirectTo: string;
   copy: RegisterFormCopy;

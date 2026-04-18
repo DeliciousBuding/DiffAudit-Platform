@@ -210,6 +210,13 @@ func (s *Server) GetConfig() Config {
 	return s.config
 }
 
+// @Summary Get health status
+// @Description Check the health status of the platform API
+// @Tags health
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Router /health [get]
 func (s *Server) handleHealth(writer http.ResponseWriter, _ *http.Request) {
 	manifestAvailable := s.snapshotExists("manifest.json")
 
@@ -223,6 +230,13 @@ func (s *Server) handleHealth(writer http.ResponseWriter, _ *http.Request) {
 	})
 }
 
+// @Summary Get runtime health
+// @Description Check the health status of the runtime server
+// @Tags health
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Router /control/runtime [get]
 func (s *Server) handleRuntimeHealth(writer http.ResponseWriter, _ *http.Request) {
 	payload := map[string]any{
 		"status":               "disconnected",
@@ -288,6 +302,14 @@ func (s *Server) handleWorkspaceSummary(writer http.ResponseWriter, request *htt
 	s.serveSnapshot(writer, snapshotPath)
 }
 
+// @Summary Get best recon summary
+// @Description Get the best recon summary for black-box/recon/sd15-ddim
+// @Tags experiments
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Failure 503 {object} ErrorResponse
+// @Router /experiments/recon/best [get]
 func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Request) {
 	type catalogEntry struct {
 		ContractKey   string `json:"contract_key"`
@@ -391,6 +413,14 @@ func (s *Server) handleDemoControlGet(writer http.ResponseWriter, request *http.
 	}
 }
 
+// @Summary Serve snapshot file
+// @Description Serve a snapshot file from the public data directory
+// @Tags snapshot
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Failure 503 {object} ErrorResponse
+// @Router /snapshot/{path} [get]
 func (s *Server) serveSnapshot(writer http.ResponseWriter, path string) {
 	bytes, err := s.readSnapshotFile(path)
 	if err != nil {
@@ -421,11 +451,19 @@ func (s *Server) readSnapshotFile(path string) ([]byte, error) {
 
 func (s *Server) writeSnapshotError(writer http.ResponseWriter, err error) {
 	if errors.Is(err, errSnapshotUnavailable) {
-		writeJSON(writer, http.StatusServiceUnavailable, map[string]any{"detail": "snapshot unavailable"})
+		writeJSON(writer, http.StatusServiceUnavailable, ErrorResponse{
+			Detail: "snapshot unavailable",
+			Code:   "snapshot_unavailable",
+			Hint:   "The requested snapshot file is not available. Please check if the public data directory is properly configured.",
+		})
 		return
 	}
 
-	writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+	writeJSON(writer, http.StatusBadGateway, ErrorResponse{
+		Detail: err.Error(),
+		Code:   "snapshot_read_error",
+		Hint:   "Failed to read snapshot file. Please check the file permissions and try again.",
+	})
 }
 
 func (s *Server) snapshotExists(name string) bool {
@@ -610,7 +648,7 @@ func normalizeWorkspaceKey(value string) string {
 func (s *Server) handleDemoJobCreation(writer http.ResponseWriter, body []byte) {
 	var payload map[string]any
 	if err := json.Unmarshal(body, &payload); err != nil {
-		writeJSON(writer, http.StatusBadRequest, map[string]any{"detail": "invalid request body"})
+		writeError(writer, http.StatusBadRequest, "invalid request body", "invalid_request", "Please provide a valid JSON request body")
 		return
 	}
 
@@ -619,9 +657,7 @@ func (s *Server) handleDemoJobCreation(writer http.ResponseWriter, body []byte) 
 	jobType, _ := payload["job_type"].(string)
 
 	if contractKey == "" || workspaceName == "" {
-		writeJSON(writer, http.StatusBadRequest, map[string]any{
-			"detail": "contract_key and workspace_name are required",
-		})
+		writeError(writer, http.StatusBadRequest, "contract_key and workspace_name are required", "missing_required_fields", "Please provide both contract_key and workspace_name in the request body")
 		return
 	}
 

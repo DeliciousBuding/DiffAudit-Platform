@@ -161,7 +161,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setSubmitState("error");
       setErrorMessage(err instanceof Error ? err.message : labels.submissionFailed);
     }
-  }, [form.attackType, form.selectedContractKey, form.rounds, form.batchSize, form.adaptiveSampling, router]);
+  }, [form.attackType, form.selectedContractKey, form.rounds, form.batchSize, form.adaptiveSampling, router, labels.submissionFailed]);
 
   // Step indicator
   const steps = [
@@ -171,15 +171,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
     { label: copy.steps.step4Label, title: copy.steps.step4Title },
   ];
 
-  const canGoNext = useMemo(() => {
-    switch (form.step) {
-      case 1: return form.attackType !== null;
-      case 2: return form.selectedContractKey !== null;
-      case 3: return true;
-      case 4: return false;
-      default: return false;
-    }
-  }, [form.step, form.attackType, form.selectedContractKey]);
+
 
   return (
     <div className="space-y-4">

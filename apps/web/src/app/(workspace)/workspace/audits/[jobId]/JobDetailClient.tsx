@@ -9,11 +9,7 @@ import { Skeleton } from "@/components/skeleton";
 import { Modal } from "@/components/modal";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-const JOB_TYPE_TO_TRACK: Record<string, "black-box" | "gray-box" | "white-box"> = {
-  "recon_artifact_mainline": "black-box",
-  "pia_runtime_mainline": "gray-box",
-  "gsa_runtime_mainline": "white-box",
-};
+
 
 // Extended job record — the detail API may return stdout/stderr tails
 interface JobDetail {
@@ -174,7 +170,7 @@ export function JobDetailClient({
     } finally {
       setLoading(false);
     }
-  }, [jobId]);
+  }, [jobId, locale]);
 
   const handleCancelJob = useCallback(async () => {
     setCancelling(true);
