@@ -497,14 +497,14 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 
 func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *http.Request, method string) {
 	if s.config.RuntimeBaseURL == "" {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "runtime base url is not configured"})
+		writeError(writer, http.StatusBadGateway, "runtime base url is not configured", "runtime_url_not_configured", "Please set DIFFAUDIT_RUNTIME_BASE_URL environment variable")
 		return
 	}
 
 	upstreamPath := request.URL.Path
 	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, upstreamPath)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "invalid_url", "Failed to construct upstream URL")
 		return
 	}
 	if query := request.URL.RawQuery; query != "" {
@@ -512,7 +512,7 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	}
 	upstreamRequest, err := http.NewRequest(method, upstreamURL, nil)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "invalid_request", "Failed to create upstream request")
 		return
 	}
 	if contentType := request.Header.Get("Content-Type"); contentType != "" {
@@ -526,7 +526,7 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	defer response.Body.Close()
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "read_error", "Failed to read response body")
 		return
 	}
 	writer.Header().Set("Content-Type", "application/json")
