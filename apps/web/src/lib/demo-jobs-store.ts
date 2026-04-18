@@ -10,7 +10,7 @@ type DemoJobDraft = {
 };
 
 declare global {
-  // eslint-disable-next-line no-var
+
   var __diffauditDemoJobs__: DemoJobRecord[] | undefined;
 }
 

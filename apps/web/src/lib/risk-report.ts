@@ -1,4 +1,3 @@
-import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 
 export type RiskLevel = "high" | "medium" | "low";
 
@@ -56,7 +55,7 @@ export function generateReportHTML(
 
   const title = isZh ? "扩散模型隐私审计报告" : "Diffusion Model Privacy Audit Report";
   const dateLabel = isZh ? "生成日期" : "Date";
-  const summaryLabel = isZh ? "审计摘要" : "Audit Summary";
+
   const totalLabel = isZh ? "审计结果总数" : "Total Results";
   const avgAucLabel = isZh ? "平均攻击 AUC" : "Avg. Attack AUC";
   const riskOverviewLabel = isZh ? "风险概览" : "Risk Overview";

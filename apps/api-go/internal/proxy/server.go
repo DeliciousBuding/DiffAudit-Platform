@@ -291,6 +291,16 @@ func (s *Server) handleSnapshotFile(name string) http.HandlerFunc {
 	}
 }
 
+// @Summary Get workspace summary
+// @Description Get the summary for a specific workspace
+// @Tags experiments
+// @Accept json
+// @Produce json
+// @Param workspace path string true "Workspace name"
+// @Success 200 {object} map[string]any
+// @Failure 400 {object} ErrorResponse
+// @Failure 503 {object} ErrorResponse
+// @Router /experiments/{workspace}/summary [get]
 func (s *Server) handleWorkspaceSummary(writer http.ResponseWriter, request *http.Request) {
 	workspace := normalizeWorkspaceKey(request.PathValue("workspace"))
 	if workspace == "" {
@@ -327,7 +337,7 @@ func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Requ
 
 	var catalog []catalogEntry
 	if err := json.Unmarshal(bytes, &catalog); err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "catalog snapshot is invalid"})
+		writeError(writer, http.StatusBadGateway, "catalog snapshot is invalid", "invalid_snapshot", "The catalog snapshot file is invalid or corrupted")
 		return
 	}
 
@@ -345,9 +355,36 @@ func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Requ
 		return
 	}
 
-	writeJSON(writer, http.StatusServiceUnavailable, map[string]any{"detail": "snapshot unavailable: recon best summary"})
+	writeError(writer, http.StatusServiceUnavailable, "snapshot unavailable: recon best summary", "snapshot_unavailable", "The best recon summary snapshot is not available")
 }
 
+// @Summary Get audit job template
+// @Description Get the job template for creating audit jobs
+// @Tags audit
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Failure 502 {object} ErrorResponse
+// @Router /audit/job-template [get]
+//
+// @Summary Get audit jobs
+// @Description Get the list of audit jobs
+// @Tags audit
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Failure 502 {object} ErrorResponse
+// @Router /audit/jobs [get]
+//
+// @Summary Get audit job details
+// @Description Get the details of a specific audit job
+// @Tags audit
+// @Accept json
+// @Produce json
+// @Param jobID path string true "Job ID"
+// @Success 200 {object} map[string]any
+// @Failure 502 {object} ErrorResponse
+// @Router /audit/jobs/{jobID} [get]
 func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Request) {
 	if s.config.DemoMode {
 		s.handleDemoControlGet(writer, request)
@@ -356,10 +393,20 @@ func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Requ
 	s.forwardControl(writer, request, nil)
 }
 
+// @Summary Create audit job
+// @Description Create a new audit job
+// @Tags audit
+// @Accept json
+// @Produce json
+// @Param job body map[string]any true "Job parameters"
+// @Success 201 {object} map[string]any
+// @Failure 400 {object} ErrorResponse
+// @Failure 502 {object} ErrorResponse
+// @Router /audit/jobs [post]
 func (s *Server) handleControlPost(writer http.ResponseWriter, request *http.Request) {
 	body, err := io.ReadAll(request.Body)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "invalid_request", "Failed to read request body")
 		return
 	}
 
@@ -475,6 +522,15 @@ func (s *Server) snapshotExists(name string) bool {
 	return err == nil
 }
 
+// @Summary Delete audit job
+// @Description Delete a specific audit job
+// @Tags audit
+// @Accept json
+// @Produce json
+// @Param jobID path string true "Job ID"
+// @Success 200 {object} map[string]any
+// @Failure 502 {object} ErrorResponse
+// @Router /audit/jobs/{jobID} [delete]
 func (s *Server) handleControlDelete(writer http.ResponseWriter, request *http.Request) {
 	if s.config.DemoMode {
 		writeJSON(writer, http.StatusOK, map[string]any{

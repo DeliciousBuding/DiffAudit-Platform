@@ -137,14 +137,17 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
 
     try {
       // Create CSV content
-      const headers = ["Track", "Attack Family", "Target Key", "Availability", "Evidence Level"];
+      const headers = ["Track", "Attack", "Defense", "Model", "AUC", "ASR", "TPR", "Evidence Level"];
       const csvContent = [
         headers.join(","),
         ...rows.map(row => [
           row.track,
-          row.attackFamily,
-          row.targetKey,
-          row.availability,
+          row.attack,
+          row.defense,
+          row.model,
+          row.aucLabel,
+          row.asrLabel,
+          row.tprLabel,
           row.evidenceLevel
         ].map(field => `"${field}"`).join(","))
       ].join("\n");

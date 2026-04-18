@@ -4,12 +4,11 @@ import { classifyRisk, riskLabel } from "@/lib/risk-report";
 interface CompetitionData {
   rows: ReportExportRow[];
   catalogSize: number;
-  defendedRows: number;
   locale: string;
 }
 
 export function generateCompetitionReportHTML(data: CompetitionData): string {
-  const { rows, catalogSize, defendedRows, locale } = data;
+  const { rows, catalogSize, locale } = data;
   const isZh = locale === "zh-CN";
 
   // Compute statistics
@@ -148,9 +147,7 @@ export function generateCompetitionReportHTML(data: CompetitionData): string {
     return html;
   }
 
-  const avgAucNum = parseFloat(avgAuc) || 0;
-  const overallRisk = riskCounts.high > 0 ? "high" : riskCounts.medium > 0 ? "medium" : "low";
-  const riskColor = overallRisk === "high" ? "#dc2626" : overallRisk === "medium" ? "#f59e0b" : "#22c55e";
+
 
   return `<!DOCTYPE html>
 <html lang="${isZh ? "zh-CN" : "en"}">
