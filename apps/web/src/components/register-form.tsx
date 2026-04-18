@@ -49,13 +49,75 @@ export function RegisterForm({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{ username?: string; password?: string; confirmPassword?: string }>({});
+
+  const validateUsername = (value: string) => {
+    if (!value.trim()) {
+      return "用户名不能为空";
+    }
+    return "";
+  };
+
+  const validatePassword = (value: string) => {
+    if (!value) {
+      return "密码不能为空";
+    }
+    if (value.length < 6) {
+      return "密码长度至少为6个字符";
+    }
+    return "";
+  };
+
+  const validateConfirmPassword = (value: string) => {
+    if (!value) {
+      return "请确认密码";
+    }
+    if (value !== password) {
+      return "两次输入的密码不一致";
+    }
+    return "";
+  };
+
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setUsername(value);
+    const error = validateUsername(value);
+    setValidationErrors(prev => ({ ...prev, username: error || undefined }));
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setPassword(value);
+    const error = validatePassword(value);
+    setValidationErrors(prev => ({ 
+      ...prev, 
+      password: error || undefined,
+      confirmPassword: validateConfirmPassword(confirmPassword) || undefined
+    }));
+  };
+
+  const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setConfirmPassword(value);
+    const error = validateConfirmPassword(value);
+    setValidationErrors(prev => ({ ...prev, confirmPassword: error || undefined }));
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
-    if (password !== confirmPassword) {
-      setError(copy.passwordMismatch);
+    // Validate form
+    const usernameError = validateUsername(username);
+    const passwordError = validatePassword(password);
+    const confirmPasswordError = validateConfirmPassword(confirmPassword);
+    
+    if (usernameError || passwordError || confirmPasswordError) {
+      setValidationErrors({ 
+        username: usernameError || undefined, 
+        password: passwordError || undefined,
+        confirmPassword: confirmPasswordError || undefined
+      });
       return;
     }
 
@@ -93,21 +155,52 @@ export function RegisterForm({
             <label className="text-[13px] font-medium text-foreground" htmlFor="register-username">{copy.username}</label>
             <div className="auth-input-shell">
               <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
-              <input id="register-username" className="portal-input auth-input-field h-[48px] text-[15px]" value={username} onChange={(event) => setUsername(event.target.value)} required />
+              <input 
+                id="register-username" 
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.username ? 'border-risk-high' : ''}`}
+                value={username} 
+                onChange={handleUsernameChange} 
+                required 
+              />
+              {validationErrors.username && (
+                <p className="text-xs text-risk-high mt-1">{validationErrors.username}</p>
+              )}
             </div>
           </div>
           <div className="grid gap-1.5">
             <label className="text-[13px] font-medium text-foreground" htmlFor="register-password">{copy.password}</label>
             <div className="auth-input-shell">
               <span className="auth-input-icon text-muted-foreground"><InputIcon icon="lock" /></span>
-              <input id="register-password" type="password" className="portal-input auth-input-field h-[48px] text-[15px]" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={copy.passwordPlaceholder} required />
+              <input 
+                id="register-password" 
+                type="password" 
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.password ? 'border-risk-high' : ''}`}
+                value={password} 
+                onChange={handlePasswordChange} 
+                placeholder={copy.passwordPlaceholder} 
+                required 
+              />
+              {validationErrors.password && (
+                <p className="text-xs text-risk-high mt-1">{validationErrors.password}</p>
+              )}
             </div>
           </div>
           <div className="grid gap-1.5">
             <label className="text-[13px] font-medium text-foreground" htmlFor="register-confirm-password">{copy.confirmPassword}</label>
             <div className="auth-input-shell">
               <span className="auth-input-icon text-muted-foreground"><InputIcon icon="shield" /></span>
-              <input id="register-confirm-password" type="password" className="portal-input auth-input-field h-[48px] text-[15px]" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={copy.confirmPasswordPlaceholder} required />
+              <input 
+                id="register-confirm-password" 
+                type="password" 
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.confirmPassword ? 'border-risk-high' : ''}`}
+                value={confirmPassword} 
+                onChange={handleConfirmPasswordChange} 
+                placeholder={copy.confirmPasswordPlaceholder} 
+                required 
+              />
+              {validationErrors.confirmPassword && (
+                <p className="text-xs text-risk-high mt-1">{validationErrors.confirmPassword}</p>
+              )}
             </div>
           </div>
         </div>

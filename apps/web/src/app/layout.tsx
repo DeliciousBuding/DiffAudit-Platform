@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Inter } from "next/font/google";
 import { RouteRecovery } from "@/components/route-recovery";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -31,6 +32,7 @@ export default async function RootLayout({
       <body className="min-h-full bg-background text-foreground font-sans">
         <RouteRecovery />
         {children}
+        <Analytics />
       </body>
     </html>
   );

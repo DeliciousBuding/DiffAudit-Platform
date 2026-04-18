@@ -47,9 +47,54 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{ username?: string; password?: string }>({});
+
+  const validateUsername = (value: string) => {
+    if (!value.trim()) {
+      return "用户名不能为空";
+    }
+    return "";
+  };
+
+  const validatePassword = (value: string) => {
+    if (!value) {
+      return "密码不能为空";
+    }
+    if (value.length < 6) {
+      return "密码长度至少为6个字符";
+    }
+    return "";
+  };
+
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setUsername(value);
+    const error = validateUsername(value);
+    setValidationErrors(prev => ({ ...prev, username: error || undefined }));
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setPassword(value);
+    const error = validatePassword(value);
+    setValidationErrors(prev => ({ ...prev, password: error || undefined }));
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    
+    // Validate form
+    const usernameError = validateUsername(username);
+    const passwordError = validatePassword(password);
+    
+    if (usernameError || passwordError) {
+      setValidationErrors({ 
+        username: usernameError || undefined, 
+        password: passwordError || undefined 
+      });
+      return;
+    }
+    
     setPending(true);
     setError("");
 
@@ -96,13 +141,16 @@ export function LoginForm({
               <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
               <input
                 id="login-username"
-                className="portal-input auth-input-field h-[48px] text-[15px]"
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.username ? 'border-risk-high' : ''}`}
                 value={username}
-                onChange={(event) => setUsername(event.target.value)}
+                onChange={handleUsernameChange}
                 autoComplete="username"
                 placeholder={copy.username}
                 required
               />
+              {validationErrors.username && (
+                <p className="text-xs text-risk-high mt-1">{validationErrors.username}</p>
+              )}
             </div>
           </div>
 
@@ -115,13 +163,16 @@ export function LoginForm({
               <input
                 id="login-password"
                 type="password"
-                className="portal-input auth-input-field h-[48px] text-[15px]"
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.password ? 'border-risk-high' : ''}`}
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={handlePasswordChange}
                 autoComplete="current-password"
                 placeholder={copy.passwordPlaceholder}
                 required
               />
+              {validationErrors.password && (
+                <p className="text-xs text-risk-high mt-1">{validationErrors.password}</p>
+              )}
             </div>
           </div>
         </div>

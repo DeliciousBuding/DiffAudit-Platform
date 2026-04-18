@@ -10,7 +10,25 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	_ "github.com/swaggo/files"
 )
+
+// @title DiffAudit Platform API
+// @version 1.0
+// @description API documentation for DiffAudit Platform
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.example.com/support
+// @contact.email support@example.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8780
+// @BasePath /api/v1
+// @schemes http https
 
 const (
 	defaultRuntimeTimeout = 15000 * time.Millisecond
@@ -32,6 +50,15 @@ type Server struct {
 	cacheDir string // snapshot cache for 5.1.3
 }
 
+// NewServer creates a new proxy server
+// @Summary Create a new proxy server
+// @Description Create a new proxy server with the given configuration
+// @Tags server
+// @Accept json
+// @Produce json
+// @Param config body Config true "Server configuration"
+// @Success 200 {object} Server
+// @Router /server [post]
 func NewServer(config Config) *Server {
 	mux := http.NewServeMux()
 	server := &Server{
@@ -42,18 +69,136 @@ func NewServer(config Config) *Server {
 		},
 		cacheDir: config.PublicDataDir,
 	}
+	
+	// Health check
+	// @Summary Health check
+	// @Description Check the health of the server
+	// @Tags health
+	// @Accept json
+	// @Produce json
+	// @Success 200 {object} map[string]any
+	// @Router /health [get]
 	mux.HandleFunc("GET /health", server.handleHealth)
+	
+	// Runtime health check
+	// @Summary Runtime health check
+	// @Description Check the health of the runtime server
+	// @Tags health
+	// @Accept json
+	// @Produce json
+	// @Success 200 {object} map[string]any
+	// @Router /control/runtime [get]
 	mux.HandleFunc("GET /api/v1/control/runtime", server.handleRuntimeHealth)
+	
+	// Catalog
+	// @Summary Get catalog
+	// @Description Get the catalog of available audit capabilities
+	// @Tags catalog
+	// @Accept json
+	// @Produce json
+	// @Success 200 {array} catalogEntry
+	// @Router /catalog [get]
 	mux.HandleFunc("GET /api/v1/catalog", server.handleSnapshotFile("catalog.json"))
+	
+	// Attack defense table
+	// @Summary Get attack defense table
+	// @Description Get the attack defense table
+	// @Tags evidence
+	// @Accept json
+	// @Produce json
+	// @Success 200 {object} map[string]any
+	// @Router /evidence/attack-defense-table [get]
 	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleSnapshotFile("attack-defense-table.json"))
+	
+	// Models
+	// @Summary Get models
+	// @Description Get the list of available models
+	// @Tags models
+	// @Accept json
+	// @Produce json
+	// @Success 200 {array} map[string]any
+	// @Router /models [get]
 	mux.HandleFunc("GET /api/v1/models", server.handleSnapshotFile("models.json"))
+	
+	// Best recon summary
+	// @Summary Get best recon summary
+	// @Description Get the best recon summary
+	// @Tags experiments
+	// @Accept json
+	// @Produce json
+	// @Success 200 {object} map[string]any
+	// @Router /experiments/recon/best [get]
 	mux.HandleFunc("GET /api/v1/experiments/recon/best", server.handleBestReconSummary)
+	
+	// Workspace summary
+	// @Summary Get workspace summary
+	// @Description Get the summary for a specific workspace
+	// @Tags experiments
+	// @Accept json
+	// @Produce json
+	// @Param workspace path string true "Workspace name"
+	// @Success 200 {object} map[string]any
+	// @Router /experiments/{workspace}/summary [get]
 	mux.HandleFunc("GET /api/v1/experiments/{workspace}/summary", server.handleWorkspaceSummary)
+	
+	// Job template
+	// @Summary Get job template
+	// @Description Get the job template for creating audit jobs
+	// @Tags audit
+	// @Accept json
+	// @Produce json
+	// @Success 200 {object} map[string]any
+	// @Router /audit/job-template [get]
 	mux.HandleFunc("GET /api/v1/audit/job-template", server.handleControlGet)
+	
+	// Get jobs
+	// @Summary Get jobs
+	// @Description Get the list of audit jobs
+	// @Tags audit
+	// @Accept json
+	// @Produce json
+	// @Success 200 {object} map[string]any
+	// @Router /audit/jobs [get]
 	mux.HandleFunc("GET /api/v1/audit/jobs", server.handleControlGet)
+	
+	// Create job
+	// @Summary Create job
+	// @Description Create a new audit job
+	// @Tags audit
+	// @Accept json
+	// @Produce json
+	// @Param job body map[string]any true "Job parameters"
+	// @Success 201 {object} map[string]any
+	// @Router /audit/jobs [post]
 	mux.HandleFunc("POST /api/v1/audit/jobs", server.handleControlPost)
+	
+	// Get job
+	// @Summary Get job
+	// @Description Get the details of a specific audit job
+	// @Tags audit
+	// @Accept json
+	// @Produce json
+	// @Param jobID path string true "Job ID"
+	// @Success 200 {object} map[string]any
+	// @Router /audit/jobs/{jobID} [get]
 	mux.HandleFunc("GET /api/v1/audit/jobs/{jobID}", server.handleControlGet)
+	
+	// Delete job
+	// @Summary Delete job
+	// @Description Delete a specific audit job
+	// @Tags audit
+	// @Accept json
+	// @Produce json
+	// @Param jobID path string true "Job ID"
+	// @Success 200 {object} map[string]any
+	// @Router /audit/jobs/{jobID} [delete]
 	mux.HandleFunc("DELETE /api/v1/audit/jobs/{jobID}", server.handleControlDelete)
+	
+	// Swagger UI
+	mux.HandleFunc("GET /swagger/*", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./swagger/"+r.URL.Path[9:])
+	})
+	
 	return server
 }
 
@@ -135,7 +280,7 @@ func (s *Server) handleSnapshotFile(name string) http.HandlerFunc {
 func (s *Server) handleWorkspaceSummary(writer http.ResponseWriter, request *http.Request) {
 	workspace := normalizeWorkspaceKey(request.PathValue("workspace"))
 	if workspace == "" {
-		writeJSON(writer, http.StatusBadRequest, map[string]any{"detail": "workspace is required"})
+		writeError(writer, http.StatusBadRequest, "workspace is required", "missing_workspace", "Please provide a valid workspace name")
 		return
 	}
 
@@ -306,7 +451,7 @@ func (s *Server) handleControlDelete(writer http.ResponseWriter, request *http.R
 
 func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Request, body []byte) {
 	if s.config.RuntimeBaseURL == "" {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "runtime base url is not configured"})
+		writeError(writer, http.StatusBadGateway, "runtime base url is not configured", "runtime_url_not_configured", "Please set DIFFAUDIT_RUNTIME_BASE_URL environment variable")
 		return
 	}
 
@@ -316,7 +461,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	}
 	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, upstreamPath)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "invalid_url", "Failed to construct upstream URL")
 		return
 	}
 	if query := request.URL.RawQuery; query != "" {
@@ -324,7 +469,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	}
 	upstreamRequest, err := http.NewRequest(request.Method, upstreamURL, strings.NewReader(string(body)))
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "invalid_request", "Failed to create upstream request")
 		return
 	}
 	if contentType := request.Header.Get("Content-Type"); contentType != "" {
@@ -342,7 +487,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	defer response.Body.Close()
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writeError(writer, http.StatusBadGateway, err.Error(), "read_error", "Failed to read response body")
 		return
 	}
 	writer.Header().Set("Content-Type", "application/json")
@@ -389,10 +534,28 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	_, _ = writer.Write(responseBody)
 }
 
+// ErrorResponse represents a standardized error response
+type ErrorResponse struct {
+	Detail        string `json:"detail"`
+	Code          string `json:"code,omitempty"`
+	Hint          string `json:"hint,omitempty"`
+	RuntimeBaseURL string `json:"runtime_base_url,omitempty"`
+	DemoModeTip   string `json:"demo_mode_tip,omitempty"`
+}
+
 func writeJSON(writer http.ResponseWriter, statusCode int, payload any) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(statusCode)
 	_ = json.NewEncoder(writer).Encode(payload)
+}
+
+// writeError writes a standardized error response
+func writeError(writer http.ResponseWriter, statusCode int, detail string, code string, hint string) {
+	writeJSON(writer, statusCode, ErrorResponse{
+		Detail: detail,
+		Code:   code,
+		Hint:   hint,
+	})
 }
 
 var errSnapshotUnavailable = errors.New("snapshot unavailable")
@@ -480,21 +643,29 @@ func (s *Server) writeRuntimeError(writer http.ResponseWriter, err error) {
 	errorMessage := err.Error()
 	statusCode := http.StatusServiceUnavailable
 	hint := "Runtime server is unavailable. Please check if the runtime server is running."
+	code := "runtime_unavailable"
 
-	// Check for timeout errors
+	// Check for specific error types
 	if strings.Contains(errorMessage, "timeout") || strings.Contains(errorMessage, "deadline exceeded") {
 		hint = "Runtime server request timed out. The server may be overloaded or unreachable."
+		code = "runtime_timeout"
 	} else if strings.Contains(errorMessage, "connection refused") {
 		hint = "Cannot connect to runtime server. Please verify the runtime server is running and accessible."
+		code = "runtime_connection_refused"
 	} else if strings.Contains(errorMessage, "no such host") {
 		hint = "Runtime server hostname cannot be resolved. Please check the runtime base URL configuration."
+		code = "runtime_host_not_found"
+	} else if strings.Contains(errorMessage, "network is unreachable") {
+		hint = "Runtime server network is unreachable. Please check your network connection."
+		code = "runtime_network_unreachable"
 	}
 
-	writeJSON(writer, statusCode, map[string]any{
-		"detail":           errorMessage,
-		"runtime_base_url": s.config.RuntimeBaseURL,
-		"hint":             hint,
-		"demo_mode_tip":    "Consider enabling demo mode (DIFFAUDIT_DEMO_MODE=true) to use snapshot data without runtime server",
+	writeJSON(writer, statusCode, ErrorResponse{
+		Detail:        errorMessage,
+		Code:          code,
+		Hint:          hint,
+		RuntimeBaseURL: s.config.RuntimeBaseURL,
+		DemoModeTip:   "Consider enabling demo mode (DIFFAUDIT_DEMO_MODE=true) to use snapshot data without runtime server",
 	})
 }
 

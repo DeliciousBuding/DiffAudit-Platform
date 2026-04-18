@@ -12,6 +12,7 @@
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.0",
+    "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.9.0",
     "drizzle-orm": "^0.45.2",
