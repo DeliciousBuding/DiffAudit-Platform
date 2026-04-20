@@ -50,15 +50,7 @@ type Server struct {
 	cacheDir string // snapshot cache for 5.1.3
 }
 
-// NewServer creates a new proxy server
-// @Summary Create a new proxy server
-// @Description Create a new proxy server with the given configuration
-// @Tags server
-// @Accept json
-// @Produce json
-// @Param config body Config true "Server configuration"
-// @Success 200 {object} Server
-// @Router /server [post]
+// NewServer creates a new proxy server.
 func NewServer(config Config) *Server {
 	mux := http.NewServeMux()
 	server := &Server{
@@ -195,9 +187,8 @@ func NewServer(config Config) *Server {
 	mux.HandleFunc("DELETE /api/v1/audit/jobs/{jobID}", server.handleControlDelete)
 	
 	// Swagger UI
-	mux.HandleFunc("GET /swagger/*", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./swagger/"+r.URL.Path[9:])
-	})
+	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(http.Dir("./swagger")))
+	mux.Handle("GET /swagger/", swaggerHandler)
 	
 	return server
 }

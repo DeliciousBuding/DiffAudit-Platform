@@ -14,6 +14,11 @@ type LoginFormCopy = {
   pending: string;
   hint: string;
   error: string;
+  validation: {
+    usernameRequired: string;
+    passwordRequired: string;
+    passwordMinLength: string;
+  };
 };
 
 type LoginPageCopy = {
@@ -51,17 +56,17 @@ export function LoginForm({
 
   const validateUsername = (value: string) => {
     if (!value.trim()) {
-      return "用户名不能为空";
+      return copy.validation.usernameRequired;
     }
     return "";
   };
 
   const validatePassword = (value: string) => {
     if (!value) {
-      return "密码不能为空";
+      return copy.validation.passwordRequired;
     }
     if (value.length < 6) {
-      return "密码长度至少为6个字符";
+      return copy.validation.passwordMinLength;
     }
     return "";
   };
