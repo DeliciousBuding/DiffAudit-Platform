@@ -138,8 +138,21 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
     try {
       // Create CSV content
       const headers = ["Track", "Attack", "Defense", "Model", "AUC", "ASR", "TPR", "Evidence Level"];
+      
+      // Helper function to escape CSV fields
+      const escapeCsvField = (field: string) => {
+        if (typeof field !== 'string') {
+          field = String(field);
+        }
+        if (field.includes('"') || field.includes(',') || field.includes('\n') || field.includes('\r')) {
+          field = field.replace(/"/g, '""');
+          return `"${field}"`;
+        }
+        return field;
+      };
+      
       const csvContent = [
-        headers.join(","),
+        headers.map(escapeCsvField).join(","),
         ...rows.map(row => [
           row.track,
           row.attack,
@@ -149,7 +162,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
           row.asrLabel,
           row.tprLabel,
           row.evidenceLevel
-        ].map(field => `"${field}"`).join(","))
+        ].map(escapeCsvField).join(","))
       ].join("\n");
 
       // Create download link
@@ -162,6 +175,9 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Clean up the URL object to prevent memory leak
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error("CSV export failed:", error);
     } finally {
