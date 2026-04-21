@@ -1,5 +1,5 @@
 import { RiskBadge } from "@/components/risk-badge";
-import { StatusBadge } from "@/components/status-badge";
+import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { type Locale } from "@/components/language-picker";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { riskLabel } from "@/lib/risk-report";
@@ -11,6 +11,11 @@ export type ReportProvenance = {
   schedule?: string | null;
   fixtureVersion?: string | null;
   summaryPath?: string | null;
+  evidenceLevel?: string | null;
+  admissionStatus?: string | null;
+  admissionLevel?: string | null;
+  provenanceStatus?: string | null;
+  intakeManifest?: string | null;
 };
 
 type ReportAuditViewProps = {
@@ -43,6 +48,11 @@ export function ReportAuditView({
         schedule: "调度",
         fixtureVersion: "Fixture 版本",
         summaryPath: "summary.json",
+        evidenceLevel: "证据等级",
+        admissionStatus: "准入状态",
+        admissionLevel: "准入层级",
+        provenanceStatus: "溯源状态",
+        intakeManifest: "Intake Manifest",
         historyTitle: "历史对照",
         historyPlaceholder:
           "同一 track 的既往 verdict diff 将在 14.2 接入；这里预留堆叠卡位，不填造数据。",
@@ -58,6 +68,11 @@ export function ReportAuditView({
         schedule: "Schedule",
         fixtureVersion: "Fixture version",
         summaryPath: "summary.json",
+        evidenceLevel: "Evidence level",
+        admissionStatus: "Admission status",
+        admissionLevel: "Admission level",
+        provenanceStatus: "Provenance status",
+        intakeManifest: "Intake manifest",
         historyTitle: "History comparison",
         historyPlaceholder:
           "Historical verdict diffs for this track will land in 14.2. This slot is intentionally reserved without fabricated data.",
@@ -123,6 +138,26 @@ export function ReportAuditView({
               <dt className="font-semibold text-foreground">{t.summaryPath}</dt>
               <dd className="mt-1 break-all text-muted-foreground">{valueOrDash(provenance.summaryPath)}</dd>
             </div>
+            <div>
+              <dt className="font-semibold text-foreground">{t.evidenceLevel}</dt>
+              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.evidenceLevel)}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-foreground">{t.admissionStatus}</dt>
+              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.admissionStatus)}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-foreground">{t.admissionLevel}</dt>
+              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.admissionLevel)}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-foreground">{t.provenanceStatus}</dt>
+              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.provenanceStatus)}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-foreground">{t.intakeManifest}</dt>
+              <dd className="mt-1 break-all text-muted-foreground">{valueOrDash(provenance.intakeManifest)}</dd>
+            </div>
           </dl>
         </section>
       </div>
@@ -174,12 +209,7 @@ export function ReportAuditView({
                     <td className="px-3 py-2 text-muted-foreground">{row.defense}</td>
                     <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
                     <td className="px-3 py-2">
-                      <div className="space-y-1">
-                        <StatusBadge tone="info" compact>
-                          {row.evidenceLevel}
-                        </StatusBadge>
-                        <div className="text-[10px] text-muted-foreground">{row.note}</div>
-                      </div>
+                      <ReportEvidenceStack locale={locale} row={row} />
                     </td>
                     <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
                     <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>

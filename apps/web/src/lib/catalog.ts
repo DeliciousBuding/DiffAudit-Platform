@@ -30,6 +30,10 @@ export type CatalogEntryPayload = {
   best_summary_path?: string | null;
   best_workspace?: string | null;
   system_gap?: string | null;
+  admission_status?: string | null;
+  admission_level?: string | null;
+  provenance_status?: string | null;
+  intake_manifest?: string | null;
 };
 
 export type CatalogTrackSummary = {
@@ -53,6 +57,10 @@ export type CatalogEntryViewModel = {
   bestWorkspace: string;
   bestSummaryPath: string;
   systemGap: string;
+  admissionStatus?: string;
+  admissionLevel?: string;
+  provenanceStatus?: string;
+  intakeManifest?: string;
 };
 
 export type CatalogDashboardViewModel = {
@@ -98,6 +106,10 @@ function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
     bestWorkspace: entry.best_workspace ?? "pending workspace",
     bestSummaryPath: entry.best_summary_path ?? "pending summary",
     systemGap: entry.system_gap ?? "pending system gap explanation",
+    ...(entry.admission_status ? { admissionStatus: entry.admission_status } : {}),
+    ...(entry.admission_level ? { admissionLevel: entry.admission_level } : {}),
+    ...(entry.provenance_status ? { provenanceStatus: entry.provenance_status } : {}),
+    ...(entry.intake_manifest ? { intakeManifest: entry.intake_manifest } : {}),
   };
 }
 
@@ -141,6 +153,14 @@ function normalizeCatalogEntry(entry: unknown): CatalogEntryPayload | null {
     best_workspace:
       typeof candidate.best_workspace === "string" ? candidate.best_workspace : null,
     system_gap: typeof candidate.system_gap === "string" ? candidate.system_gap : null,
+    admission_status:
+      typeof candidate.admission_status === "string" ? candidate.admission_status : null,
+    admission_level:
+      typeof candidate.admission_level === "string" ? candidate.admission_level : null,
+    provenance_status:
+      typeof candidate.provenance_status === "string" ? candidate.provenance_status : null,
+    intake_manifest:
+      typeof candidate.intake_manifest === "string" ? candidate.intake_manifest : null,
   };
 }
 

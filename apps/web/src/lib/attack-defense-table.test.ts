@@ -19,6 +19,9 @@ describe("attack-defense table helpers", () => {
         quality_cost: "100 public samples per split",
         evidence_level: "runtime-mainline",
         note: "current black-box main evidence",
+        boundary: "controlled / public-subset / proxy-shadow-member / risk-exists",
+        source: "experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+        provenance_status: "workspace-verified",
       },
       {
         track: "gray-box",
@@ -52,6 +55,9 @@ describe("attack-defense table helpers", () => {
           qualityCost: "100 public samples per split",
           evidenceLevel: "runtime-mainline",
           note: "current black-box main evidence",
+          boundary: "controlled / public-subset / proxy-shadow-member / risk-exists",
+          sourcePath: "experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+          provenanceStatus: "workspace-verified",
           riskLevel: "medium",
         },
         {

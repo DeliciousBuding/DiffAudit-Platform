@@ -122,6 +122,11 @@ async function fetchTrackProvenance(entry?: CatalogEntryViewModel): Promise<Repo
     runDirectoryPath: sanitizePath(entry.bestWorkspace),
     schedule: parseScheduler(entry.runtimeLabel),
     summaryPath: sanitizePath(entry.bestSummaryPath),
+    evidenceLevel: entry.evidenceLevel,
+    admissionStatus: entry.admissionStatus,
+    admissionLevel: entry.admissionLevel,
+    provenanceStatus: entry.provenanceStatus,
+    intakeManifest: sanitizePath(entry.intakeManifest),
   };
 
   const workspace = sanitizePath(entry.bestWorkspace);
@@ -141,6 +146,7 @@ async function fetchTrackProvenance(entry?: CatalogEntryViewModel): Promise<Repo
 
     const summary = await response.json() as EvidenceSummaryPayload;
     return {
+      ...base,
       runDirectoryPath: typeof summary.workspace === "string" ? summary.workspace : base.runDirectoryPath,
       seed: undefined,
       schedule: typeof summary.scheduler === "string" ? summary.scheduler : base.schedule,

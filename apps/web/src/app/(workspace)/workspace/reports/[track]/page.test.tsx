@@ -37,6 +37,10 @@ describe("TrackReportPage", () => {
               best_summary_path: "runs/recon-runtime-mainline-ddim-public-100-step30/summary.json",
               scheduler: "ddim",
               system_gap: "surface semantic limits cleanly",
+              admission_status: "admitted",
+              admission_level: "runtime-mainline",
+              provenance_status: "workspace-verified",
+              intake_manifest: "workspaces/intake/manifests/recon.json",
             },
           ]);
       }
@@ -55,6 +59,9 @@ describe("TrackReportPage", () => {
               quality_cost: "100 public samples per split",
               evidence_level: "runtime-mainline",
               note: "current black-box main evidence",
+              boundary: "controlled / public-subset / proxy-shadow-member / risk-exists",
+              source: "experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+              provenance_status: "workspace-verified",
             },
             {
               track: "gray-box",
@@ -128,6 +135,10 @@ describe("TrackReportPage", () => {
               evidence_level: "mainline",
               best_workspace: "pia-runtime-mainline",
               system_gap: "pending",
+              admission_status: "admitted",
+              admission_level: "runtime-mainline",
+              provenance_status: "workspace-verified",
+              intake_manifest: "workspaces/intake/manifests/pia.json",
             },
           ]);
       }
@@ -145,6 +156,9 @@ describe("TrackReportPage", () => {
               tpr_at_1pct_fpr: 0.023,
               evidence_level: "runtime-mainline",
               note: "current gray-box main evidence",
+              boundary: "workspace-verified + adaptive-reviewed",
+              source: "workspaces/gray-box/runs/pia-runtime-mainline/summary.json",
+              provenance_status: "workspace-verified",
             },
           ],
         });
@@ -177,6 +191,9 @@ describe("TrackReportPage", () => {
     expect(markup).toContain("实验溯源");
     expect(markup).toContain("历史对照");
     expect(markup).toContain("../Research/experiments/pia-runtime-mainline");
+    expect(markup).toContain("runtime-mainline");
+    expect(markup).toContain("workspaces/intake/manifests/pia.json");
+    expect(markup).toContain("来源路径");
     expect(markup).toContain("调度");
     expect(markup).toContain("Seed");
     expect(markup).toContain("Fixture 版本");

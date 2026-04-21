@@ -62,6 +62,9 @@ describe("WorkspaceReportsPage", () => {
                 quality_cost: "100 public samples per split",
                 evidence_level: "runtime-mainline",
                 note: "current black-box main evidence",
+                boundary: "controlled / public-subset / proxy-shadow-member / risk-exists",
+                source: "experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+                provenance_status: "workspace-verified",
               },
             ],
           }),
@@ -83,6 +86,9 @@ describe("WorkspaceReportsPage", () => {
     expect(markup).toContain("审计结果");
     expect(markup).toContain("覆盖缺口");
     expect(markup).toContain("recon DDIM public-100 step30");
+    expect(markup).toContain("证据边界");
+    expect(markup).toContain("来源路径");
+    expect(markup).toContain("workspace-verified");
     expect(markup).toContain("导出报告");
   });
 

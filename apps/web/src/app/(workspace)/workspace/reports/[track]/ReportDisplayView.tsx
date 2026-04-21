@@ -3,6 +3,7 @@ import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { RiskBadge } from "@/components/risk-badge";
+import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale } from "@/components/language-picker";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
@@ -26,22 +27,6 @@ function computeCoverageGaps(rows: Array<{ attack: string; defense: string; aucL
     .filter((row) => !Number.isNaN(row.auc) && row.auc >= 0.7)
     .sort((left, right) => right.auc - left.auc)
     .slice(0, 10);
-}
-
-function evidenceTone(
-  evidenceLevel: string,
-): "primary" | "success" | "warning" | "info" | "neutral" {
-  const normalized = evidenceLevel.trim().toLowerCase();
-  if (normalized.includes("admitted")) {
-    return "success";
-  }
-  if (normalized.includes("mainline")) {
-    return "primary";
-  }
-  if (normalized.includes("challenger")) {
-    return "warning";
-  }
-  return "neutral";
 }
 
 type ReportDisplayViewProps = {
@@ -224,19 +209,7 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
                       <StatusBadge tone="info">{row.track}</StatusBadge>
                     </td>
                     <td className="px-3 py-2">
-                      <div className="space-y-1">
-                        <StatusBadge tone={evidenceTone(row.evidenceLevel)} compact>
-                          {row.evidenceLevel}
-                        </StatusBadge>
-                        <div
-                          className="inline-flex max-w-[18rem] items-center rounded-full border border-border bg-muted/20 px-2 py-1 text-[10px] leading-4 text-muted-foreground"
-                          title={`${copy.tableHeaders.qualityCost}: ${row.qualityCost}`}
-                        >
-                          <span className="truncate">
-                            {copy.tableHeaders.qualityCost}: {row.qualityCost}
-                          </span>
-                        </div>
-                      </div>
+                      <ReportEvidenceStack locale={locale} row={row} />
                     </td>
                     <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
                     <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>

@@ -17,6 +17,9 @@ export type AttackDefenseRowPayload = {
   quality_cost?: string | null;
   evidence_level?: string | null;
   note?: string | null;
+  boundary?: string | null;
+  source?: string | null;
+  provenance_status?: string | null;
 };
 
 export type AttackDefenseRowViewModel = {
@@ -30,6 +33,9 @@ export type AttackDefenseRowViewModel = {
   qualityCost: string;
   evidenceLevel: string;
   note: string;
+  boundary?: string;
+  sourcePath?: string;
+  provenanceStatus?: string;
   riskLevel: RiskLevel;
 };
 
@@ -80,6 +86,10 @@ function normalizeRow(row: unknown): AttackDefenseRowPayload | null {
     evidence_level:
       typeof candidate.evidence_level === "string" ? candidate.evidence_level : null,
     note: typeof candidate.note === "string" ? candidate.note : null,
+    boundary: typeof candidate.boundary === "string" ? candidate.boundary : null,
+    source: typeof candidate.source === "string" ? candidate.source : null,
+    provenance_status:
+      typeof candidate.provenance_status === "string" ? candidate.provenance_status : null,
   };
 }
 
@@ -105,6 +115,9 @@ export function summarizeAttackDefenseTable(rows: AttackDefenseRowPayload[]) {
       qualityCost: row.quality_cost ?? "No cost information provided.",
       evidenceLevel: row.evidence_level ?? "unknown",
       note: row.note ?? "No additional notes.",
+      ...(row.boundary ? { boundary: row.boundary } : {}),
+      ...(row.source ? { sourcePath: row.source } : {}),
+      ...(row.provenance_status ? { provenanceStatus: row.provenance_status } : {}),
       riskLevel: classifyRisk(row.auc ?? 0),
     })),
   } satisfies AttackDefenseTableViewModel;

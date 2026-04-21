@@ -15,6 +15,7 @@ import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
+import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 
 export const dynamic = "force-dynamic";
@@ -45,22 +46,6 @@ function computeCoverageGaps(rows: Array<{ attack: string; defense: string; aucL
     .slice(0, 10); // top 10 gaps
 
   return gaps;
-}
-
-function evidenceTone(
-  evidenceLevel: string,
-): "primary" | "success" | "warning" | "info" | "neutral" {
-  const normalized = evidenceLevel.trim().toLowerCase();
-  if (normalized.includes("admitted")) {
-    return "success";
-  }
-  if (normalized.includes("mainline")) {
-    return "primary";
-  }
-  if (normalized.includes("challenger")) {
-    return "warning";
-  }
-  return "neutral";
 }
 
 /** Async server component that fetches and renders the audit results + export button */
@@ -244,19 +229,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                       <StatusBadge tone="info">{row.track}</StatusBadge>
                     </td>
                     <td className="px-3 py-2">
-                      <div className="space-y-1">
-                        <StatusBadge tone={evidenceTone(row.evidenceLevel)} compact>
-                          {row.evidenceLevel}
-                        </StatusBadge>
-                        <div
-                          className="inline-flex max-w-[18rem] items-center rounded-full border border-border bg-muted/20 px-2 py-1 text-[10px] leading-4 text-muted-foreground"
-                          title={`${copy.tableHeaders.qualityCost}: ${row.qualityCost}`}
-                        >
-                          <span className="truncate">
-                            {copy.tableHeaders.qualityCost}: {row.qualityCost}
-                          </span>
-                        </div>
-                      </div>
+                      <ReportEvidenceStack locale={locale} row={row} />
                     </td>
                     <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
                     <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>

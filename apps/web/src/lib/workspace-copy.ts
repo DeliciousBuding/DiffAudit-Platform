@@ -290,6 +290,9 @@ export const WORKSPACE_COPY: Record<
         track: string;
         evidence: string;
         qualityCost: string;
+        provenance: string;
+        boundary: string;
+        source: string;
         auc: string;
         asr: string;
         tpr: string;
@@ -797,6 +800,9 @@ export const WORKSPACE_COPY: Record<
         track: "Track",
         evidence: "Evidence",
         qualityCost: "Quality / Cost",
+        provenance: "Provenance",
+        boundary: "Boundary",
+        source: "Source Path",
         auc: "AUC",
         asr: "ASR",
         tpr: "TPR",
@@ -1444,6 +1450,9 @@ export const WORKSPACE_COPY: Record<
         track: "攻击线",
         evidence: "证据等级",
         qualityCost: "质量 / 成本",
+        provenance: "溯源状态",
+        boundary: "证据边界",
+        source: "来源路径",
         auc: "AUC",
         asr: "ASR",
         tpr: "TPR",
