@@ -14,6 +14,10 @@ type LoginFormCopy = {
   pending: string;
   hint: string;
   error: string;
+  validation: {
+    usernameRequired: string;
+    passwordRequired: string;
+  };
 };
 
 type LoginPageCopy = {
@@ -47,9 +51,49 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
+
+  function validateUsername(value: string) {
+    return value.trim() ? "" : copy.validation.usernameRequired;
+  }
+
+  function validatePassword(value: string) {
+    return value ? "" : copy.validation.passwordRequired;
+  }
+
+  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const value = event.target.value;
+    setUsername(value);
+    setValidationErrors((current) => ({
+      ...current,
+      username: validateUsername(value) || undefined,
+    }));
+  }
+
+  function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const value = event.target.value;
+    setPassword(value);
+    setValidationErrors((current) => ({
+      ...current,
+      password: validatePassword(value) || undefined,
+    }));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const usernameError = validateUsername(username);
+    const passwordError = validatePassword(password);
+    if (usernameError || passwordError) {
+      setValidationErrors({
+        username: usernameError || undefined,
+        password: passwordError || undefined,
+      });
+      return;
+    }
+
     setPending(true);
     setError("");
 
@@ -72,7 +116,7 @@ export function LoginForm({
   }
 
   const oauthError = searchParams.get("error");
-  const showProviderButtons = true;
+  const showProviderButtons = oauthEnabled.google || oauthEnabled.github;
 
   return (
     <div className="flex flex-col gap-6">
@@ -96,13 +140,16 @@ export function LoginForm({
               <span className="auth-input-icon text-muted-foreground"><InputIcon icon="user" /></span>
               <input
                 id="login-username"
-                className="portal-input auth-input-field h-[48px] text-[15px]"
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.username ? "border-risk-high" : ""}`}
                 value={username}
-                onChange={(event) => setUsername(event.target.value)}
+                onChange={handleUsernameChange}
                 autoComplete="username"
                 placeholder={copy.username}
                 required
               />
+              {validationErrors.username ? (
+                <p className="mt-1 text-xs text-risk-high">{validationErrors.username}</p>
+              ) : null}
             </div>
           </div>
 
@@ -115,13 +162,16 @@ export function LoginForm({
               <input
                 id="login-password"
                 type="password"
-                className="portal-input auth-input-field h-[48px] text-[15px]"
+                className={`portal-input auth-input-field h-[48px] text-[15px] ${validationErrors.password ? "border-risk-high" : ""}`}
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={handlePasswordChange}
                 autoComplete="current-password"
                 placeholder={copy.passwordPlaceholder}
                 required
               />
+              {validationErrors.password ? (
+                <p className="mt-1 text-xs text-risk-high">{validationErrors.password}</p>
+              ) : null}
             </div>
           </div>
         </div>

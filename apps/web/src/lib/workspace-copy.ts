@@ -387,6 +387,10 @@ export const WORKSPACE_COPY: Record<
       pending: string;
       hint: string;
       error: string;
+      validation: {
+        usernameRequired: string;
+        passwordRequired: string;
+      };
     };
     registerForm: {
       username: string;
@@ -399,6 +403,12 @@ export const WORKSPACE_COPY: Record<
       hint: string;
       error: string;
       passwordMismatch: string;
+      validation: {
+        usernameRequired: string;
+        passwordRequired: string;
+        passwordMinLength: string;
+        confirmPasswordRequired: string;
+      };
     };
     trialPage: {
       eyebrow: string;
@@ -1023,6 +1033,10 @@ export const WORKSPACE_COPY: Record<
       pending: "Signing in...",
       hint: "You can sign in with either your username or your email.",
       error: "Sign in failed. Check your credentials.",
+      validation: {
+        usernameRequired: "Username is required",
+        passwordRequired: "Password is required",
+      },
     },
     registerForm: {
       username: "Username",
@@ -1035,6 +1049,12 @@ export const WORKSPACE_COPY: Record<
       hint: "This creates a local account and signs you into the workspace directly.",
       error: "Registration failed. Please try again.",
       passwordMismatch: "Passwords do not match.",
+      validation: {
+        usernameRequired: "Username is required",
+        passwordRequired: "Password is required",
+        passwordMinLength: "Password must be at least 8 characters",
+        confirmPasswordRequired: "Please confirm your password",
+      },
     },
     trialPage: {
       eyebrow: "Request trial",
@@ -1658,6 +1678,10 @@ export const WORKSPACE_COPY: Record<
       pending: "登录中...",
       hint: "可使用账号或邮箱登录。",
       error: "登录失败，请检查账号信息。",
+      validation: {
+        usernameRequired: "用户名不能为空",
+        passwordRequired: "密码不能为空",
+      },
     },
     registerForm: {
       username: "账号",
@@ -1670,6 +1694,12 @@ export const WORKSPACE_COPY: Record<
       hint: "这会创建一个本地账号，并直接登录进入工作台。",
       error: "注册失败，请稍后重试。",
       passwordMismatch: "两次输入的密码不一致。",
+      validation: {
+        usernameRequired: "用户名不能为空",
+        passwordRequired: "密码不能为空",
+        passwordMinLength: "密码长度至少为 8 位。",
+        confirmPasswordRequired: "请确认密码",
+      },
     },
     trialPage: {
       eyebrow: "申请试用",
