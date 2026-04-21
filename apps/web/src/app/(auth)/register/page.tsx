@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { githubOAuthConfigured, googleOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
+import { sanitizeRedirectPath } from "@/lib/auth";
 import { RegisterForm } from "@/components/register-form";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -13,10 +13,6 @@ export default async function RegisterPage({
   const { redirectTo } = await searchParams;
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
-  const oauthEnabled = {
-    google: googleOAuthConfigured(),
-    github: githubOAuthConfigured(),
-  };
 
   return (
     <>
@@ -67,7 +63,6 @@ export default async function RegisterPage({
             redirectTo={sanitizeRedirectPath(redirectTo)}
             copy={copy.registerForm}
             pageCopy={copy.registerPage}
-            oauthEnabled={oauthEnabled}
           />
         </div>
       </div>

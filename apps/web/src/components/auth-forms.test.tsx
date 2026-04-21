@@ -27,6 +27,10 @@ describe("auth forms", () => {
           pending: "Signing in...",
           hint: "Hint",
           error: "Error",
+          validation: {
+            usernameRequired: "Username is required",
+            passwordRequired: "Password is required",
+          },
         }}
         pageCopy={{
           oauthDivider: "Or continue with",
@@ -53,6 +57,44 @@ describe("auth forms", () => {
     expect(markup).toContain("/register?redirectTo=%2Fworkspace");
   });
 
+  it("hides login providers when oauth is unavailable", () => {
+    const markup = renderToStaticMarkup(
+      <LoginForm
+        redirectTo="/workspace"
+        oauthEnabled={{ google: false, github: false }}
+        copy={{
+          username: "Username",
+          password: "Password",
+          passwordPlaceholder: "Enter password",
+          submit: "Sign in",
+          pending: "Signing in...",
+          hint: "Hint",
+          error: "Error",
+          validation: {
+            usernameRequired: "Username is required",
+            passwordRequired: "Password is required",
+          },
+        }}
+        pageCopy={{
+          oauthDivider: "Or continue with",
+          passwordDivider: "Use password instead",
+          hidePasswordCta: "Hide password sign-in",
+          registerLink: "New?",
+          registerCta: "Create account",
+          providerHint: "Provider hint",
+          google: "Continue with Google",
+          github: "Continue with GitHub",
+          privacy: "Privacy Policy",
+          terms: "Terms",
+          legalPrefix: "By continuing, you agree to the",
+        }}
+      />,
+    );
+
+    expect(markup).not.toContain("Continue with Google");
+    expect(markup).not.toContain("Continue with GitHub");
+  });
+
   it("preserves redirectTo through the local account path", () => {
     const markup = renderToStaticMarkup(
       <RegisterForm
@@ -69,6 +111,12 @@ describe("auth forms", () => {
           hint: "Fallback access",
           error: "Error",
           passwordMismatch: "Mismatch",
+          validation: {
+            usernameRequired: "Username is required",
+            passwordRequired: "Password is required",
+            passwordMinLength: "Password must be at least 8 characters",
+            confirmPasswordRequired: "Please confirm your password",
+          },
         }}
         pageCopy={{
           oauthDivider: "Or continue with",
