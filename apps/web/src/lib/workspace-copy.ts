@@ -419,6 +419,8 @@ export const WORKSPACE_COPY: Record<
     };
     exportButton: {
       exporting: string;
+      pdf: string;
+      csv: string;
     };
     liveJobsPanel: {
       justUpdated: string;
@@ -1055,6 +1057,8 @@ export const WORKSPACE_COPY: Record<
     },
     exportButton: {
       exporting: "Exporting...",
+      pdf: "Export as PDF",
+      csv: "Export as CSV",
     },
     liveJobsPanel: {
       justUpdated: "Just updated",
@@ -1690,6 +1694,8 @@ export const WORKSPACE_COPY: Record<
     },
     exportButton: {
       exporting: "导出中...",
+      pdf: "导出为 PDF",
+      csv: "导出为 CSV",
     },
     liveJobsPanel: {
       justUpdated: "刚刚更新",
