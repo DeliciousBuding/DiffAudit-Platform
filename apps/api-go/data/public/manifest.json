@@ -5,12 +5,20 @@
     "gray-box/pia/cifar10-ddpm": "pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive",
     "white-box/gsa/ddpm-cifar10": "gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1"
   },
-  "generated_at": "2026-04-14T07:21:27.046364+00:00",
-  "source": "http://127.0.0.1:8765",
+  "generated_at": "2026-04-18T07:35:22.438763+00:00",
+  "source": "research-direct-sync",
   "summary_keys": [
     "gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1",
     "pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive",
     "recon-runtime-mainline-ddim-public-100-step30"
   ],
-  "warnings": []
+  "warnings": [
+    "catalog: reused existing snapshot because runtime fetch failed: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "attack-defense-table synced directly from Research/workspaces/implementation/artifacts/unified-attack-defense-table.json because runtime fetch failed: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "models: reused existing snapshot because runtime fetch failed: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "black-box/recon/sd15-ddim: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "gray-box/pia/cifar10-ddpm: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "white-box/gsa/ddpm-cifar10: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>",
+    "summaries: reused existing snapshot because runtime summary fetch failed"
+  ]
 }

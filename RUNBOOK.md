@@ -92,6 +92,12 @@ cd /home/ubuntu/projects/diffaudit/platform-web
 npm run publish:public-snapshot
 ```
 
+如果现场 `Runtime` 控制面暂时不在线：
+
+- 允许发布脚本复用已有 `catalog/models/summaries` snapshot
+- 允许直接从 `Research/workspaces/implementation/artifacts/unified-attack-defense-table.json` 同步 admitted `attack-defense-table`
+- 不允许把“发布期 fallback”误读成“请求期 fallback”；线上读路仍然只能读 `apps/api-go/data/public/*`
+
 发布后至少检查：
 
 ```bash

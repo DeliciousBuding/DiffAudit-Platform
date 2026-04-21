@@ -25,6 +25,10 @@
 7. `Platform/apps/api-go` forwards only audit control-plane routes to `Runtime-Server`（Runtime）
    - current active control-plane owner is `DELICIOUS233` (`100.81.149.78`)
    - this hop depends on tailnet ACL allowing `gz2 -> d233 tcp:8765`
+8. snapshot publisher may use one publish-time fallback when Runtime is unavailable:
+   - reuse existing snapshot `catalog/models/summaries`
+   - direct-sync admitted `attack-defense-table` from `Research/workspaces/implementation/artifacts/unified-attack-defense-table.json`
+   - this does not change the request-time boundary; public reads still remain snapshot-only
 
 ## Current Runtime Owners On `gz2`
 

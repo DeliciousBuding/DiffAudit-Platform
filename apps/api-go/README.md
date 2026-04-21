@@ -42,8 +42,16 @@ Refresh the public snapshot bundle before a public deploy:
 ```powershell
 py -3 D:\Code\DiffAudit\Platform\apps\api-go\scripts\publish_public_snapshot.py `
   --runtime-base-url http://127.0.0.1:8765 `
+  --research-root D:\Code\DiffAudit\Research `
   --output-dir D:\Code\DiffAudit\Platform\apps\api-go\data\public
 ```
+
+If the local Runtime control plane is temporarily unavailable, the publisher can:
+
+- reuse existing `catalog.json` / `models.json` / `summaries/*`
+- direct-sync `attack-defense-table.json` from `Research/workspaces/implementation/artifacts/unified-attack-defense-table.json`
+
+This is a **publish-time fallback only**. Public read routes still remain snapshot-backed and must not fall back to live Runtime requests during serving.
 
 ## Covered Routes
 

@@ -9,14 +9,14 @@
     "evidence_level": "catalog",
     "label": "Kandinsky v2.2",
     "paper": "BlackBox_Reconstruction_ArXiv2023",
+    "risk_interpretation": {
+      "en-US": "Kandinsky v2.2 black-box audit has not yet produced admitted results. The contract is registered; risk quantification data is not yet available.",
+      "zh-CN": "Kandinsky v2.2 黑盒审计尚未产生已接纳的运行结果。当前仅完成合同注册，暂无可用风险量化数据。"
+    },
     "scheduler": null,
     "system_gap": "no public runnable job contract is admitted yet",
     "target_key": "kandinsky-v22",
-    "track": "black-box",
-    "risk_interpretation": {
-      "zh-CN": "Kandinsky v2.2 黑盒审计尚未产生已接纳的运行结果。当前仅完成合同注册，暂无可用风险量化数据。",
-      "en-US": "Kandinsky v2.2 black-box audit has not yet produced admitted results. The contract is registered; risk quantification data is not yet available."
-    }
+    "track": "black-box"
   },
   {
     "attack_family": "recon",
@@ -28,15 +28,15 @@
     "evidence_level": "best-summary",
     "label": "Stable Diffusion 1.5 + DDIM",
     "paper": "BlackBox_Reconstruction_ArXiv2023",
+    "risk_interpretation": {
+      "en-US": "Recon attack reaches AUC 0.849, ASR 0.51, and TPR@1%FPR 1.0 on Stable Diffusion 1.5 + DDIM under the current controlled public-subset protocol. This is admitted black-box risk evidence under a fine-tuned / controlled / proxy-shadow-member setting, not a generalized real-world exploit claim.",
+      "risk_level": "high",
+      "zh-CN": "Recon 攻击在当前受控 public-subset 协议下，于 Stable Diffusion 1.5 + DDIM 上达到 AUC 0.849、ASR 0.51、TPR@1%FPR 1.0。这是 fine-tuned / controlled / proxy-shadow-member 语义下的已接纳黑盒风险证据，不应外推为通用真实世界 exploit 结论。"
+    },
     "scheduler": "ddim",
     "system_gap": "runtime contract is live; remaining gap is to surface semantic limits and secondary-track boundaries cleanly in platform copy",
     "target_key": "sd15-ddim",
-    "track": "black-box",
-    "risk_interpretation": {
-      "risk_level": "high",
-      "zh-CN": "Recon 攻击在 Stable Diffusion 1.5 + DDIM 上达到 AUC 0.849、ASR 0.51、TPR@1% 1.0，风险等级为高。攻击者仅凭 100 个公开样本即可重建训练数据特征，表明模型存在明显的成员隐私泄露风险。建议采用差分隐私训练降低泄露风险。",
-      "en-US": "Recon attack achieves AUC 0.849, ASR 0.51, TPR@1% 1.0 on Stable Diffusion 1.5 + DDIM — risk level: high. With only 100 public samples, the attacker can reconstruct training data features, indicating clear membership privacy leakage. Differential privacy training is recommended."
-    }
+    "track": "black-box"
   },
   {
     "admission_level": "system-intake-ready",
@@ -52,17 +52,17 @@
     "label": "PIA on CIFAR10 DDPM",
     "paper": "PIA",
     "provenance_status": "workspace-verified",
+    "risk_interpretation": {
+      "baseline_auc": 0.841339,
+      "defended_auc": 0.828075,
+      "en-US": "PIA gray-box baseline reaches AUC 0.841 and ASR 0.786 on the current admitted protocol. With provisional stochastic-dropout (all_steps), AUC drops to 0.828 and ASR to 0.768, indicating a measurable but limited reduction under the present workspace-verified, adaptive-reviewed setup. This should be read as an inference-time randomization effect on epsilon-trajectory consistency, not as validated privacy protection.",
+      "risk_level": "high",
+      "zh-CN": "PIA 灰盒基线在当前已接纳协议下达到 AUC 0.841、ASR 0.786。采用 provisional stochastic-dropout (all_steps) 后，AUC 降至 0.828、ASR 降至 0.768，说明在当前 workspace-verified、adaptive-reviewed 设置下存在可测但有限的下降。这应被读作 inference-time randomization 对 epsilon-trajectory consistency 的削弱，而不是已验证的隐私保护。"
+    },
     "scheduler": null,
     "system_gap": "gray-box attack and provisional defense are admitted; remaining gap is to expose cost columns and defense wording consistently across system views",
     "target_key": "cifar10-ddpm",
-    "track": "gray-box",
-    "risk_interpretation": {
-      "risk_level": "high",
-      "baseline_auc": 0.841339,
-      "defended_auc": 0.828075,
-      "zh-CN": "PIA 灰盒攻击基线 AUC 0.841、ASR 0.786，风险等级为高。采用 stochastic-dropout (all_steps) 防御后 AUC 降至 0.828、ASR 降至 0.768，降幅 1.3%（AUC）和 1.8%（ASR）。防御有效果但幅度有限，残余风险仍处于高等级，建议结合更强的隐私保护机制。",
-      "en-US": "PIA gray-box attack baseline AUC 0.841, ASR 0.786 — risk level: high. With stochastic-dropout (all_steps) defense, AUC drops to 0.828 (−1.3%) and ASR to 0.768 (−1.8%). The defense shows measurable but limited effect; residual risk remains high. Stronger privacy mechanisms are recommended."
-    }
+    "track": "gray-box"
   },
   {
     "admission_level": "system-intake-ready",
@@ -78,17 +78,17 @@
     "label": "GSA on DDPM CIFAR10",
     "paper": "GSA",
     "provenance_status": "workspace-verified",
+    "risk_interpretation": {
+      "baseline_auc": 0.998192,
+      "defended_auc": 0.488783,
+      "en-US": "GSA white-box baseline reaches AUC 0.998 and ASR 0.990 under the current admitted comparison setup. With W-1 strong-v3 full-scale, the defended comparator falls to AUC 0.489 and ASR 0.499, which is near random guessing in the present protocol. This supports strong mitigation under the current white-box comparison setup, but it should not be overstated as benchmark-complete or as global risk elimination.",
+      "risk_level_baseline": "critical",
+      "risk_level_defended": "low",
+      "zh-CN": "GSA 白盒基线在当前已接纳比较协议下达到 AUC 0.998、ASR 0.990。采用 W-1 strong-v3 full-scale 后，防御侧比较器降至 AUC 0.489、ASR 0.499，在当前协议内接近随机猜测。这支持“当前白盒比较设置下存在强缓解信号”，但不应被表述成 benchmark 已完成，或全局风险已被消除。"
+    },
     "scheduler": null,
     "system_gap": "white-box rerun has produced a stronger admitted attack result; remaining gap is to bridge W-1 into a same-protocol benchmark without overstating benchmark completeness",
     "target_key": "ddpm-cifar10",
-    "track": "white-box",
-    "risk_interpretation": {
-      "risk_level_baseline": "critical",
-      "risk_level_defended": "low",
-      "baseline_auc": 0.998192,
-      "defended_auc": 0.488783,
-      "zh-CN": "GSA 白盒攻击基线 AUC 0.998、ASR 0.990，风险等级为极高。攻击者拥有完整模型访问权限时，几乎可以确定每条训练数据的成员身份。采用 W-1 强防御后 AUC 降至 0.489、ASR 降至 0.499，接近随机猜测水平（AUC 0.5），风险等级降至低。白盒场景下强防御可将风险有效消除。",
-      "en-US": "GSA white-box attack baseline AUC 0.998, ASR 0.990 — risk level: critical. With full model access, the attacker can almost certainly determine membership of each training sample. With W-1 strong defense, AUC drops to 0.489 and ASR to 0.499 — near random guessing (AUC 0.5) — risk level: low. Strong defense effectively eliminates risk in white-box scenarios."
-    }
+    "track": "white-box"
   }
 ]
