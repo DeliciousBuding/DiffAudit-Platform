@@ -1,0 +1,18 @@
+# Default owners
+* @DeliciousBuding
+
+# Repo governance
+/README.md @DeliciousBuding
+/CONTRIBUTING.md @DeliciousBuding
+/.github/ @DeliciousBuding
+/docs/ @DeliciousBuding
+
+# Frontend
+/apps/web/ @DeliciousBuding
+
+# Active backend
+/apps/api-go/ @DeliciousBuding
+
+# Shared contracts and scripts
+/packages/ @DeliciousBuding
+/scripts/ @DeliciousBuding

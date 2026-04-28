@@ -1,0 +1,16 @@
+{
+  "schema": "diffaudit.snapshot.v1",
+  "generated_at": "2026-04-14T12:00:00Z",
+  "source": "demo-snapshot",
+  "catalog_count": 5,
+  "summary_keys": [
+    "recon-runtime-mainline-ddim-public-50-step10",
+    "clid-artifact-summary",
+    "variation-synth-smoke",
+    "pia-runtime-smoke-gpu"
+  ],
+  "notes": [
+    "This is a demo snapshot for development and testing purposes.",
+    "Data is based on actual research experiments but simplified for demo mode."
+  ]
+}

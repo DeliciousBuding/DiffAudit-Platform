@@ -1,0 +1,41 @@
+{
+  "schema": "diffaudit.attack_defense_table.v1",
+  "generated_at": "2026-04-14T00:00:00Z",
+  "rows": [
+    {
+      "track": "black-box",
+      "attack": "Recon (Reconstruction-based MIA)",
+      "defense": "Differential Privacy (DP-SGD)",
+      "effectiveness": "high",
+      "notes": "DP-SGD significantly reduces reconstruction quality"
+    },
+    {
+      "track": "black-box",
+      "attack": "CLiD (Contrastive Learning)",
+      "defense": "Data Augmentation",
+      "effectiveness": "medium",
+      "notes": "Augmentation reduces attack AUC from 0.96 to 0.78"
+    },
+    {
+      "track": "gray-box",
+      "attack": "PIA (Privacy Inference Attack)",
+      "defense": "Gradient Clipping",
+      "effectiveness": "medium",
+      "notes": "Reduces gradient leakage but not fully effective"
+    },
+    {
+      "track": "gray-box",
+      "attack": "PIA GPU512 baseline",
+      "defense": "Stochastic Dropout (G-1)",
+      "effectiveness": "high",
+      "notes": "Provisional defense mechanism under evaluation"
+    },
+    {
+      "track": "white-box",
+      "attack": "GSA (Gradient-based Sensitivity)",
+      "defense": "Model Pruning",
+      "effectiveness": "low",
+      "notes": "Limited effectiveness against white-box attacks"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+[
+  {
+    "attack_family": "recon",
+    "availability": "partial",
+    "backend": "kandinsky_v22",
+    "best_summary_path": null,
+    "best_workspace": null,
+    "contract_key": "black-box/recon/kandinsky-v22",
+    "evidence_level": "catalog",
+    "label": "Kandinsky v2.2",
+    "paper": "BlackBox_Reconstruction_ArXiv2023",
+    "risk_interpretation": {
+      "en-US": "Kandinsky v2.2 black-box audit has not yet produced admitted results. The contract is registered; risk quantification data is not yet available.",
+      "zh-CN": "Kandinsky v2.2 黑盒审计尚未产生已接纳的运行结果。当前仅完成合同注册，暂无可用风险量化数据。"
+    },
+    "scheduler": null,
+    "system_gap": "no public runnable job contract is admitted yet",
+    "target_key": "kandinsky-v22",
+    "track": "black-box"
+  },
+  {
+    "attack_family": "recon",
+    "availability": "ready",
+    "backend": "stable_diffusion",
+    "best_summary_path": "research://experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+    "best_workspace": "research://experiments/recon-runtime-mainline-ddim-public-100-step30",
+    "contract_key": "black-box/recon/sd15-ddim",
+    "evidence_level": "best-summary",
+    "label": "Stable Diffusion 1.5 + DDIM",
+    "paper": "BlackBox_Reconstruction_ArXiv2023",
+    "risk_interpretation": {
+      "en-US": "Recon attack reaches AUC 0.849, ASR 0.51, and TPR@1%FPR 1.0 on Stable Diffusion 1.5 + DDIM under the current controlled public-subset protocol. This is admitted black-box risk evidence under a fine-tuned / controlled / proxy-shadow-member setting, not a generalized real-world exploit claim.",
+      "risk_level": "high",
+      "zh-CN": "Recon 攻击在当前受控 public-subset 协议下，于 Stable Diffusion 1.5 + DDIM 上达到 AUC 0.849、ASR 0.51、TPR@1%FPR 1.0。这是 fine-tuned / controlled / proxy-shadow-member 语义下的已接纳黑盒风险证据，不应外推为通用真实世界 exploit 结论。"
+    },
+    "scheduler": "ddim",
+    "system_gap": "runtime contract is live; remaining gap is to surface semantic limits and secondary-track boundaries cleanly in platform copy",
+    "target_key": "sd15-ddim",
+    "track": "black-box"
+  },
+  {
+    "admission_level": "system-intake-ready",
+    "admission_status": "admitted",
+    "attack_family": "pia",
+    "availability": "ready",
+    "backend": "",
+    "best_summary_path": "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive/summary.json",
+    "best_workspace": "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive",
+    "contract_key": "gray-box/pia/cifar10-ddpm",
+    "evidence_level": "best-summary",
+    "intake_manifest": "research://workspaces/gray-box/assets/pia/manifest.json",
+    "label": "PIA on CIFAR10 DDPM",
+    "paper": "PIA",
+    "provenance_status": "workspace-verified",
+    "risk_interpretation": {
+      "baseline_auc": 0.841339,
+      "defended_auc": 0.828075,
+      "en-US": "PIA gray-box baseline reaches AUC 0.841 and ASR 0.786 on the current admitted protocol. With provisional stochastic-dropout (all_steps), AUC drops to 0.828 and ASR to 0.768, indicating a measurable but limited reduction under the present workspace-verified, adaptive-reviewed setup. This should be read as an inference-time randomization effect on epsilon-trajectory consistency, not as validated privacy protection.",
+      "risk_level": "high",
+      "zh-CN": "PIA 灰盒基线在当前已接纳协议下达到 AUC 0.841、ASR 0.786。采用 provisional stochastic-dropout (all_steps) 后，AUC 降至 0.828、ASR 降至 0.768，说明在当前 workspace-verified、adaptive-reviewed 设置下存在可测但有限的下降。这应被读作 inference-time randomization 对 epsilon-trajectory consistency 的削弱，而不是已验证的隐私保护。"
+    },
+    "scheduler": null,
+    "system_gap": "gray-box attack and provisional defense are admitted; remaining gap is to expose cost columns and defense wording consistently across system views",
+    "target_key": "cifar10-ddpm",
+    "track": "gray-box"
+  },
+  {
+    "admission_level": "system-intake-ready",
+    "admission_status": "admitted",
+    "attack_family": "gsa",
+    "availability": "ready",
+    "backend": "",
+    "best_summary_path": "research://workspaces/white-box/runs/gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1/summary.json",
+    "best_workspace": "research://workspaces/white-box/runs/gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1",
+    "contract_key": "white-box/gsa/ddpm-cifar10",
+    "evidence_level": "best-summary",
+    "intake_manifest": "research://workspaces/white-box/assets/gsa-cifar10-1k-3shadow-epoch300-rerun1/manifests/cifar10-ddpm-1k-3shadow-epoch300-rerun1.json",
+    "label": "GSA on DDPM CIFAR10",
+    "paper": "GSA",
+    "provenance_status": "workspace-verified",
+    "risk_interpretation": {
+      "baseline_auc": 0.998192,
+      "defended_auc": 0.488783,
+      "en-US": "GSA white-box baseline reaches AUC 0.998 and ASR 0.990 under the current admitted comparison setup. With W-1 strong-v3 full-scale, the defended comparator falls to AUC 0.489 and ASR 0.499, which is near random guessing in the present protocol. This supports strong mitigation under the current white-box comparison setup, but it should not be overstated as benchmark-complete or as global risk elimination.",
+      "risk_level_baseline": "critical",
+      "risk_level_defended": "low",
+      "zh-CN": "GSA 白盒基线在当前已接纳比较协议下达到 AUC 0.998、ASR 0.990。采用 W-1 strong-v3 full-scale 后，防御侧比较器降至 AUC 0.489、ASR 0.499，在当前协议内接近随机猜测。这支持“当前白盒比较设置下存在强缓解信号”，但不应被表述成 benchmark 已完成，或全局风险已被消除。"
+    },
+    "scheduler": null,
+    "system_gap": "white-box rerun has produced a stronger admitted attack result; remaining gap is to bridge W-1 into a same-protocol benchmark without overstating benchmark completeness",
+    "target_key": "ddpm-cifar10",
+    "track": "white-box"
+  }
+]

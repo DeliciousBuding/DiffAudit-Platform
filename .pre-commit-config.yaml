@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: platform-local-checks
+        name: platform-local-checks
+        entry: python scripts/run_local_checks.py --fast
+        language: system
+        pass_filenames: false

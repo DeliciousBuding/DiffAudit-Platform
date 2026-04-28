@@ -1,0 +1,453 @@
+{
+  "dataset": "CIFAR-10",
+  "model_family": "DDPM",
+  "rows": [
+    {
+      "asr": 0.51,
+      "attack": "recon DDIM public-100 step30",
+      "auc": 0.849,
+      "boundary": "controlled / public-subset / proxy-shadow-member / risk-exists; not a final exploit or full real-world benchmark",
+      "defense": "none",
+      "evidence_level": "runtime-mainline",
+      "model": "Stable Diffusion v1.5 + DDIM",
+      "note": "current black-box main evidence",
+      "quality_cost": "100 public samples per split; DDIM step30; artifact-mainline ready; cuda runtime",
+      "source": "research://experiments/recon-runtime-mainline-ddim-public-100-step30/summary.json",
+      "tpr_at_0_1pct_fpr": null,
+      "tpr_at_1pct_fpr": 1.0,
+      "track": "black-box"
+    },
+    {
+      "asr": 0.51,
+      "attack": "recon DDIM public-50 step10",
+      "auc": 0.866,
+      "boundary": "controlled / public-subset / proxy-shadow-member / risk-exists; stronger single-metric rung, still not a generalized real-world exploit claim",
+      "defense": "none",
+      "evidence_level": "runtime-candidate",
+      "model": "Stable Diffusion v1.5 + DDIM",
+      "note": "best current single-metric black-box rung; stronger AUC than the admitted public-100 headline but narrower subset",
+      "quality_cost": "50 public samples per split; DDIM step10; runtime-mainline ready; cuda runtime",
+      "source": "research://experiments/recon-runtime-mainline-ddim-public-50-step10/summary.json",
+      "tpr_at_0_1pct_fpr": null,
+      "tpr_at_1pct_fpr": 1.0,
+      "track": "black-box"
+    },
+    {
+      "asr": 1.0,
+      "attack": "CLiD clip local target100",
+      "auc": 1.0,
+      "boundary": "workspace-verified + local bridge execution; target-side only, not yet a shadow-validated or paper-faithful CLiD benchmark",
+      "defense": "none",
+      "evidence_level": "runtime-candidate",
+      "model": "Stable Diffusion v1.5 + Recon target LoRA",
+      "note": "snapshot CLiD clip candidate rung on Recon CelebA assets; target-side bridge validation has now been scaled beyond smoke",
+      "quality_cost": "100 member + 100 non-member target samples; base SD1.5 snapshot; UNet attention-processor LoRA bridge; batch_size=1; max_n_samples=1",
+      "source": "research://workspaces/black-box/runs/clid-recon-clip-target100-20260415-r1/summary.json",
+      "tpr_at_0_1pct_fpr": null,
+      "tpr_at_1pct_fpr": 1.0,
+      "track": "black-box"
+    },
+    {
+      "asr": 1.0,
+      "attack": "CLiD clip local partial-target100",
+      "auc": 1.0,
+      "boundary": "workspace-verified + local bridge execution; target-side only, not yet a shadow-validated or paper-faithful CLiD benchmark",
+      "defense": "none",
+      "evidence_level": "runtime-candidate",
+      "model": "Stable Diffusion v1.5 + Recon partial-target LoRA",
+      "note": "cross-check rung showing the snapshot CLiD clip signal persists on the partial-target Recon checkpoint family",
+      "quality_cost": "100 member + 100 non-member partial-target samples; base SD1.5 snapshot; UNet attention-processor LoRA bridge; batch_size=1; max_n_samples=1",
+      "source": "research://workspaces/black-box/runs/clid-recon-clip-partial-target100-20260415-r1/summary.json",
+      "tpr_at_0_1pct_fpr": null,
+      "tpr_at_1pct_fpr": 1.0,
+      "track": "black-box"
+    },
+    {
+      "adaptive_check": {
+        "aggregation": "mean",
+        "metrics": {
+          "asr": 0.786133,
+          "auc": 0.841339,
+          "tpr_at_0_1pct_fpr": 0.011719,
+          "tpr_at_1pct_fpr": 0.058594
+        },
+        "query_repeats": 3,
+        "status": "completed"
+      },
+      "asr": 0.786133,
+      "attack": "PIA GPU512 baseline",
+      "auc": 0.841339,
+      "boundary": "workspace-verified + adaptive-reviewed + paper-alignment blocked by checkpoint/source provenance",
+      "cost": {
+        "adaptive_query_repeats": 3,
+        "attack_num": 30,
+        "batch_size": 8,
+        "device": "cuda:0",
+        "execution_mode": "single-device-serial",
+        "interval": 10,
+        "model_queries_per_sample": 31,
+        "queries_per_sample": 30,
+        "sample_count_per_split": 512,
+        "wall_clock_seconds": 212.993833
+      },
+      "defense": "none",
+      "defense_stage": "baseline",
+      "evidence_level": "runtime-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "current gray-box baseline reference; score is derived from epsilon-trajectory consistency under the official PIA DDPM attacker",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": 0.014127,
+          "inception_score": null,
+          "lpips": 0.188377
+        },
+        "official": false,
+        "reference": "input_batch",
+        "suite": "pia-runtime-surrogate-v1"
+      },
+      "quality_cost": "attack_num=30; interval=10; batch_size=8; 512 samples per split; single GPU serial; adaptive repeats=3; wall-clock=212.993833s",
+      "source": "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive/summary.json",
+      "tpr_at_0_1pct_fpr": 0.011719,
+      "tpr_at_1pct_fpr": 0.058594,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "enabled": false,
+        "metrics": {
+          "asr": 0.782715,
+          "auc": 0.83863,
+          "tpr_at_0_1pct_fpr": 0.013672,
+          "tpr_at_1pct_fpr": 0.048828
+        },
+        "status": "not-recorded"
+      },
+      "asr": 0.782715,
+      "attack": "PIA GPU1024 baseline",
+      "auc": 0.83863,
+      "boundary": "workspace-verified + adaptive-reviewed; snapshot scale-up evidence, not yet the promoted headline gray-box rung",
+      "cost": {
+        "details": "attack_num=30; interval=10; batch_size=8; 1024 samples per split; single GPU serial; adaptive repeats=3; wall-clock=494.968358s",
+        "execution_mode": "see-quality-cost"
+      },
+      "defense": "none",
+      "evidence_level": "runtime-candidate",
+      "model": "CIFAR-10 DDPM",
+      "note": "scale-up validation rung showing the current PIA snapshot signal remains stable beyond the earlier 512-sample baseline",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": null,
+          "inception_score": null,
+          "lpips": null
+        },
+        "official": false,
+        "reference": "quality-cost-note",
+        "suite": "not-recorded"
+      },
+      "quality_cost": "attack_num=30; interval=10; batch_size=8; 1024 samples per split; single GPU serial; adaptive repeats=3; wall-clock=494.968358s",
+      "source": "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline-20260415-gpu-1024-adaptive/summary.json",
+      "tpr_at_0_1pct_fpr": 0.013672,
+      "tpr_at_1pct_fpr": 0.048828,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "enabled": false,
+        "metrics": {
+          "asr": 0.770996,
+          "auc": 0.825402,
+          "tpr_at_0_1pct_fpr": 0.011719,
+          "tpr_at_1pct_fpr": 0.037109
+        },
+        "status": "not-recorded"
+      },
+      "asr": 0.770996,
+      "attack": "PIA GPU1024 baseline",
+      "auc": 0.825402,
+      "boundary": "workspace-verified + adaptive-reviewed; snapshot defense comparator, not yet the promoted headline defended rung",
+      "cost": {
+        "details": "attack_num=30; interval=10; batch_size=8; 1024 samples per split; single GPU serial; adaptive repeats=3; wall-clock=511.095233s",
+        "execution_mode": "see-quality-cost"
+      },
+      "defense": "stochastic-dropout (all_steps)",
+      "evidence_level": "runtime-candidate",
+      "model": "CIFAR-10 DDPM",
+      "note": "same-scale defended comparator for the new GPU1024 PIA rung; confirms all_steps dropout weakens but does not neutralize the local gray-box signal",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": null,
+          "inception_score": null,
+          "lpips": null
+        },
+        "official": false,
+        "reference": "quality-cost-note",
+        "suite": "not-recorded"
+      },
+      "quality_cost": "attack_num=30; interval=10; batch_size=8; 1024 samples per split; single GPU serial; adaptive repeats=3; wall-clock=511.095233s",
+      "source": "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline-dropout-defense-20260415-gpu-1024-allsteps-adaptive/summary.json",
+      "tpr_at_0_1pct_fpr": 0.011719,
+      "tpr_at_1pct_fpr": 0.037109,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "aggregation": "mean",
+        "metrics": {
+          "asr": 0.767578,
+          "auc": 0.828075,
+          "tpr_at_0_1pct_fpr": 0.009766,
+          "tpr_at_1pct_fpr": 0.052734
+        },
+        "query_repeats": 3,
+        "status": "completed"
+      },
+      "asr": 0.767578,
+      "attack": "PIA GPU512 baseline",
+      "auc": 0.828075,
+      "boundary": "workspace-verified + adaptive-reviewed + paper-alignment blocked by checkpoint/source provenance",
+      "cost": {
+        "adaptive_query_repeats": 3,
+        "attack_num": 30,
+        "batch_size": 8,
+        "device": "cuda:0",
+        "execution_mode": "single-device-serial",
+        "interval": 10,
+        "model_queries_per_sample": 31,
+        "queries_per_sample": 30,
+        "sample_count_per_split": 512,
+        "wall_clock_seconds": 223.128438
+      },
+      "defense": "provisional G-1 = stochastic-dropout (all_steps)",
+      "defense_stage": "adaptive-reviewed-provisional-g1",
+      "evidence_level": "runtime-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "current gray-box defended main result after repeated-query review; all_steps remains stronger than late_steps_only while keeping surrogate quality drift small",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": 0.000266,
+          "inception_score": null,
+          "lpips": 0.035881
+        },
+        "official": false,
+        "reference": "baseline_surrogate",
+        "suite": "pia-runtime-surrogate-v1"
+      },
+      "quality_cost": "attack_num=30; interval=10; batch_size=8; 512 samples per split; single GPU serial; adaptive repeats=3; wall-clock=223.128438s",
+      "source": "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline-dropout-defense-20260409-gpu-512-allsteps-adaptive/summary.json",
+      "tpr_at_0_1pct_fpr": 0.009766,
+      "tpr_at_1pct_fpr": 0.052734,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "enabled": false,
+        "metrics": {
+          "asr": 0.787109,
+          "auc": 0.837814,
+          "tpr_at_0_1pct_fpr": 0.015625,
+          "tpr_at_1pct_fpr": 0.050781
+        },
+        "status": "not-recorded"
+      },
+      "asr": 0.787109,
+      "attack": "TMIA-DM late-window GPU256 (repeat-confirmed)",
+      "auc": 0.837814,
+      "boundary": "workspace-verified + repeat-confirmed challenger; not yet promoted over the admitted PIA headline",
+      "cost": {
+        "details": "batch_size=8; 256 samples per split; single GPU serial; late-window [80,100,120]; repeat-confirmed at GPU128 and GPU256",
+        "execution_mode": "see-quality-cost"
+      },
+      "defense": "none",
+      "evidence_level": "runtime-challenger",
+      "model": "CIFAR-10 DDPM",
+      "note": "strongest active gray-box challenger; repeat-confirmed on both GPU128 and GPU256 and now mature enough for system-consumable comparison artifacts",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": null,
+          "inception_score": null,
+          "lpips": null
+        },
+        "official": false,
+        "reference": "quality-cost-note",
+        "suite": "not-recorded"
+      },
+      "quality_cost": "batch_size=8; 256 samples per split; single GPU serial; late-window [80,100,120]; repeat-confirmed at GPU128 and GPU256",
+      "source": "research://workspaces/gray-box/runs/tmiadm-cifar10-late-window-protocol-probe-20260416-gpu-256-r2-seed1/summary.json",
+      "tpr_at_0_1pct_fpr": 0.015625,
+      "tpr_at_1pct_fpr": 0.050781,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "enabled": false,
+        "metrics": {
+          "asr": 0.765625,
+          "auc": 0.82164,
+          "tpr_at_0_1pct_fpr": 0.019531,
+          "tpr_at_1pct_fpr": 0.042969
+        },
+        "status": "not-recorded"
+      },
+      "asr": 0.765625,
+      "attack": "TMIA-DM late-window GPU256 (repeat-confirmed)",
+      "auc": 0.82164,
+      "boundary": "workspace-verified + repeat-confirmed defended challenger; not yet promoted above the admitted defended PIA headline",
+      "cost": {
+        "details": "batch_size=8; 256 samples per split; single GPU serial; late-window [80,100,120]; defended repeat-confirmed at GPU128 and GPU256",
+        "execution_mode": "see-quality-cost"
+      },
+      "defense": "stochastic-dropout (all_steps)",
+      "evidence_level": "runtime-challenger",
+      "model": "CIFAR-10 DDPM",
+      "note": "defended gray-box is still multi-family; dropout weakens TMIA-DM late-window but does not eliminate it",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": null,
+          "inception_score": null,
+          "lpips": null
+        },
+        "official": false,
+        "reference": "quality-cost-note",
+        "suite": "not-recorded"
+      },
+      "quality_cost": "batch_size=8; 256 samples per split; single GPU serial; late-window [80,100,120]; defended repeat-confirmed at GPU128 and GPU256",
+      "source": "research://workspaces/gray-box/runs/tmiadm-cifar10-late-window-dropout-defense-20260416-gpu-256-r2-seed1/summary.json",
+      "tpr_at_0_1pct_fpr": 0.019531,
+      "tpr_at_1pct_fpr": 0.042969,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "enabled": false,
+        "metrics": {
+          "asr": 0.662109,
+          "auc": 0.7173,
+          "tpr_at_0_1pct_fpr": 0.011719,
+          "tpr_at_1pct_fpr": 0.019531
+        },
+        "status": "not-recorded"
+      },
+      "asr": 0.662109,
+      "attack": "TMIA-DM late-window GPU256 (repeat-confirmed)",
+      "auc": 0.7173,
+      "boundary": "workspace-verified + repeat-confirmed defended challenger; not yet promoted above the admitted defended PIA headline",
+      "cost": {
+        "details": "batch_size=8; 256 samples per split; single GPU serial; requested window [80,100,120]; effective window [80,120]; repeat-confirmed at cpu32, GPU128, and GPU256",
+        "execution_mode": "see-quality-cost"
+      },
+      "defense": "temporal-striding (stride=2)",
+      "evidence_level": "runtime-challenger",
+      "model": "CIFAR-10 DDPM",
+      "note": "current strongest defended TMIA-DM branch; materially stronger than TMIA + dropout, but still challenger-specific rather than the admitted defended project headline",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": null,
+          "inception_score": null,
+          "lpips": null
+        },
+        "official": false,
+        "reference": "quality-cost-note",
+        "suite": "not-recorded"
+      },
+      "quality_cost": "batch_size=8; 256 samples per split; single GPU serial; requested window [80,100,120]; effective window [80,120]; repeat-confirmed at cpu32, GPU128, and GPU256",
+      "source": "research://workspaces/gray-box/runs/tmiadm-cifar10-late-window-temporal-striding-defense-20260416-gpu-256-r2-seed1/summary.json",
+      "tpr_at_0_1pct_fpr": 0.011719,
+      "tpr_at_1pct_fpr": 0.019531,
+      "track": "gray-box"
+    },
+    {
+      "adaptive_check": {
+        "enabled": false,
+        "metrics": {
+          "asr": 0.8154,
+          "auc": 0.885833,
+          "tpr_at_0_1pct_fpr": 0.00772,
+          "tpr_at_1pct_fpr": 0.09396
+        },
+        "status": "not-recorded"
+      },
+      "asr": 0.8154,
+      "attack": "SecMI GPU full split",
+      "auc": 0.885833,
+      "boundary": "workspace-verified + full local split execution; still not automatically a paper-faithful benchmark claim",
+      "cost": {
+        "details": "t_sec=100; k=10; batch_size=64; 25000 samples per split; single GPU serial; stat line plus NNS auxiliary head",
+        "execution_mode": "see-quality-cost"
+      },
+      "defense": "none",
+      "evidence_level": "gpu-full-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "real SecMI full-split GPU run on imported CIFAR10 checkpoint bundle; NNS auxiliary head reaches AUC 0.946286 on the same rung",
+      "provenance_status": "workspace-verified",
+      "quality": {
+        "metrics": {
+          "fid": null,
+          "inception_score": null,
+          "lpips": null
+        },
+        "official": false,
+        "reference": "quality-cost-note",
+        "suite": "not-recorded"
+      },
+      "quality_cost": "t_sec=100; k=10; batch_size=64; 25000 samples per split; single GPU serial; stat line plus NNS auxiliary head",
+      "source": "research://workspaces/gray-box/runs/secmi-cifar10-gpu-full-stat-20260415-r2/summary.json",
+      "tpr_at_0_1pct_fpr": 0.00772,
+      "tpr_at_1pct_fpr": 0.09396,
+      "track": "gray-box"
+    },
+    {
+      "asr": 0.9895,
+      "attack": "GSA 1k-3shadow",
+      "auc": 0.998192,
+      "boundary": "admitted white-box bridge / risk upper-bound; not a final paper-level benchmark",
+      "defense": "none",
+      "evidence_level": "runtime-mainline",
+      "model": "CIFAR-10 DDPM",
+      "note": "current white-box attack main evidence promoted from epoch300 rerun1 under the same 1k-3shadow protocol",
+      "quality_cost": "target_eval_size=2000; shadow_train_size=4200; 3 shadows; cuda",
+      "source": "research://workspaces/white-box/runs/gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1/summary.json",
+      "tpr_at_0_1pct_fpr": 0.432,
+      "tpr_at_1pct_fpr": 0.987,
+      "track": "white-box"
+    },
+    {
+      "asr": 0.4985,
+      "attack": "GSA 1k-3shadow",
+      "auc": 0.488783,
+      "boundary": "admitted white-box bridge / defended comparator; not a final paper-level benchmark",
+      "defense": "W-1 strong-v3 full-scale",
+      "evidence_level": "runtime-smoke",
+      "model": "DPDM / Diffusion-DP",
+      "note": "current white-box defended main result",
+      "quality_cost": "target_eval_size=2000; shadow_train_size=6000; classifier=logistic-regression-1d",
+      "source": "research://workspaces/white-box/runs/dpdm-w1-multi-shadow-comparator-targetmember-strongv3-3shadow-full-rerun8-20260408/summary.json",
+      "tpr_at_0_1pct_fpr": 0.0,
+      "tpr_at_1pct_fpr": 0.009,
+      "track": "white-box"
+    },
+    {
+      "asr": 0.496,
+      "attack": "GSA 1k-3shadow",
+      "auc": 0.490813,
+      "boundary": "admitted white-box bridge / defended comparator; not a final paper-level benchmark",
+      "defense": "W-1 strong-v2 full-scale",
+      "evidence_level": "runtime-smoke",
+      "model": "DPDM / Diffusion-DP",
+      "note": "defended reference rung kept for comparison",
+      "quality_cost": "target_eval_size=2000; shadow_train_size=6000; classifier=logistic-regression-1d",
+      "source": "research://workspaces/white-box/runs/dpdm-w1-multi-shadow-comparator-targetmember-strongv2-3shadow-full-20260408/summary.json",
+      "tpr_at_0_1pct_fpr": 0.0,
+      "tpr_at_1pct_fpr": 0.006,
+      "track": "white-box"
+    }
+  ],
+  "schema": "diffaudit.attack_defense_table.v1",
+  "updated_at": "2026-04-26T00:00:00+08:00"
+}

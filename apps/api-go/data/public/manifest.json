@@ -1,0 +1,24 @@
+{
+  "catalog_count": 4,
+  "contract_summary_keys": {
+    "black-box/recon/sd15-ddim": "recon-runtime-mainline-ddim-public-100-step30",
+    "gray-box/pia/cifar10-ddpm": "pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive",
+    "white-box/gsa/ddpm-cifar10": "gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1"
+  },
+  "generated_at": "2026-04-28T12:00:57.721985+00:00",
+  "source": "research-direct-sync",
+  "summary_keys": [
+    "gsa-runtime-mainline-20260409-cifar10-1k-3shadow-epoch300-rerun1",
+    "pia-cifar10-runtime-mainline-20260409-gpu-512-adaptive",
+    "recon-runtime-mainline-ddim-public-100-step30"
+  ],
+  "warnings": [
+    "catalog: runtime unavailable; reused existing snapshot.",
+    "attack-defense-table: runtime unavailable; synced from research://workspaces/implementation/artifacts/unified-attack-defense-table.json.",
+    "models: runtime unavailable; reused existing snapshot.",
+    "black-box/recon/sd15-ddim: runtime unavailable while fetching best evidence.",
+    "gray-box/pia/cifar10-ddpm: runtime unavailable while fetching best evidence.",
+    "white-box/gsa/ddpm-cifar10: runtime unavailable while fetching best evidence.",
+    "summaries: runtime unavailable; reused existing snapshot."
+  ]
+}

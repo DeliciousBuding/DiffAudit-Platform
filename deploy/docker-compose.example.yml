@@ -1,0 +1,46 @@
+name: diffaudit-platform
+
+services:
+  api:
+    image: ${DIFFAUDIT_API_IMAGE:-diffaudit-platform-api}:${DIFFAUDIT_IMAGE_TAG:-local}
+    build:
+      context: ..
+      dockerfile: apps/api-go/Dockerfile
+      args:
+        BUILD_DATE: ${DIFFAUDIT_BUILD_DATE:-unknown}
+        VCS_REF: ${DIFFAUDIT_VCS_REF:-unknown}
+    command: ["--host", "0.0.0.0", "--port", "8780"]
+    env_file:
+      - path: ./runtime.env
+        required: false
+    environment:
+      DIFFAUDIT_PUBLIC_DATA_DIR: /app/data/public
+    ports:
+      - "${DIFFAUDIT_API_BIND:-127.0.0.1:8780}:8780"
+    restart: unless-stopped
+    volumes:
+      - "${DIFFAUDIT_PUBLIC_SNAPSHOT_DIR:-../apps/api-go/data/public}:/app/data/public:ro"
+
+  web:
+    image: ${DIFFAUDIT_WEB_IMAGE:-diffaudit-platform-web}:${DIFFAUDIT_IMAGE_TAG:-local}
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      args:
+        BUILD_DATE: ${DIFFAUDIT_BUILD_DATE:-unknown}
+        VCS_REF: ${DIFFAUDIT_VCS_REF:-unknown}
+    depends_on:
+      - api
+    env_file:
+      - path: ./runtime.env
+        required: false
+    environment:
+      DIFFAUDIT_API_BASE_URL: ${DIFFAUDIT_INTERNAL_API_URL:-http://api:8780}
+    ports:
+      - "${DIFFAUDIT_WEB_BIND:-127.0.0.1:3000}:3000"
+    restart: unless-stopped
+    volumes:
+      - web-data:/app/data
+
+volumes:
+  web-data:

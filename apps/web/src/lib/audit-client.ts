@@ -1,0 +1,191 @@
+export type RuntimeProfile = string | Record<string, unknown>;
+
+export type EvidenceSummaryPayload = {
+  status?: string;
+  paper?: string;
+  method?: string;
+  mode?: string;
+  workspace: string;
+  summary_path?: string;
+  backend?: string | null;
+  scheduler?: string | null;
+  metrics?: {
+    auc?: number | null;
+    asr?: number | null;
+    tpr_at_1pct_fpr?: number | null;
+  };
+  artifact_paths?: {
+    score_artifact_dir?: string;
+  };
+};
+
+export type JobSubmissionPayload = {
+  job_type: string;
+  contract_key: string;
+  workspace_name: string;
+  repo_root?: string;
+  runtime_profile?: RuntimeProfile;
+  assets?: Record<string, unknown>;
+  job_inputs: Record<string, unknown>;
+};
+
+export type ArtifactReplayJobPayload = JobSubmissionPayload & {
+  job_type: "recon_artifact_mainline";
+  contract_key: "black-box/recon/sd15-ddim";
+  job_inputs: {
+    artifact_dir: string;
+    method: "threshold";
+  };
+};
+
+export type GenericAuditJobPayload = {
+  job_type:
+    | "recon_artifact_mainline"
+    | "recon_runtime_mainline"
+    | "pia_runtime_mainline"
+    | "gsa_runtime_mainline";
+  contract_key:
+    | "black-box/recon/sd15-ddim"
+    | "gray-box/pia/cifar10-ddpm"
+    | "white-box/gsa/ddpm-cifar10";
+  workspace_name: string;
+  repo_root?: string;
+  runtime_profile?: RuntimeProfile;
+  assets?: Record<string, unknown>;
+  job_inputs: Record<string, unknown>;
+};
+
+export type EvidenceSourceSnapshot = {
+  statusLabel: string;
+  statusTone: "primary" | "success" | "warning" | "info";
+  workspaceName: string;
+  workspacePath: string;
+  paper: string;
+  method: string;
+  mode: string;
+  backendLabel: string;
+  aucLabel: string;
+  asrLabel: string;
+  tprLabel: string;
+  summaryPath: string;
+};
+
+export type EvidenceViewModel = {
+  status: {
+    label: string;
+    tone: EvidenceSourceSnapshot["statusTone"];
+  };
+  workspace: {
+    name: string;
+    path: string;
+  };
+  context: {
+    paper: string;
+    method: string;
+  };
+  executionMode: string;
+  backendLabel: string;
+  metrics: {
+    aucLabel: string;
+    asrLabel: string;
+    tprLabel: string;
+  };
+  summaryPath: string;
+};
+
+function formatMetric(value: number | null | undefined) {
+  if (typeof value !== "number") {
+    return "n/a";
+  }
+  return value.toFixed(3);
+}
+
+export function summarizeEvidenceMetrics(best: Pick<EvidenceSummaryPayload, "backend" | "scheduler" | "metrics">) {
+  const backendLabel = best.scheduler
+    ? `${best.backend ?? "unknown"} / ${best.scheduler}`
+    : `${best.backend ?? "unknown"}`;
+
+  return {
+    backendLabel,
+    aucLabel: formatMetric(best.metrics?.auc),
+    asrLabel: formatMetric(best.metrics?.asr),
+    tprLabel: formatMetric(best.metrics?.tpr_at_1pct_fpr),
+  };
+}
+
+export function toEvidenceViewModel(
+  source: EvidenceSourceSnapshot,
+): EvidenceViewModel {
+  return {
+    status: {
+      label: source.statusLabel,
+      tone: source.statusTone,
+    },
+    workspace: {
+      name: source.workspaceName,
+      path: source.workspacePath,
+    },
+    context: {
+      paper: source.paper,
+      method: source.method,
+    },
+    executionMode: source.mode,
+    backendLabel: source.backendLabel,
+    metrics: {
+      aucLabel: source.aucLabel,
+      asrLabel: source.asrLabel,
+      tprLabel: source.tprLabel,
+    },
+    summaryPath: source.summaryPath,
+  };
+}
+
+export function buildArtifactReplayJobPayload(
+  best: EvidenceSummaryPayload,
+  workspaceName: string,
+  options?: {
+    runtimeProfile?: RuntimeProfile;
+    assets?: Record<string, unknown>;
+    repoRoot?: string;
+  },
+): ArtifactReplayJobPayload {
+  const artifactDir = best.artifact_paths?.score_artifact_dir;
+  if (!artifactDir) {
+    throw new Error("Best evidence does not expose score_artifact_dir");
+  }
+
+  const payload: ArtifactReplayJobPayload = {
+    job_type: "recon_artifact_mainline",
+    contract_key: "black-box/recon/sd15-ddim",
+    workspace_name: workspaceName,
+    runtime_profile: "local",
+    assets: {},
+    job_inputs: {
+      artifact_dir: artifactDir,
+      method: "threshold",
+    },
+  };
+
+  if (options?.runtimeProfile) {
+    payload.runtime_profile = options.runtimeProfile;
+  }
+  if (options?.assets) {
+    payload.assets = options.assets;
+  }
+  if (options?.repoRoot) {
+    payload.repo_root = options.repoRoot;
+  }
+
+  return payload;
+}
+
+export function buildRuntimeMainlineJobPayload(
+  payload: GenericAuditJobPayload,
+): GenericAuditJobPayload {
+  return {
+    ...payload,
+    runtime_profile: payload.runtime_profile ?? "local",
+    assets: payload.assets ?? {},
+    job_inputs: payload.job_inputs ?? {},
+  };
+}

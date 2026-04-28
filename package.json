@@ -1,0 +1,25 @@
+{
+  "name": "diffaudit-platform",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Platform shell for DiffAudit frontend and API.",
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "lint:web": "npm --prefix apps/web run lint",
+    "test:web": "npm --prefix apps/web run test",
+    "dev:api": "go -C ./apps/api-go run ./cmd/platform-api --host 127.0.0.1 --port 8780",
+    "test:api": "go -C ./apps/api-go test ./...",
+    "build:api": "go -C ./apps/api-go build ./cmd/platform-api",
+    "publish:public-snapshot": "py -3 ./apps/api-go/scripts/publish_public_snapshot.py",
+    "check:public": "python scripts/check_public_boundary.py",
+    "lint:api": "gofmt -l apps/api-go",
+    "format:api": "gofmt -w apps/api-go",
+    "check:fast": "python scripts/run_local_checks.py --fast",
+    "check:all": "python scripts/run_local_checks.py"
+  }
+}

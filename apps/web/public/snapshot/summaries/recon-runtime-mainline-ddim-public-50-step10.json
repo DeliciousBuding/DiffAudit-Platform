@@ -1,0 +1,40 @@
+{
+  "status": "ready",
+  "track": "black-box",
+  "method": "recon",
+  "paper": "BlackBox_Reconstruction_ArXiv2023",
+  "mode": "runtime-mainline",
+  "device": "cuda:0",
+  "workspace": "recon-runtime-mainline-ddim-public-50-step10",
+  "contract_key": "black-box/recon/sd15-ddim",
+  "checks": {
+    "runtime_assets_ready": true,
+    "all_artifacts_generated": true,
+    "artifact_probe_ready": true,
+    "artifact_mainline_ready": true
+  },
+  "headline_metrics": {
+    "auc": 0.866,
+    "asr": 0.51,
+    "tpr_at_1pct_fpr": 1.0,
+    "accuracy": 0.78,
+    "precision": 0.82,
+    "recall": 0.74
+  },
+  "dataset_info": {
+    "target_member_count": 50,
+    "target_non_member_count": 50,
+    "shadow_member_count": 50,
+    "shadow_non_member_count": 50
+  },
+  "model_info": {
+    "target_model": "sd15-ddim",
+    "shadow_model": "sd15-ddim-shadow",
+    "checkpoint_steps": 25000
+  },
+  "execution_time": {
+    "total_seconds": 1847,
+    "artifact_generation_seconds": 1523,
+    "evaluation_seconds": 324
+  }
+}
