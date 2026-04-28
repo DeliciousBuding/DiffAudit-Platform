@@ -8,6 +8,7 @@ import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
 import { PlatformNavMobile } from "@/components/platform-nav.client";
+import { WorkspaceStatusDrawer } from "@/components/workspace-status-drawer";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { getWorkspaceDataMode } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -42,6 +43,7 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
       <div className="workspace-main-area">
         <header className="workspace-topbar">
           <div className="flex items-center gap-2 flex-wrap">
+            <WorkspaceStatusDrawer locale={locale} dataMode={dataMode} />
             {dataMode !== "demo" ? (
               <StatusBadge tone="success">{copy.shell.liveMode}</StatusBadge>
             ) : null}

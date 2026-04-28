@@ -1369,13 +1369,89 @@ html.dark .header-pill-primary:hover {
   z-index: 30;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 16px;
   min-height: 48px;
   padding: 6px 24px;
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+.workspace-status-trigger {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  border-color: rgba(47, 109, 246, 0.12);
+  background: rgba(47, 109, 246, 0.06);
+  padding: 6px 11px;
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.workspace-status-trigger:hover {
+  border-color: rgba(47, 109, 246, 0.2);
+  background: rgba(47, 109, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.workspace-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.12);
+}
+
+.workspace-status-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: min(320px, calc(100vw - 32px));
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 0 0 1px rgba(18, 19, 23, 0.04),
+    0 24px 70px rgba(18, 19, 23, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.workspace-status-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.workspace-status-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 14px;
+  background: rgba(248, 249, 252, 0.58);
+  padding: 9px 10px;
+}
+
+.workspace-status-list dt {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workspace-status-list dd {
+  margin: 0;
 }
 
 .workspace-main-content {
@@ -1396,6 +1472,10 @@ html.dark .header-pill-primary:hover {
 
   .workspace-main-content {
     padding: 16px 16px 104px;
+  }
+
+  .workspace-status-panel {
+    left: 0;
   }
 }
 
@@ -1957,6 +2037,39 @@ html.dark .workspace-highlight {
 html[data-theme="dark"] .workspace-topbar,
 html.dark .workspace-topbar {
   background: rgba(30, 30, 32, 0.92);
+}
+
+html[data-theme="dark"] .workspace-status-trigger,
+html.dark .workspace-status-trigger {
+  border-color: rgba(91, 142, 249, 0.18);
+  background: rgba(91, 142, 249, 0.1);
+}
+
+html[data-theme="dark"] .workspace-status-trigger:hover,
+html.dark .workspace-status-trigger:hover {
+  border-color: rgba(91, 142, 249, 0.28);
+  background: rgba(91, 142, 249, 0.16);
+}
+
+html[data-theme="dark"] .workspace-status-dot,
+html.dark .workspace-status-dot {
+  background: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(91, 142, 249, 0.16);
+}
+
+html[data-theme="dark"] .workspace-status-panel,
+html.dark .workspace-status-panel {
+  border-color: rgba(255, 255, 255, 0.07);
+  background: rgba(42, 42, 45, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 24px 70px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .workspace-status-list > div,
+html.dark .workspace-status-list > div {
+  background: rgba(30, 30, 32, 0.54);
 }
 
 html[data-theme="dark"] tbody tr:hover,

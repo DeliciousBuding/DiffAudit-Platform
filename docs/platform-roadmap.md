@@ -16,7 +16,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Public repository hygiene | Active | Public boundary scan runs locally and in CI |
 | Docker images | Active | GHCR publishes web and API images with immutable `sha-<short-sha>` tags |
 | Deployment traceability | Active | Gateway health exposes redacted build revision and snapshot status |
-| Workspace settings | Active | Settings shows Runtime mode, snapshot state, and build revision |
+| Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |
 | Reports | Active | Evidence stack, provenance, charts, PDF and CSV export |
 | Demo mode | Active | Snapshot-backed demo data keeps the workspace reviewable offline |
 
@@ -24,11 +24,10 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 
 | Priority | Track | Work |
 | --- | --- | --- |
-| P1 | Workspace observability | Add a compact status drawer for snapshot age, build revision, and Runtime mode across workspace pages |
 | P1 | Reports | Improve printable report pagination, table wrapping, and long-evidence layout |
 | P1 | Audit loop | Make created demo/live jobs route directly into detail and then into matching reports |
 | P2 | Docs | Add a public API contract page for catalog, evidence table, and report data shapes |
-| P2 | Deployment | Add optional GHCR pull instructions for compose-based deployments |
+| P2 | Deployment | Add optional image provenance verification helpers for GHCR and local archive deployments |
 | P2 | Account | Polish account security state for linked providers, verified email, and password access |
 
 ## Longer-Term Direction

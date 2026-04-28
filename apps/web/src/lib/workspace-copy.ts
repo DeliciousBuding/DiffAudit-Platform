@@ -18,6 +18,15 @@ export const WORKSPACE_COPY: Record<
       mobileNavAriaLabel: string;
       githubTitle: string;
       signOut: string;
+      statusTrigger: string;
+      statusTitle: string;
+      statusDescription: string;
+      statusDataMode: string;
+      statusSnapshot: string;
+      statusBuild: string;
+      statusReady: string;
+      statusMissing: string;
+      statusUnknown: string;
     };
     userMenu: {
       loggedIn: string;
@@ -465,6 +474,15 @@ export const WORKSPACE_COPY: Record<
       mobileNavAriaLabel: "Mobile navigation",
       githubTitle: "GitHub",
       signOut: "Sign out",
+      statusTrigger: "Workspace status",
+      statusTitle: "Workspace status",
+      statusDescription: "Current data mode, snapshot availability, and deployed build.",
+      statusDataMode: "Data mode",
+      statusSnapshot: "Snapshot bundle",
+      statusBuild: "Build revision",
+      statusReady: "Ready",
+      statusMissing: "Missing",
+      statusUnknown: "Unknown",
     },
     userMenu: {
       loggedIn: "Signed in",
@@ -1129,6 +1147,15 @@ export const WORKSPACE_COPY: Record<
       mobileNavAriaLabel: "移动端导航",
       githubTitle: "GitHub",
       signOut: "退出登录",
+      statusTrigger: "工作台状态",
+      statusTitle: "工作台状态",
+      statusDescription: "当前数据模式、快照可用性和部署构建版本。",
+      statusDataMode: "数据模式",
+      statusSnapshot: "快照数据包",
+      statusBuild: "构建版本",
+      statusReady: "已就绪",
+      statusMissing: "缺失",
+      statusUnknown: "未知",
     },
     userMenu: {
       loggedIn: "已登录",

@@ -10,6 +10,7 @@ Only templates are committed. Real environment files, hostnames, TLS settings, p
 | --- | --- |
 | `docker-compose.example.yml` | Generic two-service compose template for the web app and Go gateway |
 | `compose.env.example` | Compose interpolation values such as image tag, bind address, and snapshot host path |
+| `compose.ghcr.env.example` | Compose interpolation values for published GHCR images |
 | `runtime.env.example` | Runtime environment variables passed into containers |
 
 ## Build Traceable Images
@@ -38,6 +39,19 @@ The workflow publishes:
 - `latest` for simple demos and local evaluation.
 
 Production-like deployments should prefer `sha-<short-sha>` or an explicitly recorded revision tag. `latest` is convenient but should not be the rollback anchor.
+
+## Pull From GHCR
+
+For a compose deployment that pulls published images instead of building locally:
+
+```powershell
+Copy-Item .\deploy\compose.ghcr.env.example .\deploy\.env
+# Edit DIFFAUDIT_IMAGE_TAG to a real immutable tag, for example sha-1c9d67d.
+docker compose --env-file .\deploy\.env -f .\deploy\docker-compose.example.yml pull
+docker compose --env-file .\deploy\.env -f .\deploy\docker-compose.example.yml up -d
+```
+
+Use GHCR when the host has reliable registry egress and you want reproducible image provenance without moving tar archives. If registry egress is unreliable, build or transfer a revision-labeled image archive and still validate the OCI revision label before restart.
 
 ## Run With Compose
 
@@ -77,3 +91,10 @@ docker image inspect diffaudit-platform-api:local --format '{{ index .Config.Lab
 ```
 
 The gateway should serve `/health`, and the web app should load through the configured platform URL.
+
+For GHCR tags, also verify the pulled image reference and the redacted build metadata:
+
+```powershell
+docker image inspect ghcr.io/deliciousbuding/diffaudit-platform-api:sha-1c9d67d --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}'
+curl http://127.0.0.1:8780/health
+```
