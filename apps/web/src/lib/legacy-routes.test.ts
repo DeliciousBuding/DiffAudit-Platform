@@ -12,11 +12,36 @@ const LEGACY_PAGE_FILES = [
   "report/page.tsx",
 ] as const;
 const LEGACY_ROUTE_RE = /(?<![A-Za-z0-9/_-])\/(?:audit|batch|dashboard|guide|report)(?![A-Za-z0-9/_-])/g;
+const SCAN_ROOTS = [
+  path.join(process.cwd(), "src"),
+  path.join(process.cwd(), "..", "..", "README.md"),
+  path.join(process.cwd(), "..", "..", "docs"),
+] as const;
+
+function shouldSkipPath(absolutePath: string) {
+  const parts = absolutePath.split(path.sep);
+  return parts.includes("node_modules") || parts.includes(".next") || parts.includes(".git");
+}
 
 function walkFiles(dir: string): string[] {
+  if (shouldSkipPath(dir)) {
+    return [];
+  }
+
   return readdirSync(dir).flatMap((entry) => {
     const absolutePath = path.join(dir, entry);
-    if (statSync(absolutePath).isDirectory()) {
+    if (shouldSkipPath(absolutePath)) {
+      return [];
+    }
+
+    let stats;
+    try {
+      stats = statSync(absolutePath);
+    } catch {
+      return [];
+    }
+
+    if (stats.isDirectory()) {
       return walkFiles(absolutePath);
     }
     return /\.(md|ts|tsx)$/.test(entry) ? [absolutePath] : [];
@@ -39,9 +64,17 @@ describe("legacy workspace routes", () => {
   });
 
   it("does not link to deleted legacy top-level routes", () => {
-    const references = walkFiles(process.cwd()).flatMap((file) => {
+    const references = SCAN_ROOTS.flatMap((root) => {
+      try {
+        const stats = statSync(root);
+        return stats.isDirectory() ? walkFiles(root) : [root];
+      } catch {
+        return [];
+      }
+    }).flatMap((file) => {
       if (
         file.endsWith(`${path.sep}legacy-routes.test.ts`)
+        || file.endsWith(`${path.sep}project-structure.md`)
         || file.includes(`${path.sep}node_modules${path.sep}`)
         || file.includes(`${path.sep}.next${path.sep}`)
       ) {
