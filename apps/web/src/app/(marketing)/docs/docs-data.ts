@@ -294,7 +294,7 @@ function zhContent(): DocsContent {
         eyebrow: "参考",
         title: "API 接口",
         summary:
-          "以下接口覆盖目录查询、任务创建、任务列表、实验汇总和证据表查询。",
+          "以下接口覆盖目录查询、任务创建、任务列表、实验汇总、证据表查询和公开快照数据契约。",
         sections: [
           {
             id: "core-endpoints",
@@ -321,20 +321,80 @@ function zhContent(): DocsContent {
               columns: ["方法", "路径", "说明"],
               rows: [
                 ["GET", "/api/v1/catalog", "读取可审计模型与数据集目录。"],
+                ["GET", "/api/v1/models", "读取公开快照中的模型列表。"],
                 ["GET", "/api/v1/audit/jobs", "列出当前用户的审计任务。"],
                 ["POST", "/api/v1/audit/jobs", "创建新的审计任务并开始运行。"],
+                ["GET", "/api/v1/audit/jobs/{jobId}", "读取单个任务的公开安全状态与日志摘要。"],
                 ["GET", "/api/v1/experiments/{workspace}/summary", "读取指定工作区的实验汇总。"],
                 ["GET", "/api/v1/evidence/attack-defense-table", "读取攻击-防御证据表。"],
               ],
             },
           },
           {
+            id: "snapshot-contract",
+            label: "数据契约",
+            title: "公开快照数据契约",
+            paragraphs: [
+              "目录、模型、证据表与报告读取接口默认消费发布后的 public snapshot。请求期不会回退读取本地 Research 工作区、Runtime 文件系统或私有部署路径。",
+              "字段可能随研究主线演进扩展；客户端应将新增字段视为可选增强，并在缺失时显示空状态或破折号。",
+            ],
+            table: {
+              columns: ["资源", "关键字段", "说明"],
+              rows: [
+                ["Catalog entry", "contract_key, track, attack_family, target_key, label, availability, evidence_level, best_workspace, system_gap, admission_status, provenance_status", "描述一个可审计合同项及其证据入选状态。"],
+                ["Attack-defense row", "track, attack, defense, auc, asr, tpr_at_fpr, risk_level, evidence_level, boundary, source_path, provenance_status", "描述单条攻击/防御实验结果，可用于表格、图表和报告导出。"],
+                ["Experiment summary", "workspace, metrics, curves, metadata, provenance", "描述指定工作区的指标、曲线和来源摘要。"],
+                ["Audit job facade", "job_id, status, created_at, updated_at, job_type, contract_key, stdout_tail, stderr_tail, state_history", "任务接口返回公开安全的状态与日志摘要；原始 Runtime 文本会先经过脱敏。"],
+              ],
+            },
+          },
+          {
+            id: "response-examples",
+            label: "响应示例",
+            title: "响应形状示例",
+            paragraphs: [
+              "下面示例只展示稳定字段和可选增强字段，真实响应可能包含更多公开安全字段。",
+            ],
+            codeBlocks: [
+              {
+                language: "json",
+                title: "Catalog entry",
+                code: `{
+  "contract_key": "black-box/recon/sd15-ddim",
+  "track": "black-box",
+  "attack_family": "recon",
+  "target_key": "sd15-ddim",
+  "label": "Stable Diffusion 1.5 DDIM Recon",
+  "availability": "ready",
+  "evidence_level": "admitted",
+  "best_workspace": "research://experiments/recon-runtime-mainline",
+  "provenance_status": "verified"
+}`,
+              },
+              {
+                language: "json",
+                title: "Attack-defense row",
+                code: `{
+  "track": "gray-box",
+  "attack": "PIA",
+  "defense": "stochastic-dropout",
+  "auc": 0.828,
+  "asr": 0.742,
+  "tpr_at_fpr": 0.516,
+  "risk_level": "high",
+  "boundary": "public-snapshot",
+  "source_path": "research://tables/unified-attack-defense-table"
+}`,
+              },
+            ],
+          },
+          {
             id: "notes",
             label: "说明",
             title: "使用说明",
             paragraphs: [
-              "接口地址中的端口 8780 对应 API Gateway 服务，端口 8765 对应 Runtime-Server。",
-              "前端页面通过 API Gateway 转发，不直接访问 Runtime-Server。",
+              "接口地址中的端口 8780 对应 API Gateway 服务。前端页面通过 API Gateway 转发，不直接访问 Runtime-Server。",
+              "控制面接口在 Runtime 不可用时会返回公开安全的不可达状态；页面应保留 demo/snapshot 数据，不应显示原始网络异常、机器路径或私有主机信息。",
             ],
           },
         ],
@@ -650,7 +710,7 @@ function enContent(): DocsContent {
         eyebrow: "Reference",
         title: "API endpoints",
         summary:
-          "Endpoints cover catalog query, task creation, task listing, experiment summary, and evidence table lookup.",
+          "Endpoints cover catalog query, task creation, task listing, experiment summary, evidence table lookup, and public snapshot data contracts.",
         sections: [
           {
             id: "core-endpoints",
@@ -677,20 +737,80 @@ function enContent(): DocsContent {
               columns: ["Method", "Path", "Description"],
               rows: [
                 ["GET", "/api/v1/catalog", "Read the auditable model and dataset catalog."],
+                ["GET", "/api/v1/models", "Read model entries from the public snapshot."],
                 ["GET", "/api/v1/audit/jobs", "List current audit jobs."],
                 ["POST", "/api/v1/audit/jobs", "Create a new audit job."],
+                ["GET", "/api/v1/audit/jobs/{jobId}", "Read a public-safe job status and log summary."],
                 ["GET", "/api/v1/experiments/{workspace}/summary", "Read experiment summary for a workspace."],
                 ["GET", "/api/v1/evidence/attack-defense-table", "Read the attack-defense evidence table."],
               ],
             },
           },
           {
+            id: "snapshot-contract",
+            label: "Data contract",
+            title: "Public snapshot data contract",
+            paragraphs: [
+              "Catalog, model, evidence-table, and report-reading endpoints consume the published public snapshot by default. Request-time handlers do not fall back to local Research workspaces, Runtime filesystems, or private deployment paths.",
+              "Fields can expand as the research mainline evolves. Clients should treat new fields as optional enhancements and render empty states or dashes when optional fields are absent.",
+            ],
+            table: {
+              columns: ["Resource", "Key fields", "Notes"],
+              rows: [
+                ["Catalog entry", "contract_key, track, attack_family, target_key, label, availability, evidence_level, best_workspace, system_gap, admission_status, provenance_status", "Describes an auditable contract and its admitted-evidence state."],
+                ["Attack-defense row", "track, attack, defense, auc, asr, tpr_at_fpr, risk_level, evidence_level, boundary, source_path, provenance_status", "Describes one attack/defense result for tables, charts, and report export."],
+                ["Experiment summary", "workspace, metrics, curves, metadata, provenance", "Describes metrics, curves, and provenance summary for a workspace."],
+                ["Audit job facade", "job_id, status, created_at, updated_at, job_type, contract_key, stdout_tail, stderr_tail, state_history", "Job APIs return public-safe status and log summaries; raw Runtime text is sanitized before rendering."],
+              ],
+            },
+          },
+          {
+            id: "response-examples",
+            label: "Response examples",
+            title: "Response shape examples",
+            paragraphs: [
+              "The examples show stable fields and optional enhancements. Actual responses can contain additional public-safe fields.",
+            ],
+            codeBlocks: [
+              {
+                language: "json",
+                title: "Catalog entry",
+                code: `{
+  "contract_key": "black-box/recon/sd15-ddim",
+  "track": "black-box",
+  "attack_family": "recon",
+  "target_key": "sd15-ddim",
+  "label": "Stable Diffusion 1.5 DDIM Recon",
+  "availability": "ready",
+  "evidence_level": "admitted",
+  "best_workspace": "research://experiments/recon-runtime-mainline",
+  "provenance_status": "verified"
+}`,
+              },
+              {
+                language: "json",
+                title: "Attack-defense row",
+                code: `{
+  "track": "gray-box",
+  "attack": "PIA",
+  "defense": "stochastic-dropout",
+  "auc": 0.828,
+  "asr": 0.742,
+  "tpr_at_fpr": 0.516,
+  "risk_level": "high",
+  "boundary": "public-snapshot",
+  "source_path": "research://tables/unified-attack-defense-table"
+}`,
+              },
+            ],
+          },
+          {
             id: "notes",
             label: "Notes",
             title: "Usage notes",
             paragraphs: [
-              "Port 8780 is the API Gateway. Port 8765 is the Runtime-Server.",
-              "The frontend routes through the API Gateway and does not directly access the Runtime-Server.",
+              "Port 8780 is the API Gateway. Frontend routes go through the API Gateway and do not directly access the Runtime-Server.",
+              "When the Runtime control plane is unavailable, control endpoints return public-safe disconnected states. Pages should keep demo/snapshot data visible and must not display raw network errors, machine paths, or private host details.",
             ],
           },
         ],
