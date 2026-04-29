@@ -15,6 +15,12 @@ describe("sanitizeRuntimeText", () => {
     ).toBe("failed at <local-path> and <local-path> with token=<redacted> via <runtime-url>");
   });
 
+  it("redacts private hosts even when they are not full URLs", () => {
+    expect(
+      sanitizeRuntimeText("runtime at localhost:8765 forwarded to control.internal and 10.0.0.8"),
+    ).toBe("runtime at <runtime-host> forwarded to <runtime-host> and <runtime-host>");
+  });
+
   it("preserves empty values", () => {
     expect(sanitizeRuntimeText(null)).toBeNull();
     expect(sanitizeRuntimeText("")).toBe("");

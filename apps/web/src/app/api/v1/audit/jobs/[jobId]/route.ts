@@ -1,4 +1,5 @@
-import { proxyToBackend } from "@/lib/api-proxy";
+import { proxyJsonToBackend } from "@/lib/api-proxy";
+import { sanitizeAuditJobPayload } from "@/lib/audit-job-payload";
 import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 import { cancelDemoJob, findDemoJob } from "@/lib/demo-jobs-store";
 
@@ -10,10 +11,14 @@ export async function GET(
   if (await isDemoModeEnabledServer(request)) {
     const job = findDemoJob(jobId);
     return job
-      ? Response.json({ job })
+      ? Response.json(sanitizeAuditJobPayload({ job }))
       : Response.json({ detail: "Demo job not found" }, { status: 404 });
   }
-  return proxyToBackend(`/api/v1/audit/jobs/${jobId}`);
+  return proxyJsonToBackend(
+    `/api/v1/audit/jobs/${jobId}`,
+    undefined,
+    sanitizeAuditJobPayload,
+  );
 }
 
 export async function DELETE(
@@ -24,8 +29,12 @@ export async function DELETE(
   if (await isDemoModeEnabledServer(request)) {
     const job = cancelDemoJob(jobId);
     return job
-      ? Response.json({ ok: true, job })
+      ? Response.json(sanitizeAuditJobPayload({ ok: true, job }))
       : Response.json({ detail: "Demo job not found" }, { status: 404 });
   }
-  return proxyToBackend(`/api/v1/audit/jobs/${jobId}`, { method: "DELETE" });
+  return proxyJsonToBackend(
+    `/api/v1/audit/jobs/${jobId}`,
+    { method: "DELETE" },
+    sanitizeAuditJobPayload,
+  );
 }

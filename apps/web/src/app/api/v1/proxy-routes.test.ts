@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const proxyToBackend = vi.fn();
+const proxyJsonToBackend = vi.fn();
 const cookiesMock = vi.fn();
 
 vi.mock("next/headers", () => ({
@@ -9,6 +10,7 @@ vi.mock("next/headers", () => ({
 
 vi.mock("@/lib/api-proxy", () => ({
   proxyToBackend,
+  proxyJsonToBackend,
 }));
 
 describe("platform api proxy routes", () => {
@@ -16,6 +18,8 @@ describe("platform api proxy routes", () => {
     vi.resetModules();
     proxyToBackend.mockReset();
     proxyToBackend.mockResolvedValue(new Response(null, { status: 200 }));
+    proxyJsonToBackend.mockReset();
+    proxyJsonToBackend.mockResolvedValue(Response.json({}));
     cookiesMock.mockReset();
     cookiesMock.mockResolvedValue({
       get: () => undefined,
@@ -73,7 +77,11 @@ describe("platform api proxy routes", () => {
       headers: { cookie: "platform-demo-mode=0" },
     }));
 
-    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/audit/jobs");
+    expect(proxyJsonToBackend).toHaveBeenCalledWith(
+      "/api/v1/audit/jobs",
+      undefined,
+      expect.any(Function),
+    );
   });
 
   it("proxies runtime control health requests to the backend", async () => {

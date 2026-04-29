@@ -1,12 +1,17 @@
-import { proxyToBackend } from "@/lib/api-proxy";
+import { proxyJsonToBackend } from "@/lib/api-proxy";
+import { sanitizeAuditJobPayload } from "@/lib/audit-job-payload";
 import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 import { createDemoJob, listDemoJobs } from "@/lib/demo-jobs-store";
 
 export async function GET(request: Request) {
   if (await isDemoModeEnabledServer(request)) {
-    return Response.json({ jobs: listDemoJobs() });
+    return Response.json(sanitizeAuditJobPayload({ jobs: listDemoJobs() }));
   }
-  return proxyToBackend("/api/v1/audit/jobs");
+  return proxyJsonToBackend(
+    "/api/v1/audit/jobs",
+    undefined,
+    sanitizeAuditJobPayload,
+  );
 }
 
 export async function POST(request: Request) {
@@ -23,11 +28,15 @@ export async function POST(request: Request) {
             ? payload.contract_key
             : undefined,
     });
-    return Response.json({ ok: true, job }, { status: 201 });
+    return Response.json(sanitizeAuditJobPayload({ ok: true, job }), { status: 201 });
   }
 
-  return proxyToBackend("/api/v1/audit/jobs", {
-    method: "POST",
-    body: await request.text(),
-  });
+  return proxyJsonToBackend(
+    "/api/v1/audit/jobs",
+    {
+      method: "POST",
+      body: await request.text(),
+    },
+    sanitizeAuditJobPayload,
+  );
 }

@@ -26,3 +26,35 @@ export async function proxyToBackend(
     },
   });
 }
+
+export async function proxyJsonToBackend(
+  path: string,
+  init: RequestInit | undefined,
+  transform: (payload: unknown) => unknown,
+): Promise<Response> {
+  const url = new URL(path, backendBaseUrl());
+  const upstream = await fetch(url, {
+    ...init,
+    headers: {
+      "content-type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+    cache: "no-store",
+  });
+
+  const contentType = upstream.headers.get("content-type") ?? "application/json; charset=utf-8";
+  const payload = await upstream.json().catch(() => null);
+  if (payload === null) {
+    return Response.json(
+      { detail: upstream.ok ? "Runtime response unavailable." : "Runtime request failed." },
+      { status: upstream.status },
+    );
+  }
+
+  return Response.json(transform(payload), {
+    status: upstream.status,
+    headers: {
+      "content-type": contentType,
+    },
+  });
+}
