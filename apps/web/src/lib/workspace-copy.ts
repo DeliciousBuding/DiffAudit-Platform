@@ -295,6 +295,16 @@ export const WORKSPACE_COPY: Record<
       exportSummary: string;
       emptyResults: string;
       emptyGaps: string;
+      jobContext: {
+        title: string;
+        matched: (count: number) => string;
+        notAdmitted: string;
+        contract: string;
+        model: string;
+        auc: string;
+        job: string;
+        matchedRow: string;
+      };
       chartDimensions: string[];
       tableHeaders: {
         attack: string;
@@ -830,6 +840,16 @@ export const WORKSPACE_COPY: Record<
       exportSummary: "Export report",
       emptyResults: "No audit results yet.",
       emptyGaps: "No coverage gap data.",
+      jobContext: {
+        title: "Reviewing completed job",
+        matched: (count: number) => `${count} matching admitted result row${count === 1 ? "" : "s"} found in this snapshot.`,
+        notAdmitted: "This completed job has not been admitted into the current public snapshot yet.",
+        contract: "Contract",
+        model: "Model",
+        auc: "AUC",
+        job: "Job",
+        matchedRow: "Matched job",
+      },
       tableHeaders: {
         attack: "Attack",
         defense: "Defense",
@@ -1509,6 +1529,16 @@ export const WORKSPACE_COPY: Record<
       exportSummary: "导出报告",
       emptyResults: "还没有审计结果。",
       emptyGaps: "暂无覆盖缺口数据。",
+      jobContext: {
+        title: "正在审阅已完成任务",
+        matched: (count: number) => `当前快照中找到 ${count} 条匹配的 admitted 结果行。`,
+        notAdmitted: "这个已完成任务尚未进入当前公开快照。",
+        contract: "合约",
+        model: "模型",
+        auc: "AUC",
+        job: "任务",
+        matchedRow: "匹配任务",
+      },
       tableHeaders: {
         attack: "攻击方法",
         defense: "防御方法",

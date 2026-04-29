@@ -18,11 +18,20 @@ export type ReportProvenance = {
   intakeManifest?: string | null;
 };
 
+export type ReportJobContext = {
+  jobId?: string;
+  contractKey?: string;
+  targetModel?: string;
+  aucLabel?: string;
+};
+
 type ReportAuditViewProps = {
   locale: Locale;
   rows: AttackDefenseRowViewModel[];
   provenance: ReportProvenance;
   historyPlaceholder: string;
+  jobContext?: ReportJobContext;
+  highlightedRowKeys?: string[];
 };
 
 function valueOrDash(value?: string | null) {
@@ -34,8 +43,11 @@ export function ReportAuditView({
   rows,
   provenance,
   historyPlaceholder,
+  jobContext,
+  highlightedRowKeys = [],
 }: ReportAuditViewProps) {
   const copy = WORKSPACE_COPY[locale].reports;
+  const highlightedRows = new Set(highlightedRowKeys);
   const t = locale === "zh-CN"
     ? {
         summaryTitle: "审计视图摘要",
@@ -82,6 +94,47 @@ export function ReportAuditView({
 
   return (
     <div className="space-y-4">
+      {jobContext ? (
+        <section className="rounded-lg border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-foreground">{copy.jobContext.title}</div>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                {highlightedRows.size > 0
+                  ? copy.jobContext.matched(highlightedRows.size)
+                  : copy.jobContext.notAdmitted}
+              </p>
+            </div>
+            <div className="grid gap-1 text-right text-[10px] text-muted-foreground sm:grid-cols-2 sm:text-left">
+              {jobContext.contractKey ? (
+                <div>
+                  <span className="font-semibold text-foreground">{copy.jobContext.contract}: </span>
+                  <span className="mono break-all">{jobContext.contractKey}</span>
+                </div>
+              ) : null}
+              {jobContext.targetModel ? (
+                <div>
+                  <span className="font-semibold text-foreground">{copy.jobContext.model}: </span>
+                  <span className="mono">{jobContext.targetModel}</span>
+                </div>
+              ) : null}
+              {jobContext.aucLabel ? (
+                <div>
+                  <span className="font-semibold text-foreground">{copy.jobContext.auc}: </span>
+                  <span className="mono">{jobContext.aucLabel}</span>
+                </div>
+              ) : null}
+              {jobContext.jobId ? (
+                <div>
+                  <span className="font-semibold text-foreground">{copy.jobContext.job}: </span>
+                  <span className="mono">{jobContext.jobId}</span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <div className="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)]">
         <section className="border border-border bg-card">
           <div className="border-b border-border bg-muted/20 px-3 py-2">
@@ -198,14 +251,26 @@ export function ReportAuditView({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, index) => (
-                  <tr
-                    key={`${row.track}-${row.attack}-${row.defense}-audit`}
-                    className={`border-b border-border ${
-                      index % 2 === 0 ? "bg-background" : "bg-muted/10"
-                    }`}
-                  >
-                    <td className="px-3 py-2 font-medium">{row.attack}</td>
+                {rows.map((row, index) => {
+                  const key = `${row.track}::${row.attack}::${row.defense}::${row.model}::${row.aucLabel}`;
+                  const isHighlighted = highlightedRows.has(key);
+                  return (
+                    <tr
+                      key={`${row.track}-${row.attack}-${row.defense}-audit`}
+                      className={`border-b border-border transition-colors hover:bg-muted/30 ${
+                        isHighlighted
+                          ? "border-l-2 border-l-[var(--accent-blue)] bg-[color:var(--accent-blue)]/5"
+                          : index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                      }`}
+                    >
+                    <td className="px-3 py-2 font-medium">
+                      {isHighlighted ? (
+                        <span className="mb-1 inline-flex rounded-full border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-blue)]">
+                          {copy.jobContext.matchedRow}
+                        </span>
+                      ) : null}
+                      <div>{row.attack}</div>
+                    </td>
                     <td className="px-3 py-2 text-muted-foreground">{row.defense}</td>
                     <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
                     <td className="px-3 py-2">
@@ -222,7 +287,8 @@ export function ReportAuditView({
                       />
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           ) : (

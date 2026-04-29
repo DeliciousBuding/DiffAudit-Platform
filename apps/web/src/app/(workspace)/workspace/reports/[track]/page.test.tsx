@@ -45,4 +45,46 @@ describe("TrackReportPage", () => {
     expect(markup).toContain("Seed");
     expect(markup).toContain("Fixture 版本");
   });
+
+  it("renders completed job context and highlights matching rows", async () => {
+    const markup = renderToStaticMarkup(
+      await renderTrackReportPage({
+        locale: "en-US",
+        params: { track: "black-box" },
+        searchParams: {
+          view: "audit",
+          job: "job_demo_004",
+          contract: "recon_artifact_mainline",
+          model: "stable-diffusion-v1-4",
+          auc: "0.849",
+        },
+      }),
+    );
+
+    expect(markup).toContain("Reviewing completed job");
+    expect(markup).toContain("matching admitted result row");
+    expect(markup).toContain("Matched job");
+    expect(markup).toContain("job_demo_004");
+    expect(markup).toContain("recon_artifact_mainline");
+  });
+
+  it("keeps completed job context safe when no snapshot row matches", async () => {
+    const markup = renderToStaticMarkup(
+      await renderTrackReportPage({
+        locale: "en-US",
+        params: { track: "black-box" },
+        searchParams: {
+          view: "audit",
+          job: "job_unadmitted",
+          contract: "recon_new_runtime",
+          model: "not-in-snapshot",
+          auc: "0.999",
+        },
+      }),
+    );
+
+    expect(markup).toContain("Reviewing completed job");
+    expect(markup).toContain("has not been admitted into the current public snapshot yet");
+    expect(markup).not.toContain("Matched job");
+  });
 });
