@@ -11,7 +11,7 @@ import { findActiveNavItem } from "@/lib/platform-shell";
 export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
   const items = getNavItems(locale);
-  const current = findActiveNavItem(pathname);
+  const current = findActiveNavItem(pathname, items);
 
   return (
     <nav className="flex flex-col gap-0.5" aria-label="Sidebar navigation">

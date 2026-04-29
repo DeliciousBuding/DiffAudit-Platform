@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { ReportAuditView } from "./ReportAuditView";
-import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
+import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 
 const rows: AttackDefenseRowViewModel[] = [
   {

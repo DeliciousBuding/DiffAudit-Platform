@@ -1,9 +1,9 @@
 import { headers } from "next/headers";
 
 import { type Locale } from "@/components/language-picker";
-import { fetchCatalogDashboard } from "@/lib/catalog";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { getWorkspaceCatalogData } from "@/lib/workspace-source";
 import { CreateTaskClient } from "./CreateTaskClient";
 
 type CreateTaskPageOptions = {
@@ -15,7 +15,7 @@ async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
   const copy = WORKSPACE_COPY[resolvedLocale].createTask;
 
   // Fetch catalog for model selection step
-  const catalog = await fetchCatalogDashboard();
+  const catalog = await getWorkspaceCatalogData();
   const availableModels = catalog
     ? catalog.tracks.flatMap((track) =>
         track.entries

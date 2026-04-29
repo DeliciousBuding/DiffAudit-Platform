@@ -4,14 +4,12 @@ import { notFound } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import {
-  fetchAttackDefenseTable,
+  getWorkspaceAttackDefenseData,
+  getWorkspaceCatalogData,
   type AttackDefenseRowViewModel,
-} from "@/lib/attack-defense-table";
-import {
-  fetchCatalogDashboard,
   type CatalogEntryViewModel,
   type CatalogTrack,
-} from "@/lib/catalog";
+} from "@/lib/workspace-source";
 import { type EvidenceSummaryPayload } from "@/lib/audit-client";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -240,8 +238,8 @@ export async function renderTrackReportPage({
   const currentView = parseViewMode(searchParams?.view);
   const jobContext = buildJobContext(searchParams);
   const [table, catalog] = await Promise.all([
-    fetchAttackDefenseTable(),
-    fetchCatalogDashboard(),
+    getWorkspaceAttackDefenseData(),
+    getWorkspaceCatalogData(),
   ]);
 
   const rows = filterRows(table?.rows ?? [], track);

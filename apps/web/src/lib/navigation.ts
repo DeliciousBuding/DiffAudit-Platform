@@ -21,5 +21,3 @@ export function getNavItems(locale: Locale): NavItem[] {
     ...localized[entry.key],
   }));
 }
-
-export const navItems: NavItem[] = getNavItems("en-US");
