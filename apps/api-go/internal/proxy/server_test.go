@@ -167,6 +167,25 @@ func TestRuntimeHealthEndpointDoesNotExposeNetworkErrors(t *testing.T) {
 	}
 }
 
+func TestControlProxyMisconfigurationDoesNotExposeRawRuntimeBaseURL(t *testing.T) {
+	server := NewServer(Config{RuntimeBaseURL: "http://[::1"})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusBadGateway {
+		t.Fatalf("expected 502, got %d", recorder.Code)
+	}
+	raw := recorder.Body.String()
+	if strings.Contains(raw, "[::1") || strings.Contains(raw, "missing ']'") {
+		t.Fatalf("control proxy leaked raw runtime configuration: %s", raw)
+	}
+	if !strings.Contains(raw, "runtime proxy request is misconfigured") {
+		t.Fatalf("expected generic misconfiguration detail, got %s", raw)
+	}
+}
+
 func TestModelsEndpointUsesSnapshotData(t *testing.T) {
 	dataDir := writeSnapshotBundle(t, snapshotBundle{
 		models: []map[string]any{

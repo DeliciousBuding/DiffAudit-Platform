@@ -204,7 +204,7 @@ func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Requ
 func (s *Server) handleControlPost(writer http.ResponseWriter, request *http.Request) {
 	body, err := io.ReadAll(request.Body)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "request body unavailable")
 		return
 	}
 
@@ -292,7 +292,7 @@ func (s *Server) writeSnapshotError(writer http.ResponseWriter, err error) {
 		return
 	}
 
-	writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+	writePublicGatewayError(writer, "snapshot read failed")
 }
 
 func (s *Server) snapshotExists(name string) bool {
@@ -328,7 +328,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	}
 	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, upstreamPath)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "runtime proxy request is misconfigured")
 		return
 	}
 	if query := request.URL.RawQuery; query != "" {
@@ -336,7 +336,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	}
 	upstreamRequest, err := http.NewRequest(request.Method, upstreamURL, strings.NewReader(string(body)))
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "runtime proxy request is misconfigured")
 		return
 	}
 	if contentType := request.Header.Get("Content-Type"); contentType != "" {
@@ -354,7 +354,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	defer response.Body.Close()
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "runtime response unavailable")
 		return
 	}
 	writer.Header().Set("Content-Type", "application/json")
@@ -371,7 +371,7 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	upstreamPath := request.URL.Path
 	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, upstreamPath)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "runtime proxy request is misconfigured")
 		return
 	}
 	if query := request.URL.RawQuery; query != "" {
@@ -379,7 +379,7 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	}
 	upstreamRequest, err := http.NewRequest(method, upstreamURL, nil)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "runtime proxy request is misconfigured")
 		return
 	}
 	if contentType := request.Header.Get("Content-Type"); contentType != "" {
@@ -393,7 +393,7 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	defer response.Body.Close()
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": err.Error()})
+		writePublicGatewayError(writer, "runtime response unavailable")
 		return
 	}
 	writer.Header().Set("Content-Type", "application/json")
@@ -405,6 +405,10 @@ func writeJSON(writer http.ResponseWriter, statusCode int, payload any) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(statusCode)
 	_ = json.NewEncoder(writer).Encode(payload)
+}
+
+func writePublicGatewayError(writer http.ResponseWriter, detail string) {
+	writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": detail})
 }
 
 var errSnapshotUnavailable = errors.New("snapshot unavailable")

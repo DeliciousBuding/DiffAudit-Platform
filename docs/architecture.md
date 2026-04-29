@@ -66,6 +66,16 @@ These objects should degrade gracefully when optional fields are missing. Public
 
 The snapshot publisher may use a checked-out research repository while preparing a public bundle. That is a publish-time concern only. Request handlers should continue to read the generated snapshot bundle.
 
+## Public Data Boundary Contract
+
+| Boundary | Allowed at publish time | Allowed at request time |
+| --- | --- | --- |
+| Research outputs | Read selected, sanitized artifacts while generating the public snapshot | No filesystem discovery and no raw Research workspace reads |
+| Snapshot bundle | Generate, validate, and sanitize public JSON | Serve `apps/api-go/data/public` or configured public snapshot directory only |
+| Runtime control plane | Query configured Runtime while publishing or proxying explicit job-control routes | Proxy only explicit `/api/v1/audit/*` and `/api/v1/control/runtime` routes through public-safe errors |
+| Demo mode | Seed deterministic review data | Serve snapshot/demo view models without contacting Runtime |
+| Public UI errors | Record generic warnings and source labels | Do not show hostnames, URLs, local paths, tokens, raw network errors, or stack traces |
+
 ## Security Practices
 
 Public examples should use placeholders for credentials, host-specific settings, and deployment-specific configuration. Runtime URLs, OAuth secrets, data paths, and API keys should be supplied through environment variables or a deployment secret store.
