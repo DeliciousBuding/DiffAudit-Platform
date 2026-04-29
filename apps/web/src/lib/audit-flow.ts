@@ -32,5 +32,5 @@ export function buildCompletedJobReportHref(job: AuditJobLike) {
   }
 
   const track = inferReportTrack(job);
-  return track ? buildReportHref(track, "audit") : "/workspace/reports";
+  return track ? buildReportHref(track, "audit") : null;
 }

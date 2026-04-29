@@ -11,8 +11,12 @@ describe("normalizeAuditJobList", () => {
     expect(normalizeAuditJobList({ jobs: [{ job_id: "job_demo" }] })).toEqual([{ job_id: "job_demo" }]);
   });
 
-  it("falls back to an empty list for malformed payloads", () => {
+  it("accepts empty demo-mode wrappers", () => {
     expect(normalizeAuditJobList({ jobs: null })).toEqual([]);
-    expect(normalizeAuditJobList({})).toEqual([]);
+  });
+
+  it("returns null for malformed payloads", () => {
+    expect(normalizeAuditJobList({})).toBeNull();
+    expect(normalizeAuditJobList("not-json")).toBeNull();
   });
 });
