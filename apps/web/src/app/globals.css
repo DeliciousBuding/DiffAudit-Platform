@@ -2415,3 +2415,24 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   animation: skeleton-pulse 2s var(--easing-standard) infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .workspace-sidebar-link,
+  .workspace-btn-primary,
+  .workspace-btn-secondary,
+  .workspace-input,
+  .table-row-hover,
+  .card-animate,
+  .page-entrance,
+  .animate-pulse,
+  button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill) {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .workspace-sidebar-link:hover,
+  button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):hover,
+  button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):active {
+    transform: none !important;
+  }
+}
+

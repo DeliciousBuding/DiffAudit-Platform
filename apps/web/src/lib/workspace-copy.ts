@@ -153,6 +153,10 @@ export const WORKSPACE_COPY: Record<
       retryTitle: string;
       statusLabels: Record<string, string>;
       filters: {
+        groupLabel: string;
+        statusGroupLabel: string;
+        trackSelectLabel: string;
+        searchLabel: string;
         statusAll: string;
         statusCompleted: string;
         statusFailed: string;
@@ -171,6 +175,7 @@ export const WORKSPACE_COPY: Record<
       description: string;
       backToTasks: string;
       steps: {
+        stepperLabel: string;
         step1Label: string;
         step1Title: string;
         step1Desc: string;
@@ -638,6 +643,10 @@ export const WORKSPACE_COPY: Record<
         cancelled: "Cancelled",
       },
       filters: {
+        groupLabel: "Audit filters",
+        statusGroupLabel: "Filter by task status",
+        trackSelectLabel: "Filter by audit track",
+        searchLabel: "Search audit contracts and jobs",
         statusAll: "All",
         statusCompleted: "Completed",
         statusFailed: "Failed",
@@ -656,6 +665,7 @@ export const WORKSPACE_COPY: Record<
       description: "Choose an attack method, pick a target model, set parameters, and launch the audit.",
       backToTasks: "Back to tasks",
       steps: {
+        stepperLabel: "Create audit task steps",
         step1Label: "1",
         step1Title: "Attack method",
         step1Desc: "Which attack methodology would you like to use?",
@@ -1327,6 +1337,10 @@ export const WORKSPACE_COPY: Record<
         cancelled: "已取消",
       },
       filters: {
+        groupLabel: "审计筛选",
+        statusGroupLabel: "按任务状态筛选",
+        trackSelectLabel: "按审计轨道筛选",
+        searchLabel: "搜索审计合约和任务",
         statusAll: "全部",
         statusCompleted: "已完成",
         statusFailed: "失败",
@@ -1345,6 +1359,7 @@ export const WORKSPACE_COPY: Record<
       description: "选择攻击方式、目标模型，设置参数后启动审计。",
       backToTasks: "返回任务列表",
       steps: {
+        stepperLabel: "创建审计任务步骤",
         step1Label: "1",
         step1Title: "攻击方式",
         step1Desc: "你想用哪种攻击方法来审计？",

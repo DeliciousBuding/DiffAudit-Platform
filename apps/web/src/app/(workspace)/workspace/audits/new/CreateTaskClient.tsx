@@ -59,6 +59,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   const copy = WORKSPACE_COPY[locale].createTask;
   const labels = copy.labels;
   const router = useRouter();
+  const roundsInputId = "create-audit-rounds";
+  const batchSizeInputId = "create-audit-batch-size";
 
   const [form, setForm] = useState<FormState>({
     step: 1,
@@ -186,38 +188,43 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
     <div className="space-y-4">
       {/* Step indicator */}
       <div className="border border-border bg-card">
-        <div className="flex items-center gap-0 border-b border-border bg-muted/20">
+        <div className="flex items-center gap-0 border-b border-border bg-muted/20" role="list" aria-label={copy.steps.stepperLabel}>
           {steps.map((step, index) => {
             const isActive = form.step === index + 1;
             const isCompleted = form.step > index + 1;
+            const isDisabled = !isActive && !isCompleted;
             return (
-              <button
-                key={step.label}
-                type="button"
-                onClick={() => {
-                  if (isCompleted) setStep(index + 1);
-                }}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors ${
-                  isActive
-                    ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
-                    : isCompleted
-                      ? "text-muted-foreground hover:text-foreground cursor-pointer"
-                      : "text-muted-foreground cursor-default"
-                }`}
-              >
-                <span
-                  className={`inline-flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-semibold ${
-                    isCompleted
-                      ? "bg-[var(--info-soft)] text-[var(--info)] border border-[rgba(47,109,246,0.2)]"
-                      : isActive
-                        ? "bg-[var(--accent-blue)] text-white"
-                        : "bg-muted/40 text-muted-foreground border border-border"
+              <div key={step.label} role="listitem">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isCompleted) setStep(index + 1);
+                  }}
+                  disabled={isDisabled}
+                  aria-current={isActive ? "step" : undefined}
+                  aria-disabled={isDisabled}
+                  className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors ${
+                    isActive
+                      ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
+                      : isCompleted
+                        ? "text-muted-foreground hover:text-foreground cursor-pointer"
+                        : "text-muted-foreground cursor-default"
                   }`}
                 >
-                  {isCompleted ? "\u2713" : step.label}
-                </span>
-                {step.title}
-              </button>
+                  <span
+                    className={`inline-flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-semibold ${
+                      isCompleted
+                        ? "bg-[var(--info-soft)] text-[var(--info)] border border-[rgba(47,109,246,0.2)]"
+                        : isActive
+                          ? "bg-[var(--accent-blue)] text-white"
+                          : "bg-muted/40 text-muted-foreground border border-border"
+                    }`}
+                  >
+                    {isCompleted ? "\u2713" : step.label}
+                  </span>
+                  {step.title}
+                </button>
+              </div>
             );
           })}
         </div>
@@ -257,6 +264,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       key={card.type}
                       type="button"
                       onClick={() => selectAttackType(card.type)}
+                      aria-pressed={isSelected}
                       className={`text-left rounded-lg border p-4 transition-all ${
                         isSelected
                           ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
@@ -317,6 +325,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         key={model.contractKey}
                         type="button"
                         onClick={() => selectModel(model.contractKey)}
+                        aria-pressed={isSelected}
                         className={`text-left rounded-lg border p-3 transition-all ${
                           isSelected
                             ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
@@ -363,10 +372,11 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
               {/* Rounds */}
               <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                <label htmlFor={roundsInputId} className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                   {labels.rounds}
                 </label>
                 <input
+                  id={roundsInputId}
                   type="number"
                   min={1}
                   max={1000}
@@ -383,10 +393,11 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
               {/* Batch size */}
               <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                <label htmlFor={batchSizeInputId} className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                   {labels.batchSize}
                 </label>
                 <input
+                  id={batchSizeInputId}
                   type="number"
                   min={1}
                   max={512}
@@ -407,6 +418,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   type="button"
                   role="switch"
                   aria-checked={form.adaptiveSampling}
+                  aria-label={labels.adaptiveSampling}
                   onClick={() => setForm((prev) => ({ ...prev, adaptiveSampling: !prev.adaptiveSampling }))}
                   className={`mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
                     form.adaptiveSampling ? "bg-[var(--accent-blue)]" : "bg-muted-foreground/30"

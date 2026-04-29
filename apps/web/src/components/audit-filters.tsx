@@ -84,14 +84,15 @@ export function AuditFilters({ locale = "en-US", onFilterChange }: AuditFiltersP
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2">
+    <div className="flex items-center gap-2 px-3 py-2" role="search" aria-label={copy.groupLabel}>
       {/* Status pills */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" role="group" aria-label={copy.statusGroupLabel}>
         {STATUS_OPTIONS.map((option) => (
           <button
             key={option}
             type="button"
             onClick={() => handleStatusChange(option)}
+            aria-pressed={status === option}
             className={`inline-flex items-center rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${
               status === option
                 ? "bg-[var(--info-soft)] text-[var(--info)] border border-[rgba(47,109,246,0.2)]"
@@ -110,6 +111,7 @@ export function AuditFilters({ locale = "en-US", onFilterChange }: AuditFiltersP
       <select
         value={track}
         onChange={handleTrackChange}
+        aria-label={copy.trackSelectLabel}
         className="inline-flex items-center rounded-md border border-border bg-background px-2 py-1 text-[11px] font-medium text-foreground outline-none transition-colors hover:bg-muted/40 focus:border-[rgba(47,109,246,0.52)] focus:ring-2 focus:ring-[rgba(47,109,246,0.08)]"
       >
         {TRACK_OPTIONS.map((option) => (
@@ -129,6 +131,7 @@ export function AuditFilters({ locale = "en-US", onFilterChange }: AuditFiltersP
           type="text"
           value={search}
           onChange={handleSearchChange}
+          aria-label={copy.searchLabel}
           placeholder={copy.searchPlaceholder}
           className="w-full rounded-md border border-border bg-background py-1 pl-6 pr-2 text-[11px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:bg-muted/40 focus:border-[rgba(47,109,246,0.52)] focus:ring-2 focus:ring-[rgba(47,109,246,0.08)]"
         />
