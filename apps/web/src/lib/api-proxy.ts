@@ -9,14 +9,7 @@ export async function proxyToBackend(
   init?: RequestInit,
 ): Promise<Response> {
   const url = new URL(path, backendBaseUrl());
-  const upstream = await fetch(url, {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-    cache: "no-store",
-  });
+  const upstream = await fetchBackend(url, init);
 
   return new Response(upstream.body, {
     status: upstream.status,
@@ -33,14 +26,7 @@ export async function proxyJsonToBackend(
   transform: (payload: unknown) => unknown,
 ): Promise<Response> {
   const url = new URL(path, backendBaseUrl());
-  const upstream = await fetch(url, {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-    cache: "no-store",
-  });
+  const upstream = await fetchBackend(url, init);
 
   const contentType = upstream.headers.get("content-type") ?? "application/json; charset=utf-8";
   const payload = await upstream.json().catch(() => null);
@@ -57,4 +43,22 @@ export async function proxyJsonToBackend(
       "content-type": contentType,
     },
   });
+}
+
+async function fetchBackend(url: URL, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, {
+      ...init,
+      headers: {
+        "content-type": "application/json",
+        ...(init?.headers ?? {}),
+      },
+      cache: "no-store",
+    });
+  } catch {
+    return Response.json(
+      { detail: "Platform gateway unavailable." },
+      { status: 502 },
+    );
+  }
 }

@@ -48,6 +48,13 @@ This document defines the stable engineering boundaries for the Platform reposit
 
 Workspace route components must not import `catalog`, `attack-defense-table`, or `demo-mode` directly. If a page needs a new view model, extend `workspace-source` first and keep source selection behind that facade.
 
+## Public-Safe Data Contract
+
+- Request-time read APIs are snapshot-backed. They must not discover local Research workspaces or raw Runtime directories.
+- Publish-time fallback may read selected Research outputs only inside the snapshot publisher, then must sanitize paths into logical identifiers such as `research://...`.
+- Runtime proxy errors must be generic. Do not return raw URLs, hostnames, local paths, ports, tokens, exception strings, or stack traces to browser-facing responses.
+- Demo mode is a data mode, not a page-level shortcut. Pages should consume the same facade-backed view models in demo and live modes.
+
 ## UI Primitive Rules
 
 - Prefer explicit primitives (`Button`, `Card`, `WorkspacePageFrame`, `WorkspaceSectionCard`, `Tabs`, `Modal`, badges, tables) over one-off page chrome.

@@ -43,6 +43,14 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - Legacy redirect routes must not gain new product logic. Before deleting them, scan internal links and tests; after deletion, route recovery should point users to current routes.
 - Do not add new broad global CSS selectors such as `button:not(...)` for product interaction behavior. Prefer explicit primitives or scoped classes.
 
+## Knowledge Hygiene
+
+- Treat README, docs, and AGENTS as edited contracts, not append-only logs.
+- When code changes affect setup, routes, environment variables, data boundaries, or UI primitives, update the existing authoritative doc section in the same PR.
+- Prefer deletion or replacement of stale guidance over adding contradictory notes.
+- Use absolute calendar dates if a date is necessary. Do not write vague timeline phrases in durable docs.
+- Do not write agent operation diaries, private handoff chatter, or maintainer instructions into product-facing docs.
+
 ## Deployment Boundary
 
 - Public deployment material may include Dockerfiles, compose templates, environment examples, and generic validation commands.
