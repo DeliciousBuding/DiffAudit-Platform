@@ -23,5 +23,9 @@ describe("audit flow routing", () => {
       status: "running",
       contract_key: "black-box/recon/sd15-ddim",
     })).toBeNull();
+    expect(buildCompletedJobReportHref({
+      status: "completed",
+      contract_key: "unknown/family",
+    })).toBeNull();
   });
 });

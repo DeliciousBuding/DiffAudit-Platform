@@ -18,6 +18,7 @@ import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
 import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
+import { buildReportHref } from "@/lib/audit-flow";
 
 export const dynamic = "force-dynamic";
 
@@ -152,7 +153,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
     track,
     label: summaryCopy.tracks[track],
     count: rows.filter((row) => row.track === track).length,
-    href: `/workspace/reports/${track}?view=audit`,
+    href: buildReportHref(track, "audit"),
   }));
 
   // Coverage gaps visualization — 2.4.4
@@ -222,7 +223,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
             <Link
               key={card.track}
               href={card.href}
-              className="group rounded-lg border border-border bg-background p-4 transition-colors hover:border-[rgba(47,109,246,0.28)] hover:bg-muted/20"
+              className="group rounded-lg border border-border bg-background p-4 transition-colors hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>

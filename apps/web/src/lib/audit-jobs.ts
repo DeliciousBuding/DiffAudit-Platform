@@ -1,5 +1,6 @@
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
+import { sanitizeRuntimeText } from "@/lib/runtime-text";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
@@ -103,8 +104,8 @@ export function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[]
       contractKey: job.contract_key ?? "unknown contract",
       workspaceName: job.workspace_name ?? "pending workspace",
       updatedAtLabel: formatUpdatedAt(job.updated_at),
-      summaryPath: job.summary_path ?? "Summary path will appear after the run completes.",
-      error: job.error ?? "",
+      summaryPath: sanitizeRuntimeText(job.summary_path) ?? "Summary path will appear after the run completes.",
+      error: sanitizeRuntimeText(job.error) ?? "",
     }));
 }
 
@@ -122,7 +123,8 @@ export async function fetchAuditJobs(): Promise<AuditJobViewModel[] | null> {
     }
 
     const payload = await response.json();
-    return summarizeAuditJobs(normalizeAuditJobList<AuditJobPayload>(payload));
+    const jobs = normalizeAuditJobList<AuditJobPayload>(payload);
+    return jobs ? summarizeAuditJobs(jobs) : null;
   } catch {
     return null;
   }

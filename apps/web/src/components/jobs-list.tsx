@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
+import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 type AuditJobPayload = {
@@ -101,8 +102,8 @@ function summarizeAuditJobs(jobs: AuditJobPayload[], locale: Locale): AuditJobVi
       contractKey: job.contract_key,
       workspaceName: job.workspace_name ?? copy.recommendedWorkspace,
       updatedAtLabel: formatUpdatedAt(job.updated_at, locale),
-      summaryPath: job.summary_path ?? copy.updatedAt,
-      error: job.error ?? "",
+      summaryPath: sanitizeRuntimeText(job.summary_path) ?? copy.updatedAt,
+      error: sanitizeRuntimeText(job.error) ?? "",
     }));
 
   return normalized;
@@ -125,7 +126,11 @@ export function JobsList({ locale = "en-US" }: { locale?: Locale }) {
 
         const payload = await response.json();
         if (!cancelled) {
-          const jobs = summarizeAuditJobs(normalizeAuditJobList<AuditJobPayload>(payload), locale);
+          const payloadJobs = normalizeAuditJobList<AuditJobPayload>(payload);
+          if (!payloadJobs) {
+            throw new Error("jobs payload is not a supported list shape");
+          }
+          const jobs = summarizeAuditJobs(payloadJobs, locale);
           setState({ kind: "ready", jobs });
 
           // Auto-stop polling when all jobs are completed or failed

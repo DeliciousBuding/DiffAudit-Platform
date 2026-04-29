@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
+import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 type AuditJobPayload = {
@@ -98,8 +99,8 @@ function summarizeAuditJobs(jobs: AuditJobPayload[], justUpdated: string, noSumm
       contractKey: job.contract_key,
       workspaceName: job.workspace_name ?? "pending workspace",
       updatedAtLabel: formatUpdatedAt(job.updated_at, justUpdated, locale),
-      summaryPath: job.summary_path ?? noSummary,
-      error: job.error ?? "",
+      summaryPath: sanitizeRuntimeText(job.summary_path) ?? noSummary,
+      error: sanitizeRuntimeText(job.error) ?? "",
     }));
 
   return normalized;
@@ -124,7 +125,11 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
         if (!cancelled) {
           const statusLabels = auditsCopy.statusLabels;
           const localeTag = locale === "zh-CN" ? "zh-CN" : "en-US";
-          setState({ kind: "ready", jobs: summarizeAuditJobs(normalizeAuditJobList<AuditJobPayload>(payload), panelCopy.justUpdated, panelCopy.noSummary, localeTag, statusLabels) });
+          const payloadJobs = normalizeAuditJobList<AuditJobPayload>(payload);
+          if (!payloadJobs) {
+            throw new Error("jobs payload is not a supported list shape");
+          }
+          setState({ kind: "ready", jobs: summarizeAuditJobs(payloadJobs, panelCopy.justUpdated, panelCopy.noSummary, localeTag, statusLabels) });
         }
       } catch {
         if (!cancelled) {

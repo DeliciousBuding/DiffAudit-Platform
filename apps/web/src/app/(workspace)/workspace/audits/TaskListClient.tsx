@@ -7,6 +7,7 @@ import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
+import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 interface JobRecord {
@@ -109,6 +110,9 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
         if (res.ok) {
           const data = await res.json();
           const allJobs = normalizeAuditJobList<JobRecord>(data);
+          if (!allJobs) {
+            throw new Error("jobs payload is not a supported list shape");
+          }
           const filtered =
             mode === "active"
               ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
@@ -199,7 +203,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
             )}
             {job.error && (
               <div className="mono mt-1.5 text-[10px] text-warning truncate">
-                {job.error}
+                {sanitizeRuntimeText(job.error)}
               </div>
             )}
           </div>
