@@ -34,6 +34,15 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - Avoid personal test identities. Prefer `demo-reviewer`, `example-user`, `review@diffaudit.test`, and similar neutral fixtures.
 - Keep `DiffAudit-Research` references as external research/evidence integration points; do not copy private research workspace structure into public docs.
 
+## Structural Governance
+
+- Treat `docs/project-structure.md` as the source of truth for repository area ownership, web route ownership, and legacy route policy.
+- Do not create duplicate sources of truth for workspace navigation, labels, status mapping, risk mapping, data mode selection, or report field interpretation.
+- Workspace navigation must be derived from the workspace registry plus localized workspace copy.
+- Demo/live/snapshot/Runtime selection belongs in shared data adapters. Page components should consume view models instead of choosing data sources ad hoc.
+- Legacy redirect routes must not gain new product logic. Before deleting them, scan internal links and tests; after deletion, route recovery should point users to current routes.
+- Do not add new broad global CSS selectors such as `button:not(...)` for product interaction behavior. Prefer explicit primitives or scoped classes.
+
 ## Deployment Boundary
 
 - Public deployment material may include Dockerfiles, compose templates, environment examples, and generic validation commands.
