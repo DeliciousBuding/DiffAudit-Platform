@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
+import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
@@ -28,6 +29,14 @@ function reportSummaryCopy(locale: Locale) {
       strongestDefense: "最强防御结论",
       briefing: "讲解提示",
       fallback: "当前没有可展示的审计结果。",
+      trackReview: "按攻击线审阅",
+      trackReviewBody: "进入对应轨道的审计视图，查看证据、溯源和长期审计信息。",
+      openAuditView: "打开审计视图",
+      tracks: {
+        "black-box": "黑盒",
+        "gray-box": "灰盒",
+        "white-box": "白盒",
+      },
     };
   }
 
@@ -37,6 +46,14 @@ function reportSummaryCopy(locale: Locale) {
     strongestDefense: "Strongest defense",
     briefing: "Narrative cue",
     fallback: "No audit result is available for the briefing panel.",
+    trackReview: "Review by attack track",
+    trackReviewBody: "Open each track's audit view for evidence, provenance, and long-term review context.",
+    openAuditView: "Open audit view",
+    tracks: {
+      "black-box": "Black-box",
+      "gray-box": "Gray-box",
+      "white-box": "White-box",
+    },
   };
 }
 
@@ -131,6 +148,12 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   const briefingNote = highestRiskRow
     ? highestRiskRow.note
     : summaryCopy.fallback;
+  const trackCards = (["black-box", "gray-box", "white-box"] as const).map((track) => ({
+    track,
+    label: summaryCopy.tracks[track],
+    count: rows.filter((row) => row.track === track).length,
+    href: `/workspace/reports/${track}?view=audit`,
+  }));
 
   // Coverage gaps visualization — 2.4.4
   const gapData = computeCoverageGaps(rows);
@@ -185,6 +208,38 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
               {briefingNote}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="border border-border bg-card" id="report-tracks">
+        <div className="border-b border-border bg-muted/20 px-3 py-2">
+          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {summaryCopy.trackReview}
+          </h2>
+        </div>
+        <div className="grid gap-3 p-3 md:grid-cols-3">
+          {trackCards.map((card) => (
+            <Link
+              key={card.track}
+              href={card.href}
+              className="group rounded-lg border border-border bg-background p-4 transition-colors hover:border-[rgba(47,109,246,0.28)] hover:bg-muted/20"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold group-hover:text-[var(--accent-blue)] transition-colors">
+                    {card.label}
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {summaryCopy.trackReviewBody}
+                  </p>
+                </div>
+                <span className="mono text-lg font-semibold">{card.count}</span>
+              </div>
+              <div className="mt-3 text-xs font-medium text-[var(--accent-blue)]">
+                {summaryCopy.openAuditView}
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 

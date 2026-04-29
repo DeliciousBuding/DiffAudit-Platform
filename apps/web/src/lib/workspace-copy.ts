@@ -146,6 +146,8 @@ export const WORKSPACE_COPY: Record<
       emptyResults: string;
       emptyTasks: string;
       emptyHistory: string;
+      viewDetails: string;
+      viewReport: string;
       retry: string;
       retrying: string;
       retryTitle: string;
@@ -231,6 +233,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string; title: string; description: string;
       backToAudits: string; cancelJob: string; cancelling: string; confirmCancel: string;
       keepRunning: string; cancelTitle: string; cancelBody: string; nextStepsTitle: string;
+      reportReadyTitle: string; reportReadyBody: string; viewReport: string;
       nextSteps: Record<"completed" | "failed" | "cancelled", string[]>;
       statusLabels: Record<string, string>;
       labels: {
@@ -611,6 +614,8 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "No audit results yet.",
       emptyTasks: "No active tasks.",
       emptyHistory: "No task history yet.",
+      viewDetails: "View details",
+      viewReport: "View report",
       retry: "Retry",
       retrying: "Retrying...",
       retryTitle: "Retry this job",
@@ -685,7 +690,7 @@ export const WORKSPACE_COPY: Record<
         submitButton: "Start audit",
         submitting: "Submitting...",
         successTitle: "Task created.",
-        successBody: "Your audit job has been queued. Redirecting to the task list.",
+        successBody: "Your audit job has been queued. Redirecting to the task detail.",
         goToTasks: "Go to task list",
         disabled: "Not available",
         availabilityReady: "Ready",
@@ -719,6 +724,9 @@ export const WORKSPACE_COPY: Record<
       cancelTitle: "Cancel audit job",
       cancelBody: "Are you sure you want to cancel this audit job? This action cannot be undone.",
       nextStepsTitle: "Suggested next steps",
+      reportReadyTitle: "Report review is ready",
+      reportReadyBody: "Open the matching report track to review evidence, charts, and export options.",
+      viewReport: "Open report",
       statusLabels: {
         queued: "Queued",
         running: "Running",
@@ -1284,6 +1292,8 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "还没有审计结果。",
       emptyTasks: "当前没有活跃任务。",
       emptyHistory: "还没有历史任务。",
+      viewDetails: "查看详情",
+      viewReport: "查看报告",
       retry: "重试",
       retrying: "重试中...",
       retryTitle: "重试此任务",
@@ -1358,7 +1368,7 @@ export const WORKSPACE_COPY: Record<
         submitButton: "开始审计",
         submitting: "提交中...",
         successTitle: "任务已创建。",
-        successBody: "审计任务已加入队列，正在跳转到任务列表。",
+        successBody: "审计任务已加入队列，正在跳转到任务详情。",
         goToTasks: "前往任务列表",
         disabled: "暂不可用",
         availabilityReady: "就绪",
@@ -1392,6 +1402,9 @@ export const WORKSPACE_COPY: Record<
       cancelTitle: "取消审计任务",
       cancelBody: "确定要取消这个审计任务吗？此操作不可撤销。",
       nextStepsTitle: "建议的下一步",
+      reportReadyTitle: "报告审阅已就绪",
+      reportReadyBody: "打开对应报告轨道，查看证据、图表和导出选项。",
+      viewReport: "打开报告",
       statusLabels: {
         queued: "排队中",
         running: "运行中",
