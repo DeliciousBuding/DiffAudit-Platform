@@ -468,6 +468,7 @@ export function JobDetailClient({
         open={showCancelModal}
         onClose={() => setShowCancelModal(false)}
         title={copy.jobDetail.cancelTitle}
+        closeLabel={copy.jobDetail.closeDialog}
         actions={
           <>
             <button

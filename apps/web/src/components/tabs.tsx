@@ -13,14 +13,19 @@ interface TabsProps {
   tabs: TabDef[];
   variant?: "inline" | "full-width";
   className?: string;
+  idPrefix: string;
 }
 
-export function Tabs({ value, onChange, tabs, variant = "inline", className }: TabsProps) {
+export function Tabs({ value, onChange, tabs, variant = "inline", className, idPrefix }: TabsProps) {
   const listRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       const idx = tabs.findIndex((t) => t.value === value);
+      if (!tabs.length || idx < 0) {
+        return;
+      }
       let next = idx;
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
         e.preventDefault();
@@ -36,11 +41,9 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className }: T
         next = tabs.length - 1;
       }
       if (next !== idx) {
-        onChange(tabs[next].value);
-        const btn = listRef.current?.querySelector<HTMLButtonElement>(
-          `[data-value="${tabs[next].value}"]`
-        );
-        btn?.focus();
+        const nextValue = tabs[next].value;
+        onChange(nextValue);
+        buttonRefs.current[nextValue]?.focus();
       }
     },
     [tabs, value, onChange]
@@ -67,14 +70,20 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className }: T
     <div ref={listRef} className={`${baseClasses} ${variantClasses} ${className ?? ""}`} role="tablist" onKeyDown={handleKeyDown}>
       {tabs.map((tab) => {
         const isActive = tab.value === value;
+        const tabId = `${idPrefix}-${tab.value}`;
+        const panelId = `${idPrefix}-panel-${tab.value}`;
         return (
           <button
             key={tab.value}
+            id={tabId}
+            ref={(node) => {
+              buttonRefs.current[tab.value] = node;
+            }}
             data-value={tab.value}
             role="tab"
             tabIndex={isActive ? 0 : -1}
             aria-selected={isActive}
-            aria-controls={`tabpanel-${tab.value}`}
+            aria-controls={panelId}
             onClick={() => onChange(tab.value)}
             className={`relative px-4 py-2.5 transition-colors ${
               isActive
@@ -101,15 +110,18 @@ interface TabPanelProps {
   activeValue: string;
   children: React.ReactNode;
   className?: string;
+  idPrefix: string;
 }
 
-export function TabPanel({ value, activeValue, children, className }: TabPanelProps) {
+export function TabPanel({ value, activeValue, children, className, idPrefix }: TabPanelProps) {
   if (value !== activeValue) return null;
+  const tabId = `${idPrefix}-${value}`;
+  const panelId = `${idPrefix}-panel-${value}`;
   return (
     <div
       role="tabpanel"
-      id={`tabpanel-${value}`}
-      aria-labelledby={`tab-${value}`}
+      id={panelId}
+      aria-labelledby={tabId}
       className={className}
     >
       {children}

@@ -232,6 +232,7 @@ export const WORKSPACE_COPY: Record<
     jobDetail: {
       eyebrow: string; title: string; description: string;
       backToAudits: string; cancelJob: string; cancelling: string; confirmCancel: string;
+      closeDialog: string;
       keepRunning: string; cancelTitle: string; cancelBody: string; nextStepsTitle: string;
       reportReadyTitle: string; reportReadyBody: string; viewReport: string;
       nextSteps: Record<"completed" | "failed" | "cancelled", string[]>;
@@ -720,6 +721,7 @@ export const WORKSPACE_COPY: Record<
       cancelJob: "Cancel job",
       cancelling: "Cancelling...",
       confirmCancel: "Confirm cancel",
+      closeDialog: "Close dialog",
       keepRunning: "Keep running",
       cancelTitle: "Cancel audit job",
       cancelBody: "Are you sure you want to cancel this audit job? This action cannot be undone.",
@@ -1398,6 +1400,7 @@ export const WORKSPACE_COPY: Record<
       cancelJob: "取消任务",
       cancelling: "取消中...",
       confirmCancel: "确认取消",
+      closeDialog: "关闭对话框",
       keepRunning: "继续运行",
       cancelTitle: "取消审计任务",
       cancelBody: "确定要取消这个审计任务吗？此操作不可撤销。",

@@ -17,6 +17,7 @@ interface ReportsClientProps {
 export function ReportsClient({ rows, locale, resultsContent }: ReportsClientProps) {
   const copy = WORKSPACE_COPY[locale].reports;
   const [activeTab, setActiveTab] = useState("results");
+  const tabIdPrefix = "reports-tabs";
   const tabs = [
     { value: "results", label: copy.reportTabs.results },
     { value: "compare", label: copy.reportTabs.compare },
@@ -24,13 +25,13 @@ export function ReportsClient({ rows, locale, resultsContent }: ReportsClientPro
 
   return (
     <div className="space-y-4">
-      <Tabs value={activeTab} onChange={setActiveTab} tabs={tabs} />
+      <Tabs idPrefix={tabIdPrefix} value={activeTab} onChange={setActiveTab} tabs={tabs} />
 
-      <TabPanel value="results" activeValue={activeTab}>
+      <TabPanel idPrefix={tabIdPrefix} value="results" activeValue={activeTab}>
         {resultsContent}
       </TabPanel>
 
-      <TabPanel value="compare" activeValue={activeTab}>
+      <TabPanel idPrefix={tabIdPrefix} value="compare" activeValue={activeTab}>
         <CompareView rows={rows} locale={locale} />
       </TabPanel>
     </div>
