@@ -51,7 +51,7 @@ Workspace route components must not import `catalog`, `attack-defense-table`, or
 ## UI Primitive Rules
 
 - Prefer explicit primitives (`Button`, `Card`, `WorkspacePageFrame`, `WorkspaceSectionCard`, `Tabs`, `Modal`, badges, tables) over one-off page chrome.
-- Do not add new broad global selectors such as `button:not(...)` to control product interaction behavior.
+- Do not add new broad global selectors such as `button:not(...)` to control product interaction behavior. Existing fallback selectors must not expand and must exclude primitive markers such as `ui-button`.
 - If a new repeated visual pattern appears in more than one workspace page, promote it into a primitive before adding a third copy.
 - Do not introduce a new visual language for workspace pages. Extend the existing tokens, compact cards, badges, tables, and quiet motion.
 
