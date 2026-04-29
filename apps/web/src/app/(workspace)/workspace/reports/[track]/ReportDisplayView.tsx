@@ -6,7 +6,7 @@ import { RiskBadge } from "@/components/risk-badge";
 import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale } from "@/components/language-picker";
-import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
+import { type AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 

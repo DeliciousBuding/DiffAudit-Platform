@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import { githubOAuthConfigured, googleOAuthConfigured } from "@/lib/auth";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { getCurrentUserProfile, SESSION_COOKIE_NAME } from "@/lib/auth";
-import { isDemoModeEnabledServer, isDemoModeForcedServer } from "@/lib/demo-mode";
+import { getWorkspaceModeState } from "@/lib/workspace-source";
 import { SettingsClient } from "../settings/SettingsClient";
 
 export default async function WorkspaceAccountPage({
@@ -14,8 +14,7 @@ export default async function WorkspaceAccountPage({
   const locale = resolveLocaleFromHeaderStore(await headers());
   const cookieStore = await cookies();
   const profile = getCurrentUserProfile(cookieStore.get(SESSION_COOKIE_NAME)?.value);
-  const initialDemoMode = await isDemoModeEnabledServer();
-  const demoModeLocked = isDemoModeForcedServer();
+  const modeState = await getWorkspaceModeState();
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const emailVerificationStatus =
     typeof resolvedSearchParams.emailVerified === "string"
@@ -30,8 +29,8 @@ export default async function WorkspaceAccountPage({
     <SettingsClient
       locale={locale}
       mode="account"
-      initialDemoMode={initialDemoMode}
-      demoModeLocked={demoModeLocked}
+      initialDemoMode={modeState.demoModeEnabled}
+      demoModeLocked={modeState.demoModeLocked}
       initialProfile={profile}
       oauthEnabled={{
         google: googleOAuthConfigured(),

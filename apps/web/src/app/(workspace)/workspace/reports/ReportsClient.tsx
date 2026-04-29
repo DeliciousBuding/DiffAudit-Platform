@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { type Locale } from "@/components/language-picker";
-import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
+import { type AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { CompareView } from "@/components/compare-view";

@@ -35,6 +35,19 @@ This document defines the stable engineering boundaries for the Platform reposit
 - Runtime text shown in public UI must pass through the public-safe sanitization layer.
 - Public snapshot paths must use logical identifiers such as `research://...`; request handlers must not discover local Research workspaces at request time.
 
+## Web Source Contract
+
+| Concern | Source of truth | Consumers |
+| --- | --- | --- |
+| Workspace route order, hrefs, and icons | `apps/web/src/lib/workspace-registry.ts` | `getNavItems(locale)`, shell navigation, active-route helpers |
+| Workspace navigation labels | `WORKSPACE_COPY[locale].nav` | `getNavItems(locale)` only |
+| Workspace reusable labels | `WORKSPACE_COPY` | Page frames, report tables, risk/status badges, filters |
+| Workspace catalog and attack-defense data | `apps/web/src/lib/workspace-source.ts` | Workspace pages and shell chrome |
+| Demo/live mode state | `getWorkspaceModeState()` / `getWorkspaceDataMode()` | Shell chrome, account/settings pages |
+| Runtime and snapshot payload normalization | `catalog`, `attack-defense-table`, `audit-client`, `evidence-report` helpers | Facades and route handlers |
+
+Workspace route components must not import `catalog`, `attack-defense-table`, or `demo-mode` directly. If a page needs a new view model, extend `workspace-source` first and keep source selection behind that facade.
+
 ## UI Primitive Rules
 
 - Prefer explicit primitives (`Button`, `Card`, `WorkspacePageFrame`, `WorkspaceSectionCard`, `Tabs`, `Modal`, badges, tables) over one-off page chrome.

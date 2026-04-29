@@ -11,7 +11,7 @@ import { findActiveNavItem } from "@/lib/platform-shell";
 export function PlatformNavDesktop({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
   const items = getNavItems(locale);
-  const current = findActiveNavItem(pathname);
+  const current = findActiveNavItem(pathname, items);
 
   return (
     <nav className="workspace-nav" aria-label="Workspace navigation">
@@ -39,7 +39,7 @@ export function PlatformNavDesktop({ locale = "en-US" }: { locale?: Locale }) {
 export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
   const items = getNavItems(locale);
-  const current = findActiveNavItem(pathname);
+  const current = findActiveNavItem(pathname, items);
 
   return (
     <nav
