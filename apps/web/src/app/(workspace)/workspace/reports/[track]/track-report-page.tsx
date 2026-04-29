@@ -26,6 +26,10 @@ type ViewMode = "display" | "audit";
 
 export type TrackReportPageSearchParams = {
   view?: string | string[];
+  job?: string | string[];
+  contract?: string | string[];
+  model?: string | string[];
+  auc?: string | string[];
 };
 
 export type RenderTrackReportPageOptions = {
@@ -45,6 +49,29 @@ function isTrack(value: string): value is CatalogTrack {
 function parseViewMode(view?: string | string[]): ViewMode {
   const resolved = Array.isArray(view) ? view[0] : view;
   return resolved === "audit" ? "audit" : "display";
+}
+
+function firstParam(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function safeContextValue(value?: string | string[]) {
+  const resolved = firstParam(value)?.trim();
+  return resolved ? resolved.slice(0, 120) : undefined;
+}
+
+function inferAttackFamily(value?: string) {
+  const normalized = value?.toLowerCase() ?? "";
+  if (normalized.includes("recon")) {
+    return "recon";
+  }
+  if (normalized.includes("pia")) {
+    return "pia";
+  }
+  if (normalized.includes("gsa")) {
+    return "gsa";
+  }
+  return undefined;
 }
 
 function trackLabel(locale: Locale, track: CatalogTrack) {
@@ -162,6 +189,43 @@ function filterRows(rows: AttackDefenseRowViewModel[], track: CatalogTrack) {
   return rows.filter((row) => row.track === track);
 }
 
+function rowKey(row: AttackDefenseRowViewModel) {
+  return `${row.track}::${row.attack}::${row.defense}::${row.model}::${row.aucLabel}`;
+}
+
+function buildJobContext(searchParams?: TrackReportPageSearchParams) {
+  const jobId = safeContextValue(searchParams?.job);
+  const contractKey = safeContextValue(searchParams?.contract);
+  if (!jobId && !contractKey) {
+    return undefined;
+  }
+
+  return {
+    jobId,
+    contractKey,
+    targetModel: safeContextValue(searchParams?.model),
+    aucLabel: safeContextValue(searchParams?.auc),
+  };
+}
+
+function findHighlightedRows(rows: AttackDefenseRowViewModel[], jobContext: ReturnType<typeof buildJobContext>) {
+  if (!jobContext) {
+    return [];
+  }
+
+  const attackFamily = inferAttackFamily(jobContext.contractKey);
+  const targetModel = jobContext.targetModel?.toLowerCase();
+
+  return rows
+    .filter((row) => {
+      const attackMatches = attackFamily ? row.attack.toLowerCase().includes(attackFamily) : true;
+      const modelMatches = targetModel ? row.model.toLowerCase() === targetModel : false;
+      const aucMatches = jobContext.aucLabel ? row.aucLabel === jobContext.aucLabel : false;
+      return attackMatches && (modelMatches || aucMatches);
+    })
+    .map(rowKey);
+}
+
 export async function renderTrackReportPage({
   locale,
   params,
@@ -174,12 +238,14 @@ export async function renderTrackReportPage({
 
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const currentView = parseViewMode(searchParams?.view);
+  const jobContext = buildJobContext(searchParams);
   const [table, catalog] = await Promise.all([
     fetchAttackDefenseTable(),
     fetchCatalogDashboard(),
   ]);
 
   const rows = filterRows(table?.rows ?? [], track);
+  const highlightedRowKeys = findHighlightedRows(rows, jobContext);
   const catalogEntries = catalog?.tracks.find((item) => item.track === track)?.entries ?? [];
   const provenance = await fetchTrackProvenance(pickPrimaryEntry(catalogEntries));
   const label = trackLabel(resolvedLocale, track);
@@ -225,6 +291,8 @@ export async function renderTrackReportPage({
           rows={rows}
           provenance={provenance}
           historyPlaceholder={historyPlaceholder(resolvedLocale, label)}
+          jobContext={jobContext}
+          highlightedRowKeys={highlightedRowKeys}
         />
       ) : (
         <ReportDisplayView locale={resolvedLocale} rows={rows} />

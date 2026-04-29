@@ -18,7 +18,7 @@ describe("audit flow routing", () => {
     expect(buildCompletedJobReportHref({
       status: "completed",
       contract_key: "black-box/recon/sd15-ddim",
-    })).toBe("/workspace/reports/black-box?view=audit");
+    })).toBe("/workspace/reports/black-box?view=audit&contract=black-box%2Frecon%2Fsd15-ddim");
     expect(buildCompletedJobReportHref({
       status: "running",
       contract_key: "black-box/recon/sd15-ddim",
@@ -27,5 +27,15 @@ describe("audit flow routing", () => {
       status: "completed",
       contract_key: "unknown/family",
     })).toBeNull();
+  });
+
+  it("carries safe completed-job context into report links", () => {
+    expect(buildCompletedJobReportHref({
+      job_id: "job_demo_004",
+      status: "completed",
+      contract_key: "recon_artifact_mainline",
+      target_model: "stable-diffusion-v1-4",
+      metrics: { auc: 0.849 },
+    })).toBe("/workspace/reports/black-box?view=audit&job=job_demo_004&contract=recon_artifact_mainline&model=stable-diffusion-v1-4&auc=0.849");
   });
 });

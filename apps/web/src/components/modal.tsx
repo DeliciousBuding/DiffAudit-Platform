@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 
 type ModalProps = {
   open: boolean;
@@ -8,12 +8,14 @@ type ModalProps = {
   title: string;
   children: ReactNode;
   actions?: ReactNode;
+  closeLabel?: string;
 };
 
-export function Modal({ open, onClose, title, children, actions }: ModalProps) {
+export function Modal({ open, onClose, title, children, actions, closeLabel = "Close" }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -26,7 +28,38 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
     }, 0);
 
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (e.key !== "Tab" || !contentRef.current) {
+        return;
+      }
+
+      const focusable = Array.from(
+        contentRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute("aria-hidden"));
+
+      if (focusable.length === 0) {
+        e.preventDefault();
+        contentRef.current.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", handleEsc);
     document.body.style.overflow = "hidden";
@@ -45,7 +78,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       ref={overlayRef}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modal-title"
+      aria-labelledby={titleId}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       style={{ animation: "modal-backdrop-in 0.15s ease-out forwards" }}
       onClick={(e) => {
@@ -54,16 +87,17 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
     >
       <div
         ref={contentRef}
+        tabIndex={-1}
         className="mx-4 w-full max-w-md rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] shadow-xl"
         style={{ animation: "modal-content-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-5 py-3">
-          <h2 id="modal-title" className="text-sm font-semibold text-[var(--color-text-primary)]">{title}</h2>
+          <h2 id={titleId} className="text-sm font-semibold text-[var(--color-text-primary)]">{title}</h2>
           <button
             onClick={onClose}
             className="rounded p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-primary)] transition-colors"
-            aria-label="Close"
+            aria-label={closeLabel}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M18 6L6 18M6 6l12 12" />
