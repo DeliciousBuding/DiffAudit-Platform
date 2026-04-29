@@ -56,7 +56,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`${baseClass} ${sizeClass} ${className}`}
+        className={`ui-button ${baseClass} ${sizeClass} ${className}`}
         {...props}
       >
         {children}

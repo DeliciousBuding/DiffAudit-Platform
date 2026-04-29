@@ -287,6 +287,18 @@ Examples:
 
 Utility surfaces support the page. They do not compete with it.
 
+### 5.6 UI Primitive Ownership
+
+Reusable workspace interaction must start from explicit primitives:
+
+- `Button` owns reusable button variants and carries the `ui-button` primitive marker.
+- `Card`, `CardHeader`, and `CardBody` own generic card chrome.
+- `WorkspacePageFrame` owns page header, description, and action placement.
+- `WorkspaceSectionCard` owns repeated workspace section framing.
+- `Tabs` and `Modal` own their own keyboard and motion behavior.
+
+Do not extend the legacy `button:not(...)` fallback selectors. They exist only to preserve older one-off buttons while pages migrate to primitives.
+
 ## 6. Page Templates
 
 All current and future pages should inherit one of these templates.

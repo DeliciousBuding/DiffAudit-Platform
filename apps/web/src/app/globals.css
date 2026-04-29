@@ -2077,13 +2077,14 @@ html.dark tbody tr:hover {
   background: var(--palette-grey-10);
 }
 
-html[data-theme="dark"] button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):hover,
-html.dark button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):hover {
+/* Legacy broad button fallback. Do not extend; prefer explicit UI primitives. */
+html[data-theme="dark"] button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.ui-button):hover,
+html.dark button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.ui-button):hover {
   background: var(--palette-grey-10);
 }
 
-html[data-theme="dark"] button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):active,
-html.dark button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):active {
+html[data-theme="dark"] button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.ui-button):active,
+html.dark button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.ui-button):active {
   background: var(--palette-grey-20);
 }
 
@@ -2369,8 +2370,8 @@ html.dark .workspace-btn-secondary:hover {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Button micro-interaction (4.2.2) — replace the global catch-all with token-based version */
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill) {
+/* Legacy broad button fallback. Do not extend; prefer Button or local classes. */
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button) {
   font-family: var(--font-sans, "Inter", "Microsoft YaHei", sans-serif);
   font-size: 14px;
   font-weight: 450;
@@ -2385,23 +2386,23 @@ button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([c
   cursor: pointer;
 }
 
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):hover {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button):hover {
   background: var(--palette-grey-10);
   border-color: var(--border);
   transform: translateY(-1px);
 }
 
-button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):active {
+button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button):active {
   transform: translateY(0);
   background: var(--palette-grey-20);
 }
 
 /* Micro-animation: button scale (replaces the previous scale-based rule) */
-button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):hover {
+button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):not(.ui-button):hover {
   transform: scale(1.02);
 }
 
-button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):active {
+button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):not(.ui-button):active {
   transform: scale(0.98);
 }
 
@@ -2424,14 +2425,14 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   .card-animate,
   .page-entrance,
   .animate-pulse,
-  button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill) {
+  button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button) {
     animation: none !important;
     transition: none !important;
   }
 
   .workspace-sidebar-link:hover,
-  button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):hover,
-  button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):active {
+  button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):not(.ui-button):hover,
+  button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.header-pill):not(.ui-button):active {
     transform: none !important;
   }
 }
