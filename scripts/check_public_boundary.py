@@ -96,6 +96,8 @@ def main() -> int:
     failures: list[str] = []
 
     for path in tracked_files(repo_root):
+        if not path.exists():
+            continue
         if not should_scan(path, repo_root):
             continue
         rel = path.relative_to(repo_root).as_posix()

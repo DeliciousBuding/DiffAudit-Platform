@@ -62,6 +62,7 @@ Legacy routes are compatibility debt, not product surface.
 - Do not add new behavior under legacy redirect route groups.
 - Before deleting a legacy route, scan internal links and tests for references.
 - After deletion, route recovery and not-found pages should direct users to the current public paths: `/`, `/docs`, `/workspace`, `/workspace/audits`, and `/workspace/reports`.
+- Deleted top-level legacy workspace routes must stay deleted. Do not restore `/audit`, `/batch`, `/dashboard`, `/guide`, or `/report`; use `/workspace`, `/workspace/audits`, `/workspace/reports`, or `/docs` instead.
 
 ## Review Checklist
 
