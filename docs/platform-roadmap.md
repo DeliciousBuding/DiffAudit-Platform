@@ -19,6 +19,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |
 | Reports | Active | Evidence stack, provenance, track review links, charts, PDF and CSV export |
 | Demo mode | Active | Snapshot-backed demo data keeps the workspace reviewable offline |
+| Runtime response facade | Active | Audit job API responses are normalized through a public-safe redaction layer before rendering |
 
 ## Near-Term Product Work
 
@@ -30,6 +31,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | P2 | Deployment | Add optional image provenance verification helpers for GHCR and local archive deployments |
 | P2 | Account | Polish account security state for linked providers, verified email, and password access |
 | P2 | Accessibility | Add menu roles, chart text summaries, and stronger focus handling in shared primitives |
+| P2 | Workspace controls | Harden filters and create-audit wizard semantics without changing the visual system |
 
 ## Longer-Term Direction
 
