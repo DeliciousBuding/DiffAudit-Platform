@@ -17,7 +17,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Docker images | Active | GHCR publishes web and API images with immutable `sha-<short-sha>` tags |
 | Deployment traceability | Active | Gateway health exposes redacted build revision and snapshot status |
 | Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |
-| Reports | Active | Evidence stack, provenance, charts, PDF and CSV export |
+| Reports | Active | Evidence stack, provenance, track review links, charts, PDF and CSV export |
 | Demo mode | Active | Snapshot-backed demo data keeps the workspace reviewable offline |
 
 ## Near-Term Product Work
@@ -25,10 +25,11 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Priority | Track | Work |
 | --- | --- | --- |
 | P1 | Reports | Improve printable report pagination, table wrapping, and long-evidence layout |
-| P1 | Audit loop | Make created demo/live jobs route directly into detail and then into matching reports |
+| P1 | Audit loop | Highlight completed job context inside matching report rows when admitted into the snapshot |
 | P2 | Docs | Add a public API contract page for catalog, evidence table, and report data shapes |
 | P2 | Deployment | Add optional image provenance verification helpers for GHCR and local archive deployments |
 | P2 | Account | Polish account security state for linked providers, verified email, and password access |
+| P2 | Accessibility | Add menu roles, chart text summaries, and stronger focus handling in shared primitives |
 
 ## Longer-Term Direction
 
@@ -39,6 +40,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Research handoff | Cleaner admitted-evidence import from DiffAudit-Research without exposing raw paths |
 | Product demo | More realistic seeded jobs, reports, and coverage gaps while keeping data sanitized |
 | Release management | Signed/provenance-aware images after the GHCR baseline is stable |
+| Data source facade | Normalize demo/live response shapes and sanitize Runtime text before rendering |
 
 ## Guardrails
 

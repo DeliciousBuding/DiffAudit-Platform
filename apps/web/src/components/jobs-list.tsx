@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
+import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 type AuditJobPayload = {
@@ -123,12 +124,8 @@ export function JobsList({ locale = "en-US" }: { locale?: Locale }) {
         }
 
         const payload = await response.json();
-        if (!Array.isArray(payload)) {
-          throw new Error("jobs payload is not an array");
-        }
-
         if (!cancelled) {
-          const jobs = summarizeAuditJobs(payload as AuditJobPayload[], locale);
+          const jobs = summarizeAuditJobs(normalizeAuditJobList<AuditJobPayload>(payload), locale);
           setState({ kind: "ready", jobs });
 
           // Auto-stop polling when all jobs are completed or failed

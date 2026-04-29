@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
+import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 type AuditJobPayload = {
@@ -120,14 +121,10 @@ export function LiveJobsPanel({ locale = "en-US" }: { locale?: Locale }) {
         }
 
         const payload = await response.json();
-        if (!Array.isArray(payload)) {
-          throw new Error("jobs payload is not an array");
-        }
-
         if (!cancelled) {
           const statusLabels = auditsCopy.statusLabels;
           const localeTag = locale === "zh-CN" ? "zh-CN" : "en-US";
-          setState({ kind: "ready", jobs: summarizeAuditJobs(payload as AuditJobPayload[], panelCopy.justUpdated, panelCopy.noSummary, localeTag, statusLabels) });
+          setState({ kind: "ready", jobs: summarizeAuditJobs(normalizeAuditJobList<AuditJobPayload>(payload), panelCopy.justUpdated, panelCopy.noSummary, localeTag, statusLabels) });
         }
       } catch {
         if (!cancelled) {

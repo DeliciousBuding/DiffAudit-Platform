@@ -7,6 +7,8 @@ import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/skeleton";
 import { Modal } from "@/components/modal";
+import { buildCompletedJobReportHref } from "@/lib/audit-flow";
+import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 // Extended job record — the detail API may return stdout/stderr tails
@@ -273,6 +275,7 @@ export function JobDetailClient({
   const isTerminal = ["completed", "failed", "cancelled"].includes(job.status);
   const suggestionsKey = job.status as keyof typeof copy.jobDetail.nextSteps;
   const suggestions = isTerminal ? copy.jobDetail.nextSteps[suggestionsKey] ?? [] : [];
+  const reportHref = buildCompletedJobReportHref(job);
   const showMetrics = job.metrics && (
     typeof job.metrics.auc === "number"
     || typeof job.metrics.asr === "number"
@@ -305,6 +308,23 @@ export function JobDetailClient({
           {job.summary_note}
         </div>
       )}
+
+      {reportHref ? (
+        <div className="rounded-lg border border-[color:var(--success)]/25 bg-[color:var(--success)]/10 px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-foreground">{copy.jobDetail.reportReadyTitle}</div>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">{copy.jobDetail.reportReadyBody}</p>
+            </div>
+            <Link
+              href={reportHref}
+              className="inline-flex items-center rounded-md border border-[color:var(--success)]/25 bg-background/60 px-3 py-1.5 text-xs font-medium text-[color:var(--success)] transition-colors hover:bg-background"
+            >
+              {copy.jobDetail.viewReport}
+            </Link>
+          </div>
+        </div>
+      ) : null}
 
       {typeof job.progress_pct === "number" && !isTerminal && (
         <div className="rounded-md border border-border bg-card p-3">
@@ -377,7 +397,7 @@ export function JobDetailClient({
             {copy.jobDetail.labels.error}
           </div>
           <pre className="mono text-[10px] text-warning whitespace-pre-wrap break-all">
-            {job.error}
+            {sanitizeRuntimeText(job.error)}
           </pre>
         </div>
       )}
@@ -396,10 +416,10 @@ export function JobDetailClient({
       {/* Stdout / Stderr tails */}
       <div className="space-y-3">
         {job.stdout_tail && (
-          <LogTail label={copy.jobDetail.labels.stdoutTail} content={job.stdout_tail} linesLabel={copy.jobDetail.labels.lines} />
+          <LogTail label={copy.jobDetail.labels.stdoutTail} content={sanitizeRuntimeText(job.stdout_tail) ?? ""} linesLabel={copy.jobDetail.labels.lines} />
         )}
         {job.stderr_tail && (
-          <LogTail label={copy.jobDetail.labels.stderrTail} content={job.stderr_tail} linesLabel={copy.jobDetail.labels.lines} />
+          <LogTail label={copy.jobDetail.labels.stderrTail} content={sanitizeRuntimeText(job.stderr_tail) ?? ""} linesLabel={copy.jobDetail.labels.lines} />
         )}
         {!job.stdout_tail && !job.stderr_tail && (
           <div className="text-xs text-muted-foreground text-center py-4">

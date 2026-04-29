@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
+import { normalizeAuditJobList } from "@/lib/audit-job-payload";
+import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 interface JobRecord {
@@ -106,7 +108,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
         });
         if (res.ok) {
           const data = await res.json();
-          const allJobs: JobRecord[] = Array.isArray(data.jobs) ? data.jobs : [];
+          const allJobs = normalizeAuditJobList<JobRecord>(data);
           const filtered =
             mode === "active"
               ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
@@ -222,69 +224,81 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           </tr>
         </thead>
         <tbody>
-          {jobs.map((job, index) => (
-            <tr
-              key={job.job_id}
-              className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
-                index % 2 === 0 ? "bg-background" : "bg-muted/10"
-              }`}
-            >
-              <td className="px-3 py-2">
-                <div className="font-medium text-xs">{job.job_id}</div>
-                <div className="mono text-[10px] text-muted-foreground mt-0.5">{job.contract_key}</div>
-              </td>
-              <td className="px-3 py-2">
-                <span className="text-xs text-muted-foreground">{job.job_type}</span>
-              </td>
-              <td className="px-3 py-2">
-                <span className="mono text-xs">{job.target_model ?? "--"}</span>
-                {job.summary_note && (
-                  <div className="mt-1 text-[10px] leading-4 text-muted-foreground max-w-[18rem]">
-                    {job.summary_note}
-                  </div>
-                )}
-              </td>
-              <td className="px-3 py-2">
-                <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
-                {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
-                  <div className="mt-1">
-                    <ProgressStrip value={job.progress_pct} />
-                  </div>
-                )}
-              </td>
-              <td className="px-3 py-2">
-                <span className="mono text-xs text-muted-foreground">{formatTime(job.created_at, locale)}</span>
-              </td>
-              <td className="mono px-3 py-2 text-right text-xs">
-                {formatDuration(job.created_at, job.updated_at)}
-                {job.metrics && (
-                  <div className="mt-1 text-[10px] leading-4 text-muted-foreground">
-                    AUC {formatMetricValue(job.metrics.auc)}
-                  </div>
-                )}
-              </td>
-              <td className="px-3 py-2 text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <Link
-                    href={`/workspace/audits/${job.job_id}`}
-                    className="text-xs text-[var(--accent-blue)] hover:underline"
-                  >
-                    {tableCopy.action}
-                  </Link>
-                  {job.status === "failed" && (
-                    <button
-                      onClick={() => handleRetry(job)}
-                      disabled={retryingJobId === job.job_id}
-                      className="text-xs text-[var(--accent-amber)] hover:underline disabled:opacity-50"
-                      title={copy.retryTitle}
-                    >
-                      {retryingJobId === job.job_id ? copy.retrying : copy.retry}
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+          {jobs.map((job, index) => {
+              const reportHref = buildCompletedJobReportHref(job);
+
+              return (
+                <tr
+                  key={job.job_id}
+                  className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+                    index % 2 === 0 ? "bg-background" : "bg-muted/10"
+                  }`}
+                >
+                  <td className="px-3 py-2">
+                    <div className="font-medium text-xs">{job.job_id}</div>
+                    <div className="mono text-[10px] text-muted-foreground mt-0.5">{job.contract_key}</div>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className="text-xs text-muted-foreground">{job.job_type}</span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className="mono text-xs">{job.target_model ?? "--"}</span>
+                    {job.summary_note && (
+                      <div className="mt-1 text-[10px] leading-4 text-muted-foreground max-w-[18rem]">
+                        {job.summary_note}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
+                    {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
+                      <div className="mt-1">
+                        <ProgressStrip value={job.progress_pct} />
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className="mono text-xs text-muted-foreground">{formatTime(job.created_at, locale)}</span>
+                  </td>
+                  <td className="mono px-3 py-2 text-right text-xs">
+                    {formatDuration(job.created_at, job.updated_at)}
+                    {job.metrics && (
+                      <div className="mt-1 text-[10px] leading-4 text-muted-foreground">
+                        AUC {formatMetricValue(job.metrics.auc)}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/workspace/audits/${job.job_id}`}
+                        className="text-xs text-[var(--accent-blue)] hover:underline"
+                      >
+                        {copy.viewDetails}
+                      </Link>
+                      {reportHref ? (
+                        <Link
+                          href={reportHref}
+                          className="text-xs text-[var(--accent-blue)] hover:underline"
+                        >
+                          {copy.viewReport}
+                        </Link>
+                      ) : null}
+                      {job.status === "failed" && (
+                        <button
+                          onClick={() => handleRetry(job)}
+                          disabled={retryingJobId === job.job_id}
+                          className="text-xs text-[var(--accent-amber)] hover:underline disabled:opacity-50"
+                          title={copy.retryTitle}
+                        >
+                          {retryingJobId === job.job_id ? copy.retrying : copy.retry}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>

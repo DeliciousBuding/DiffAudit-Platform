@@ -1,4 +1,5 @@
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
+import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 
 const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
@@ -121,11 +122,7 @@ export async function fetchAuditJobs(): Promise<AuditJobViewModel[] | null> {
     }
 
     const payload = await response.json();
-    if (!Array.isArray(payload)) {
-      return null;
-    }
-
-    return summarizeAuditJobs(payload as AuditJobPayload[]);
+    return summarizeAuditJobs(normalizeAuditJobList<AuditJobPayload>(payload));
   } catch {
     return null;
   }
