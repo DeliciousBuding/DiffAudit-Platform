@@ -15,7 +15,7 @@ import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { classifyRisk, riskLabel } from "@/lib/risk-report";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportsClient } from "@/app/(workspace)/workspace/reports/ReportsClient";
-import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
+import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 import { buildReportHref } from "@/lib/audit-flow";
@@ -33,6 +33,19 @@ function reportSummaryCopy(locale: Locale) {
       trackReview: "按攻击线审阅",
       trackReviewBody: "进入对应轨道的审计视图，查看证据、溯源和长期审计信息。",
       openAuditView: "打开审计视图",
+      reportInfo: "报告信息",
+      recentExports: "最近导出记录",
+      templates: "报告模板库",
+      owner: "负责人",
+      generatedAt: "生成时间",
+      status: "报告状态",
+      completed: "已完成",
+      pdfVersion: "PDF 版本",
+      docxVersion: "DOCX 版本",
+      pptxVersion: "PPTX 版本",
+      enterpriseTemplate: "企业摘要模板",
+      researchTemplate: "研究演示版模板",
+      complianceTemplate: "合规模板",
       tracks: {
         "black-box": "黑盒",
         "gray-box": "灰盒",
@@ -50,6 +63,19 @@ function reportSummaryCopy(locale: Locale) {
     trackReview: "Review by attack track",
     trackReviewBody: "Open each track's audit view for evidence, provenance, and long-term review context.",
     openAuditView: "Open audit view",
+    reportInfo: "Report information",
+    recentExports: "Recent exports",
+    templates: "Report templates",
+    owner: "Owner",
+    generatedAt: "Generated at",
+    status: "Report status",
+    completed: "Completed",
+    pdfVersion: "PDF version",
+    docxVersion: "DOCX version",
+    pptxVersion: "PPTX version",
+    enterpriseTemplate: "Enterprise summary template",
+    researchTemplate: "Research presentation template",
+    complianceTemplate: "Compliance template",
     tracks: {
       "black-box": "Black-box",
       "gray-box": "Gray-box",
@@ -149,6 +175,9 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
   const briefingNote = highestRiskRow
     ? highestRiskRow.note
     : summaryCopy.fallback;
+  const featuredReportName = highestRiskRow
+    ? `${highestRiskRow.model} · ${highestRiskRow.attack}`
+    : copy.sections.auditResults;
   const trackCards = (["black-box", "gray-box", "white-box"] as const).map((track) => ({
     track,
     label: summaryCopy.tracks[track],
@@ -161,54 +190,32 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
 
   const resultsContent = (
     <>
-      <section className="border border-border bg-card">
-        <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <section className="workspace-report-feature">
+        <div className="workspace-report-feature-body">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {summaryCopy.title}
-          </h2>
-        </div>
-        <div className="grid gap-3 p-3 lg:grid-cols-3">
-          <div className="rounded-lg border border-[var(--risk-high)]/25 bg-[var(--risk-high)]/5 p-4">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {summaryCopy.strongestRisk}
-            </div>
-            {highestRiskRow ? (
-              <>
-                <div className="mt-2 text-sm font-semibold">{highestRiskRow.attack} · {highestRiskRow.model}</div>
-                <div className="mt-1 mono text-xl font-semibold">{highestRiskRow.aucLabel}</div>
-                <div className="mt-2 text-xs leading-5 text-muted-foreground">{highestRiskRow.note}</div>
-              </>
-            ) : (
-              <div className="mt-2 text-xs text-muted-foreground">{summaryCopy.fallback}</div>
-            )}
           </div>
-
-          <div className="rounded-lg border border-[var(--success)]/25 bg-[var(--success)]/10 p-4">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {summaryCopy.strongestDefense}
-            </div>
-            {strongestDefenseRow ? (
-              <>
-                <div className="mt-2 text-sm font-semibold">{strongestDefenseRow.defense} · {strongestDefenseRow.model}</div>
-                <div className="mt-1 mono text-xl font-semibold">{strongestDefenseRow.aucLabel}</div>
-                <div className="mt-2 text-xs leading-5 text-muted-foreground">{strongestDefenseRow.note}</div>
-              </>
-            ) : (
-              <div className="mt-2 text-xs text-muted-foreground">{summaryCopy.fallback}</div>
-            )}
+          <h2>{featuredReportName}</h2>
+          <div className="workspace-report-scoreline">
+            <span>{Math.round(avgAuc * 100)}</span>
+            <small>/100</small>
+            <p>{copy.description}</p>
           </div>
-
-          <div className="rounded-lg border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 p-4">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {summaryCopy.briefing}
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <div className="workspace-report-mini-stat">
+              <span>{summaryCopy.strongestRisk}</span>
+              <strong>{highestRiskRow?.aucLabel ?? "—"}</strong>
             </div>
-            <div className="mt-2 text-sm font-semibold">
-              {rows.length > 0 ? `${rows.length} rows across ${catalog?.stats.total ?? 0} contracts` : "—"}
+            <div className="workspace-report-mini-stat">
+              <span>{summaryCopy.strongestDefense}</span>
+              <strong>{strongestDefenseRow?.aucLabel ?? "—"}</strong>
             </div>
-            <div className="mt-2 text-xs leading-6 text-muted-foreground">
-              {briefingNote}
+            <div className="workspace-report-mini-stat">
+              <span>{copy.sections.highRiskGaps}</span>
+              <strong>{gapData.length}</strong>
             </div>
           </div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">{briefingNote}</p>
         </div>
       </section>
 
@@ -369,7 +376,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
                       <StatusBadge tone="info">{row.track}</StatusBadge>
                     </td>
                     <td className="px-3 py-2">
-                      <ReportEvidenceStack locale={locale} row={row} />
+                      <ReportEvidenceStack locale={locale} row={row} compact />
                     </td>
                     <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
                     <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
@@ -395,6 +402,72 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
     </>
   );
 
+  const rightRail = (
+    <>
+      <section className="workspace-inspector-card">
+        <div className="workspace-inspector-card-header">
+          <h2>{summaryCopy.reportInfo}</h2>
+        </div>
+        <div className="workspace-inspector-list">
+          <div className="workspace-inspector-metric">
+            <span>{copy.tableHeaders.model}</span>
+            <strong>{highestRiskRow?.model ?? "—"}</strong>
+          </div>
+          <div className="workspace-inspector-metric">
+            <span>{copy.tableHeaders.attack}</span>
+            <strong>{highestRiskRow?.attack ?? "—"}</strong>
+          </div>
+          <div className="workspace-inspector-metric">
+            <span>{summaryCopy.owner}</span>
+            <strong>DiffAudit</strong>
+          </div>
+          <div className="workspace-inspector-metric">
+            <span>{summaryCopy.generatedAt}</span>
+            <strong>2026-04-15</strong>
+          </div>
+          <div className="workspace-inspector-metric">
+            <span>{summaryCopy.status}</span>
+            <strong className="text-[color:var(--success)]">{summaryCopy.completed}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="workspace-inspector-card">
+        <div className="workspace-inspector-card-header">
+          <h2>{summaryCopy.recentExports}</h2>
+        </div>
+        <div className="workspace-report-rail-list">
+          {[summaryCopy.pdfVersion, summaryCopy.docxVersion, summaryCopy.pptxVersion].map((item, index) => (
+            <div key={item} className="workspace-report-rail-item">
+              <span className="workspace-report-rail-icon">{index + 1}</span>
+              <div>
+                <strong>{item}</strong>
+                <span>2026-04-15</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="workspace-inspector-card">
+        <div className="workspace-inspector-card-header">
+          <h2>{summaryCopy.templates}</h2>
+        </div>
+        <div className="workspace-report-rail-list">
+          {[summaryCopy.enterpriseTemplate, summaryCopy.researchTemplate, summaryCopy.complianceTemplate].map((item, index) => (
+            <div key={item} className="workspace-report-rail-item">
+              <span className="workspace-report-rail-icon is-soft">{index + 1}</span>
+              <div>
+                <strong>{item}</strong>
+                <span>{copy.sections.coverageGaps}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+
   return (
     <WorkspacePageFrame
       eyebrow={copy.eyebrow}
@@ -408,55 +481,10 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
           locale={locale}
         />
       }
+      rightRail={rightRail}
     >
       <ReportsClient rows={rows} locale={locale} resultsContent={resultsContent} />
     </WorkspacePageFrame>
-  );
-}
-
-/** Async server component that fetches and renders the coverage gaps table */
-async function CoverageGapsSection({ locale }: { locale: Locale }) {
-  const copy = WORKSPACE_COPY[locale].reports;
-  const th = copy.tableHeaders;
-  const catalog = await getWorkspaceCatalogData();
-  const contracts = catalog?.tracks.flatMap((track) => track.entries).slice(0, 6) ?? [];
-
-  return (
-    <WorkspaceSectionCard title={copy.sections.coverageGaps}>
-      <div className="overflow-auto">
-        {contracts.length > 0 ? (
-          <table className="min-w-[900px] w-full border-collapse text-xs">
-            <thead className="sticky top-0 bg-muted/30">
-              <tr className="border-b border-border">
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.contractKey}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.label}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.systemGap}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.workspace}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contracts.map((entry, index) => (
-                <tr
-                  key={entry.contractKey}
-                  className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
-                    index % 2 === 0 ? "bg-background" : "bg-muted/10"
-                  }`}
-                >
-                  <td className="mono px-3 py-2 text-[10px] text-muted-foreground">{entry.contractKey}</td>
-                  <td className="px-3 py-2 font-medium">{entry.label}</td>
-                  <td className="px-3 py-2 text-muted-foreground max-w-xs">{entry.systemGap}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{entry.bestWorkspace}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-            {copy.emptyGaps}
-          </div>
-        )}
-      </div>
-    </WorkspaceSectionCard>
   );
 }
 
@@ -484,13 +512,6 @@ async function renderWorkspaceReportsPage({ locale }: WorkspaceReportsPageOption
         <AuditResultsSection locale={resolvedLocale} />
       </Suspense>
 
-      <Suspense fallback={
-        <section className="border border-border bg-card">
-          <TableSkeleton rows={6} cols={4} />
-        </section>
-      }>
-        <CoverageGapsSection locale={resolvedLocale} />
-      </Suspense>
     </div>
   );
 }

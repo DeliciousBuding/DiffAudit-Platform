@@ -65,3 +65,6 @@ deploy.tar.gz
 deploy/.env
 deploy/runtime.env
 deploy/public/
+
+# Local design references
+docs/design/reference/

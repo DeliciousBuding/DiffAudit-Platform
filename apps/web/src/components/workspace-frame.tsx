@@ -6,28 +6,37 @@ export function WorkspacePageFrame({
   description,
   actions,
   children,
-  titleClassName = "text-lg",
-  descriptionClassName = "text-xs",
+  rightRail,
+  titleClassName = "text-2xl",
+  descriptionClassName = "text-sm",
 }: {
   eyebrow: string;
   title: string;
   description: string;
   actions?: ReactNode;
   children: ReactNode;
+  rightRail?: ReactNode;
   titleClassName?: string;
   descriptionClassName?: string;
 }) {
   return (
-    <div className="space-y-4">
-      <div className={`border-b border-border pb-3 ${actions ? "flex items-start justify-between gap-4" : ""}`}>
+    <div className="workspace-page-frame">
+      <div className={`workspace-page-header ${actions ? "has-actions" : ""}`}>
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{eyebrow}</div>
-          <h1 className={`mt-1 font-semibold ${titleClassName}`.trim()}>{title}</h1>
-          <p className={`mt-0.5 text-muted-foreground ${descriptionClassName}`.trim()}>{description}</p>
+          <div className="workspace-page-eyebrow">{eyebrow}</div>
+          <h1 className={`workspace-page-title ${titleClassName}`.trim()}>{title}</h1>
+          <p className={`workspace-page-description ${descriptionClassName}`.trim()}>{description}</p>
         </div>
-        {actions ? <div className="shrink-0">{actions}</div> : null}
+        {actions ? <div className="workspace-page-actions">{actions}</div> : null}
       </div>
-      {children}
+      {rightRail ? (
+        <div className="workspace-page-with-rail">
+          <div className="workspace-page-primary">{children}</div>
+          <aside className="workspace-page-rail">{rightRail}</aside>
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 }
@@ -44,9 +53,9 @@ export function WorkspaceSectionCard({
   className?: string;
 }) {
   return (
-    <section className={`border border-border bg-card ${className}`.trim()}>
-      <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between gap-3">
-        <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{title}</h2>
+    <section className={`workspace-section-card ${className}`.trim()}>
+      <div className="workspace-section-card-header">
+        <h2 className="workspace-section-card-title">{title}</h2>
         {actions ? <div>{actions}</div> : null}
       </div>
       {children}

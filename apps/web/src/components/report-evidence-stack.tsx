@@ -23,12 +23,14 @@ type ReportEvidenceStackProps = {
   locale: Locale;
   row: AttackDefenseRowViewModel;
   showNote?: boolean;
+  compact?: boolean;
 };
 
 export function ReportEvidenceStack({
   locale,
   row,
   showNote = true,
+  compact = false,
 }: ReportEvidenceStackProps) {
   const headers = WORKSPACE_COPY[locale].reports.tableHeaders;
   const boundary = row.boundary?.trim() || "—";
@@ -36,20 +38,20 @@ export function ReportEvidenceStack({
   const provenanceStatus = row.provenanceStatus?.trim() || "—";
 
   return (
-    <div className="space-y-1">
+    <div className={compact ? "workspace-evidence-stack is-compact" : "workspace-evidence-stack"}>
       <StatusBadge tone={evidenceTone(row.evidenceLevel)} compact>
         {row.evidenceLevel}
       </StatusBadge>
       {showNote ? (
         <div
-          className="max-w-[22rem] text-[10px] leading-4 text-muted-foreground"
+          className="workspace-evidence-note"
           title={row.note}
         >
           {row.note}
         </div>
       ) : null}
       <div
-        className="inline-flex max-w-[22rem] items-center rounded-full border border-border bg-muted/20 px-2 py-1 text-[10px] leading-4 text-muted-foreground"
+        className="workspace-evidence-pill"
         title={`${headers.qualityCost}: ${row.qualityCost}`}
       >
         <span className="truncate">
@@ -57,19 +59,19 @@ export function ReportEvidenceStack({
         </span>
       </div>
       <div
-        className="max-w-[22rem] text-[10px] leading-4 text-muted-foreground"
+        className="workspace-evidence-meta"
         title={`${headers.provenance}: ${provenanceStatus}`}
       >
         {headers.provenance}: {provenanceStatus}
       </div>
       <div
-        className="max-w-[22rem] text-[10px] leading-4 text-muted-foreground"
+        className="workspace-evidence-meta"
         title={`${headers.boundary}: ${boundary}`}
       >
         {headers.boundary}: {boundary}
       </div>
       <div
-        className="max-w-[22rem] truncate font-mono text-[10px] leading-4 text-muted-foreground"
+        className="workspace-evidence-source"
         title={`${headers.source}: ${sourcePath}`}
       >
         {headers.source}: {sourcePath}

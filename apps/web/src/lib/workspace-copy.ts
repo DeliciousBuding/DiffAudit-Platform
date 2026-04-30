@@ -27,6 +27,9 @@ export const WORKSPACE_COPY: Record<
       statusReady: string;
       statusMissing: string;
       statusUnknown: string;
+      searchPlaceholder: string;
+      searchShortcut: string;
+      notificationTitle: string;
     };
     userMenu: {
       loggedIn: string;
@@ -509,6 +512,9 @@ export const WORKSPACE_COPY: Record<
       statusReady: "Ready",
       statusMissing: "Missing",
       statusUnknown: "Unknown",
+      searchPlaceholder: "Search models, tasks, reports...",
+      searchShortcut: "⌘ K",
+      notificationTitle: "Notifications",
     },
     userMenu: {
       loggedIn: "Signed in",
@@ -521,11 +527,12 @@ export const WORKSPACE_COPY: Record<
     },
     nav: {
       workspace: { title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
-      audits: { title: "Audits", subtitle: "Create jobs and review runs", shortLabel: "Audits" },
-      reports: { title: "Reports", subtitle: "Summaries and exports", shortLabel: "Reports" },
-      apiKeys: { title: "API Keys", subtitle: "Manage access credentials", shortLabel: "Keys" },
-      account: { title: "Account", subtitle: "Profile, password, and sign-in methods", shortLabel: "Account" },
-      settings: { title: "Settings", subtitle: "Runtime, defaults, and workspace config", shortLabel: "Settings" },
+      audits: { title: "Audit Tasks", subtitle: "Create, run, and review jobs", shortLabel: "Tasks" },
+      modelAssets: { title: "Model Assets", subtitle: "Targets, datasets, and versions", shortLabel: "Assets" },
+      riskFindings: { title: "Risk Findings", subtitle: "Evidence, gaps, and remediation", shortLabel: "Risks" },
+      reportCenter: { title: "Report Center", subtitle: "Summaries, exports, and sharing", shortLabel: "Reports" },
+      apiKeys: { title: "API Management", subtitle: "Issue and revoke access keys", shortLabel: "API" },
+      account: { title: "Personal Account", subtitle: "Profile and sign-in settings", shortLabel: "Account" },
     },
     workspace: {
       eyebrow: "Workspace",
@@ -893,9 +900,9 @@ export const WORKSPACE_COPY: Record<
       },
     },
     apiKeys: {
-      eyebrow: "API Keys",
-      title: "Manage API access credentials.",
-      description: "Create and manage API keys to access the DiffAudit platform programmatically. Keys are scoped to specific permissions and can be revoked at any time.",
+      eyebrow: "API Management",
+      title: "Issue and revoke API access keys.",
+      description: "Create, scope, copy, and revoke API keys used by runners, notebooks, and integrations.",
       create: "Create new key",
       createTitle: "Create a new API key",
       keyName: "Key name",
@@ -1215,6 +1222,9 @@ export const WORKSPACE_COPY: Record<
       statusReady: "已就绪",
       statusMissing: "缺失",
       statusUnknown: "未知",
+      searchPlaceholder: "搜索模型、任务、报告...",
+      searchShortcut: "⌘ K",
+      notificationTitle: "通知",
     },
     userMenu: {
       loggedIn: "已登录",
@@ -1227,11 +1237,12 @@ export const WORKSPACE_COPY: Record<
     },
     nav: {
       workspace: { title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
-      audits: { title: "审计流程", subtitle: "创建审计任务，查看运行结果", shortLabel: "审计" },
-      reports: { title: "报告", subtitle: "结果汇总与导出", shortLabel: "报告" },
-      apiKeys: { title: "API 密钥", subtitle: "管理访问凭证", shortLabel: "密钥" },
-      account: { title: "账户", subtitle: "资料、密码与登录方式", shortLabel: "账户" },
-      settings: { title: "设置", subtitle: "运行配置、默认值与工作区设置", shortLabel: "设置" },
+      audits: { title: "审计任务", subtitle: "创建、运行与查看任务", shortLabel: "任务" },
+      modelAssets: { title: "模型资产", subtitle: "目标、数据集与版本", shortLabel: "资产" },
+      riskFindings: { title: "风险发现", subtitle: "证据、缺口与修复建议", shortLabel: "风险" },
+      reportCenter: { title: "报告中心", subtitle: "报告汇总、导出与分享", shortLabel: "报告" },
+      apiKeys: { title: "API 管理", subtitle: "分发与吊销访问密钥", shortLabel: "API" },
+      account: { title: "个人账户设置", subtitle: "资料与登录方式", shortLabel: "账户" },
     },
     workspace: {
       eyebrow: "工作台",
@@ -1599,9 +1610,9 @@ export const WORKSPACE_COPY: Record<
       },
     },
     apiKeys: {
-      eyebrow: "API 密钥",
-      title: "管理 API 访问凭证。",
-      description: "在这里创建和管理 DiffAudit 的 API 密钥。每个密钥都有明确权限范围，并且可以随时吊销。",
+      eyebrow: "API 管理",
+      title: "分发与吊销 API 访问密钥。",
+      description: "为 Runner、Notebook 和集成系统创建、授权、复制和吊销 API 密钥。",
       create: "创建新密钥",
       createTitle: "创建新的 API 密钥",
       keyName: "密钥名称",

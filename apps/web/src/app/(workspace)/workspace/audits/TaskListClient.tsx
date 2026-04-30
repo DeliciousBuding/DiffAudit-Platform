@@ -203,9 +203,9 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
   // Active tasks: compact list with live pulse
   if (mode === "active") {
     return (
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-border/70">
         {jobs.map((job) => (
-          <div key={job.job_id} className="px-3 py-2.5 transition-colors hover:bg-muted/30">
+          <div key={job.job_id} className="px-4 py-3 transition-colors hover:bg-[color:var(--accent-blue)]/5">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
               <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
@@ -247,16 +247,16 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
   // History: full table view
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-xs">
+      <table className="workspace-data-table w-full border-collapse text-xs">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{tableCopy.name}</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{tableCopy.type}</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{tableCopy.model}</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{tableCopy.status}</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{tableCopy.created}</th>
-            <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{tableCopy.duration}</th>
-            <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{tableCopy.action}</th>
+            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.name}</th>
+            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.type}</th>
+            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.model}</th>
+            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.status}</th>
+            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.created}</th>
+            <th className="px-4 py-3 text-right font-semibold text-muted-foreground">{tableCopy.duration}</th>
+            <th className="px-4 py-3 text-right font-semibold text-muted-foreground">{tableCopy.action}</th>
           </tr>
         </thead>
         <tbody>
@@ -267,6 +267,8 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                 <tr
                   key={job.job_id}
                   className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+                    index === 0 ? "workspace-row-selected" : ""
+                  } ${
                     index % 2 === 0 ? "bg-background" : "bg-muted/10"
                   }`}
                 >

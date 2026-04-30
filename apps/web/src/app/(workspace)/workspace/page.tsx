@@ -32,18 +32,72 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
   return points;
 }
 
+function KpiIcon({ type }: { type: "catalog" | "shield" | "chart" | "report" }) {
+  const paths = {
+    catalog: (
+      <>
+        <path d="M6 5.5h12v13H6z" />
+        <path d="M9 9h6M9 12h6M9 15h3" />
+      </>
+    ),
+    shield: (
+      <>
+        <path d="M12 4.5 18 7v5.2c0 4-2.4 6.8-6 8.3-3.6-1.5-6-4.3-6-8.3V7l6-2.5Z" />
+        <path d="m9.2 12.4 1.9 1.9 3.9-4.4" />
+      </>
+    ),
+    chart: (
+      <>
+        <path d="M5 19h14" />
+        <path d="M7.5 15.5 11 12l2.6 2.2 3.9-6" />
+        <path d="M7.5 15.5v-3M11 12V8m2.6 6.2V10m3.9-1.8V5" />
+      </>
+    ),
+    report: (
+      <>
+        <path d="M7 4.5h7l3 3v12H7z" />
+        <path d="M14 4.5v3h3" />
+        <path d="M9.5 12h5M9.5 15h5" />
+      </>
+    ),
+  };
+
+  return (
+    <span className={`workspace-kpi-icon is-${type}`} aria-hidden="true">
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        {paths[type]}
+      </svg>
+    </span>
+  );
+}
+
 /** KPI card with trend arrow (up/down/flat) — 2.4.1 */
-function KpiCardWithTrend({ label, value, note, trend }: { label: string; value: string; note: string; trend?: "up" | "down" | "flat" }) {
+function KpiCardWithTrend({
+  icon,
+  label,
+  value,
+  note,
+  trend,
+}: {
+  icon: "catalog" | "shield" | "chart" | "report";
+  label: string;
+  value: string;
+  note: string;
+  trend?: "up" | "down" | "flat";
+}) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+    <div className="workspace-kpi-card card-animate">
+      <div className="workspace-kpi-card-head">
+        <KpiIcon type={icon} />
+        <div className="workspace-kpi-card-label">{label}</div>
+      </div>
       <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-3xl font-semibold leading-none">{value}</span>
+        <span className="workspace-kpi-card-value">{value}</span>
         {trendIcon ? <span className={`text-base ${trendColor}`}>{trendIcon}</span> : null}
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
+      <p className="workspace-kpi-card-note">{note}</p>
     </div>
   );
 }
@@ -153,63 +207,14 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <div className="workspace-dashboard-layout">
+        <div className="workspace-dashboard-main">
       {/* KPI row — with trend indicators 2.4.1 */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-        <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
-        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
-        <KpiCardWithTrend label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
-        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
-      </div>
-
-      {/* Audit track quick-access cards — Platform Boost */}
-      <div className="grid gap-3 md:grid-cols-3">
-        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
-          </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-
-        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
-          </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-
-        <Link href="/workspace/audits/new" className="group rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
-          </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            {copy.auditTracks.createAudit}
-            <svg viewBox="0 0 24 24" className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <KpiCardWithTrend icon="catalog" label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
+        <KpiCardWithTrend icon="shield" label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
+        <KpiCardWithTrend icon="chart" label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
+        <KpiCardWithTrend icon="report" label={copy.kpis.defenseEvaluatedLabel} value={String(defendedRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
       </div>
 
       {/* System progress bar — audit coverage overview */}
@@ -280,64 +285,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </div>
           </div>
         </section>
-      ) : (
-        /* Suggested next step — 2.4.5 */
-        suggestions.length > 0 && (
-          <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4M12 8h.01" />
-              </svg>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
-                  {copy.sections.suggestedNextSteps}
-                </h3>
-                <ul className="space-y-1">
-                  {suggestions.map((s, i) => (
-                    <li key={i} className="text-xs text-muted-foreground">{s}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </section>
-        )
-      )}
+      ) : null}
 
-      {/* Risk distribution */}
-      {totalRisk > 0 && (
-        <div className="grid gap-3 lg:grid-cols-2">
-          <div className="grid gap-3 grid-cols-3">
-            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.high}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.high}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.medium}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.medium}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.low}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.low}
-              </p>
-            </div>
-          </div>
-
-          {/* Risk Radar — 7.1 */}
+      {/* Charts grid */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {totalRisk > 0 && (
           <WorkspaceSectionCard
             title={copy.sections.chartTitles.riskRadar}
             actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
@@ -346,11 +298,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <ChartRiskRadar data={radarData} height={220} />
             </div>
           </WorkspaceSectionCard>
-        </div>
-      )}
+        )}
 
-      {/* Charts grid */}
-      <div className="grid gap-3 lg:grid-cols-2">
         <WorkspaceSectionCard title={copy.sections.chartTitles.aucDistribution}>
           <div className="p-3">
             {aucDistData.length > 0 ? (
@@ -385,9 +334,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       </div>
 
       {/* Main content grid */}
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid gap-4">
         {/* Recent results table */}
-        <WorkspaceSectionCard title={copy.sections.recentResults} className="lg:col-span-2">
+        <WorkspaceSectionCard title={copy.sections.recentResults}>
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
               <table className="w-full border-collapse text-xs">
@@ -436,19 +385,51 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </WorkspaceSectionCard>
 
-        {/* Tasks panel */}
-        <WorkspaceSectionCard title={copy.sections.tasks}>
-          <div className="p-3">
-            {copy.todoItems.map((item, index) => (
-              <div key={item} className="flex items-start gap-2 border-b border-border py-2 last:border-0">
-                <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[9px] font-semibold rounded-sm">
-                  {index + 1}
-                </span>
-                <p className="text-sm leading-relaxed text-muted-foreground">{item}</p>
-              </div>
-            ))}
-          </div>
-        </WorkspaceSectionCard>
+      </div>
+        </div>
+
+        <aside className="workspace-inspector-stack">
+          <section className="workspace-inspector-card">
+            <div className="workspace-inspector-card-header">
+              <h2>{copy.sections.suggestedNextSteps}</h2>
+            </div>
+            <div className="space-y-3 p-4">
+              {(suggestions.length > 0 ? suggestions : copy.todoItems).slice(0, 3).map((item, index) => (
+                <div key={`${item}-${index}`} className="workspace-action-row">
+                  <span className="workspace-action-icon">{index + 1}</span>
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="workspace-inspector-card">
+            <div className="workspace-inspector-card-header">
+              <h2>{copy.sections.tasks}</h2>
+            </div>
+            <div className="space-y-3 p-4">
+              {copy.todoItems.map((item, index) => (
+                <div key={item} className="workspace-task-progress">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="mono text-[11px] text-muted-foreground">{index + 1}</div>
+                      <p>{item}</p>
+                    </div>
+                    <span>{index === 0 ? "65%" : index === 1 ? "30%" : "—"}</span>
+                  </div>
+                  {index < 2 ? (
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted/40">
+                      <div
+                        className="h-full rounded-full bg-[var(--accent-blue)]"
+                        style={{ width: index === 0 ? "65%" : "30%" }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </section>
+        </aside>
       </div>
     </>
   );

@@ -5,10 +5,10 @@ import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { UserAvatar } from "@/components/user-avatar";
 import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
-import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { StatusBadge } from "@/components/status-badge";
 import { PlatformNavMobile } from "@/components/platform-nav.client";
-import { WorkspaceStatusDrawer } from "@/components/workspace-status-drawer";
+import { WorkspaceTopbarTitle } from "@/components/workspace-topbar-title";
+import { WorkspaceGlobalSearch } from "@/components/workspace-global-search";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { getWorkspaceDataMode } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -27,36 +27,25 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
         <div className="workspace-sidebar-body">
           <WorkspaceSidebar locale={locale} />
         </div>
-        <div className="workspace-sidebar-footer">
-          <div className="flex items-center gap-2 px-3 py-2 flex-wrap">
-            <StatusBadge tone="info">{copy.shell.siteBadge}</StatusBadge>
-            {dataMode !== "demo" ? (
-              <StatusBadge tone="success">{copy.shell.liveMode}</StatusBadge>
-            ) : null}
-          </div>
-          <div className="flex items-center gap-1 px-3 pb-3">
-            <RuntimeStatusBadge locale={locale} />
-          </div>
-        </div>
       </aside>
 
       <div className="workspace-main-area">
         <header className="workspace-topbar">
-          <div className="flex items-center gap-2 flex-wrap">
-            <WorkspaceStatusDrawer locale={locale} dataMode={dataMode} />
+          <div className="workspace-topbar-left">
+            <WorkspaceTopbarTitle locale={locale} />
             {dataMode !== "demo" ? (
               <StatusBadge tone="success">{copy.shell.liveMode}</StatusBadge>
             ) : null}
-            <RuntimeStatusBadge locale={locale} />
           </div>
-          <div className="flex items-center gap-2">
+          <WorkspaceGlobalSearch locale={locale} />
+          <div className="workspace-topbar-actions">
             <LanguagePicker value={locale} reloadOnChange />
             <ThemeToggleButton />
             <a
               href="https://github.com/DeliciousBuding/DiffAudit-Platform"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background/50 text-muted-foreground backdrop-blur-sm transition hover:bg-muted/50 hover:text-foreground"
+              className="workspace-icon-button"
               title={copy.shell.githubTitle}
             >
               <GithubIcon />

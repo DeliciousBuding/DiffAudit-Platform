@@ -4,11 +4,21 @@ export function BrandMark() {
   return <SiteBrandMark compact href="/" prefetch={false} />;
 }
 
-export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "settings" | "key" | "account" }) {
+export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "model" | "risk" | "report" | "key" | "account" }) {
   if (icon === "key") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
         <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+      </svg>
+    );
+  }
+
+  if (icon === "model") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
+        <path d="M12 3.5 19 7.3v9.4l-7 3.8-7-3.8V7.3l7-3.8Z" />
+        <path d="M5.4 7.6 12 11.2l6.6-3.6" />
+        <path d="M12 11.2v8.8" />
       </svg>
     );
   }
@@ -57,6 +67,20 @@ export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "se
     );
   }
 
+  if (icon === "risk") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
+      >
+        <path d="M12 3.4 21 19.5H3L12 3.4Z" />
+        <path d="M12 8.8v5.2" />
+        <path d="M12 17.2h.01" />
+      </svg>
+    );
+  }
+
   if (icon === "account") {
     return (
       <svg
@@ -64,21 +88,8 @@ export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "se
         aria-hidden="true"
         className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
       >
-        <path d="M12 3.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 0 1 0-6.4Z" />
-        <path d="M4.5 19.2c1.8-3.1 4.3-4.6 7.5-4.6s5.7 1.5 7.5 4.6" />
-      </svg>
-    );
-  }
-
-  if (icon === "settings") {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-      >
-        <path d="M12 8.2a3.8 3.8 0 1 1 0 7.6a3.8 3.8 0 0 1 0-7.6Z" />
-        <path d="M18.7 13.4a7.6 7.6 0 0 0 0-2.8l2-1.5-2-3.4-2.4 1a7.3 7.3 0 0 0-2.4-1.4L13.6 2h-4l-.4 3.3a7.3 7.3 0 0 0-2.4 1.4l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 2.8l-2 1.5 2 3.4 2.4-1a7.3 7.3 0 0 0 2.4 1.4l.4 3.3h4l.4-3.3a7.3 7.3 0 0 0 2.4-1.4l2.4 1 2-3.4-2.1-1.5Z" />
+        <path d="M12 4.2a3.4 3.4 0 1 1 0 6.8a3.4 3.4 0 0 1 0-6.8Z" />
+        <path d="M4.8 19.4c1.7-3.2 4.1-4.8 7.2-4.8s5.5 1.6 7.2 4.8" />
       </svg>
     );
   }

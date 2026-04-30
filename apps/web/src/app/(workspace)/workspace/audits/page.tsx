@@ -33,7 +33,43 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
         </Link>
       }
     >
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="workspace-kpi-card">
+          <div className="workspace-kpi-card-label">{copy.statusLabels.running}</div>
+          <div className="workspace-kpi-card-value">1</div>
+          <p className="workspace-kpi-card-note">{copy.sections.activeTasks}</p>
+        </div>
+        <div className="workspace-kpi-card">
+          <div className="workspace-kpi-card-label">{copy.statusLabels.completed}</div>
+          <div className="workspace-kpi-card-value">5</div>
+          <p className="workspace-kpi-card-note">{copy.sections.taskHistory}</p>
+        </div>
+        <div className="workspace-kpi-card">
+          <div className="workspace-kpi-card-label">{copy.statusLabels.failed}</div>
+          <div className="workspace-kpi-card-value">1</div>
+          <p className="workspace-kpi-card-note">{copy.retryTitle}</p>
+        </div>
+        <div className="workspace-kpi-card">
+          <div className="workspace-kpi-card-label">{copy.filters.trackSelectLabel}</div>
+          <div className="workspace-kpi-card-value">3</div>
+          <p className="workspace-kpi-card-note">{copy.filters.trackAll}</p>
+        </div>
+      </div>
 
+      <div className="workspace-toolbar">
+        <div className="workspace-toolbar-tabs">
+          <span className="is-active">{copy.filters.statusAll}</span>
+          <span>{copy.filters.statusRunning}</span>
+          <span>{copy.filters.statusCompleted}</span>
+          <span>{copy.filters.statusFailed}</span>
+        </div>
+        <div className="workspace-toolbar-search">
+          <span>{copy.filters.searchPlaceholder}</span>
+        </div>
+      </div>
+
+      <div className="workspace-audit-layout">
+        <div className="workspace-audit-main">
       {/* Active tasks section */}
       <WorkspaceSectionCard
         title={copy.sections.activeTasks}
@@ -66,6 +102,54 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
           </Suspense>
         </div>
       </WorkspaceSectionCard>
+        </div>
+
+        <aside className="workspace-audit-inspector">
+          <section className="workspace-inspector-card">
+            <div className="workspace-inspector-card-header">
+              <h2>{copy.sections.activeTasks}</h2>
+            </div>
+            <div className="p-4">
+              <div className="workspace-audit-stepper" aria-hidden="true">
+                {[copy.statusLabels.queued, copy.statusLabels.running, copy.statusLabels.completed].map((label, index) => (
+                  <div key={label} className={index <= 1 ? "is-active" : ""}>
+                    <span>{index + 1}</span>
+                    <small>{label}</small>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 space-y-3">
+                <div className="workspace-inspector-metric">
+                  <span>{copy.taskTable.status}</span>
+                  <strong>{copy.statusLabels.running}</strong>
+                </div>
+                <div className="workspace-inspector-metric">
+                  <span>{copy.taskTable.type}</span>
+                  <strong>recon / black-box</strong>
+                </div>
+                <div className="workspace-inspector-metric">
+                  <span>{copy.taskTable.duration}</span>
+                  <strong>68%</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="workspace-inspector-card">
+            <div className="workspace-inspector-card-header">
+              <h2>{copy.filters.groupLabel}</h2>
+            </div>
+            <div className="space-y-3 p-4">
+              {[copy.filters.trackBlackBox, copy.filters.trackGrayBox, copy.filters.trackWhiteBox].map((track, index) => (
+                <div key={track} className="workspace-action-row">
+                  <span className="workspace-action-icon">{index + 1}</span>
+                  <p>{track}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </div>
     </WorkspacePageFrame>
   );
 }
