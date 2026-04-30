@@ -22,7 +22,12 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
     return NextResponse.json({ ok: true, user });
-  } catch {
-    return NextResponse.json({ message: "Username or email already exists." }, { status: 409 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes("UNIQUE")) {
+      return NextResponse.json({ message: "Username or email already exists." }, { status: 409 });
+    }
+    console.error("Registration failed:", error);
+    return NextResponse.json({ message: "An unexpected error occurred." }, { status: 500 });
   }
 }
