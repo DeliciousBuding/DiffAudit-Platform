@@ -48,24 +48,56 @@ const MOCK_KEYS: ApiKey[] = [
 
 export function ApiKeysClient({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].apiKeys;
-  const [keys] = useState<ApiKey[]>(MOCK_KEYS);
+  const [keys, setKeys] = useState<ApiKey[]>(MOCK_KEYS);
   const [showCreate, setShowCreate] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [selectedScopes, setSelectedScopes] = useState<Set<string>>(
+    () => new Set(["audit:read", "audit:write", "results:read", "results:export"]),
+  );
+
+  function handleToggleScope(scope: string) {
+    setSelectedScopes((prev) => {
+      const next = new Set(prev);
+      if (next.has(scope)) {
+        next.delete(scope);
+      } else {
+        next.add(scope);
+      }
+      return next;
+    });
+  }
 
   function handleCreate() {
     if (!newKeyName.trim()) return;
     const fakeKey = `da_live_${Math.random().toString(36).slice(2, 10)}${Math.random().toString(36).slice(2, 10)}`;
+    const newKey: ApiKey = {
+      id: `key_${Date.now()}`,
+      name: newKeyName.trim(),
+      prefix: `${fakeKey.slice(0, 14)}...${fakeKey.slice(-4)}`,
+      created: new Date().toISOString().slice(0, 10),
+      lastUsed: null,
+      scopes: Array.from(selectedScopes),
+      status: "active",
+    };
+    setKeys((prev) => [newKey, ...prev]);
     setCreatedKey(fakeKey);
     setNewKeyName("");
   }
 
   function handleCopy() {
     if (!createdKey) return;
-    navigator.clipboard.writeText(createdKey).catch(() => {});
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(createdKey).then(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  }
+
+  function handleRevoke(keyId: string) {
+    setKeys((prev) =>
+      prev.map((k) => (k.id === keyId ? { ...k, status: "revoked" as const } : k)),
+    );
   }
 
   return (
@@ -108,7 +140,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               <div className="flex flex-wrap gap-2">
                 {["audit:read", "audit:write", "results:read", "results:export", "admin"].map((scope) => (
                   <label key={scope} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs hover:border-[var(--accent-blue)]/30 transition-colors">
-                    <input type="checkbox" defaultChecked={scope !== "admin"} className="rounded border-border" />
+                    <input type="checkbox" checked={selectedScopes.has(scope)} onChange={() => handleToggleScope(scope)} className="rounded border-border" />
                     <code className="font-mono text-[11px]">{scope}</code>
                   </label>
                 ))}
@@ -229,7 +261,10 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               </div>
 
               {key.status === "active" ? (
-                <button className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)]">
+                <button
+                  onClick={() => handleRevoke(key.id)}
+                  className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)]"
+                >
                   {copy.revoke}
                 </button>
               ) : null}
