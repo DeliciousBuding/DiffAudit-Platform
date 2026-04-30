@@ -805,21 +805,17 @@ export function SettingsClient({
         ) : null}
 
         {isAccountMode ? (
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {copy.account.title}
-            </h2>
-          </div>
-          <div className="grid gap-4 p-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+        <section className="space-y-5">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
             {/* Username with avatar */}
             <div className="space-y-3">
-              <span className="text-xs text-muted-foreground">{copy.account.username}</span>
               {profile ? (
                 <>
-                  <div className="flex items-center gap-3 rounded-[22px] border border-border bg-[linear-gradient(180deg,rgba(47,109,246,0.08),rgba(47,109,246,0.02))] p-4">
+                  <div className="relative overflow-hidden rounded-[30px] border border-border/80 bg-[radial-gradient(circle_at_top_left,rgba(47,109,246,0.22),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+                    <div className="absolute right-[-42px] top-[-58px] h-40 w-40 rounded-full bg-[color:var(--accent-blue)]/10 blur-2xl" />
+                    <div className="relative flex items-center gap-4">
                     <div
-                      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-border bg-[color:var(--primary)]/10 text-sm font-semibold text-[color:var(--primary)]"
+                      className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[color:var(--primary)]/15 text-xl font-semibold text-foreground shadow-inner"
                       style={
                         profile.avatarUrl
                           ? {
@@ -834,12 +830,16 @@ export function SettingsClient({
                       {profile.avatarUrl ? null : profile.displayName[0]?.toUpperCase() ?? "?"}
                     </div>
                     <div className="min-w-0">
-                      <div className="truncate text-base font-semibold">{profile.displayName}</div>
-                      <div className="truncate text-xs text-muted-foreground">@{profile.username}</div>
-                      <div className="mt-1 text-[11px] leading-5 text-muted-foreground">{accessSummary}</div>
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-blue)]/80">{copy.account.username}</div>
+                      <div className="mt-1 truncate text-2xl font-semibold tracking-[-0.03em] text-foreground">{profile.displayName}</div>
+                      <div className="mt-1 truncate text-sm text-muted-foreground">@{profile.username}</div>
+                    </div>
+                    </div>
+                    <div className="relative mt-5 rounded-2xl border border-white/10 bg-background/35 px-4 py-3 text-sm leading-6 text-muted-foreground backdrop-blur">
+                      {accessSummary}
                     </div>
                   </div>
-                  <div className="space-y-1 rounded-[18px] border border-border bg-card p-4">
+                  <div className="space-y-3 rounded-[26px] border border-border/80 bg-card/80 p-5 shadow-sm">
                     <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                       {copy.account.email}
                     </div>
@@ -851,7 +851,7 @@ export function SettingsClient({
                         </span>
                       ) : null}
                     </div>
-                    <div>
+                    <div className="pt-1">
                       <button
                         type="button"
                         onClick={() => {
@@ -859,14 +859,14 @@ export function SettingsClient({
                           setEmailError(null);
                           setEmailInput(profile.pendingEmail ?? profile.email ?? "");
                         }}
-                        className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
+                        className="workspace-btn-secondary px-4 py-2 text-xs font-medium"
                       >
                         {profile.email || profile.pendingEmail ? copy.account.changeEmail : copy.account.addEmail}
                       </button>
                     </div>
                   </div>
                   {showEmailEditor ? (
-                    <div className="space-y-3 rounded-[14px] border border-border bg-card p-3">
+                    <div className="space-y-3 rounded-[22px] border border-border bg-card p-4">
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground" htmlFor="settings-email">
                           {copy.account.email}
@@ -907,7 +907,7 @@ export function SettingsClient({
                     </div>
                   ) : null}
                   {profile.pendingEmail ? (
-                    <div className="space-y-3 rounded-[14px] border border-border bg-muted/10 p-3">
+                    <div className="space-y-3 rounded-[22px] border border-border bg-muted/10 p-4">
                       <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                         {copy.account.pendingEmail}
                       </div>
@@ -996,7 +996,7 @@ export function SettingsClient({
                       {providerLinkNotice.message}
                     </div>
                   ) : null}
-                  <p className="text-[11px] leading-5 text-muted-foreground">
+                  <p className="rounded-2xl border border-border/70 bg-muted/10 px-4 py-3 text-[11px] leading-5 text-muted-foreground">
                     {copy.account.securityNote}{" "}
                     <Link href="/docs/privacy" className="auth-inline-link">{copy.account.privacy}</Link>
                     {" · "}
@@ -1013,14 +1013,14 @@ export function SettingsClient({
               )}
             </div>
 
-            <div className="space-y-3 rounded-[22px] border border-border bg-muted/10 p-4">
-              <div className="space-y-1 rounded-[16px] border border-border bg-card p-3">
+            <div className="space-y-5 rounded-[30px] border border-border/80 bg-[linear-gradient(180deg,var(--card),rgba(47,109,246,0.035))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+              <div className="space-y-2 rounded-[22px] border border-border/80 bg-background/55 p-4">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                   {copy.account.accessSummary}
                 </div>
-                <p className="text-sm leading-6 text-foreground">{accessSummary}</p>
+                <p className="text-base font-semibold leading-7 text-foreground">{accessSummary}</p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                   {copy.account.providers}
                 </div>
@@ -1060,7 +1060,7 @@ export function SettingsClient({
               ) : null}
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
+                <div className="space-y-1 rounded-[20px] border border-border/70 bg-background/45 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.password}
                   </div>
@@ -1068,7 +1068,7 @@ export function SettingsClient({
                     {profile?.hasPassword ? copy.account.passwordSet : copy.account.passwordUnset}
                   </div>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1 rounded-[20px] border border-border/70 bg-background/45 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.loginId}
                   </div>
@@ -1080,7 +1080,7 @@ export function SettingsClient({
                 </div>
               </div>
 
-              <div className="space-y-3 border-t border-border pt-3">
+              <div className="space-y-3 rounded-[22px] border border-border/80 bg-background/45 p-4">
                 <div className="space-y-1">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.passwordManage}
@@ -1097,12 +1097,12 @@ export function SettingsClient({
                       setPasswordError(null);
                       setShowPasswordEditor(true);
                     }}
-                    className="workspace-btn-secondary w-full px-3 py-2 text-xs font-medium"
+                    className="workspace-btn-secondary w-full px-3 py-3 text-xs font-medium"
                   >
                     {profile?.hasPassword ? copy.account.openPasswordChange : copy.account.openPasswordCreate}
                   </button>
                 ) : (
-                  <div className="space-y-3 rounded-[14px] border border-border bg-card p-3">
+                  <div className="space-y-3 rounded-[18px] border border-border bg-card p-3">
                     {profile?.hasPassword ? (
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground" htmlFor="settings-current-password">

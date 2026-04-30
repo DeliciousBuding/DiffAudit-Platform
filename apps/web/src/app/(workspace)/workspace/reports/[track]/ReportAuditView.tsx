@@ -256,7 +256,7 @@ export function ReportAuditView({
                   const isHighlighted = highlightedRows.has(key);
                   return (
                     <tr
-                      key={`${row.track}-${row.attack}-${row.defense}-audit`}
+                      key={`${key}::${index}`}
                       className={`border-b border-border transition-colors hover:bg-muted/30 ${
                         isHighlighted
                           ? "border-l-2 border-l-[var(--accent-blue)] bg-[color:var(--accent-blue)]/5"

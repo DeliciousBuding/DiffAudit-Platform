@@ -70,6 +70,19 @@ export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "report" | "se
     );
   }
 
+  if (icon === "settings") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
+      >
+        <path d="M12 8.2a3.8 3.8 0 1 1 0 7.6a3.8 3.8 0 0 1 0-7.6Z" />
+        <path d="M18.7 13.4a7.6 7.6 0 0 0 0-2.8l2-1.5-2-3.4-2.4 1a7.3 7.3 0 0 0-2.4-1.4L13.6 2h-4l-.4 3.3a7.3 7.3 0 0 0-2.4 1.4l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 2.8l-2 1.5 2 3.4 2.4-1a7.3 7.3 0 0 0 2.4 1.4l.4 3.3h4l.4-3.3a7.3 7.3 0 0 0 2.4-1.4l2.4 1 2-3.4-2.1-1.5Z" />
+      </svg>
+    );
+  }
+
   return (
     <svg
       viewBox="0 0 24 24"

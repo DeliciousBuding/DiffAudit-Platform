@@ -135,15 +135,27 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       titleClassName="text-xl"
       descriptionClassName="text-sm"
     >
-    <div className="workspace-page-container" style={{ maxWidth: 860 }}>
-      <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
-        {copy.demoNotice}
-      </div>
-      <div className="mb-8">
+    <div className="workspace-page-container" style={{ maxWidth: 1180 }}>
+      <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div className="rounded-3xl border border-amber-300/40 bg-[linear-gradient(135deg,rgba(245,158,11,0.16),rgba(47,109,246,0.06))] px-5 py-4 text-sm text-foreground shadow-sm dark:border-amber-500/25 dark:bg-[linear-gradient(135deg,rgba(245,158,11,0.14),rgba(47,109,246,0.08))]">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400/15 text-amber-300">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+                <path d="M10.3 3.7 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0Z" />
+              </svg>
+            </span>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-300/90">{copy.demoKeyPrefix}</div>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy.demoNotice}</p>
+            </div>
+          </div>
+        </div>
         {!showCreate && !createdKey ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="workspace-btn-secondary px-4 py-2.5 text-sm font-medium hover:border-[var(--accent-blue)] hover:shadow-md"
+            className="workspace-btn-primary justify-center px-5 py-3 text-sm font-semibold shadow-[0_18px_40px_rgba(47,109,246,0.18)] hover:opacity-95"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M12 5v14M5 12h14" />
@@ -151,6 +163,9 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
             {copy.create}
           </button>
         ) : null}
+      </div>
+
+      <div className="mb-8">
 
         {showCreate && !createdKey ? (
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
@@ -237,17 +252,17 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         ) : null}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-        <div className="border-b border-border bg-muted/10 px-5 py-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="overflow-hidden rounded-[28px] border border-border/80 bg-[linear-gradient(180deg,var(--card),rgba(47,109,246,0.025))] shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+        <div className="border-b border-border/70 bg-muted/10 px-6 py-4">
+          <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             {copy.activeKeys} · {keys.filter((k) => k.status === "active").length}
           </h3>
         </div>
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-border/70">
           {keys.map((key) => (
             <div
               key={key.id}
-              className={`flex flex-col gap-4 px-5 py-4 transition-colors hover:bg-muted/5 sm:flex-row sm:items-center ${key.status === "revoked" ? "opacity-50" : ""}`}
+              className={`flex flex-col gap-4 px-6 py-5 transition-colors hover:bg-muted/5 xl:flex-row xl:items-center ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
               <div className="flex min-w-0 flex-1 gap-3">
                 <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
@@ -272,7 +287,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-                    <code className="font-mono">{key.prefix}</code>
+                    <code className="rounded-lg border border-border/70 bg-background/60 px-2 py-1 font-mono text-foreground/85">{key.prefix}</code>
                     <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px]">{copy.demoKeyPrefix}</span>
                     <span>{copy.createdAt} {key.created}</span>
                     {key.lastUsed ? <span>{copy.lastUsed} {key.lastUsed}</span> : null}
@@ -280,11 +295,11 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1 sm:shrink-0">
+              <div className="flex flex-wrap items-center gap-1.5 xl:max-w-[360px] xl:justify-end xl:shrink-0">
                 {key.scopes.map((scope) => (
                   <span
                     key={scope}
-                    className="inline-flex items-center rounded-md border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
+                    className="inline-flex items-center rounded-full border border-border bg-background/80 px-2 py-1 text-[10px] font-mono text-muted-foreground"
                   >
                     {scope}
                   </span>
@@ -294,7 +309,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               {key.status === "active" ? (
                 <button
                   onClick={() => setPendingRevokeId(key.id)}
-                  className="min-h-11 shrink-0 self-end rounded-lg border border-border px-3 py-2 text-[11px] text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] sm:self-center"
+                  className="min-h-11 shrink-0 self-end rounded-full border border-border bg-background/70 px-4 py-2 text-[11px] font-medium text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] xl:self-center"
                 >
                   {copy.revoke}
                 </button>
@@ -329,7 +344,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-[#1a1b1e] shadow-sm">
+      <div className="mt-8 overflow-hidden rounded-[28px] border border-border bg-[#111318] shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
         <div className="flex items-center justify-between border-b border-white/[0.06] bg-[#222326] px-4 py-2">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[#9ca0aa]">bash</span>

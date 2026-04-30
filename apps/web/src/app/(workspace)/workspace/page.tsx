@@ -407,7 +407,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     const auc = parseFloat(row.aucLabel);
                     return (
                     <tr
-                      key={`${row.track}-${row.attack}-${row.defense}`}
+                      key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
                       className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
                         index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
