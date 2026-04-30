@@ -53,6 +53,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
   const [newKeyName, setNewKeyName] = useState("");
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(
     () => new Set(["audit:read", "audit:write", "results:read", "results:export"]),
   );
@@ -73,7 +74,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     if (!newKeyName.trim()) return;
     const fakeKey = `da_live_${Math.random().toString(36).slice(2, 10)}${Math.random().toString(36).slice(2, 10)}`;
     const newKey: ApiKey = {
-      id: `key_${Date.now()}`,
+      id: crypto.randomUUID(),
       name: newKeyName.trim(),
       prefix: `${fakeKey.slice(0, 14)}...${fakeKey.slice(-4)}`,
       created: new Date().toISOString().slice(0, 10),
@@ -91,10 +92,14 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     navigator.clipboard.writeText(createdKey).then(() => {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    }).catch(() => {
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 2000);
+    });
   }
 
   function handleRevoke(keyId: string) {
+    if (!window.confirm("Are you sure you want to revoke this API key? This action cannot be undone.")) return;
     setKeys((prev) =>
       prev.map((k) => (k.id === keyId ? { ...k, status: "revoked" as const } : k)),
     );
@@ -109,6 +114,9 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       descriptionClassName="text-sm"
     >
     <div className="workspace-page-container" style={{ maxWidth: 860 }}>
+      <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        API key management is not yet connected to a backend. Keys shown here are for demonstration only.
+      </div>
       <div className="mb-8">
         {!showCreate && !createdKey ? (
           <button
@@ -155,7 +163,10 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 {copy.generate}
               </button>
               <button
-                onClick={() => setShowCreate(false)}
+                onClick={() => {
+                  setShowCreate(false);
+                  setSelectedScopes(new Set(["audit:read", "audit:write", "results:read", "results:export"]));
+                }}
                 className="workspace-btn-secondary px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
               >
                 {copy.cancel}
@@ -183,7 +194,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                     onClick={handleCopy}
                     className="workspace-btn-secondary shrink-0 px-3 py-2 text-xs font-medium hover:border-[var(--accent-blue)]"
                   >
-                    {copied ? copy.copied : copy.copy}
+                    {copyFailed ? "Copy failed" : copied ? copy.copied : copy.copy}
                   </button>
                 </div>
               </div>
@@ -193,6 +204,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 onClick={() => {
                   setCreatedKey(null);
                   setShowCreate(false);
+                  setSelectedScopes(new Set(["audit:read", "audit:write", "results:read", "results:export"]));
                 }}
                 className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
