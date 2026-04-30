@@ -1,6 +1,6 @@
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
+export const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 
-function backendBaseUrl() {
+export function backendBaseUrl() {
   return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
 }
 
@@ -32,8 +32,8 @@ export async function proxyJsonToBackend(
   const payload = await upstream.json().catch(() => null);
   if (payload === null) {
     return Response.json(
-      { detail: upstream.ok ? "Runtime response unavailable." : "Runtime request failed." },
-      { status: upstream.status },
+      { detail: "Runtime response unavailable." },
+      { status: 502 },
     );
   }
 
@@ -55,10 +55,12 @@ async function fetchBackend(url: URL, init?: RequestInit): Promise<Response> {
       },
       cache: "no-store",
     });
-  } catch {
+  } catch (error) {
+    console.error("[api-proxy]", error);
+    const status = error instanceof DOMException && error.name === "AbortError" ? 504 : 502;
     return Response.json(
-      { detail: "Platform gateway unavailable." },
-      { status: 502 },
+      { detail: status === 504 ? "Platform gateway timeout." : "Platform gateway unavailable." },
+      { status },
     );
   }
 }

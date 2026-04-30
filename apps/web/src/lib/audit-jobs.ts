@@ -1,8 +1,8 @@
+import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
 
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 
 export type AuditJobPayload = {
@@ -25,10 +25,6 @@ export type AuditJobViewModel = {
   summaryPath: string;
   error: string;
 };
-
-function backendBaseUrl() {
-  return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
-}
 
 function normalizeAuditJob(job: unknown): AuditJobPayload | null {
   if (!job || typeof job !== "object") {
