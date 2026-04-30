@@ -11,12 +11,12 @@ import {
   type CatalogTrack,
 } from "@/lib/workspace-source";
 import { type EvidenceSummaryPayload } from "@/lib/audit-client";
+import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { ReportAuditView, type ReportProvenance } from "./ReportAuditView";
 import { ReportDisplayView } from "./ReportDisplayView";
 
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 const TRACKS: CatalogTrack[] = ["black-box", "gray-box", "white-box"];
 
@@ -35,10 +35,6 @@ export type RenderTrackReportPageOptions = {
   params: { track: string };
   searchParams?: TrackReportPageSearchParams;
 };
-
-function backendBaseUrl() {
-  return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
-}
 
 function isTrack(value: string): value is CatalogTrack {
   return TRACKS.includes(value as CatalogTrack);

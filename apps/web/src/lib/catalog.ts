@@ -1,8 +1,8 @@
+import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { DEMO_CATALOG_ENTRIES } from "@/lib/demo-snapshot";
 import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 
 const TRACK_ORDER = ["black-box", "gray-box", "white-box"] as const;
@@ -79,10 +79,6 @@ function isCatalogTrack(value: unknown): value is CatalogTrack {
 
 function isCatalogAvailability(value: unknown): value is CatalogAvailability {
   return value === "ready" || value === "partial" || value === "planned";
-}
-
-function backendBaseUrl() {
-  return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
 }
 
 function formatRuntimeLabel(entry: CatalogEntryPayload) {

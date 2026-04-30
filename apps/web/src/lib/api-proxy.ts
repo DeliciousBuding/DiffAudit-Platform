@@ -1,6 +1,6 @@
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
+export const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 
-function backendBaseUrl() {
+export function backendBaseUrl() {
   return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
 }
 

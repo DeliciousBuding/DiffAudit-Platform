@@ -1,9 +1,9 @@
+import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
 import { DEMO_ATTACK_DEFENSE_ROWS } from "@/lib/demo-snapshot";
 import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:8780";
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 
 export type AttackDefenseRowPayload = {
@@ -47,10 +47,6 @@ export type AttackDefenseTableViewModel = {
   };
   rows: AttackDefenseRowViewModel[];
 };
-
-function backendBaseUrl() {
-  return process.env.DIFFAUDIT_API_BASE_URL ?? DEFAULT_API_BASE_URL;
-}
 
 function formatMetric(value: number | null | undefined) {
   if (typeof value !== "number") {
