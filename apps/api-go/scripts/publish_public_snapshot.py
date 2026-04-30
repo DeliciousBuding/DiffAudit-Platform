@@ -83,7 +83,7 @@ def sanitize_public_string(value: str) -> str:
         return f"research://{normalized.removeprefix('Research/').lstrip('/')}"
     if normalized.startswith(("workspaces/", "experiments/", "external/")):
         return f"research://{normalized}"
-    sanitized = value
+    sanitized = normalized
     for source, replacement in PUBLIC_TEXT_REPLACEMENTS.items():
         sanitized = sanitized.replace(source, replacement)
     return sanitized
