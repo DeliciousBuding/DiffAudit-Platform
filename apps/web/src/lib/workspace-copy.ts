@@ -351,6 +351,7 @@ export const WORKSPACE_COPY: Record<
       createdBody: string;
       copy: string;
       copied: string;
+      copyFailed: string;
       done: string;
       activeKeys: string;
       createdAt: string;
@@ -358,6 +359,12 @@ export const WORKSPACE_COPY: Record<
       revoke: string;
       active: string;
       revoked: string;
+      demoNotice: string;
+      demoKeyPrefix: string;
+      revokeConfirmTitle: string;
+      revokeConfirmBody: string;
+      revokeConfirmCancel: string;
+      revokeConfirmAction: string;
       usageExample: string;
     };
     settings: {
@@ -367,7 +374,7 @@ export const WORKSPACE_COPY: Record<
       sections: Array<{ title: string; copy: string }>;
       systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string };
-      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; logout: string };
+      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
       auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string };
@@ -900,6 +907,7 @@ export const WORKSPACE_COPY: Record<
       createdBody: "Copy your key now. You will not be able to see it again.",
       copy: "Copy",
       copied: "Copied",
+      copyFailed: "Copy failed",
       done: "Done",
       activeKeys: "Active keys",
       createdAt: "Created",
@@ -907,6 +915,12 @@ export const WORKSPACE_COPY: Record<
       revoke: "Revoke",
       active: "Active",
       revoked: "Revoked",
+      demoNotice: "Demo-only API key preview. These keys are local examples and are not connected to backend credential issuance.",
+      demoKeyPrefix: "Demo key",
+      revokeConfirmTitle: "Revoke demo key?",
+      revokeConfirmBody: "This only updates the local preview. It will not revoke a real credential.",
+      revokeConfirmCancel: "Cancel",
+      revokeConfirmAction: "Revoke demo key",
       usageExample: "API usage example",
     },
     settings: {
@@ -998,6 +1012,8 @@ export const WORKSPACE_COPY: Record<
         terms: "Terms",
         currentPassword: "Current password",
         currentPasswordPlaceholder: "Enter current password",
+        currentPasswordRequired: "Enter your current password.",
+        currentPasswordIncorrect: "Current password is incorrect.",
         newPassword: "New password",
         newPasswordPlaceholder: "At least 8 characters",
         confirmPassword: "Confirm password",
@@ -1012,6 +1028,8 @@ export const WORKSPACE_COPY: Record<
         passwordSaved: "Password updated",
         passwordMismatch: "Passwords do not match.",
         passwordTooShort: "Password must be at least 8 characters.",
+        passwordRequired: "Password and confirmation are required.",
+        passwordUnauthorized: "Sign in again before changing your password.",
         logout: "Sign out",
       },
       preferences: {
@@ -1595,6 +1613,7 @@ export const WORKSPACE_COPY: Record<
       createdBody: "请立即复制这串密钥。离开当前提示后将无法再次看到完整内容。",
       copy: "复制",
       copied: "已复制",
+      copyFailed: "复制失败",
       done: "完成",
       activeKeys: "启用中的密钥",
       createdAt: "创建于",
@@ -1602,6 +1621,12 @@ export const WORKSPACE_COPY: Record<
       revoke: "吊销",
       active: "启用",
       revoked: "已吊销",
+      demoNotice: "当前是 API 密钥演示预览。这些密钥只是本地示例，不会连接后端凭证签发。",
+      demoKeyPrefix: "演示密钥",
+      revokeConfirmTitle: "吊销演示密钥？",
+      revokeConfirmBody: "这个操作只会更新本地预览，不会吊销真实凭证。",
+      revokeConfirmCancel: "取消",
+      revokeConfirmAction: "吊销演示密钥",
       usageExample: "API 调用示例",
     },
     settings: {
@@ -1693,6 +1718,8 @@ export const WORKSPACE_COPY: Record<
         terms: "服务条款",
         currentPassword: "当前密码",
         currentPasswordPlaceholder: "输入当前密码",
+        currentPasswordRequired: "请输入当前密码。",
+        currentPasswordIncorrect: "当前密码不正确。",
         newPassword: "新密码",
         newPasswordPlaceholder: "至少 8 位",
         confirmPassword: "确认新密码",
@@ -1707,6 +1734,8 @@ export const WORKSPACE_COPY: Record<
         passwordSaved: "密码已更新",
         passwordMismatch: "两次输入的密码不一致。",
         passwordTooShort: "密码长度至少为 8 位。",
+        passwordRequired: "密码和确认密码不能为空。",
+        passwordUnauthorized: "请重新登录后再修改密码。",
         logout: "退出登录",
       },
       preferences: {

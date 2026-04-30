@@ -40,6 +40,20 @@ describe("platform api proxy routes", () => {
     );
   });
 
+  it("keeps logical research workspace identifiers as one encoded backend path segment", async () => {
+    const route = await import("./experiments/[workspace]/summary/route");
+
+    await route.GET(new Request("http://localhost"), {
+      params: Promise.resolve({
+        workspace: "research://workspaces/gray-box/runs/pia-cifar10-runtime-mainline",
+      }),
+    });
+
+    expect(proxyToBackend).toHaveBeenCalledWith(
+      "/api/v1/experiments/research%3A%2F%2Fworkspaces%2Fgray-box%2Fruns%2Fpia-cifar10-runtime-mainline/summary",
+    );
+  });
+
   it("proxies catalog requests to the backend", async () => {
     const route = await import("./catalog/route");
 

@@ -120,6 +120,29 @@ function getAccessSummary(
   return summary.join(" ");
 }
 
+function passwordErrorMessage(
+  code: string | undefined,
+  status: number,
+  copy: typeof WORKSPACE_COPY["en-US"]["settings"]["account"],
+) {
+  switch (code) {
+    case "password_required":
+      return copy.passwordRequired;
+    case "password_too_short":
+      return copy.passwordTooShort;
+    case "password_mismatch":
+      return copy.passwordMismatch;
+    case "current_password_required":
+      return copy.currentPasswordRequired;
+    case "current_password_incorrect":
+      return copy.currentPasswordIncorrect;
+    case "unauthorized":
+      return copy.passwordUnauthorized;
+    default:
+      return status === 401 ? copy.passwordUnauthorized : copy.passwordSaveFailed;
+  }
+}
+
 interface SettingsClientProps {
   locale: Locale;
   initialDemoMode?: boolean;
@@ -154,8 +177,8 @@ export function SettingsClient({
   const [defaultRounds, setDefaultRounds] = useState("10");
   const [defaultBatchSize, setDefaultBatchSize] = useState("32");
   type SavedSection = "audit" | "runtime" | "account" | "templates";
-const [savedSection, setSavedSection] = useState<SavedSection | null>(null);
-  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [savedSection, setSavedSection] = useState<SavedSection | null>(null);
+  const savedTimerRef = useRef<number | null>(null);
   const [profile, setProfile] = useState<CurrentUserProfile | null>(initialProfile ?? null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -274,7 +297,10 @@ const [savedSection, setSavedSection] = useState<SavedSection | null>(null);
   const showSaved = useCallback((section: SavedSection) => {
     setSavedSection(section);
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
-    savedTimerRef.current = window.setTimeout(() => setSavedSection(null), 2000);
+    savedTimerRef.current = window.setTimeout(() => {
+      setSavedSection(null);
+      savedTimerRef.current = null;
+    }, 2000);
   }, []);
 
   // Clean up saved indicator timer on unmount
@@ -364,8 +390,8 @@ const [savedSection, setSavedSection] = useState<SavedSection | null>(null);
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as { message?: string } | null;
-        setPasswordError(payload?.message ?? copy.account.passwordTooShort);
+        const payload = (await response.json().catch(() => null)) as { code?: string } | null;
+        setPasswordError(passwordErrorMessage(payload?.code, response.status, copy.account));
         return;
       }
 

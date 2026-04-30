@@ -20,7 +20,7 @@ const MOCK_KEYS: ApiKey[] = [
   {
     id: "key_1",
     name: "Production Audit Runner",
-    prefix: "da_live_7kX3...mQ9p",
+    prefix: "da_demo_7kX3...mQ9p",
     created: "2026-03-28",
     lastUsed: "2026-04-15",
     scopes: ["audit:read", "audit:write", "results:read"],
@@ -29,7 +29,7 @@ const MOCK_KEYS: ApiKey[] = [
   {
     id: "key_2",
     name: "CI/CD Pipeline",
-    prefix: "da_live_9bR1...hT4w",
+    prefix: "da_demo_9bR1...hT4w",
     created: "2026-04-02",
     lastUsed: "2026-04-14",
     scopes: ["audit:write", "results:read"],
@@ -46,6 +46,27 @@ const MOCK_KEYS: ApiKey[] = [
   },
 ];
 
+let demoIdCounter = 0;
+
+function randomDemoToken(bytes = 12) {
+  const values = new Uint8Array(bytes);
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(values);
+  } else {
+    demoIdCounter += 1;
+    values.set(new TextEncoder().encode(`demo-${Date.now()}-${demoIdCounter}`).slice(0, bytes));
+  }
+  return Array.from(values, (value) => value.toString(36).padStart(2, "0")).join("").slice(0, 18);
+}
+
+function createDemoId() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+  demoIdCounter += 1;
+  return `demo-key-${Date.now()}-${demoIdCounter}`;
+}
+
 export function ApiKeysClient({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].apiKeys;
   const [keys, setKeys] = useState<ApiKey[]>(MOCK_KEYS);
@@ -54,6 +75,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
+  const [pendingRevokeId, setPendingRevokeId] = useState<string | null>(null);
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(
     () => new Set(["audit:read", "audit:write", "results:read", "results:export"]),
   );
@@ -72,9 +94,9 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
 
   function handleCreate() {
     if (!newKeyName.trim()) return;
-    const fakeKey = `da_live_${Math.random().toString(36).slice(2, 10)}${Math.random().toString(36).slice(2, 10)}`;
+    const fakeKey = `da_demo_${randomDemoToken()}`;
     const newKey: ApiKey = {
-      id: crypto.randomUUID(),
+      id: createDemoId(),
       name: newKeyName.trim(),
       prefix: `${fakeKey.slice(0, 14)}...${fakeKey.slice(-4)}`,
       created: new Date().toISOString().slice(0, 10),
@@ -99,10 +121,10 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
   }
 
   function handleRevoke(keyId: string) {
-    if (!window.confirm("Are you sure you want to revoke this API key? This action cannot be undone.")) return;
     setKeys((prev) =>
       prev.map((k) => (k.id === keyId ? { ...k, status: "revoked" as const } : k)),
     );
+    setPendingRevokeId(null);
   }
 
   return (
@@ -114,8 +136,8 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       descriptionClassName="text-sm"
     >
     <div className="workspace-page-container" style={{ maxWidth: 860 }}>
-      <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-        API key management is not yet connected to a backend. Keys shown here are for demonstration only.
+      <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
+        {copy.demoNotice}
       </div>
       <div className="mb-8">
         {!showCreate && !createdKey ? (
@@ -194,7 +216,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                     onClick={handleCopy}
                     className="workspace-btn-secondary shrink-0 px-3 py-2 text-xs font-medium hover:border-[var(--accent-blue)]"
                   >
-                    {copyFailed ? "Copy failed" : copied ? copy.copied : copy.copy}
+                    {copyFailed ? copy.copyFailed : copied ? copy.copied : copy.copy}
                   </button>
                 </div>
               </div>
@@ -250,6 +272,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 </div>
                 <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                   <code className="font-mono">{key.prefix}</code>
+                  <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px]">{copy.demoKeyPrefix}</span>
                   <span>·</span>
                   <span>{copy.createdAt} {key.created}</span>
                   {key.lastUsed ? (
@@ -274,7 +297,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
 
               {key.status === "active" ? (
                 <button
-                  onClick={() => handleRevoke(key.id)}
+                  onClick={() => setPendingRevokeId(key.id)}
                   className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)]"
                 >
                   {copy.revoke}
@@ -284,6 +307,31 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           ))}
         </div>
       </div>
+
+      {pendingRevokeId ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
+            <h3 className="text-sm font-semibold text-foreground">{copy.revokeConfirmTitle}</h3>
+            <p className="mt-2 text-xs leading-6 text-muted-foreground">{copy.revokeConfirmBody}</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setPendingRevokeId(null)}
+                className="workspace-btn-secondary px-3 py-2 text-xs"
+              >
+                {copy.revokeConfirmCancel}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRevoke(pendingRevokeId)}
+                className="rounded-lg bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+              >
+                {copy.revokeConfirmAction}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-[#1a1b1e] shadow-sm">
         <div className="flex items-center justify-between border-b border-white/[0.06] bg-[#222326] px-4 py-2">
@@ -295,7 +343,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
           <code className="text-[#e0e4ec]">{`# Submit an audit job via API
 curl -X POST https://api.diffaudit.com/v1/jobs \\
-  -H "Authorization: Bearer da_live_your_key_here" \\
+  -H "Authorization: Bearer da_demo_your_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{
     "attack_type": "black-box",
