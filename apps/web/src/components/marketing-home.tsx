@@ -102,26 +102,26 @@ const HOME_COPY: Record<
         href: "#product",
         dropdown: {
           title: "DiffAudit Platform",
-          description: "扩散模型成员推断风险的统一审计入口。",
+          description: "扩散模型隐私泄露风险的统一审计入口",
           links: [
             {
-              title: "首页价值主张",
-              description: "先看清系统能解决什么，再决定如何接入。",
+              title: "能力概览",
+              description: "查看系统支持的审计范围",
               href: "#product",
             },
             {
-              title: "申请试用",
-              description: "从公开入口进入试用申请流程。",
+              title: "试用申请",
+              description: "进入公开试用申请流程",
               href: "/trial",
             },
             {
               title: "统一登录",
-              description: "在同一站点完成登录，然后继续进入工作台。",
+              description: "在同一站点完成登录，然后继续进入工作台",
               href: "/login",
             },
             {
               title: "工作台入口",
-              description: "直接进入当前审计工作区。",
+              description: "直接进入当前审计工作区",
               href: "/workspace",
             },
           ],
@@ -133,26 +133,26 @@ const HOME_COPY: Record<
         href: "#coverage",
         dropdown: {
           title: "审计深度",
-          description: "从快速筛查到深入证据，都沿着同一条链路推进。",
+          description: "从快速筛查到深入证据，都沿着同一条链路推进",
           links: [
             {
               title: "黑盒审计",
-              description: "用最小前置成本判断风险暴露面。",
+              description: "用最小前置成本判断风险暴露面",
               href: "#coverage",
             },
             {
               title: "灰盒分析",
-              description: "查看更细的攻击线索与中间状态。",
+              description: "查看更细的攻击线索与中间状态",
               href: "#coverage",
             },
             {
               title: "白盒证据",
-              description: "继续下钻到训练痕迹、对照结果和解释面。",
+              description: "继续下钻到训练痕迹、对照结果和解释面",
               href: "#coverage",
             },
             {
               title: "报告输出",
-              description: "把结果整理成可复核的审计结论。",
+              description: "把结果整理成可复核的审计结论",
               href: "/workspace/reports",
             },
           ],
@@ -164,26 +164,26 @@ const HOME_COPY: Record<
         href: "#flow",
         dropdown: {
           title: "使用流程",
-          description: "先进入，再创建任务，然后回看结果。",
+          description: "先进入系统，再创建审计任务，然后回看结果",
           links: [
             {
               title: "登录",
-              description: "统一入口完成认证。",
+              description: "在同一站点完成认证",
               href: "/login",
             },
             {
               title: "创建任务",
-              description: "在审计流程页发起新的审计任务。",
+              description: "在审计流程页发起新的审计任务",
               href: "/workspace/audits",
             },
             {
               title: "查看状态",
-              description: "跟踪运行进度、关键指标和输出结果。",
+              description: "跟踪运行进度、关键指标和输出结果",
               href: "/workspace",
             },
             {
               title: "导出报告",
-              description: "把汇总结果带到报告页继续整理。",
+              description: "把汇总结果带到报告页继续整理",
               href: "/workspace/reports",
             },
           ],
@@ -195,26 +195,26 @@ const HOME_COPY: Record<
         href: "/workspace",
         dropdown: {
           title: "工作台",
-          description: "任务、报告和设置都收在同一套结构里。",
+          description: "任务、报告和设置都收在同一套结构里",
           links: [
             {
               title: "工作台首页",
-              description: "查看待办、最近任务和关键指标。",
+              description: "查看待办、最近任务和关键指标",
               href: "/workspace",
             },
             {
               title: "审计流程",
-              description: "创建任务，跟踪运行状态，查看结果。",
+              description: "创建任务，跟踪运行状态，查看结果",
               href: "/workspace/audits",
             },
             {
               title: "报告中心",
-              description: "汇总输出并导出报告。",
+              description: "汇总输出并导出报告",
               href: "/workspace/reports",
             },
             {
               title: "设置",
-              description: "管理团队、密钥和个人偏好。",
+              description: "管理团队、密钥和个人偏好",
               href: "/workspace/settings",
             },
           ],
@@ -226,26 +226,26 @@ const HOME_COPY: Record<
         href: "/docs",
         dropdown: {
           title: "文档",
-          description: "架构、API 参考和使用指南。",
+          description: "架构、API 参考和使用指南",
           links: [
             {
               title: "快速开始",
-              description: "三步完成首次审计。",
+              description: "三步完成首次审计",
               href: "/docs/quick-start",
             },
             {
               title: "架构",
-              description: "Platform → Runtime-Server → Runner 三层架构。",
+              description: "Platform → Runtime-Server → Runner 三层架构",
               href: "/docs/deployment-runtime",
             },
             {
               title: "API 参考",
-              description: "核心 REST API 端点说明。",
+              description: "核心 REST API 端点说明",
               href: "/docs/api-reference",
             },
             {
-              title: "攻击线路",
-              description: "黑盒、灰盒、白盒三条审计线路。",
+              title: "审计线路",
+              description: "黑盒、灰盒、白盒三条审计线路",
               href: "/docs/audit-tracks",
             },
           ],
@@ -263,50 +263,50 @@ const HOME_COPY: Record<
     },
     coverage: {
       caption: "能力范围",
-      heading: "成员推断风险，三层审计深度。",
+      heading: "成员推断风险，三层审计深度",
       items: [
         {
           index: "01",
           title: "黑盒线索",
-          body: "先用最小前置成本判断模型是否暴露成员推断风险，适合做快速筛查和对外沟通。",
+          body: "用最低成本判断模型是否暴露成员推断风险，适合快速筛查和对外沟通",
         },
         {
           index: "02",
           title: "灰盒与白盒",
-          body: "当你需要更深的证据链，可以继续下钻到训练痕迹、攻击效果和对照结果。",
+          body: "需要更深的证据链时，可以继续下钻到训练痕迹、攻击效果和对照结果",
         },
         {
           index: "03",
           title: "统一工作台",
-          body: "首页负责讲清范围和入口，工作台承接任务、运行状态与报告导出。",
+          body: "首页负责讲清范围和入口，工作台负责任务、运行状态与报告导出",
         },
       ],
     },
     flow: {
       caption: "流程",
-      heading: "首页定义范围，工作台承接执行。",
-      body: "首页只做说明与导航。任务、运行状态和报告导出都在工作台完成。",
+      heading: "首页定义范围，工作台负责执行",
+      body: "首页只做说明与导航。任务、运行状态和报告导出都在工作台完成",
       steps: [
         {
           index: "A",
           title: "登录",
-          body: "统一入口完成认证，停留在当前站点内继续操作。",
+          body: "在同一站点完成认证，继续后续操作",
         },
         {
           index: "B",
           title: "创建任务",
-          body: "进入审计流程页，选择目标、发起运行并跟踪状态。",
+          body: "进入审计流程页，选择目标、发起运行并跟踪状态",
         },
         {
           index: "C",
           title: "查看结果",
-          body: "回到工作台和报告页，整理关键指标与输出结论。",
+          body: "回到工作台和报告页，整理关键指标与输出结论",
         },
       ],
     },
     resources: {
       caption: "开始使用",
-      heading: "从首页进入，在工作台完成审计。",
+      heading: "从首页进入，在工作台完成审计",
       primaryCtaLoggedIn: "打开审计工作台",
       primaryCtaLoggedOut: "现在登录",
       secondaryCta: "回到顶部",
@@ -329,26 +329,26 @@ const HOME_COPY: Record<
         href: "#product",
         dropdown: {
           title: "DiffAudit Platform",
-          description: "Membership inference audit for diffusion models, in one place.",
+          description: "Membership inference audit for diffusion models, in one place",
           links: [
             {
               title: "Value proposition",
-              description: "Start with what the system can explain and support.",
+              description: "Start with what the system can explain and support",
               href: "#product",
             },
             {
               title: "Request trial",
-              description: "Open the public trial flow from the same site.",
+              description: "Open the public trial flow from the same site",
               href: "/trial",
             },
             {
               title: "Unified sign in",
-              description: "Authenticate here, then continue straight into the workspace.",
+              description: "Authenticate here, then continue straight into the workspace",
               href: "/login",
             },
             {
               title: "Workspace entry",
-              description: "Go directly to the current audit workspace.",
+              description: "Go directly to the current audit workspace",
               href: "/workspace",
             },
           ],
@@ -360,26 +360,26 @@ const HOME_COPY: Record<
         href: "#coverage",
         dropdown: {
           title: "Audit depth",
-          description: "From a quick screen to deep evidence, all in the same tool chain.",
+          description: "From a quick screen to deep evidence, all in the same tool chain",
           links: [
             {
               title: "Black-box audit",
-              description: "Get a quick read on exposure with minimal setup.",
+              description: "Get a quick read on exposure with minimal setup",
               href: "#coverage",
             },
             {
               title: "Gray-box analysis",
-              description: "Inspect attack signals and intermediate evidence.",
+              description: "Inspect attack signals and intermediate evidence",
               href: "#coverage",
             },
             {
               title: "White-box evidence",
-              description: "Drill down into training traces, comparisons, and explanations.",
+              description: "Drill down into training traces, comparisons, and explanations",
               href: "#coverage",
             },
             {
               title: "Reports",
-              description: "Turn results into a reviewable audit package.",
+              description: "Turn results into a reviewable audit package",
               href: "/workspace/reports",
             },
           ],
@@ -391,26 +391,26 @@ const HOME_COPY: Record<
         href: "#flow",
         dropdown: {
           title: "Workflow",
-          description: "Sign in, create a run, then review the results.",
+          description: "Sign in, create a run, then review the results",
           links: [
             {
               title: "Sign in",
-              description: "Use the shared entry point for authentication.",
+              description: "Use the shared entry point for authentication",
               href: "/login",
             },
             {
               title: "Create run",
-              description: "Launch a new audit job from the audit flow page.",
+              description: "Launch a new audit job from the audit flow page",
               href: "/workspace/audits",
             },
             {
               title: "Track status",
-              description: "Review runtime progress, metrics, and outputs.",
+              description: "Review runtime progress, metrics, and outputs",
               href: "/workspace",
             },
             {
               title: "Export reports",
-              description: "Carry the result set into the report center.",
+              description: "Carry the result set into the report center",
               href: "/workspace/reports",
             },
           ],
@@ -422,26 +422,26 @@ const HOME_COPY: Record<
         href: "/workspace",
         dropdown: {
           title: "Workbench",
-          description: "Tasks, reports, and settings stay inside one structure.",
+          description: "Tasks, reports, and settings stay inside one structure",
           links: [
             {
               title: "Workspace home",
-              description: "Review todos, recent jobs, and key metrics.",
+              description: "Review todos, recent jobs, and key metrics",
               href: "/workspace",
             },
             {
               title: "Audit flow",
-              description: "Create jobs, track runtime, and inspect outputs.",
+              description: "Create jobs, track runtime, and inspect outputs",
               href: "/workspace/audits",
             },
             {
               title: "Reports",
-              description: "Collect results and export the final package.",
+              description: "Collect results and export the final package",
               href: "/workspace/reports",
             },
             {
               title: "Settings",
-              description: "Manage team access, keys, and preferences.",
+              description: "Manage team access, keys, and preferences",
               href: "/workspace/settings",
             },
           ],
@@ -453,26 +453,26 @@ const HOME_COPY: Record<
         href: "/docs",
         dropdown: {
           title: "Documentation",
-          description: "Architecture, API reference, and usage guides.",
+          description: "Architecture, API reference, and usage guides",
           links: [
             {
               title: "Quick Start",
-              description: "Complete your first audit in three steps.",
+              description: "Complete your first audit in three steps",
               href: "/docs/quick-start",
             },
             {
               title: "Architecture",
-              description: "Platform, Runtime-Server, and Python Runners.",
+              description: "Platform, Runtime-Server, and Python Runners",
               href: "/docs/deployment-runtime",
             },
             {
               title: "API Reference",
-              description: "Core REST API endpoint descriptions.",
+              description: "Core REST API endpoint descriptions",
               href: "/docs/api-reference",
             },
             {
-              title: "Attack Lines",
-              description: "Black-box, Gray-box, and White-box audit tracks.",
+              title: "Audit Tracks",
+              description: "Black-box, Gray-box, and White-box audit tracks",
               href: "/docs/audit-tracks",
             },
           ],
@@ -482,7 +482,7 @@ const HOME_COPY: Record<
     hero: {
       headline: "Audit diffusion models",
       subheadline: "before they reach production.",
-      description: "Membership inference attack platform for privacy-aware AI compliance.",
+      description: "Membership inference attack platform for privacy-aware AI compliance",
       subheadlineNoWrap: true,
       primaryCtaLoggedIn: "Open audit workspace",
       primaryCtaLoggedOut: "Sign in to start",
@@ -490,50 +490,50 @@ const HOME_COPY: Record<
     },
     coverage: {
       caption: "Coverage",
-      heading: "Membership inference risk, three layers of audit depth.",
+      heading: "Membership inference risk, three layers of audit depth",
       items: [
         {
           index: "01",
           title: "Black-box signals",
-          body: "Start with the fastest read on exposure so teams can screen risk early and brief stakeholders clearly.",
+          body: "Get a fast read on exposure for early screening and stakeholder communication",
         },
         {
           index: "02",
           title: "Gray-box and white-box depth",
-          body: "When the story needs stronger evidence, keep drilling into training traces, attack effects, and comparisons.",
+          body: "When you need stronger evidence, drill into training traces, attack effects, and comparisons",
         },
         {
           index: "03",
           title: "One workspace",
-          body: "The homepage frames the system. The workspace carries tasks, runtime status, and exports.",
+          body: "The homepage frames the system. The workspace carries tasks, runtime status, and exports",
         },
       ],
     },
     flow: {
       caption: "Flow",
-      heading: "The homepage sets scope. The workspace handles execution.",
-      body: "The homepage covers scope and entry points. Tasks, runtime status, and report exports live in the workspace.",
+      heading: "The homepage sets scope. The workspace handles execution",
+      body: "The homepage covers scope and entry points. Tasks, runtime status, and report exports live in the workspace",
       steps: [
         {
           index: "A",
           title: "Sign in",
-          body: "Authenticate through one entry point and stay inside the same site.",
+          body: "Sign in and continue in the same site",
         },
         {
           index: "B",
           title: "Create a job",
-          body: "Open the audit flow, choose the target, launch the run, and follow its state.",
+          body: "Open the audit flow, choose the target, launch the run, and follow its state",
         },
         {
           index: "C",
           title: "Review results",
-          body: "Return to the workspace and report pages to collect metrics and package the outcome.",
+          body: "Return to the workspace and report pages to collect metrics and package the outcome",
         },
       ],
     },
     resources: {
       caption: "Get started",
-      heading: "Start from the homepage. Finish in the workspace.",
+      heading: "Start from the homepage. Finish in the workspace",
       primaryCtaLoggedIn: "Open audit workspace",
       primaryCtaLoggedOut: "Sign in now",
       secondaryCta: "Back to top",

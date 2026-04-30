@@ -90,14 +90,14 @@ function zhContent(): DocsContent {
         eyebrow: "快速开始",
         title: "DiffAudit 概述",
         summary:
-          "DiffAudit 是一套成员推理风险审计系统，涵盖目录管理、任务执行、状态追踪与证据报告四个模块。本文档按产品实际路径组织。",
+          "DiffAudit 是一套成员推断风险审计系统，涵盖目录管理、任务执行、状态追踪与证据报告四个模块。本文档按产品实际路径组织。",
         sections: [
           {
             id: "overview",
             label: "概述",
             title: "系统定位与架构",
             paragraphs: [
-              "DiffAudit 将目录、任务、运行状态、证据表与报告解释整合在统一的工作台中。用户通过 Web 前端发起审计任务，任务经由 API Gateway 转发至 Runtime-Server，最终由 Python Runner 执行具体实验。",
+              "DiffAudit 将目录、任务、运行状态、证据表与报告整合在工作台中。用户通过 Web 前端发起审计任务，任务经由 API Gateway 转发至 Runtime-Server，最终由 Python Runner 执行具体实验。",
               "系统的输出包括 AUC、ASR、TPR@FPR 等量化指标，以及基于这些指标的风险分级与防御效果对照。",
             ],
             rows: [
@@ -162,7 +162,7 @@ function zhContent(): DocsContent {
             label: "页面结构",
             title: "页面层级结构",
             paragraphs: [
-              "每个页面遵循统一的结构层级：全局壳层、页面头部（标题 + 一句话描述）、主工作区、辅助工作区。",
+              "每个页面遵循统一的结构层级：全局布局、页面头部（标题 + 一句话描述）、主工作区、辅助工作区。",
             ],
             rows: [
               { title: "页面头部", body: "说明当前页面的目的和一句话摘要。", tone: "neutral" },
@@ -282,7 +282,7 @@ function zhContent(): DocsContent {
             rows: [
               { title: "任务创建", body: "选择攻击类型、目标模型和执行参数，提交后任务自动执行。", tone: "neutral" },
               { title: "状态跟踪", body: "任务状态通过 3 秒轮询更新，支持取消和重试操作。", tone: "blue" },
-              { title: "报告导出", body: "支持直接导出 PDF 审计报告，内含封面、曲线图、风险分布与规范表格。", tone: "green" },
+              { title: "报告导出", body: "支持直接导出 PDF 审计报告，内含封面、曲线图、风险分布与标准表格。", tone: "green" },
             ],
           },
         ],
@@ -341,7 +341,7 @@ function zhContent(): DocsContent {
             table: {
               columns: ["资源", "关键字段", "说明"],
               rows: [
-                ["Catalog entry", "contract_key, track, attack_family, target_key, label, availability, evidence_level, best_workspace, system_gap, admission_status, provenance_status", "描述一个可审计合同项及其证据入选状态。"],
+                ["Catalog entry", "contract_key, track, attack_family, target_key, label, availability, evidence_level, best_workspace, system_gap, admission_status, provenance_status", "描述一个可审计合约及其证据入选状态。"],
                 ["Attack-defense row", "track, attack, defense, auc, asr, tpr_at_fpr, risk_level, evidence_level, boundary, source_path, provenance_status", "描述单条攻击/防御实验结果，可用于表格、图表和报告导出。"],
                 ["Experiment summary", "workspace, metrics, curves, metadata, provenance", "描述指定工作区的指标、曲线和来源摘要。"],
                 ["Audit job facade", "job_id, status, created_at, updated_at, job_type, contract_key, stdout_tail, stderr_tail, state_history", "任务接口返回公开安全的状态与日志摘要；原始 Runtime 文本会先经过脱敏。"],
@@ -421,7 +421,7 @@ function zhContent(): DocsContent {
             label: "运行数据",
             title: "任务与运行时数据",
             paragraphs: [
-              "工作台会展示任务状态、目标模型、审计指标和报告摘要。这些数据用于成员推理风险评估，不会作为第三方广告或推荐用途。",
+              "工作台会展示任务状态、目标模型、审计指标和报告摘要。这些数据用于成员推断风险评估，不会作为第三方广告或推荐用途。",
               "本地偏好设置如主题、语言、默认参数和 Runtime 地址会保存在浏览器本地存储中，以便你下次访问时恢复界面状态。",
             ],
           },
@@ -449,7 +449,7 @@ function zhContent(): DocsContent {
             label: "使用范围",
             title: "使用范围",
             paragraphs: [
-              "DiffAudit 用于成员推理审计、风险评估和评审/研究演示，不应被误认为自动防御系统或生产监控替代品。",
+              "DiffAudit 用于成员推断审计、风险评估和评审演示，不替代防御系统或生产监控。",
               "你应仅在已授权的数据集、模型和实验环境中使用本系统。任何超出授权范围的操作，都不属于平台设计目标。",
             ],
           },
@@ -846,7 +846,7 @@ function enContent(): DocsContent {
             label: "Security",
             title: "Security boundary",
             paragraphs: [
-              "DiffAudit is an audit platform. It does not automatically deploy defenses or share your model data with external services.",
+              "DiffAudit surfaces risks. It does not deploy defenses or share your model data with external services.",
               "If email verification, API keys, or external Runtime integration are enabled, those capabilities remain bounded to the current deployment environment.",
             ],
           },
@@ -865,7 +865,7 @@ function enContent(): DocsContent {
             label: "Scope",
             title: "Usage scope",
             paragraphs: [
-              "DiffAudit is intended for membership inference auditing, risk assessment, and research review demos. It is not a substitute for a defense system or production monitoring stack.",
+              "DiffAudit is for membership inference auditing, risk assessment, and research review demos. It does not replace a defense system or production monitoring stack.",
               "You should only use the platform with authorized datasets, models, and experiment environments.",
             ],
           },
