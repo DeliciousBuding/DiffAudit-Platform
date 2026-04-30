@@ -1,9 +1,11 @@
+import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import {
   createSession,
   findOrCreateOAuthUser,
+  getCurrentUserProfile,
   linkOAuthAccount,
   sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
@@ -36,6 +38,16 @@ function readStoredState(raw: string | undefined) {
   }
 }
 
+function timingSafeStateEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
+
 function buildRedirectWithProviderStatus(
   redirectTo: string | undefined,
   providerLink: string,
@@ -62,7 +74,7 @@ export async function GET(request: Request) {
   const storedState = readStoredState(cookieStore.get(STATE_COOKIE)?.value);
   cookieStore.delete(STATE_COOKIE);
 
-  if (!code || !state || !storedState || state !== storedState.state) {
+  if (!code || !state || !storedState || !timingSafeStateEqual(state, storedState.state)) {
     return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_state", platformUrl));
   }
 
@@ -146,6 +158,14 @@ export async function GET(request: Request) {
   };
 
   if (storedState.mode === "connect" && storedState.userId) {
+    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    const currentUser = getCurrentUserProfile(sessionToken);
+    if (!currentUser || currentUser.id !== storedState.userId) {
+      return NextResponse.redirect(
+        buildPlatformRedirect("/login?error=session_mismatch", platformUrl),
+      );
+    }
+
     const result = linkOAuthAccount(storedState.userId, "github", String(user.id), profile);
     if (!result.ok) {
       return NextResponse.redirect(

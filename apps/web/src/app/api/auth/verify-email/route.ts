@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   const result = verifyEmailToken(token);
   if (!result.ok) {
-    return NextResponse.redirect(new URL(`/workspace/account?emailVerified=${result.reason}`, request.url));
+    return NextResponse.redirect(new URL("/workspace/account?emailVerified=error", request.url));
   }
 
   return NextResponse.redirect(new URL("/workspace/account?emailVerified=1", request.url));
