@@ -33,7 +33,7 @@ export async function proxyJsonToBackend(
   if (payload === null) {
     return Response.json(
       { detail: "Runtime response unavailable." },
-      { status: 502 },
+      { status: upstream.status >= 200 && upstream.status < 600 ? upstream.status : 502 },
     );
   }
 
@@ -56,7 +56,7 @@ async function fetchBackend(url: URL, init?: RequestInit): Promise<Response> {
       cache: "no-store",
     });
   } catch (error) {
-    console.error("[api-proxy]", error);
+    console.error("[api-proxy]", error instanceof Error ? error.message : String(error));
     const status = error instanceof DOMException && error.name === "AbortError" ? 504 : 502;
     return Response.json(
       { detail: status === 504 ? "Platform gateway timeout." : "Platform gateway unavailable." },
