@@ -18,7 +18,8 @@ function isAuthPage(pathname: string) {
 
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const hasSession = request.cookies.has(SESSION_COOKIE);
+  const sessionCookie = request.cookies.get(SESSION_COOKIE);
+  const hasSession = Boolean(sessionCookie?.value && sessionCookie.value.length >= 32);
   const locale = request.cookies.get(LOCALE_COOKIE)?.value;
   const requestHeaders = new Headers(request.headers);
 
