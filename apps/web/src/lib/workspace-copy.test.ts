@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-
-const LOCALES: Locale[] = ["en-US", "zh-CN"];
 
 function collectKeys(obj: unknown, prefix = ""): string[] {
   if (typeof obj !== "object" || obj === null) {

@@ -7,12 +7,12 @@
 ### 1. CRITICAL: Backslash Normalization Discarded — Raw Windows Paths Can Leak
 
 - **File:** `apps/api-go/scripts/publish_public_snapshot.py` (line 86)
-- **Detail:** `normalize = value.replace("\\", "/")` computes a normalized path, but in the fallback branch the code uses `sanitized = value` (the original un-normalized value) instead of `sanitized = normalized`. The `PUBLIC_TEXT_REPLACEMENTS` dict contains no backslash patterns, so a raw Windows path like `D:\Code\DiffAudit\Platform\some\file.json` passes through completely unchanged.
+- **Detail:** `normalize = value.replace("\\", "/")` computes a normalized path, but in the fallback branch the code uses `sanitized = value` (the original un-normalized value) instead of `sanitized = normalized`. The `PUBLIC_TEXT_REPLACEMENTS` dict contains no backslash patterns, so a raw Windows path like `<USERPROFILE>\Projects\some\file.json` passes through completely unchanged.
 - **Fix:** Change line 86 from `sanitized = value` to `sanitized = normalized`.
 
 ### 2. Absolute Non-Research Paths Not Caught
 
-Paths rooted outside the Research checkout (e.g., `/home/admin/...`, `D:\Server\...`) don't match any of the four sanitization conditions and survive to the public snapshot.
+Paths rooted outside the Research checkout (e.g., a user home directory, `C:\Server\...`) don't match any of the four sanitization conditions and survive to the public snapshot.
 
 ### 3. Only 1 Test for the Entire Publisher
 
