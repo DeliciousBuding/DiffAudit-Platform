@@ -153,7 +153,8 @@ export function SettingsClient({
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [defaultRounds, setDefaultRounds] = useState("10");
   const [defaultBatchSize, setDefaultBatchSize] = useState("32");
-  const [savedSection, setSavedSection] = useState<string | null>(null);
+  type SavedSection = "audit" | "runtime" | "account" | "templates";
+const [savedSection, setSavedSection] = useState<SavedSection | null>(null);
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [profile, setProfile] = useState<CurrentUserProfile | null>(initialProfile ?? null);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -270,10 +271,17 @@ export function SettingsClient({
     };
   }, []);
 
-  const showSaved = useCallback((section: string) => {
+  const showSaved = useCallback((section: SavedSection) => {
     setSavedSection(section);
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
     savedTimerRef.current = window.setTimeout(() => setSavedSection(null), 2000);
+  }, []);
+
+  // Clean up saved indicator timer on unmount
+  useEffect(() => {
+    return () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    };
   }, []);
 
   function handleDemoModeToggle(checked: boolean) {

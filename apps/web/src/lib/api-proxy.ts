@@ -20,6 +20,9 @@ export async function proxyToBackend(
   });
 }
 
+const PROXY_TIMEOUT_MS = 15_000;
+const NO_BODY_STATUSES = new Set([204, 205, 304]);
+
 export async function proxyJsonToBackend(
   path: string,
   init: RequestInit | undefined,
@@ -28,27 +31,38 @@ export async function proxyJsonToBackend(
   const url = new URL(path, backendBaseUrl());
   const upstream = await fetchBackend(url, init);
 
-  const contentType = upstream.headers.get("content-type") ?? "application/json; charset=utf-8";
-  const payload = await upstream.json().catch(() => null);
-  if (payload === null) {
+  if (NO_BODY_STATUSES.has(upstream.status)) {
+    return new Response(null, { status: upstream.status });
+  }
+
+  const text = await upstream.text();
+  let payload: unknown;
+  try {
+    payload = JSON.parse(text);
+  } catch {
+    if (upstream.ok) {
+      // 2xx but not JSON — protocol violation
+      return Response.json({ detail: "Runtime response unavailable." }, { status: 502 });
+    }
+    // Non-2xx non-JSON (e.g. HTML error page) — preserve upstream status
     return Response.json(
-      { detail: "Runtime response unavailable." },
-      { status: upstream.status >= 200 && upstream.status < 600 ? upstream.status : 502 },
+      { detail: `Runtime request failed (status ${upstream.status}).` },
+      { status: upstream.status },
     );
   }
 
   return Response.json(transform(payload), {
     status: upstream.status,
-    headers: {
-      "content-type": contentType,
-    },
   });
 }
 
 async function fetchBackend(url: URL, init?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), PROXY_TIMEOUT_MS);
   try {
     return await fetch(url, {
       ...init,
+      signal: controller.signal,
       headers: {
         "content-type": "application/json",
         ...(init?.headers ?? {}),
@@ -56,11 +70,13 @@ async function fetchBackend(url: URL, init?: RequestInit): Promise<Response> {
       cache: "no-store",
     });
   } catch (error) {
-    console.error("[api-proxy]", error instanceof Error ? error.message : String(error));
-    const status = error instanceof DOMException && error.name === "AbortError" ? 504 : 502;
+    const isTimeout = error instanceof DOMException && error.name === "AbortError";
+    console.error("[api-proxy]", isTimeout ? "timeout" : "upstream unavailable");
     return Response.json(
-      { detail: status === 504 ? "Platform gateway timeout." : "Platform gateway unavailable." },
-      { status },
+      { detail: isTimeout ? "Platform gateway timeout." : "Platform gateway unavailable." },
+      { status: isTimeout ? 504 : 502 },
     );
+  } finally {
+    clearTimeout(timeout);
   }
 }
