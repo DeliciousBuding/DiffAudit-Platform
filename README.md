@@ -161,6 +161,8 @@ Copy-Item .env.example apps/web/.env.local
 | `DIFFAUDIT_API_BASE_URL` | web | Go gateway URL |
 | `DIFFAUDIT_DB_PATH` | web | SQLite path for local users and sessions |
 | `DIFFAUDIT_DEMO_MODE` | web/api | Enables demo-mode defaults |
+| `DIFFAUDIT_FORCE_DEMO_MODE` | web | Optional override that keeps demo mode enabled even if a user cookie tries to disable it |
+| `DIFFAUDIT_PRIMARY_CONTRACT_KEY` | web | Optional preferred contract key for landing-page evidence selection |
 | `DIFFAUDIT_SHARED_USERNAME` | web | Optional first local account username |
 | `DIFFAUDIT_SHARED_PASSWORD` | web | Optional first local account password |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | web | Optional GitHub OAuth provider |
@@ -201,6 +203,14 @@ Use immutable `sha-<short-sha>` tags for deployment pinning. Use `latest` only f
 
 See [deploy/README.md](deploy/README.md) for the template contract.
 
+## Portability / 可迁移化
+
+The portable baseline is source code plus a sanitized public snapshot plus environment variables. Private deployment topology, raw Research workspaces, local databases, OAuth secrets, and server-local process files stay outside Git.
+
+迁移基线由源码、可公开的 snapshot 和环境变量组成。私有部署拓扑、原始 Research 工作区、本地数据库、OAuth 密钥和服务器本地进程文件不进入 Git。
+
+See [docs/portability.md](docs/portability.md) for the migration model, environment groups, snapshot contract, and public-ready checklist.
+
 ## Research And Runtime Integration / 研究与运行时集成
 
 DiffAudit Platform is designed to sit between research evidence and product review.
@@ -236,6 +246,7 @@ python scripts/run_local_checks.py
 | --- | --- |
 | [docs/README.md](docs/README.md) | Documentation map |
 | [docs/architecture.md](docs/architecture.md) | Architecture and data boundaries |
+| [docs/portability.md](docs/portability.md) | Productization and migration contract |
 | [docs/platform-roadmap.md](docs/platform-roadmap.md) | Public product roadmap and implementation guardrails |
 | [apps/web/README.md](apps/web/README.md) | Web app setup and notes |
 | [apps/api-go/README.md](apps/api-go/README.md) | Gateway routes and local usage |

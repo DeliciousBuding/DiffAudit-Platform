@@ -7,7 +7,7 @@ This repository is public and product-facing. Treat every committed file as mate
 - Keep the repository suitable for a public GitHub product page.
 - Keep README, docs, examples, and comments product-facing; do not write cleanup diaries, operator handoff notes, agent prompts, or private deployment notes into public files.
 - Keep the license model Apache-2.0. Do not add restrictive commercial-use terms or approval-gated usage terms unless the maintainer explicitly changes the license.
-- Do not introduce invented anti-abuse gates, marketplace copy, analytics claims, or unrelated compliance claims unless the feature actually exists in this repository and the maintainer explicitly asks for it.
+- Do not introduce invented security gates, marketplace copy, analytics claims, or unrelated compliance claims unless the feature actually exists in this repository and the maintainer explicitly asks for it.
 
 ## Sensitive Information
 
@@ -30,6 +30,7 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 ## Product Packaging
 
 - Keep public docs focused on product behavior, architecture, setup, verification, and integration contracts.
+- Keep `docs/portability.md` as the source of truth for productization, migration, environment groups, snapshot portability, and public-ready checklists.
 - Avoid one-off event packaging in reusable product surfaces unless the maintainer explicitly asks for an event branch.
 - Avoid personal test identities. Prefer `demo-reviewer`, `example-user`, `review@diffaudit.test`, and similar neutral fixtures.
 - Keep `DiffAudit-Research` references as external research/evidence integration points; do not copy private research workspace structure into public docs.
