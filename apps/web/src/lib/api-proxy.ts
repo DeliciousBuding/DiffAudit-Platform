@@ -32,8 +32,8 @@ export async function proxyJsonToBackend(
   const payload = await upstream.json().catch(() => null);
   if (payload === null) {
     return Response.json(
-      { detail: upstream.ok ? "Runtime response unavailable." : "Runtime request failed." },
-      { status: upstream.status },
+      { detail: "Runtime response unavailable." },
+      { status: 502 },
     );
   }
 
