@@ -22,11 +22,15 @@ export async function isDemoModeEnabledServer(request?: Request): Promise<boolea
 
   const headerCookie = request?.headers.get("cookie");
   if (headerCookie) {
-    if (headerCookie.includes(`${DEMO_MODE_COOKIE}=0`)) {
-      return false;
-    }
-    if (headerCookie.includes(`${DEMO_MODE_COOKIE}=1`)) {
-      return true;
+    const parsed = headerCookie
+      .split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(`${DEMO_MODE_COOKIE}=`));
+
+    if (parsed) {
+      const value = parsed.slice(DEMO_MODE_COOKIE.length + 1);
+      if (value === "0") return false;
+      if (value === "1") return true;
     }
   }
 
