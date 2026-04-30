@@ -316,6 +316,7 @@ export function SettingsClient({
     setRuntimeHost(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, value);
+      showSaved(copy.runtimeConfig.saved);
     } catch {}
   }
 
@@ -323,6 +324,7 @@ export function SettingsClient({
     setRuntimePort(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, value);
+      showSaved(copy.runtimeConfig.saved);
     } catch {}
   }
 
@@ -364,7 +366,7 @@ export function SettingsClient({
       setShowPasswordEditor(false);
       showSaved(copy.account.passwordSaved);
     } catch {
-      setPasswordError(copy.account.passwordTooShort);
+      setPasswordError(copy.account.verificationRequestFailed);
     } finally {
       setPasswordPending(false);
     }
@@ -647,7 +649,7 @@ export function SettingsClient({
                 type="number"
                 value={defaultRounds}
                 onChange={(e) => handleRoundsChange(e.target.value)}
-                onBlur={() => showSaved(copy.auditConfig.defaultRounds)}
+                onBlur={() => showSaved(copy.auditConfig.saved)}
                 min={1}
                 max={1000}
                 className="settings-input"
@@ -663,7 +665,7 @@ export function SettingsClient({
                 type="number"
                 value={defaultBatchSize}
                 onChange={(e) => handleBatchSizeChange(e.target.value)}
-                onBlur={() => showSaved(copy.auditConfig.defaultBatchSize)}
+                onBlur={() => showSaved(copy.auditConfig.saved)}
                 min={1}
                 max={1024}
                 className="settings-input"
