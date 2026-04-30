@@ -55,10 +55,12 @@ async function fetchBackend(url: URL, init?: RequestInit): Promise<Response> {
       },
       cache: "no-store",
     });
-  } catch {
+  } catch (error) {
+    console.error("[api-proxy]", error);
+    const status = error instanceof DOMException && error.name === "AbortError" ? 504 : 502;
     return Response.json(
-      { detail: "Platform gateway unavailable." },
-      { status: 502 },
+      { detail: status === 504 ? "Platform gateway timeout." : "Platform gateway unavailable." },
+      { status },
     );
   }
 }
