@@ -105,6 +105,10 @@ export async function ensureLegacySharedUser(
     return { id: existing.id, username: existing.username };
   }
 
+  console.warn(
+    `[auth] Password hash mismatch for legacy shared user "${username}" — overwriting with current env value.`,
+  );
+
   db.update(schema.users)
     .set({
       passwordHash: await bcrypt.hash(password, 10),
