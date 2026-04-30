@@ -4,6 +4,8 @@ This folder contains public-safe Docker deployment templates for DiffAudit Platf
 
 Only templates are committed. Real environment files, hostnames, TLS settings, proxy rules, OAuth secrets, API keys, and server notes must stay in the deployment environment.
 
+For the full productization and migration contract, see [../docs/portability.md](../docs/portability.md).
+
 ## Files
 
 | File | Purpose |
@@ -98,3 +100,11 @@ For GHCR tags, also verify the pulled image reference and the redacted build met
 docker image inspect ghcr.io/deliciousbuding/diffaudit-platform-api:sha-1c9d67d --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}'
 curl http://127.0.0.1:8780/health
 ```
+
+## Migration Checklist
+
+- Pin image tags to a Git revision or immutable GHCR `sha-<short-sha>` tag.
+- Copy only sanitized public snapshot files into the configured snapshot directory.
+- Recreate real environment values in the target secret store or untracked compose env files.
+- Keep public domains, TLS/proxy rules, SSH aliases, process-manager files, and host notes outside Git.
+- Confirm `/health` and the web landing page before exposing the deployment.

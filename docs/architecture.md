@@ -99,3 +99,14 @@ The deployment environment owns private operational state:
 - sanitized public snapshot bundles selected for that environment.
 
 This split keeps the repository suitable for public review while still supporting reproducible Docker deployment.
+
+## Portability Contract
+
+The portable Platform unit is:
+
+- a clean Git revision or image built from one;
+- a sanitized public snapshot bundle;
+- environment variables supplied by the deployment environment;
+- optional Runtime connectivity through `DIFFAUDIT_RUNTIME_BASE_URL`.
+
+The repository must remain usable without private server notes, raw Research directories, or deployment-specific files. See [portability.md](portability.md) for the migration checklist and environment groups.

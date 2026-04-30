@@ -14,6 +14,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Area | Status | Notes |
 | --- | --- | --- |
 | Public repository hygiene | Active | Public boundary scan runs locally and in CI |
+| Product portability | Active | Migration contract documents source, snapshot, env, Docker, and GHCR boundaries |
 | Docker images | Active | GHCR publishes web and API images with immutable `sha-<short-sha>` tags |
 | Deployment traceability | Active | Gateway health exposes redacted build revision and snapshot status |
 | Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |

@@ -6,6 +6,7 @@ This folder contains public documentation for the Platform repository.
 | --- | --- |
 | [../README.md](../README.md) | Product overview, quick start, configuration, and verification |
 | [architecture.md](architecture.md) | System boundaries, data flow, and Runtime integration model |
+| [portability.md](portability.md) | Productization, migration model, environment groups, and public-ready checklist |
 | [project-structure.md](project-structure.md) | Repository ownership, source-of-truth rules, UI primitive rules, and legacy route policy |
 | [platform-roadmap.md](platform-roadmap.md) | Public product roadmap and implementation guardrails |
 | [../apps/api-go/README.md](../apps/api-go/README.md) | Go gateway routes and local gateway usage |
