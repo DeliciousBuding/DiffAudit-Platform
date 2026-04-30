@@ -42,28 +42,19 @@ describe("WORKSPACE_COPY key parity", () => {
     const enCopy = WORKSPACE_COPY["en-US"];
     const chineseRegex = /[\u4e00-\u9fff]/;
 
-    const knownViolations = new Set([
-      "emptyWorkspace.title",
-      "emptyWorkspace.steps.0.title",
-      "emptyWorkspace.steps.0.desc",
-      "emptyWorkspace.steps.1.title",
-      "emptyWorkspace.steps.1.desc",
-      "emptyWorkspace.steps.2.title",
-      "emptyWorkspace.steps.2.desc",
-    ]);
-
     const violations: string[] = [];
-    for (const path of collectKeys(enCopy)) {
-      const parts = path.split(".");
-      let current: unknown = enCopy;
-      for (const part of parts) {
-        current = (current as Record<string, unknown>)[part];
+    function walk(obj: unknown, path: string) {
+      if (typeof obj === "string") {
+        if (chineseRegex.test(obj)) violations.push(path);
+        return;
       }
-      if (typeof current === "string" && chineseRegex.test(current) && !knownViolations.has(path)) {
-        violations.push(`${path}: "${current}"`);
+      if (typeof obj === "object" && obj !== null) {
+        for (const [key, val] of Object.entries(obj)) {
+          walk(val, path ? `${path}.${key}` : key);
+        }
       }
     }
-
+    walk(enCopy, "");
     expect(violations).toEqual([]);
   });
 });
