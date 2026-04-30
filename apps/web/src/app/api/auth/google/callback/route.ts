@@ -1,4 +1,3 @@
-import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -11,6 +10,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/auth";
+import { timingSafeStateEqual } from "@/lib/timing-safe";
 
 const STATE_COOKIE = "diffaudit_google_oauth_state";
 
@@ -52,16 +52,6 @@ function readStoredState(raw: string | undefined) {
   } catch {
     return null;
   }
-}
-
-function timingSafeStateEqual(a: string, b: string): boolean {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) {
-    timingSafeEqual(bufA, bufA);
-    return false;
-  }
-  return timingSafeEqual(bufA, bufB);
 }
 
 function buildRedirectWithProviderStatus(
