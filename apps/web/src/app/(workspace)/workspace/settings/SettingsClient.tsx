@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 import { ProviderIcon } from "@/components/auth-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
@@ -153,7 +153,8 @@ export function SettingsClient({
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [defaultRounds, setDefaultRounds] = useState("10");
   const [defaultBatchSize, setDefaultBatchSize] = useState("32");
-  const [savedMsg, setSavedMsg] = useState<string | null>(null);
+  const [savedSection, setSavedSection] = useState<string | null>(null);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [profile, setProfile] = useState<CurrentUserProfile | null>(initialProfile ?? null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -269,10 +270,11 @@ export function SettingsClient({
     };
   }, []);
 
-  const showSaved = useCallback((section?: string) => {
-    setSavedMsg(section ?? copy.auditConfig.saved);
-    window.setTimeout(() => setSavedMsg(null), 2000);
-  }, [copy.auditConfig.saved]);
+  const showSaved = useCallback((section: string) => {
+    setSavedSection(section);
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    savedTimerRef.current = window.setTimeout(() => setSavedSection(null), 2000);
+  }, []);
 
   function handleDemoModeToggle(checked: boolean) {
     if (demoModeLocked && !checked) {
@@ -316,7 +318,7 @@ export function SettingsClient({
     setRuntimeHost(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, value);
-      showSaved(copy.runtimeConfig.saved);
+      showSaved("runtime");
     } catch {}
   }
 
@@ -324,7 +326,7 @@ export function SettingsClient({
     setRuntimePort(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, value);
-      showSaved(copy.runtimeConfig.saved);
+      showSaved("runtime");
     } catch {}
   }
 
@@ -364,9 +366,9 @@ export function SettingsClient({
       setNewPassword("");
       setConfirmPassword("");
       setShowPasswordEditor(false);
-      showSaved(copy.account.passwordSaved);
+      showSaved("account");
     } catch {
-      setPasswordError(copy.account.verificationRequestFailed);
+      setPasswordError(copy.account.passwordSaveFailed);
     } finally {
       setPasswordPending(false);
     }
@@ -633,7 +635,7 @@ export function SettingsClient({
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditConfig.title}
             </h2>
-            {savedMsg === copy.auditConfig.saved && (
+            {savedSection === "audit" && (
               <span className="text-[10px] text-[color:var(--success)]">
                 {copy.auditConfig.saved}
               </span>
@@ -649,7 +651,7 @@ export function SettingsClient({
                 type="number"
                 value={defaultRounds}
                 onChange={(e) => handleRoundsChange(e.target.value)}
-                onBlur={() => showSaved(copy.auditConfig.saved)}
+                onBlur={() => showSaved("audit")}
                 min={1}
                 max={1000}
                 className="settings-input"
@@ -665,7 +667,7 @@ export function SettingsClient({
                 type="number"
                 value={defaultBatchSize}
                 onChange={(e) => handleBatchSizeChange(e.target.value)}
-                onBlur={() => showSaved(copy.auditConfig.saved)}
+                onBlur={() => showSaved("audit")}
                 min={1}
                 max={1024}
                 className="settings-input"
@@ -680,7 +682,7 @@ export function SettingsClient({
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.runtimeConfig.title}
             </h2>
-            {savedMsg === copy.runtimeConfig.saved && (
+            {savedSection === "runtime" && (
               <span className="text-[10px] text-[color:var(--success)]">
                 {copy.runtimeConfig.saved}
               </span>
@@ -756,7 +758,7 @@ export function SettingsClient({
                     "platform-audit-template-default",
                     JSON.stringify(template)
                   );
-                  showSaved(copy.auditTemplates.saved);
+                  showSaved("templates");
                 } catch {}
               }}
               className="workspace-btn-secondary w-full px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
