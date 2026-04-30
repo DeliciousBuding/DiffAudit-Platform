@@ -794,13 +794,13 @@ export const WORKSPACE_COPY: Record<
       },
     },
     emptyWorkspace: {
-      title: "还没有审计结果。",
+      title: "No audit results yet.",
       description: "DiffAudit helps you discover privacy risks in machine learning models through three attack lines: black-box, gray-box, and white-box.",
       cta: "Create your first audit task",
       steps: [
-        { step: "1", title: "选择攻击方式", desc: "黑盒（推荐起点）、灰盒或白盒。" },
-        { step: "2", title: "选择目标模型", desc: "从合同目录中挑选要审计的模型。" },
-        { step: "3", title: "等待结果", desc: "提交后系统会自动运行审计，完成后在这里展示。" },
+        { step: "1", title: "Choose an attack method", desc: "Black-box (recommended starting point), gray-box, or white-box." },
+        { step: "2", title: "Select target model", desc: "Pick the model to audit from the contract catalog." },
+        { step: "3", title: "Wait for results", desc: "After submission, the system runs the audit automatically and displays results here." },
       ],
     },
     reports: {
