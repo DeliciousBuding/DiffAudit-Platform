@@ -47,7 +47,7 @@ export function ChartRiskDistribution({ data }: RiskDistributionProps) {
           axisLine={false}
         />
         <Tooltip contentStyle={chartTooltipStyle} />
-        <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={60}>
+        <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={60} isAnimationActive={false}>
           {data.map((entry, index) => (
             <Cell key={index} fill={RISK_COLORS[entry.key] || "var(--accent-blue)"} />
           ))}

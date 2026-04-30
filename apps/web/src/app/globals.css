@@ -544,6 +544,46 @@ select {
   }
 }
 
+@keyframes tabs-underline {
+  from {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.tabs-underline {
+  transform-origin: center;
+  animation: tabs-underline 150ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs-underline {
+    animation: none !important;
+  }
+}
+
+@media (pointer: coarse), (max-width: 640px) {
+  .header-pill,
+  .language-trigger,
+  .workspace-btn-primary,
+  .workspace-btn-secondary {
+    min-height: 44px;
+  }
+
+  .header-pill-icon {
+    min-width: 44px;
+    width: 44px;
+  }
+
+  .language-trigger {
+    min-width: 44px;
+  }
+}
+
 /* Primary variant — subtle emphasis via border + weight, not fill */
 .header-pill-primary {
   border-color: rgba(33, 34, 38, 0.18);

@@ -320,16 +320,22 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {filteredModels.map((model) => {
                     const isSelected = form.selectedContractKey === model.contractKey;
+                    const isDisabled = model.availability === "disabled";
                     return (
                       <button
                         key={model.contractKey}
                         type="button"
-                        onClick={() => selectModel(model.contractKey)}
+                        onClick={() => {
+                          if (!isDisabled) selectModel(model.contractKey);
+                        }}
                         aria-pressed={isSelected}
+                        disabled={isDisabled}
                         className={`text-left rounded-lg border p-3 transition-all ${
                           isSelected
                             ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
-                            : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
+                            : isDisabled
+                              ? "border-border bg-muted/10 opacity-55 cursor-not-allowed"
+                              : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">

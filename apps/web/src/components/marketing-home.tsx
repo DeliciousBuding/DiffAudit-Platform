@@ -231,22 +231,22 @@ const HOME_COPY: Record<
             {
               title: "快速开始",
               description: "三步完成首次审计。",
-              href: "/docs",
+              href: "/docs/quick-start",
             },
             {
               title: "架构",
               description: "Platform → Runtime-Server → Runner 三层架构。",
-              href: "/docs#architecture",
+              href: "/docs/deployment-runtime",
             },
             {
               title: "API 参考",
               description: "核心 REST API 端点说明。",
-              href: "/docs#api",
+              href: "/docs/api-reference",
             },
             {
               title: "攻击线路",
               description: "黑盒、灰盒、白盒三条审计线路。",
-              href: "/docs#attacks",
+              href: "/docs/audit-tracks",
             },
           ],
         },
@@ -458,22 +458,22 @@ const HOME_COPY: Record<
             {
               title: "Quick Start",
               description: "Complete your first audit in three steps.",
-              href: "/docs",
+              href: "/docs/quick-start",
             },
             {
               title: "Architecture",
               description: "Platform, Runtime-Server, and Python Runners.",
-              href: "/docs#architecture",
+              href: "/docs/deployment-runtime",
             },
             {
               title: "API Reference",
               description: "Core REST API endpoint descriptions.",
-              href: "/docs#api",
+              href: "/docs/api-reference",
             },
             {
               title: "Attack Lines",
               description: "Black-box, Gray-box, and White-box audit tracks.",
-              href: "/docs#attacks",
+              href: "/docs/audit-tracks",
             },
           ],
         },

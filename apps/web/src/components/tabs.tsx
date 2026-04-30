@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useCallback } from "react";
 
 interface TabDef {
   value: string;
@@ -49,18 +49,6 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className, idP
     [tabs, value, onChange]
   );
 
-  // Inject keyframes once globally
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const id = "tabs-underline-keyframes";
-    if (!document.getElementById(id)) {
-      const style = document.createElement("style");
-      style.id = id;
-      style.textContent = `@keyframes tabs-underline{from{transform:scaleX(0.6);opacity:0}to{transform:scaleX(1);opacity:1}}`;
-      document.head.appendChild(style);
-    }
-  }, []);
-
   const baseClasses =
     "relative flex items-center gap-0 text-sm font-medium border-b border-[var(--color-border-subtle)]";
   const variantClasses =
@@ -94,8 +82,7 @@ export function Tabs({ value, onChange, tabs, variant = "inline", className, idP
             {tab.label}
             {isActive && (
               <span
-                className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--color-accent-blue)]"
-                style={{ animation: "tabs-underline 0.15s ease-out forwards" }}
+                className="tabs-underline absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--color-accent-blue)]"
               />
             )}
           </button>

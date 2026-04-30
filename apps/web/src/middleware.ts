@@ -12,10 +12,6 @@ function isProtectedApi(pathname: string) {
   return pathname.startsWith("/api/v1/");
 }
 
-function isAuthPage(pathname: string) {
-  return pathname === "/login" || pathname === "/register";
-}
-
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const sessionCookie = request.cookies.get(SESSION_COOKIE);
@@ -27,10 +23,6 @@ export function middleware(request: NextRequest) {
     requestHeaders.set(LOCALE_HEADER, locale);
   } else {
     requestHeaders.delete(LOCALE_HEADER);
-  }
-
-  if (isAuthPage(pathname) && hasSession) {
-    return NextResponse.redirect(new URL("/workspace", request.url));
   }
 
   if (!hasSession && isProtectedApi(pathname)) {

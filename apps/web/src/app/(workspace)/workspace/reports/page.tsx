@@ -340,7 +340,7 @@ async function AuditResultsSection({ locale }: { locale: Locale }) {
         </div>
         <div className="overflow-auto max-h-[440px]">
           {rows.length > 0 ? (
-            <table className="w-full border-collapse text-xs">
+            <table className="min-w-[900px] w-full border-collapse text-xs">
               <thead className="sticky top-0 bg-muted/30">
                 <tr className="border-b border-border">
                   <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
@@ -425,7 +425,7 @@ async function CoverageGapsSection({ locale }: { locale: Locale }) {
     <WorkspaceSectionCard title={copy.sections.coverageGaps}>
       <div className="overflow-auto">
         {contracts.length > 0 ? (
-          <table className="w-full border-collapse text-xs">
+          <table className="min-w-[900px] w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-muted/30">
               <tr className="border-b border-border">
                 <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{th.contractKey}</th>

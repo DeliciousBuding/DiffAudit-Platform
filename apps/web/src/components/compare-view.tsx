@@ -187,7 +187,7 @@ export function CompareView({ rows, locale }: CompareViewProps) {
           </h2>
         </div>
         <div className="overflow-auto max-h-[480px]">
-          <table className="w-full border-collapse text-xs">
+          <table className="min-w-[900px] w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-muted/30">
               <tr className="border-b border-border">
                 <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.attack}</th>

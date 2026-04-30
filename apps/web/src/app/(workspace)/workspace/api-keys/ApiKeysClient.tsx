@@ -247,44 +247,40 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           {keys.map((key) => (
             <div
               key={key.id}
-              className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/5 ${key.status === "revoked" ? "opacity-50" : ""}`}
+              className={`flex flex-col gap-4 px-5 py-4 transition-colors hover:bg-muted/5 sm:flex-row sm:items-center ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
-              <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${
-                key.status === "active"
-                  ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
-                  : "bg-muted/30 text-muted-foreground"
-              }`}>
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                </svg>
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="mb-0.5 flex items-center gap-2">
-                  <span className="truncate text-sm font-medium text-foreground">{key.name}</span>
-                  <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
-                    key.status === "active"
-                      ? "bg-[var(--accent-green)]/10 text-[var(--accent-green)]"
-                      : "bg-muted/30 text-muted-foreground"
-                  }`}>
-                    {key.status === "active" ? copy.active : copy.revoked}
-                  </span>
+              <div className="flex min-w-0 flex-1 gap-3">
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                  key.status === "active"
+                    ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
+                    : "bg-muted/30 text-muted-foreground"
+                }`}>
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                  </svg>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                  <code className="font-mono">{key.prefix}</code>
-                  <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px]">{copy.demoKeyPrefix}</span>
-                  <span>·</span>
-                  <span>{copy.createdAt} {key.created}</span>
-                  {key.lastUsed ? (
-                    <>
-                      <span>·</span>
-                      <span>{copy.lastUsed} {key.lastUsed}</span>
-                    </>
-                  ) : null}
+
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="min-w-0 truncate text-sm font-medium text-foreground">{key.name}</span>
+                    <span className={`inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
+                      key.status === "active"
+                        ? "bg-[var(--accent-green)]/10 text-[var(--accent-green)]"
+                        : "bg-muted/30 text-muted-foreground"
+                    }`}>
+                      {key.status === "active" ? copy.active : copy.revoked}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                    <code className="font-mono">{key.prefix}</code>
+                    <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px]">{copy.demoKeyPrefix}</span>
+                    <span>{copy.createdAt} {key.created}</span>
+                    {key.lastUsed ? <span>{copy.lastUsed} {key.lastUsed}</span> : null}
+                  </div>
                 </div>
               </div>
 
-              <div className="hidden shrink-0 items-center gap-1 md:flex">
+              <div className="flex flex-wrap items-center gap-1 sm:shrink-0">
                 {key.scopes.map((scope) => (
                   <span
                     key={scope}
@@ -298,7 +294,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               {key.status === "active" ? (
                 <button
                   onClick={() => setPendingRevokeId(key.id)}
-                  className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)]"
+                  className="min-h-11 shrink-0 self-end rounded-lg border border-border px-3 py-2 text-[11px] text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] sm:self-center"
                 >
                   {copy.revoke}
                 </button>
@@ -341,8 +337,8 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           </div>
         </div>
         <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-          <code className="text-[#e0e4ec]">{`# Submit an audit job via API
-curl -X POST https://api.diffaudit.com/v1/jobs \\
+          <code className="text-[#e0e4ec]">{`# Demo preview only: submit shape via the Platform gateway
+curl -X POST https://your-platform.example/api/v1/audit/jobs \\
   -H "Authorization: Bearer da_demo_your_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{

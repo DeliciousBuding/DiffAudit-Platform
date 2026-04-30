@@ -97,6 +97,8 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
 
   const [jobs, setJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -107,20 +109,24 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
         const res = await fetch("/api/v1/audit/jobs", {
           signal: controller.signal,
         });
-        if (res.ok) {
-          const data = await res.json();
-          const allJobs = normalizeAuditJobList<JobRecord>(data);
-          if (!allJobs) {
-            throw new Error("jobs payload is not a supported list shape");
-          }
-          const filtered =
-            mode === "active"
-              ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
-              : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
-          setJobs(filtered);
+        if (!res.ok) {
+          throw new Error(`jobs request failed: ${res.status}`);
         }
-      } catch {
-        // Ignore fetch errors (abort, network)
+        const data = await res.json();
+        const allJobs = normalizeAuditJobList<JobRecord>(data);
+        if (!allJobs) {
+          throw new Error("jobs payload is not a supported list shape");
+        }
+        const filtered =
+          mode === "active"
+            ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
+            : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
+        setJobs(filtered);
+        setLoadError(false);
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setLoadError(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -137,7 +143,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     }
 
     return () => controller.abort();
-  }, [mode]);
+  }, [mode, refreshToken]);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
@@ -162,6 +168,26 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     return (
       <div className="px-3 py-4 text-xs text-muted-foreground text-center">
         {copy.jobsRefreshNote}
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="px-3 py-4 text-center text-xs text-muted-foreground">
+        <div>{copy.jobsUnavailable}</div>
+        <button
+          type="button"
+          onClick={() => {
+            setLoading(true);
+            setLoadError(false);
+            setJobs([]);
+            setRefreshToken((value) => value + 1);
+          }}
+          className="workspace-btn-secondary mt-3 px-3 py-2 text-xs font-medium"
+        >
+          {copy.retry}
+        </button>
       </div>
     );
   }
@@ -206,6 +232,12 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                 {sanitizeRuntimeText(job.error)}
               </div>
             )}
+            <Link
+              href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
+              className="mt-2 inline-flex text-[11px] font-medium text-[var(--accent-blue)] transition-colors hover:text-foreground"
+            >
+              {copy.viewDetails}
+            </Link>
           </div>
         ))}
       </div>

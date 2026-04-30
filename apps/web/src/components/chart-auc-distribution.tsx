@@ -46,6 +46,7 @@ export function ChartAucDistribution({ data }: AucDistributionProps) {
           fill="var(--accent-blue)"
           radius={[4, 4, 0, 0]}
           maxBarSize={40}
+          isAnimationActive={false}
         />
       </BarChart>
     </ResponsiveContainer>

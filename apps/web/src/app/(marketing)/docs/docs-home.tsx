@@ -98,7 +98,7 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, prevPage, nextP
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       {/* Topbar */}
       <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/80 backdrop-blur-xl">
-        <div className="mx-auto grid h-14 max-w-7xl grid-cols-[minmax(12rem,1fr)_minmax(20rem,32rem)_minmax(12rem,1fr)] items-center gap-4 px-4">
+        <div className="mx-auto grid h-14 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 md:grid-cols-[minmax(12rem,1fr)_minmax(20rem,32rem)_minmax(12rem,1fr)] md:gap-4">
           <div className="flex min-w-0 items-center gap-3 justify-self-start">
             <Link href="/" className="flex items-center gap-2" aria-label="DiffAudit Home">
               <BrandMark compact />
@@ -125,12 +125,41 @@ function DocsLayout({ content, page, selectedSlug, onSelectSlug, prevPage, nextP
               </kbd>
             </button>
           </div>
-          <div className="flex min-w-0 items-center justify-end gap-3 justify-self-end">
+          <div className="flex min-w-0 items-center justify-end gap-2 justify-self-end md:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true });
+                window.dispatchEvent(event);
+              }}
+              className="header-pill header-pill-icon md:hidden"
+              aria-label={content.header.searchPlaceholder}
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2}>
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+            </button>
             <LanguagePicker value={locale} reloadOnChange />
             <ThemeToggleButton />
           </div>
         </div>
       </header>
+
+      <div className="border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]/92 px-4 py-3 backdrop-blur-xl lg:hidden">
+        <select
+          value={selectedSlug}
+          onChange={(event) => onSelectSlug(event.target.value)}
+          className="w-full rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] px-3 py-2.5 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-blue)]"
+          aria-label={content.header.docs}
+        >
+          {content.pages.map((docPage) => (
+            <option key={docPage.slug} value={docPage.slug}>
+              {docPage.navLabel}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Main layout: left nav + content + right TOC */}
       <div className="mx-auto flex max-w-7xl">
