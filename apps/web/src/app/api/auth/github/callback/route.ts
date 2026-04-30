@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import {
   createSession,
   findOrCreateOAuthUser,
+  getCurrentUserProfile,
   linkOAuthAccount,
   sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
@@ -146,6 +147,14 @@ export async function GET(request: Request) {
   };
 
   if (storedState.mode === "connect" && storedState.userId) {
+    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    const currentUser = getCurrentUserProfile(sessionToken);
+    if (!currentUser || currentUser.id !== storedState.userId) {
+      return NextResponse.redirect(
+        buildPlatformRedirect("/login?error=session_mismatch", platformUrl),
+      );
+    }
+
     const result = linkOAuthAccount(storedState.userId, "github", String(user.id), profile);
     if (!result.ok) {
       return NextResponse.redirect(
