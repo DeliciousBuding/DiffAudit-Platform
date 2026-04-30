@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -37,6 +38,16 @@ function readStoredState(raw: string | undefined) {
   }
 }
 
+function timingSafeStateEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
+
 function buildRedirectWithProviderStatus(
   redirectTo: string | undefined,
   providerLink: string,
@@ -63,7 +74,7 @@ export async function GET(request: Request) {
   const storedState = readStoredState(cookieStore.get(STATE_COOKIE)?.value);
   cookieStore.delete(STATE_COOKIE);
 
-  if (!code || !state || !storedState || state !== storedState.state) {
+  if (!code || !state || !storedState || !timingSafeStateEqual(state, storedState.state)) {
     return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_state", platformUrl));
   }
 
