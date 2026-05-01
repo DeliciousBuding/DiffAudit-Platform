@@ -94,7 +94,7 @@ function pageTitle(locale: Locale, label: string) {
 
 function pageDescription(locale: Locale, label: string) {
   return locale === "zh-CN"
-    ? "同一攻击线的展示视图与长期审计视图共用这一个入口，默认保持展示形态。"
+    ? "同一审计线路的展示视图与长期审计视图共用这一个入口，默认保持展示形态。"
     : `This route keeps both the display view and the long-term audit view for the ${label.toLowerCase()} track.`;
 }
 

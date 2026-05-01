@@ -20,8 +20,8 @@ export function TrialForm({ copy }: { copy?: TrialFormCopy }) {
 
   const t = copy ?? {
     successEyebrow: "申请已记录",
-    successTitle: "我们会通过你留下的联系方式继续跟进。",
-    successBody: "当前页面使用前端占位提交流程，后续可以直接接入真实线索系统。",
+    successTitle: "我们会通过你留下的联系方式继续跟进",
+    successBody: "你的申请已收到，我们会尽快与你联系",
     team: "团队名称",
     teamPlaceholder: "例如：模型安全组 / 法务合规组",
     contact: "联系人",

@@ -48,7 +48,7 @@ describe("WorkspaceAuditsPage", () => {
     const { default: WorkspaceAuditsPage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceAuditsPage());
 
-    expect(markup).toContain("创建任务，跟踪进度，查看结果。");
+    expect(markup).toContain("创建任务，跟踪进度，查看结果");
     expect(markup).toContain("创建任务");
     expect(markup).toContain("运行中的任务");
     expect(markup).toContain("历史任务");
@@ -79,9 +79,9 @@ describe("WorkspaceAuditsPage", () => {
     const { default: WorkspaceAuditsPage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceAuditsPage());
 
-    expect(markup).toContain("Create tasks, track progress, review results.");
+    expect(markup).toContain("Create tasks, track progress, review results");
     expect(markup).toContain("Create task");
-    expect(markup).toContain("Running tasks");
+    expect(markup).toContain("Active tasks");
     expect(markup).toContain("History");
   });
 });

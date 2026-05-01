@@ -352,7 +352,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           </div>
         </div>
         <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-          <code className="text-[#e0e4ec]">{`# Demo preview only: submit shape via the Platform gateway
+          <code className="text-[#e0e4ec]">{`# Demo preview only: send an audit request via the API
 curl -X POST https://your-platform.example/api/v1/audit/jobs \\
   -H "Authorization: Bearer da_demo_your_key_here" \\
   -H "Content-Type: application/json" \\

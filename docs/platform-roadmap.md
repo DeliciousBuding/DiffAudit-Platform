@@ -4,10 +4,10 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 
 ## Operating Principles
 
-- Keep the public demo useful without a live Runtime.
-- Keep Runtime and Research integration explicit through snapshots and HTTP contracts.
-- Keep deployment provenance visible without exposing private topology.
-- Keep UI changes inside the existing workspace design language.
+- Public demo works without a live Runtime.
+- Runtime and Research integration goes through snapshots and HTTP contracts.
+- Deployment provenance stays visible; private topology stays out.
+- UI changes follow the existing workspace design language.
 
 ## Current Baseline
 
@@ -47,6 +47,6 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 
 ## Guardrails
 
-- Do not add private hostnames, SSH aliases, reverse-proxy details, TLS paths, or systemd units to public docs.
-- Do not invent product claims that are not implemented.
-- Do not introduce a new visual system for workspace pages; extend the current tokens, cards, badges, and compact section layout.
+- No private hostnames, SSH aliases, reverse-proxy details, TLS paths, or systemd units in public docs.
+- No product claims that are not implemented.
+- No new visual system for workspace pages; extend the current tokens, cards, badges, and compact section layout.

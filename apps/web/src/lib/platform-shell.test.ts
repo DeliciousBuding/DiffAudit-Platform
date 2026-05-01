@@ -10,10 +10,11 @@ describe("platform shell helpers", () => {
     expect(navItems.map((item) => item.icon)).toEqual([
       "dashboard",
       "spark",
+      "model",
+      "risk",
       "report",
       "key",
       "account",
-      "settings",
     ]);
   });
 
@@ -23,10 +24,9 @@ describe("platform shell helpers", () => {
   });
 
   it("matches nested routes to the longest compatible nav item", () => {
-    expect(findActiveNavItem("/workspace/api-keys/rotate", navItems)).toEqual(navItems[3]);
-    expect(findActiveNavItem("/workspace/account/security", navItems)).toEqual(navItems[4]);
-    expect(findActiveNavItem("/workspace/settings/team", navItems)).toEqual(navItems[5]);
-    expect(findActiveNavItem("/workspace/reports/preview/123", navItems)).toEqual(navItems[2]);
+    expect(findActiveNavItem("/workspace/api-keys/rotate", navItems)).toEqual(navItems[5]);
+    expect(findActiveNavItem("/workspace/account/security", navItems)).toEqual(navItems[6]);
+    expect(findActiveNavItem("/workspace/reports/preview/123", navItems)).toEqual(navItems[4]);
   });
 
   it("falls back to the first nav item when no route matches", () => {

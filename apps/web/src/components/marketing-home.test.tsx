@@ -60,7 +60,7 @@ describe("MarketingHome hero", () => {
     expect(markup).toContain("Audit diffusion models");
     expect(markup).toContain("before they reach production.");
     expect(markup).toContain("landing-subheader landing-subheader-nowrap");
-    expect(markup).toContain("Membership inference attack platform for privacy-aware AI compliance.");
+    expect(markup).toContain("Membership inference attack platform for privacy-aware AI compliance");
     expect(markup).toContain("landing-hero-body landing-hero-body-nowrap");
   });
 });

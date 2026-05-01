@@ -22,7 +22,7 @@ describe("AuditFilters accessibility", () => {
 
     expect(markup).toContain('aria-label="审计筛选"');
     expect(markup).toContain('aria-label="按任务状态筛选"');
-    expect(markup).toContain('aria-label="按审计轨道筛选"');
+    expect(markup).toContain('aria-label="按审计线路筛选"');
     expect(markup).toContain('aria-label="搜索审计合约和任务"');
   });
 });

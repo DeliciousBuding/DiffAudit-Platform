@@ -25,12 +25,12 @@ describe("WorkspaceHomePage", () => {
     const { default: WorkspaceHomePage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态。");
+    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态");
     expect(markup).toContain("当前任务");
     expect(markup).toContain("最近结果");
     expect(markup).toContain("PIA");
     expect(markup).toContain("stable-diffusion-v1-4");
-    expect(markup).toContain("可审计合同");
+    expect(markup).toContain("可审计合约");
     expect(markup).toContain("已防御结果");
   });
 
@@ -42,8 +42,7 @@ describe("WorkspaceHomePage", () => {
     expect(markup).toContain("Your workspace aggregates current audit tasks, recent results, and system status at a glance.");
     expect(markup).toContain("Active tasks");
     expect(markup).toContain("Recent results");
-    expect(markup).toContain("Recon Member Inference Audit");
-    expect(markup).toContain("Auditable contracts");
+    expect(markup).toContain("stable-diffusion-v1-4");
     expect(markup).toContain("Auditable contracts");
   });
 });

@@ -27,7 +27,6 @@ describe("ReportAuditView", () => {
         locale="zh-CN"
         rows={[]}
         provenance={{}}
-        historyPlaceholder="history"
       />,
     );
 
@@ -41,7 +40,6 @@ describe("ReportAuditView", () => {
         locale="en-US"
         rows={rows}
         provenance={{}}
-        historyPlaceholder="No prior verdicts."
         jobContext={{
           jobId: "job_demo_004",
           contractKey: "recon_artifact_mainline",
@@ -64,7 +62,6 @@ describe("ReportAuditView", () => {
         locale="zh-CN"
         rows={rows}
         provenance={{}}
-        historyPlaceholder="暂无历史对照。"
         jobContext={{
           jobId: "job_unadmitted",
           contractKey: "recon_future_runtime",

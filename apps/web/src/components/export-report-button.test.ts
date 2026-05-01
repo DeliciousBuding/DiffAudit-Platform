@@ -40,7 +40,7 @@ describe("export report csv helpers", () => {
     const csv = buildReportCsv([], "zh-CN");
     const [headerLine] = csv.split("\n");
 
-    expect(headerLine).toContain('"攻击线"');
+    expect(headerLine).toContain('"审计线路"');
     expect(headerLine).toContain('"攻击方法"');
     expect(headerLine).toContain('"防御方法"');
     expect(headerLine).toContain('"证据等级"');

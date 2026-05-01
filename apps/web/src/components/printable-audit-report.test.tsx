@@ -62,7 +62,7 @@ describe("PrintableAuditReport", () => {
       />,
     );
 
-    expect(markup).toContain("Audit results and coverage gaps.");
+    expect(markup).toContain("Audit results and coverage gaps");
     expect(markup).toContain("AUC Score Distribution");
     expect(markup).toContain("ROC Curve");
     expect(markup).toContain("Risk Distribution");

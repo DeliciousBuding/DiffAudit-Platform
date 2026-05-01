@@ -1,8 +1,10 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: () => {} }),
+  redirect: vi.fn((url: string) => {
+    throw new Error(`REDIRECT:${url}`);
+  }),
 }));
 
 const headersMock = vi.fn();
@@ -33,7 +35,7 @@ describe("WorkspaceSettingsPage locale", () => {
     vi.resetModules();
   });
 
-  it("renders zh-CN copy from the locale cookie", async () => {
+  it("redirects to the API keys page", async () => {
     headersMock.mockResolvedValue(new Headers([["cookie", "platform-locale-v2=zh-CN; diffaudit_session=test-session"]]));
     cookiesMock.mockResolvedValue({
       get: (name: string) => (name === "diffaudit_session" ? { value: "test-session" } : undefined),
@@ -42,11 +44,7 @@ describe("WorkspaceSettingsPage locale", () => {
     googleOAuthConfiguredMock.mockReturnValue(true);
     getCurrentUserProfileMock.mockReturnValue(null);
 
-    // page.tsx is a server component that renders SettingsClient
     const { default: WorkspaceSettingsPage } = await import("./page");
-    const markup = renderToStaticMarkup(await WorkspaceSettingsPage({}));
-
-    // SettingsClient renders the settings content for zh-CN
-    expect(markup).toContain("设置");
+    await expect(async () => WorkspaceSettingsPage({})).rejects.toThrow("REDIRECT:/workspace/api-keys");
   });
 });
