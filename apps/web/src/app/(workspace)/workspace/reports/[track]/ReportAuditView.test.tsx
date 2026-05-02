@@ -27,6 +27,7 @@ describe("ReportAuditView", () => {
         locale="zh-CN"
         rows={[]}
         provenance={{ intakeManifest: "manifest-v2.json" }}
+        historyPlaceholder="暂无历史数据"
       />,
     );
 
@@ -41,6 +42,7 @@ describe("ReportAuditView", () => {
         locale="zh-CN"
         rows={[]}
         provenance={{}}
+        historyPlaceholder="暂无历史数据"
       />,
     );
 
@@ -56,6 +58,7 @@ describe("ReportAuditView", () => {
         locale="en-US"
         rows={rows}
         provenance={{}}
+        historyPlaceholder="No history data"
         jobContext={{
           jobId: "job_demo_004",
           contractKey: "recon_artifact_mainline",
@@ -78,6 +81,7 @@ describe("ReportAuditView", () => {
         locale="zh-CN"
         rows={rows}
         provenance={{}}
+        historyPlaceholder="暂无历史数据"
         jobContext={{
           jobId: "job_unadmitted",
           contractKey: "recon_future_runtime",

@@ -220,7 +220,7 @@ export function JobDetailClient({
         <Skeleton className="h-3 w-32" />
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-16 rounded-md" />
+            <Skeleton key={i} className="h-16 rounded-2xl" />
           ))}
         </div>
       </div>

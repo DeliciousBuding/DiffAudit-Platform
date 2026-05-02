@@ -198,10 +198,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   ];
 
   // Suggested next step — 2.4.5
-  const suggestions: string[] = [];
-  if (riskCounts.high > 0) suggestions.push(copy.suggestions.highRisk(riskCounts.high));
-  if (defendedRows === 0 && totalRows > 0) suggestions.push(copy.suggestions.noDefense);
-  if (riskCounts.medium > 2) suggestions.push(copy.suggestions.mediumRisk(riskCounts.medium));
+  const suggestions: Array<{ text: string; href: string }> = [];
+  if (riskCounts.high > 0) suggestions.push({ text: copy.suggestions.highRisk(riskCounts.high), href: "/workspace/risk-findings" });
+  if (defendedRows === 0 && totalRows > 0) suggestions.push({ text: copy.suggestions.noDefense, href: "/workspace/audits/new" });
+  if (riskCounts.medium > 2) suggestions.push({ text: copy.suggestions.mediumRisk(riskCounts.medium), href: "/workspace/risk-findings" });
 
   const isEmpty = totalRows === 0;
 
@@ -380,7 +380,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 </h3>
                 <ul className="space-y-1">
                   {suggestions.map((s, i) => (
-                    <li key={i} className="text-xs text-muted-foreground">{s}</li>
+                    <li key={i} className="text-xs text-muted-foreground">
+                      <Link href={s.href} className="hover:text-[color:var(--accent-blue)] hover:underline transition-colors">
+                        {s.text}
+                      </Link>
+                    </li>
                   ))}
                 </ul>
               </div>

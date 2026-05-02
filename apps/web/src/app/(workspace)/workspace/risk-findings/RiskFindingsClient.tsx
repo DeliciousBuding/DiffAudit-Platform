@@ -10,7 +10,6 @@ import { SortableHeader } from "@/components/sortable-header";
 import { StatusBadge } from "@/components/status-badge";
 import { TableDensityToggle, readPersistedDensity, densityClass, type Density } from "@/components/table-density-toggle";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
-import { InfoTooltip } from "@/components/info-tooltip";
 import { useSort } from "@/hooks/use-sort";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
