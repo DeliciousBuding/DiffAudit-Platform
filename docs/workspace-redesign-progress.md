@@ -320,3 +320,17 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 3. **Accessible**: aria-label, fade-in animation, reduced-motion safe
 
 24 rounds total, 22 commits to main. 136/136 tests.
+
+### Phase 25: Track Evaluation Counts (COMPLETED)
+1. **Audit track cards**: show count of completed evaluations per track
+2. Bilingual suffix ("项评估" / "evals"), only shown when > 0
+
+### Phase 26: Accessibility Improvements (COMPLETED)
+1. **API Keys**: aria-labels on action buttons, table semantics
+2. **Audits**: aria-labels on filter tabs, table region role
+3. **Model Assets**: aria-labels on CRUD buttons, table semantics
+4. **Settings**: form labels, section landmarks, button labels
+5. **Empty State**: aria-hidden on decorative icon
+6. **Sidebar**: aria-hidden on ChevronLeft icon
+
+26 rounds total, 24 commits to main. 136/136 tests.
