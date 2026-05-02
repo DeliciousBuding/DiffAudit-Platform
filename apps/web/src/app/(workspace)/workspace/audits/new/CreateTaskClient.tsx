@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
@@ -187,14 +187,14 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   return (
     <div className="space-y-4">
       {/* Step indicator */}
-      <div className="border border-border bg-card">
-        <div className="flex items-center gap-0 border-b border-border bg-muted/20" role="list" aria-label={copy.steps.stepperLabel}>
+      <div className="rounded-2xl border border-border bg-card">
+        <div className="flex items-center gap-0 border-b border-border bg-muted/20 rounded-t-2xl" role="list" aria-label={copy.steps.stepperLabel}>
           {steps.map((step, index) => {
             const isActive = form.step === index + 1;
             const isCompleted = form.step > index + 1;
             const isDisabled = !isActive && !isCompleted;
             return (
-              <div key={step.label} role="listitem">
+              <div key={step.label} role="listitem" className="flex-1 min-w-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -203,7 +203,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   disabled={isDisabled}
                   aria-current={isActive ? "step" : undefined}
                   aria-disabled={isDisabled}
-                  className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors ${
+                  className={`flex w-full flex-col items-center gap-1.5 px-3 py-3 text-xs font-medium transition-colors ${
                     isActive
                       ? "text-foreground border-b-2 border-b-[var(--accent-blue)]"
                       : isCompleted
@@ -212,7 +212,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   }`}
                 >
                   <span
-                    className={`inline-flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-semibold ${
+                    className={`inline-flex items-center justify-center h-6 w-6 rounded-full text-xs font-semibold ${
                       isCompleted
                         ? "bg-[var(--info-soft)] text-[var(--info)] border border-[rgba(47,109,246,0.2)]"
                         : isActive
@@ -222,7 +222,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   >
                     {isCompleted ? "\u2713" : step.label}
                   </span>
-                  {step.title}
+                  <span className="text-center leading-tight truncate">{step.title}</span>
                 </button>
               </div>
             );
@@ -234,8 +234,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {/* Step 1: Attack type selection */}
           {form.step === 1 && (
             <div className="space-y-3">
-              <div className="text-xs text-muted-foreground mb-3">{copy.steps.step1Desc}</div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step1Desc}</div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
                 {(
                   [
                     {
@@ -265,39 +265,36 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       type="button"
                       onClick={() => selectAttackType(card.type)}
                       aria-pressed={isSelected}
-                      className={`text-left rounded-lg border p-4 transition-all ${
+                      className={`text-left rounded-2xl border p-4 flex flex-col transition-all ${
                         isSelected
                           ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                           : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
                       }`}
                     >
-                      <div className="text-sm font-semibold mb-1.5">{card.title}</div>
-                      <div className="text-xs text-muted-foreground mb-2 leading-relaxed">{card.desc}</div>
-                      <div className="text-[10px] text-muted-foreground italic">{card.note}</div>
+                      <div className="text-sm font-bold mb-1.5">{card.title}</div>
+                      <div className="text-[13px] text-muted-foreground mb-2 leading-relaxed flex-1">{card.desc}</div>
+                      <div className="text-[13px] text-muted-foreground italic pt-2 border-t border-border/40">{card.note}</div>
                     </button>
                   );
                 })}
               </div>
               {/* Recommended configuration — 7.2.1 */}
               {form.attackType && (
-                <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
+                <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-3">
                   <div className="flex items-start gap-2">
-                    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 16v-4M12 8h.01" />
-                    </svg>
+                    <Info size={16} strokeWidth={2} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
                     <div className="space-y-1">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--accent-blue)]">
+                      <div className="text-[13px] font-bold text-[color:var(--accent-blue)]">
                         {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxTitle : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxTitle : copy.recommendedConfig.whiteBoxTitle}
                       </div>
                       <ul className="space-y-0.5">
-                        <li className="text-xs text-muted-foreground">
+                        <li className="text-[13px] text-muted-foreground">
                           {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxRounds : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxRounds : copy.recommendedConfig.whiteBoxRounds}
                         </li>
-                        <li className="text-xs text-muted-foreground">
+                        <li className="text-[13px] text-muted-foreground">
                           {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxBatch : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxBatch : copy.recommendedConfig.whiteBoxBatch}
                         </li>
-                        <li className="text-xs text-muted-foreground">
+                        <li className="text-[13px] text-muted-foreground">
                           {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxAdaptive : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxAdaptive : copy.recommendedConfig.whiteBoxAdaptive}
                         </li>
                       </ul>
@@ -311,9 +308,9 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {/* Step 2: Target model selection */}
           {form.step === 2 && (
             <div className="space-y-3">
-              <div className="text-xs text-muted-foreground mb-3">{copy.steps.step2Desc}</div>
+              <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step2Desc}</div>
               {filteredModels.length === 0 ? (
-                <div className="text-xs text-muted-foreground text-center py-6 border border-dashed border-border rounded-lg">
+                <div className="text-[13px] text-muted-foreground text-center py-6 border border-dashed border-border rounded-2xl">
                   {labels.disabled}
                 </div>
               ) : (
@@ -330,7 +327,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         }}
                         aria-pressed={isSelected}
                         disabled={isDisabled}
-                        className={`text-left rounded-lg border p-3 transition-all ${
+                        className={`text-left rounded-2xl border p-3 transition-all ${
                           isSelected
                             ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                             : isDisabled
@@ -339,7 +336,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-sm font-medium">{model.label}</span>
+                          <span className="text-[13px] font-bold">{model.label}</span>
                           <StatusBadge
                             tone={model.availability === "ready" ? "success" : model.availability === "partial" ? "warning" : "neutral"}
                             compact
@@ -351,8 +348,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                                 : labels.availabilityDisabled}
                           </StatusBadge>
                         </div>
-                        <div className="mono text-[10px] text-muted-foreground">{model.contractKey}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{model.capabilityLabel}</div>
+                        <div className="mono text-[13px] text-muted-foreground">{model.contractKey}</div>
+                        <div className="text-[13px] text-muted-foreground mt-1">{model.capabilityLabel}</div>
                       </button>
                     );
                   })}
@@ -363,7 +360,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40"
+                  className="workspace-btn-secondary px-3 py-1.5 text-[13px] font-medium"
                 >
                   &larr; {copy.steps.step1Title}
                 </button>
@@ -374,11 +371,11 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {/* Step 3: Configure parameters */}
           {form.step === 3 && (
             <div className="space-y-4 max-w-md">
-              <div className="text-xs text-muted-foreground mb-3">{copy.steps.step3Desc}</div>
+              <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step3Desc}</div>
 
               {/* Rounds */}
               <div>
-                <label htmlFor={roundsInputId} className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                <label htmlFor={roundsInputId} className="block text-[13px] font-bold text-muted-foreground mb-1.5">
                   {labels.rounds}
                 </label>
                 <input
@@ -393,13 +390,13 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       setForm((prev) => ({ ...prev, rounds: val }));
                     }
                   }}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground outline-none transition-colors hover:bg-muted/40 focus:border-[rgba(47,109,246,0.52)] focus:ring-2 focus:ring-[rgba(47,109,246,0.08)]"
+                  className="settings-input"
                 />
               </div>
 
               {/* Batch size */}
               <div>
-                <label htmlFor={batchSizeInputId} className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                <label htmlFor={batchSizeInputId} className="block text-[13px] font-bold text-muted-foreground mb-1.5">
                   {labels.batchSize}
                 </label>
                 <input
@@ -414,7 +411,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       setForm((prev) => ({ ...prev, batchSize: val }));
                     }
                   }}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground outline-none transition-colors hover:bg-muted/40 focus:border-[rgba(47,109,246,0.52)] focus:ring-2 focus:ring-[rgba(47,109,246,0.08)]"
+                  className="settings-input"
                 />
               </div>
 
@@ -437,8 +434,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   />
                 </button>
                 <div>
-                  <div className="text-xs font-medium">{labels.adaptiveSampling}</div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">{labels.adaptiveSamplingNote}</div>
+                  <div className="text-[13px] font-bold">{labels.adaptiveSampling}</div>
+                  <div className="text-[13px] text-muted-foreground mt-0.5">{labels.adaptiveSamplingNote}</div>
                 </div>
               </div>
 
@@ -447,7 +444,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40"
+                  className="workspace-btn-secondary px-3 py-1.5 text-[13px] font-medium"
                 >
                   &larr; {copy.steps.step2Title}
                 </button>
@@ -465,15 +462,15 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {/* Step 4: Review & submit */}
           {form.step === 4 && (
             <div className="space-y-4 max-w-lg">
-              <div className="text-xs text-muted-foreground mb-3">{labels.reviewSummary}</div>
+              <div className="text-[13px] text-muted-foreground mb-3">{labels.reviewSummary}</div>
 
               {/* Review card */}
-              <div className="border border-border rounded-lg bg-muted/10 p-4 space-y-3">
+              <div className="border border-border rounded-2xl bg-muted/10 p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[13px] font-bold text-muted-foreground">
                     {labels.reviewAttackType}
                   </span>
-                  <span className="text-xs font-medium">
+                  <span className="text-[13px] font-medium">
                     {form.attackType === "black-box"
                       ? copy.attackTypes.blackBoxTitle
                       : form.attackType === "gray-box"
@@ -482,38 +479,38 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[13px] font-bold text-muted-foreground">
                     {labels.reviewModel}
                   </span>
-                  <span className="text-xs font-medium mono">
+                  <span className="text-[13px] font-medium mono">
                     {selectedModel?.label ?? form.selectedContractKey ?? "--"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[13px] font-bold text-muted-foreground">
                     {labels.reviewRounds}
                   </span>
-                  <span className="text-xs mono">{form.rounds}</span>
+                  <span className="text-[13px] mono">{form.rounds}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[13px] font-bold text-muted-foreground">
                     {labels.reviewBatchSize}
                   </span>
-                  <span className="text-xs mono">{form.batchSize}</span>
+                  <span className="text-[13px] mono">{form.batchSize}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[13px] font-bold text-muted-foreground">
                     {labels.reviewAdaptiveSampling}
                   </span>
-                  <span className="text-xs">
+                  <span className="text-[13px]">
                     {form.adaptiveSampling ? labels.adaptiveOn : labels.adaptiveOff}
                   </span>
                 </div>
                 <div className="flex items-center justify-between pt-1 border-t border-border">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="text-[13px] font-bold text-muted-foreground">
                     {labels.reviewEstTime}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[13px] text-muted-foreground">
                     ~{form.rounds * 2}s {labels.estimatedSuffix}
                   </span>
                 </div>
@@ -521,16 +518,16 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
               {/* Success state */}
               {submitState === "success" && (
-                <div className="border border-[var(--success-soft)] rounded-lg bg-[var(--success-soft)] p-4">
-                  <div className="text-sm font-semibold text-[color:var(--success)]">{labels.successTitle}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{labels.successBody}</div>
+                <div className="border border-[var(--success-soft)] rounded-2xl bg-[var(--success-soft)] p-4">
+                  <div className="text-[13px] font-bold text-[color:var(--success)]">{labels.successTitle}</div>
+                  <div className="text-[13px] text-muted-foreground mt-1">{labels.successBody}</div>
                 </div>
               )}
 
               {/* Error state */}
               {submitState === "error" && errorMessage && (
-                <div className="border border-[var(--warning-soft)] rounded-lg bg-[var(--warning-soft)] p-4">
-                  <div className="text-xs text-[color:var(--warning)]">{errorMessage}</div>
+                <div className="border border-[var(--warning-soft)] rounded-2xl bg-[var(--warning-soft)] p-4">
+                  <div className="text-[13px] text-[color:var(--warning)]">{errorMessage}</div>
                 </div>
               )}
 
@@ -540,7 +537,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   type="button"
                   onClick={() => setStep(3)}
                   disabled={submitState === "submitting"}
-                  className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 disabled:opacity-50"
+                  className="workspace-btn-secondary px-3 py-1.5 text-[13px] font-medium disabled:opacity-50"
                 >
                   &larr; {copy.steps.step3Title}
                 </button>
@@ -558,16 +555,6 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
             </div>
           )}
         </div>
-      </div>
-
-      {/* Back link */}
-      <div>
-        <Link
-          href="/workspace/audits"
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          &larr; {copy.backToTasks}
-        </Link>
       </div>
     </div>
   );

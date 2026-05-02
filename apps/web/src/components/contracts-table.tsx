@@ -37,15 +37,15 @@ export function ContractsTable({ contracts, locale }: ContractsTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-xs">
+      <table className="w-full border-collapse text-[13px]">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Contract</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Status</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Risk</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">System Gap</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Workspace</th>
-            <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">Action</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Contract</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Status</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Risk</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">System Gap</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Workspace</th>
+            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -58,11 +58,11 @@ export function ContractsTable({ contracts, locale }: ContractsTableProps) {
                   index % 2 === 0 ? "bg-background" : "bg-muted/10"
                 }`}
               >
-                <td className="px-3 py-2">
+                <td className="px-3 py-3">
                   <div className="font-medium">{entry.label}</div>
                   <div className="mono mt-0.5 text-[10px] text-muted-foreground">{entry.contractKey}</div>
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-3">
                   <StatusBadge
                     tone={
                       entry.availability === "ready"
@@ -75,16 +75,16 @@ export function ContractsTable({ contracts, locale }: ContractsTableProps) {
                     {entry.availability}
                   </StatusBadge>
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-3">
                   <RiskBadge auc={auc} compact />
                 </td>
-                <td className="px-3 py-2 max-w-xs">
+                <td className="px-3 py-3 max-w-xs">
                   <div className="text-muted-foreground line-clamp-2 text-xs">{entry.systemGap}</div>
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-3">
                   <span className="text-muted-foreground text-xs">{entry.bestWorkspace}</span>
                 </td>
-                <td className="px-3 py-2 text-right">
+                <td className="px-3 py-3 text-right">
                   <CreateJobButton contractKey={entry.contractKey} label={copy.createJob} />
                 </td>
               </tr>

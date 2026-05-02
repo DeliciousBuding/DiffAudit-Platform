@@ -73,12 +73,16 @@ export const WORKSPACE_COPY: Record<
           tpr: string;
         };
         noAucData: string;
+        insufficientData: string;
+        dataLoadFailed: string;
         chartTitles: {
           aucDistribution: string;
           rocCurve: string;
           riskDistribution: string;
           attackComparison: string;
           riskRadar: string;
+          syntheticSuffix: string;
+          noDataAvailable: string;
         };
         riskLabels: {
           high: string;
@@ -88,6 +92,7 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: string;
         chartDimensions: string[];
         suggestedNextSteps: string;
+        partialDataWarning: string;
         radarLabels: {
           auc: string;
           asr: string;
@@ -137,6 +142,7 @@ export const WORKSPACE_COPY: Record<
         created: string;
         duration: string;
         action: string;
+        auc: string;
       };
       createTask: string;
       recommendedWorkspace: string;
@@ -149,6 +155,10 @@ export const WORKSPACE_COPY: Record<
       emptyResults: string;
       emptyTasks: string;
       emptyHistory: string;
+      emptyHistoryFiltered: string;
+      kpiTracksLabel: string;
+      kpiTracksNote: string;
+      trackCountUnit: string;
       viewDetails: string;
       viewReport: string;
       retry: string;
@@ -261,6 +271,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      backToReports: string;
       reportTabs: {
         results: string;
         compare: string;
@@ -338,6 +349,25 @@ export const WORKSPACE_COPY: Record<
         asr: string;
         tpr: string;
       };
+      trackLabels: Record<string, string>;
+      trackMethods: Record<string, string>;
+      trackDescs: Record<string, string>;
+      trackReportTitles: Record<string, string>;
+      reportGeneration: string;
+      generateByTrack: string;
+      generateReport: string;
+      generatedReports: string;
+      comprehensiveAnalysis: string;
+      keyFindings: string;
+      defenseGap: string;
+      recommendedDefenses: string;
+      exportOptions: string;
+      noFinding: string;
+      date: string;
+      view: string;
+      download: string;
+      popupBlocked: string;
+      exportTimeout: string;
     };
     apiKeys: {
       eyebrow: string;
@@ -357,30 +387,38 @@ export const WORKSPACE_COPY: Record<
       copyFailed: string;
       done: string;
       activeKeys: string;
+      prefix: string;
       createdAt: string;
       lastUsed: string;
+      status: string;
+      actions: string;
       revoke: string;
       active: string;
       revoked: string;
+      revokedLabel: string;
       demoNotice: string;
       demoKeyPrefix: string;
       revokeConfirmTitle: string;
       revokeConfirmBody: string;
+      revokeConfirmIrreversible: string;
       revokeConfirmCancel: string;
       revokeConfirmAction: string;
+      revokeSuccess: string;
+      adminScopeWarning: string;
+      noScopeError: string;
       usageExample: string;
+      codeComment: string;
     };
     settings: {
       eyebrow: string;
       title: string;
       description: string;
-      sections: Array<{ title: string; copy: string }>;
-      systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string };
-      auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string };
-      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; logout: string };
+      systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string; gatewayError: string };
+      auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string; roundsClamped: string; batchClamped: string };
+      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
-      auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string };
+      auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string };
       aboutSystem: { title: string; useCases: string; useCaseItems: { title: string; desc: string }[]; systemBoundary: string; boundaryNote: string; framework: string; frameworkItems: { tier: string; desc: string }[] };
       errorPage: { title: string; description: string; retry: string; goHome: string };
       notFound: { title: string; description: string; goHome: string };
@@ -526,18 +564,19 @@ export const WORKSPACE_COPY: Record<
       signOut: "Sign out",
     },
     nav: {
-      workspace: { title: "Workspace", subtitle: "Tasks and metrics overview", shortLabel: "Home" },
-      audits: { title: "Audit Tasks", subtitle: "Create, run, and review jobs", shortLabel: "Tasks" },
-      modelAssets: { title: "Model Assets", subtitle: "Targets, datasets, and versions", shortLabel: "Assets" },
-      riskFindings: { title: "Risk Findings", subtitle: "Evidence, gaps, and remediation", shortLabel: "Risks" },
-      reportCenter: { title: "Report Center", subtitle: "Summaries, exports, and sharing", shortLabel: "Reports" },
-      apiKeys: { title: "API Management", subtitle: "Issue and revoke access keys", shortLabel: "API" },
-      account: { title: "Personal Account", subtitle: "Profile and sign-in settings", shortLabel: "Account" },
+      workspace: { title: "Workspace", subtitle: "Overview & Metrics", shortLabel: "Home" },
+      audits: { title: "Audit Tasks", subtitle: "Manage audit jobs", shortLabel: "Tasks" },
+      modelAssets: { title: "Model Assets", subtitle: "Manage audit targets", shortLabel: "Assets" },
+      riskFindings: { title: "Risk Findings", subtitle: "View risk evidence", shortLabel: "Risks" },
+      reportCenter: { title: "Report Center", subtitle: "Aggregate & export reports", shortLabel: "Reports" },
+      apiKeys: { title: "API Management", subtitle: "Manage API keys", shortLabel: "API" },
+      account: { title: "Personal Account", subtitle: "Profile & security", shortLabel: "Account" },
+      settings: { title: "System Settings", subtitle: "System configuration", shortLabel: "Settings" },
     },
     workspace: {
       eyebrow: "Workspace",
-      title: "See what your model is leaking",
-      description: "Your workspace aggregates current audit tasks, recent results, and system status at a glance.",
+      title: "Workspace Overview",
+      description: "Aggregate audit tasks, results, and system status in one view.",
       kpis: {
         liveContractsLabel: "Auditable contracts",
         liveContractsNote: "Number of audit contracts currently available.",
@@ -546,7 +585,7 @@ export const WORKSPACE_COPY: Record<
         avgAucLabel: "Avg. attack AUC",
         avgAucNote: "Mean attack AUC across all audit results — higher means greater leakage risk.",
         defenseEvaluatedLabel: "Defenses evaluated",
-        defenseEvaluatedNote: "Total number of completed audit results.",
+        defenseEvaluatedNote: "Total audit result rows evaluated.",
       },
       sections: {
         tasks: "Active tasks",
@@ -562,12 +601,16 @@ export const WORKSPACE_COPY: Record<
           tpr: "TPR",
         },
         noAucData: "No AUC data available",
+        insufficientData: "Not enough data to display this chart",
+        dataLoadFailed: "Failed to load workspace data. Please try again later.",
         chartTitles: {
           aucDistribution: "AUC Distribution",
           rocCurve: "ROC Curve",
           riskDistribution: "Risk Distribution",
           attackComparison: "Attack Comparison",
           riskRadar: "Risk Radar",
+          syntheticSuffix: " (Synthetic)",
+          noDataAvailable: "No data available",
         },
         riskLabels: {
           high: "High risk",
@@ -577,6 +620,7 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: "dimensions",
         chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
         suggestedNextSteps: "Suggested next steps",
+        partialDataWarning: "Some data sources failed to load. The information below may be incomplete.",
         radarLabels: {
           auc: "AUC",
           asr: "ASR",
@@ -632,6 +676,7 @@ export const WORKSPACE_COPY: Record<
         created: "Created",
         duration: "Duration",
         action: "Action",
+        auc: "AUC",
       },
       createTask: "Create task",
       recommendedWorkspace: "Recommended workspace",
@@ -644,6 +689,10 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "No audit results yet",
       emptyTasks: "No active tasks",
       emptyHistory: "No task history yet",
+      emptyHistoryFiltered: "No history items match this filter",
+      kpiTracksLabel: "Audit tracks",
+      kpiTracksNote: "Distinct track types with active or completed jobs",
+      trackCountUnit: " jobs",
       viewDetails: "View details",
       viewReport: "View report",
       retry: "Retry",
@@ -694,13 +743,13 @@ export const WORKSPACE_COPY: Record<
         step4Desc: "Confirm and submit.",
       },
       attackTypes: {
-        blackBoxTitle: "Black-box / Recon",
+        blackBoxTitle: "Black-box Audit / Recon",
         blackBoxDesc: "Infer membership from output scores — no model internals needed. Best for quick risk assessment",
         blackBoxNote: "Recommended starting point",
-        grayBoxTitle: "Gray-box / PIA",
+        grayBoxTitle: "Gray-box Audit / PIA",
         grayBoxDesc: "Use intermediate layer features for stronger attack signals. Quantifies risk and evaluates defense effectiveness",
         grayBoxNote: "Stronger signal with feature access",
-        whiteBoxTitle: "White-box / GSA",
+        whiteBoxTitle: "White-box Audit / GSA",
         whiteBoxDesc: "Full access to model weights and gradients. Discovers deep privacy leaks and validates strongest defenses",
         whiteBoxNote: "Requires full model weights and gradient access",
       },
@@ -821,6 +870,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "Reports",
       title: "Audit results and coverage gaps",
       description: "Aggregate audit results and identify weak spots in your model's defenses.",
+      backToReports: "Back to Reports",
       reportTabs: {
         results: "Results",
         compare: "Compare",
@@ -858,7 +908,7 @@ export const WORKSPACE_COPY: Record<
         rocCurve: "ROC Curve",
         riskDistribution: "Risk Distribution",
         attackComparison: "Attack Comparison",
-        highRiskGaps: "high-risk gaps (AUC >= 0.7)",
+        highRiskGaps: "high-risk gaps (AUC >= 0.85)",
       },
       chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
       exportSummary: "Export report",
@@ -898,11 +948,46 @@ export const WORKSPACE_COPY: Record<
         asr: "Attack Success Rate - percentage of successful privacy attacks",
         tpr: "True Positive Rate - sensitivity of the attack at detecting members",
       },
+      trackLabels: {
+        "black-box": "Black-box",
+        "gray-box": "Gray-box",
+        "white-box": "White-box",
+      },
+      trackMethods: {
+        "black-box": "Recon",
+        "gray-box": "PIA",
+        "white-box": "GSA",
+      },
+      trackDescs: {
+        "black-box": "Membership inference audit based on model output scores. No model internals needed.",
+        "gray-box": "Privacy attack audit using intermediate layer features. Quantifies attack signal and evaluates defense effectiveness.",
+        "white-box": "Gradient signature audit with full model weight and gradient access. Discovers deepest privacy leaks.",
+      },
+      trackReportTitles: {
+        "black-box": "Recon Assessment Report",
+        "gray-box": "PIA Assessment Report",
+        "white-box": "GSA Assessment Report",
+      },
+      reportGeneration: "Report Generation",
+      generateByTrack: "Generate by Audit Mode",
+      generateReport: "View Full Report",
+      generatedReports: "Generated Reports",
+      comprehensiveAnalysis: "Comprehensive Analysis",
+      keyFindings: "Key Findings",
+      defenseGap: "Defense Gap",
+      recommendedDefenses: "Recommended Defenses",
+      exportOptions: "Export Options",
+      noFinding: "No audit results available for analysis.",
+      date: "Date",
+      view: "View Report",
+      download: "Download",
+      popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
+      exportTimeout: "PDF export timed out. Please try again.",
     },
     apiKeys: {
       eyebrow: "API Management",
-      title: "Issue and revoke API access keys",
-      description: "Create, scope, copy, and revoke API keys used by runners, notebooks, and integrations",
+      title: "API Key Management",
+      description: "Create and manage API access keys for runners, notebooks, and integrations",
       create: "Create new key",
       createTitle: "Create a new API key",
       keyName: "Key name",
@@ -917,28 +1002,32 @@ export const WORKSPACE_COPY: Record<
       copyFailed: "Copy failed",
       done: "Done",
       activeKeys: "Active keys",
+      prefix: "Prefix",
       createdAt: "Created",
       lastUsed: "Last used",
-      revoke: "Revoke",
+      status: "Status",
+      actions: "Actions",
+      revoke: "Disable",
       active: "Active",
-      revoked: "Revoked",
+      revoked: "Disabled",
+      revokedLabel: "Disabled",
       demoNotice: "Demo-only API key preview. These keys are local examples and are not connected to a real backend.",
       demoKeyPrefix: "Demo key",
-      revokeConfirmTitle: "Revoke demo key?",
-      revokeConfirmBody: "This only updates the local preview. It will not revoke a real credential.",
+      revokeConfirmTitle: "Disable this key?",
+      revokeConfirmBody: "This key will lose API access. This only affects the local demo data.",
+      revokeConfirmIrreversible: "This action cannot be undone. Once disabled, this key cannot be restored.",
       revokeConfirmCancel: "Cancel",
-      revokeConfirmAction: "Revoke demo key",
+      revokeConfirmAction: "Confirm disable",
+      revokeSuccess: "Key has been disabled.",
+      adminScopeWarning: "The admin scope grants full API access. Use with caution.",
+      noScopeError: "Select at least one permission scope.",
       usageExample: "API usage example",
+      codeComment: "Demo preview only: send an audit request via the API",
     },
     settings: {
       eyebrow: "Settings",
       title: "Team, keys, and preferences",
       description: "Manage team settings, runtime connection, and local preferences.",
-      sections: [
-        { title: "Team members", copy: "Manage team name, collaboration roles, and default workspace scope." },
-        { title: "API keys", copy: "Centralize service endpoints, API keys, and access boundaries." },
-        { title: "Preferences", copy: "Save default language, page preferences, and report presentation." },
-      ],
       systemStatus: {
         title: "System status",
         runtime: "Runtime connection",
@@ -952,12 +1041,15 @@ export const WORKSPACE_COPY: Record<
         demoOff: "Off",
         demoHintOn: "Using snapshot contracts, jobs, and reports across the workspace.",
         demoHintOff: "Using live Runtime and API responses instead of snapshot data.",
+        gatewayError: "Gateway health check failed. Some status information may be unavailable.",
       },
       auditConfig: {
         title: "Audit defaults",
         defaultRounds: "Default attack rounds",
         defaultBatchSize: "Default batch size",
         saved: "Saved",
+        roundsClamped: "Rounds clamped to valid range (1–1000).",
+        batchClamped: "Batch size clamped to valid range (1–1024).",
       },
       account: {
         title: "Account",
@@ -1005,6 +1097,7 @@ export const WORKSPACE_COPY: Record<
         accessSummaryPasswordOff: "Password sign-in is not enabled yet.",
         accessSummaryPendingEmail: "Verify the pending email to use it as a password login ID.",
         accessSummaryNoProvider: "No OAuth providers are connected yet.",
+        connectAnotherProvider: "Connect another provider",
         password: "Password access",
         passwordManage: "Password management",
         passwordSet: "Configured",
@@ -1065,6 +1158,11 @@ export const WORKSPACE_COPY: Record<
         saveCurrent: "Save current defaults as template",
         saved: "Saved",
         noTemplates: "No saved templates yet.",
+        loadTemplate: "Load",
+        deleteTemplate: "Delete",
+        templateLoaded: "Template loaded.",
+        templateDeleted: "Template deleted.",
+        savedTemplatesTitle: "Saved templates",
       },
       aboutSystem: {
         title: "About the System",
@@ -1236,18 +1334,19 @@ export const WORKSPACE_COPY: Record<
       signOut: "退出登录",
     },
     nav: {
-      workspace: { title: "工作台", subtitle: "任务和指标概览", shortLabel: "工作台" },
-      audits: { title: "审计任务", subtitle: "创建、运行与查看任务", shortLabel: "任务" },
-      modelAssets: { title: "模型资产", subtitle: "目标、数据集与版本", shortLabel: "资产" },
-      riskFindings: { title: "风险发现", subtitle: "证据、缺口与修复建议", shortLabel: "风险" },
-      reportCenter: { title: "报告中心", subtitle: "报告汇总、导出与分享", shortLabel: "报告" },
-      apiKeys: { title: "API 管理", subtitle: "分发与吊销访问密钥", shortLabel: "API" },
-      account: { title: "个人账户设置", subtitle: "资料与登录方式", shortLabel: "账户" },
+      workspace: { title: "工作台", subtitle: "总览与指标", shortLabel: "工作台" },
+      audits: { title: "审计任务", subtitle: "管理审计任务", shortLabel: "任务" },
+      modelAssets: { title: "模型资产", subtitle: "管理审计目标", shortLabel: "资产" },
+      riskFindings: { title: "风险发现", subtitle: "查看风险证据", shortLabel: "风险" },
+      reportCenter: { title: "报告中心", subtitle: "汇总与导出报告", shortLabel: "报告" },
+      apiKeys: { title: "API 管理", subtitle: "管理 API 密钥", shortLabel: "API" },
+      account: { title: "个人账户", subtitle: "个人资料与安全", shortLabel: "账户" },
+      settings: { title: "系统设置", subtitle: "系统配置", shortLabel: "设置" },
     },
     workspace: {
       eyebrow: "工作台",
-      title: "看看你的模型泄露了什么",
-      description: "这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态",
+      title: "工作台总览",
+      description: "汇总审计任务、评估结果和系统状态，一站式掌握隐私风险态势。",
       kpis: {
         liveContractsLabel: "可审计合约",
         liveContractsNote: "当前可用的审计合约数",
@@ -1256,7 +1355,7 @@ export const WORKSPACE_COPY: Record<
         avgAucLabel: "平均攻击 AUC",
         avgAucNote: "所有审计结果的攻击 AUC 均值，越高说明泄露风险越大。",
         defenseEvaluatedLabel: "已评估防御",
-        defenseEvaluatedNote: "已完成审计的结果总数。",
+        defenseEvaluatedNote: "已完成审计的结果总行数。",
       },
       sections: {
         tasks: "当前任务",
@@ -1272,12 +1371,16 @@ export const WORKSPACE_COPY: Record<
           tpr: "TPR",
         },
         noAucData: "暂无 AUC 数据",
+        insufficientData: "数据不足，无法显示此图表",
+        dataLoadFailed: "加载工作台数据失败，请稍后重试。",
         chartTitles: {
           aucDistribution: "AUC 分布",
           rocCurve: "ROC 曲线",
           riskDistribution: "风险分布",
           attackComparison: "攻击对比",
           riskRadar: "风险雷达",
+          syntheticSuffix: "（合成）",
+          noDataAvailable: "暂无数据",
         },
         riskLabels: {
           high: "高风险",
@@ -1287,6 +1390,7 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: "维度",
         chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
         suggestedNextSteps: "建议的下一步",
+        partialDataWarning: "部分数据源加载失败，以下信息可能不完整。",
         radarLabels: {
           auc: "AUC",
           asr: "ASR",
@@ -1342,6 +1446,7 @@ export const WORKSPACE_COPY: Record<
         created: "创建时间",
         duration: "耗时",
         action: "操作",
+        auc: "AUC",
       },
       createTask: "创建任务",
       recommendedWorkspace: "推荐工作台",
@@ -1354,6 +1459,10 @@ export const WORKSPACE_COPY: Record<
       emptyResults: "还没有审计结果",
       emptyTasks: "当前没有活跃任务",
       emptyHistory: "还没有历史任务",
+      emptyHistoryFiltered: "当前筛选条件下没有历史任务",
+      kpiTracksLabel: "审计线路",
+      kpiTracksNote: "有活跃或已完成任务的线路类型数",
+      trackCountUnit: " 个任务",
       viewDetails: "查看详情",
       viewReport: "查看报告",
       retry: "重试",
@@ -1404,13 +1513,13 @@ export const WORKSPACE_COPY: Record<
         step4Desc: "确认配置无误后提交任务",
       },
       attackTypes: {
-        blackBoxTitle: "黑盒 / Recon",
+        blackBoxTitle: "黑盒审计 / Recon",
         blackBoxDesc: "通过输出分数推断模型是否记住了训练数据。不需要模型内部信息，适合快速评估",
         blackBoxNote: "推荐作为首次评估的起点",
-        grayBoxTitle: "灰盒 / PIA",
+        grayBoxTitle: "灰盒审计 / PIA",
         grayBoxDesc: "利用模型中间层特征发起攻击，信号更强，可量化风险并评估防御效果",
         grayBoxNote: "可获取中间特征时信号更强",
-        whiteBoxTitle: "白盒 / GSA",
+        whiteBoxTitle: "白盒审计 / GSA",
         whiteBoxDesc: "完全访问模型权重和梯度，可发现最深层的隐私泄露并验证最强防御",
         whiteBoxNote: "需要完整的模型权重和梯度信息",
       },
@@ -1531,6 +1640,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "报告",
       title: "审计结果和覆盖缺口",
       description: "这里汇总了所有审计结果，帮你发现模型防御的薄弱环节",
+      backToReports: "返回报告中心",
       reportTabs: {
         results: "审计结果",
         compare: "对比分析",
@@ -1568,7 +1678,7 @@ export const WORKSPACE_COPY: Record<
         rocCurve: "ROC 曲线",
         riskDistribution: "风险分布",
         attackComparison: "攻击效果对比",
-        highRiskGaps: "个高风险缺口 (AUC >= 0.7)",
+        highRiskGaps: "个高风险缺口 (AUC >= 0.85)",
       },
       chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
       exportSummary: "导出报告",
@@ -1608,11 +1718,46 @@ export const WORKSPACE_COPY: Record<
         asr: "攻击成功率 - 隐私攻击成功的百分比",
         tpr: "真阳性率 - 攻击检测成员的灵敏度",
       },
+      trackLabels: {
+        "black-box": "黑盒",
+        "gray-box": "灰盒",
+        "white-box": "白盒",
+      },
+      trackMethods: {
+        "black-box": "Recon",
+        "gray-box": "PIA",
+        "white-box": "GSA",
+      },
+      trackDescs: {
+        "black-box": "基于模型输出分数的成员推断攻击审计。无需访问模型内部信息。",
+        "gray-box": "利用模型中间层特征的隐私攻击审计。量化攻击信号强度并评估防御效果。",
+        "white-box": "完全访问模型权重和梯度的梯度签名审计。发现最深层隐私泄露。",
+      },
+      trackReportTitles: {
+        "black-box": "Recon 评估报告",
+        "gray-box": "PIA 评估报告",
+        "white-box": "GSA 评估报告",
+      },
+      reportGeneration: "报告生成",
+      generateByTrack: "按审计模式生成",
+      generateReport: "查看完整报告",
+      generatedReports: "已生成报告",
+      comprehensiveAnalysis: "综合分析",
+      keyFindings: "关键发现",
+      defenseGap: "防御缺口",
+      recommendedDefenses: "建议防御",
+      exportOptions: "导出选项",
+      noFinding: "暂无审计结果可用于分析。",
+      date: "日期",
+      view: "查看审计报告",
+      download: "下载",
+      popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
+      exportTimeout: "PDF 导出超时，请重试。",
     },
     apiKeys: {
       eyebrow: "API 管理",
-      title: "分发与吊销 API 访问密钥",
-      description: "为 Runner、Notebook 和集成系统创建、授权、复制和吊销 API 密钥",
+      title: "API 密钥管理",
+      description: "创建和管理 API 访问密钥，用于 Runner、Notebook 和第三方集成",
       create: "创建新密钥",
       createTitle: "创建新的 API 密钥",
       keyName: "密钥名称",
@@ -1627,28 +1772,32 @@ export const WORKSPACE_COPY: Record<
       copyFailed: "复制失败",
       done: "完成",
       activeKeys: "启用中的密钥",
+      prefix: "前缀",
       createdAt: "创建于",
       lastUsed: "最近使用",
-      revoke: "吊销",
+      status: "状态",
+      actions: "操作",
+      revoke: "停用",
       active: "启用",
-      revoked: "已吊销",
+      revoked: "已停用",
+      revokedLabel: "已停用",
       demoNotice: "当前是 API 密钥演示预览。这些密钥只是本地示例，不会连接后端凭证签发。",
       demoKeyPrefix: "演示密钥",
-      revokeConfirmTitle: "吊销演示密钥？",
-      revokeConfirmBody: "这个操作只会更新本地预览，不会吊销真实凭证。",
+      revokeConfirmTitle: "停用此密钥？",
+      revokeConfirmBody: "停用后该密钥将无法访问 API。此操作仅影响本地演示数据。",
+      revokeConfirmIrreversible: "此操作不可逆。停用后该密钥将无法恢复。",
       revokeConfirmCancel: "取消",
-      revokeConfirmAction: "吊销演示密钥",
+      revokeConfirmAction: "确认停用",
+      revokeSuccess: "密钥已停用。",
+      adminScopeWarning: "admin 权限拥有完整的 API 访问能力，请谨慎使用。",
+      noScopeError: "请至少选择一项权限范围。",
       usageExample: "API 调用示例",
+      codeComment: "演示预览：通过 API 发送审计请求",
     },
     settings: {
       eyebrow: "设置",
       title: "团队、密钥和个人偏好",
       description: "管理团队设置、运行时连接和本地偏好",
-      sections: [
-        { title: "团队成员", copy: "管理团队名称、协作角色和默认工作区范围" },
-        { title: "API 密钥", copy: "集中维护服务地址、API 密钥和访问边界" },
-        { title: "工作台偏好", copy: "保存默认语言、页面偏好和报告展示方式" },
-      ],
       systemStatus: {
         title: "系统状态",
         runtime: "Runtime 连接",
@@ -1662,12 +1811,15 @@ export const WORKSPACE_COPY: Record<
         demoOff: "关闭",
         demoHintOn: "当前工作台统一使用演示快照：合约、任务、报告都会显示模拟数据",
         demoHintOff: "当前使用实时 Runtime / API 数据，不再显示演示快照。",
+        gatewayError: "网关健康检查失败，部分状态信息可能不可用。",
       },
       auditConfig: {
         title: "审计默认值",
         defaultRounds: "默认攻击轮次",
         defaultBatchSize: "默认批次大小",
         saved: "已保存",
+        roundsClamped: "轮次已限制在有效范围内（1–1000）。",
+        batchClamped: "批次大小已限制在有效范围内（1–1024）。",
       },
       account: {
         title: "账户",
@@ -1715,6 +1867,7 @@ export const WORKSPACE_COPY: Record<
         accessSummaryPasswordOff: "密码登录尚未启用。",
         accessSummaryPendingEmail: "待确认邮箱验证通过后，才能用作登录账号",
         accessSummaryNoProvider: "还没有连接 OAuth 登录方式。",
+        connectAnotherProvider: "绑定其他登录方式",
         password: "密码访问",
         passwordManage: "密码管理",
         passwordSet: "已配置",
@@ -1775,6 +1928,11 @@ export const WORKSPACE_COPY: Record<
         saveCurrent: "保存当前默认值为模板",
         saved: "已保存",
         noTemplates: "还没有保存的模板",
+        loadTemplate: "加载",
+        deleteTemplate: "删除",
+        templateLoaded: "模板已加载。",
+        templateDeleted: "模板已删除。",
+        savedTemplatesTitle: "已保存的模板",
       },
       aboutSystem: {
         title: "关于系统",

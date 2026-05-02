@@ -5,11 +5,11 @@ type StatusBadgeProps = {
 };
 
 const toneClasses: Record<NonNullable<StatusBadgeProps["tone"]>, string> = {
-  primary: "border-primary/20 bg-primary/10 text-primary",
-  success: "border-[color:var(--success-soft)] bg-[color:var(--success-soft)] text-[color:var(--success)]",
-  warning: "border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)] text-[color:var(--warning)]",
-  info: "border-[color:var(--info-soft)] bg-[color:var(--info-soft)] text-[color:var(--info)]",
-  neutral: "border-border bg-muted/30 text-muted-foreground",
+  primary: "border-primary/30 bg-primary/20 text-primary",
+  success: "border-[color:var(--success)]/25 bg-[color:var(--success-soft-strong)] text-[color:var(--success)]",
+  warning: "border-[color:var(--warning)]/25 bg-[color:var(--warning-soft-strong)] text-[color:var(--warning)]",
+  info: "border-[color:var(--info)]/25 bg-[color:var(--info-soft-strong)] text-[color:var(--info)]",
+  neutral: "border-border bg-muted/50 text-muted-foreground",
 };
 
 export function StatusBadge({

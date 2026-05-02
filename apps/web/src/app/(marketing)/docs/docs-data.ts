@@ -127,7 +127,7 @@ function zhContent(): DocsContent {
               "以下链接可直接跳转到对应功能页面。",
             ],
             links: [
-              { title: "Workspace", body: "查看当前任务、最近结果和系统状态。", href: "/workspace", cta: "打开 Workspace" },
+              { title: "Workspace", body: "查看当前任务、最近结果和系统状态。", href: "/workspace/start", cta: "打开 Workspace" },
               { title: "Audits", body: "创建任务并跟踪运行状态。", href: "/workspace/audits", cta: "前往 Audits" },
               { title: "Reports", body: "查看风险解释、覆盖缺口与导出报告。", href: "/workspace/reports", cta: "前往 Reports" },
             ],
@@ -543,7 +543,7 @@ function enContent(): DocsContent {
               "Direct links to each functional page.",
             ],
             links: [
-              { title: "Workspace", body: "View current tasks, recent results, and system status.", href: "/workspace", cta: "Open Workspace" },
+              { title: "Workspace", body: "View current tasks, recent results, and system status.", href: "/workspace/start", cta: "Open Workspace" },
               { title: "Audits", body: "Create tasks and track execution status.", href: "/workspace/audits", cta: "Go to Audits" },
               { title: "Reports", body: "View risk analysis, coverage gaps, and export reports.", href: "/workspace/reports", cta: "Go to Reports" },
             ],

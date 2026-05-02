@@ -22,10 +22,9 @@ describe("WorkspaceHomePage", () => {
 
   it("renders zh-CN copy with forced demo data", async () => {
     headersMock.mockResolvedValue(new Headers([["x-platform-locale", "zh-CN"]]));
-    const { default: WorkspaceHomePage } = await import("./page");
+    const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("这里汇总了当前正在运行的审计任务、最近的审计结果，以及系统的连接状态");
     expect(markup).toContain("当前任务");
     expect(markup).toContain("最近结果");
     expect(markup).toContain("PIA");
@@ -36,10 +35,9 @@ describe("WorkspaceHomePage", () => {
 
   it("renders en-US copy with forced demo data", async () => {
     headersMock.mockResolvedValue(new Headers([["x-platform-locale", "en-US"]]));
-    const { default: WorkspaceHomePage } = await import("./page");
+    const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("Your workspace aggregates current audit tasks, recent results, and system status at a glance.");
     expect(markup).toContain("Active tasks");
     expect(markup).toContain("Recent results");
     expect(markup).toContain("stable-diffusion-v1-4");

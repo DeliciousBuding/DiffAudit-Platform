@@ -6,7 +6,7 @@ import type { CatalogEntryViewModel } from "@/lib/catalog";
 import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { classifyRisk, riskLabel } from "@/lib/risk-report";
+import { classifyRisk, riskLabel, HIGH_RISK_AUC_THRESHOLD } from "@/lib/risk-report";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
@@ -117,7 +117,7 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 function computeCoverageGaps(rows: Array<{ attack: string; defense: string; aucLabel: string }>) {
   return rows
     .map((row) => ({ attack: row.attack, defense: row.defense, auc: parseFloat(row.aucLabel) }))
-    .filter((row) => !Number.isNaN(row.auc) && row.auc >= 0.7)
+    .filter((row) => !Number.isNaN(row.auc) && row.auc > HIGH_RISK_AUC_THRESHOLD)
     .sort((left, right) => right.auc - left.auc)
     .slice(0, 8);
 }
@@ -689,7 +689,7 @@ export function PrintableAuditReport({
           <div style={{ fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#64748b" }}>
             {copy.eyebrow}
           </div>
-          <h2 style={{ margin: "8px 0 0", fontSize: "22px", fontWeight: 650 }}>Summary</h2>
+          <h2 style={{ margin: "8px 0 0", fontSize: "22px", fontWeight: 650 }}>{locale === "zh-CN" ? "摘要" : "Summary"}</h2>
         </header>
 
         <section style={{ display: "grid", gap: "12px" }}>
@@ -697,22 +697,32 @@ export function PrintableAuditReport({
             <div style={{ fontSize: "12px", fontWeight: 700, marginBottom: "8px" }}>{copy.compareView.title}</div>
             <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.8, color: "#475569" }}>
               {effectivePairs > 0
-                ? `${effectivePairs} / ${comparePairs.length || 1} defense pairs show a meaningful AUC reduction, and the average AUC change is ${avgAucReduction.toFixed(3)}.`
-                : `No defense pair currently shows a strong AUC reduction. The average AUC change is ${avgAucReduction.toFixed(3)}.`}
+                ? locale === "zh-CN"
+                  ? `${effectivePairs} / ${comparePairs.length || 1} 个防御配对显示出显著的 AUC 降低，平均 AUC 变化为 ${avgAucReduction.toFixed(3)}。`
+                  : `${effectivePairs} / ${comparePairs.length || 1} defense pairs show a meaningful AUC reduction, and the average AUC change is ${avgAucReduction.toFixed(3)}.`
+                : locale === "zh-CN"
+                  ? `目前没有防御配对显示出显著的 AUC 降低。平均 AUC 变化为 ${avgAucReduction.toFixed(3)}。`
+                  : `No defense pair currently shows a strong AUC reduction. The average AUC change is ${avgAucReduction.toFixed(3)}.`}
             </p>
           </div>
           <div style={{ ...SECTION_STYLE, padding: "16px" }}>
             <div style={{ fontSize: "12px", fontWeight: 700, marginBottom: "8px" }}>{copy.sections.coverageGaps}</div>
             <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.8, color: "#475569" }}>
               {gapData.length > 0
-                ? `${gapData.length} high-risk gaps remain above the configured threshold. Prioritize the highest-AUC attack and defense pairs first.`
-                : "No high-risk coverage gaps were detected in the current snapshot."}
+                ? locale === "zh-CN"
+                  ? `${gapData.length} 个高风险缺口仍高于配置阈值。请优先处理 AUC 最高的攻击和防御配对。`
+                  : `${gapData.length} high-risk gaps remain above the configured threshold. Prioritize the highest-AUC attack and defense pairs first.`
+                : locale === "zh-CN"
+                  ? "当前快照中未检测到高风险覆盖缺口。"
+                  : "No high-risk coverage gaps were detected in the current snapshot."}
             </p>
           </div>
           <div style={{ ...SECTION_STYLE, padding: "16px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 700, marginBottom: "8px" }}>Risk distribution</div>
+            <div style={{ fontSize: "12px", fontWeight: 700, marginBottom: "8px" }}>{locale === "zh-CN" ? "风险分布" : "Risk distribution"}</div>
             <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.8, color: "#475569" }}>
-              High risk: {riskCounts.high} · Medium risk: {riskCounts.medium} · Low risk: {riskCounts.low} · Defended rows: {defendedCount}
+              {locale === "zh-CN"
+                ? `高风险: ${riskCounts.high} · 中风险: ${riskCounts.medium} · 低风险: ${riskCounts.low} · 已防御行数: ${defendedCount}`
+                : `High risk: ${riskCounts.high} · Medium risk: ${riskCounts.medium} · Low risk: ${riskCounts.low} · Defended rows: ${defendedCount}`}
             </p>
           </div>
         </section>

@@ -9,5 +9,5 @@ export default async function HomePage() {
   const locale = resolveLocaleFromHeaderStore(await headers());
   const loggedIn = validateSession(cookieStore.get(SESSION_COOKIE_NAME)?.value) !== null;
 
-  return <MarketingHome loggedIn={loggedIn} workbenchUrl="/workspace" initialLocale={locale} />;
+  return <MarketingHome loggedIn={loggedIn} workbenchUrl="/workspace/start" initialLocale={locale} />;
 }

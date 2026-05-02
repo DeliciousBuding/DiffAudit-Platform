@@ -12,7 +12,7 @@ const SEARCH_ALIASES: Record<string, string> = {
   "/workspace/model-assets": "模型资产 model assets catalog contracts datasets versions 模型 资产 合同 数据集 版本",
   "/workspace/risk-findings": "风险发现 risk findings leakage evidence remediation 风险 发现 证据 修复",
   "/workspace/reports": "报告中心 reports export pdf csv 报告 导出",
-  "/workspace/api-keys": "api 管理 api management keys tokens credentials 密钥 秘钥 凭证 分发 吊销",
+  "/workspace/api-keys": "api 管理 api management keys tokens credentials 密钥 秘钥 凭证 分发 停用",
   "/workspace/account": "个人账户 account profile login password oauth 账户 登录 密码 个人资料",
 };
 
@@ -76,7 +76,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   }
 
   return (
-    <div className="workspace-global-search" role="search">
+    <div className="workspace-global-search" role="search" onMouseLeave={() => setOpen(false)}>
       <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4">
         <path d="m21 21-4.4-4.4M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>

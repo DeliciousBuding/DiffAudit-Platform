@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
@@ -92,10 +93,10 @@ function JobMetricCard({
   note: string;
 }) {
   return (
-    <div className="rounded-md border border-border bg-card p-3">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{label}</div>
+    <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="text-[13px] font-bold text-muted-foreground mb-1">{label}</div>
       <div className="mono text-lg font-semibold">{value}</div>
-      <div className="mt-1 text-[10px] leading-4 text-muted-foreground">{note}</div>
+      <div className="mt-1 text-[13px] leading-4 text-muted-foreground">{note}</div>
     </div>
   );
 }
@@ -106,14 +107,14 @@ function LogTail({ label, content, linesLabel }: { label: string; content: strin
   const tail = lines.slice(-30);
 
   return (
-    <div className="border border-border bg-card rounded-md overflow-hidden">
-      <div className="border-b border-border bg-muted/20 px-3 py-1.5 flex items-center justify-between">
-        <span className="mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="border border-border bg-card rounded-2xl overflow-hidden">
+      <div className="border-b border-border bg-muted/20 px-4 py-2 flex items-center justify-between">
+        <span className="mono text-[13px] font-bold text-muted-foreground">
           {label}
         </span>
-        <span className="text-[10px] text-muted-foreground">{tail.length} {linesLabel}</span>
+        <span className="text-[13px] text-muted-foreground">{tail.length} {linesLabel}</span>
       </div>
-      <pre className="mono text-[10px] leading-relaxed p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
+      <pre className="mono text-[10px] leading-relaxed p-4 max-h-52 overflow-y-auto whitespace-pre-wrap break-all text-muted-foreground">
         {tail.join("\n")}
       </pre>
     </div>
@@ -137,28 +138,28 @@ function StateHistory({
 }) {
   if (entries.length === 0) {
     return (
-      <div className="text-xs text-muted-foreground text-center py-4">
+      <div className="text-[13px] text-muted-foreground text-center py-4">
         {labels.noStateHistory}
       </div>
     );
   }
 
   return (
-    <div className="border border-border bg-card rounded-md overflow-hidden">
-      <div className="border-b border-border bg-muted/20 px-3 py-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="border border-border bg-card rounded-2xl overflow-hidden">
+      <div className="border-b border-border bg-muted/20 px-4 py-2">
+        <span className="text-[13px] font-bold text-muted-foreground">
           {labels.stateHistory}
         </span>
       </div>
       <div className="divide-y divide-border">
         {entries.map((entry, index) => (
-          <div key={`${entry.state}-${entry.timestamp}-${index}`} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+          <div key={`${entry.state}-${entry.timestamp}-${index}`} className="flex items-center justify-between gap-4 px-4 py-2 text-[13px]">
             <div className="flex items-center gap-2">
               <StatusBadge tone={statusTone(entry.state)} compact>
                 {statusLabel(entry.state, statusLabels)}
               </StatusBadge>
             </div>
-            <div className="mono text-[10px] text-muted-foreground" title={`${labels.stateTimestamp}: ${entry.timestamp}`}>
+            <div className="mono text-[13px] text-muted-foreground" title={`${labels.stateTimestamp}: ${entry.timestamp}`}>
               {formatTime(entry.timestamp, locale)}
             </div>
           </div>
@@ -248,7 +249,7 @@ export function JobDetailClient({
           <Skeleton className="h-5 w-20" />
         </div>
         <Skeleton className="h-3 w-32" />
-        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-16 rounded-md" />
           ))}
@@ -260,10 +261,10 @@ export function JobDetailClient({
   if (fetchError || !job) {
     return (
       <div className="space-y-3">
-        <div className="text-sm text-warning">{fetchError ?? WORKSPACE_COPY[locale].jobDetail.labels.jobNotFound}</div>
+        <div className="text-[13px] text-warning">{fetchError ?? WORKSPACE_COPY[locale].jobDetail.labels.jobNotFound}</div>
         <Link
           href="/workspace/audits"
-          className="inline-flex text-xs text-[var(--accent-blue)] hover:underline"
+          className="inline-flex text-[13px] text-[var(--accent-blue)] hover:underline"
         >
           {WORKSPACE_COPY[locale].jobDetail.backToAudits}
         </Link>
@@ -284,17 +285,6 @@ export function JobDetailClient({
 
   return (
     <div className="space-y-4">
-      {/* Back link */}
-      <Link
-        href="/workspace/audits"
-        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        {copy.jobDetail.backToAudits}
-      </Link>
-
       {/* Header: job ID + status badge */}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="mono text-sm font-medium">{job.job_id}</span>
@@ -304,21 +294,21 @@ export function JobDetailClient({
       </div>
 
       {job.summary_note && (
-        <div className="rounded-lg border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3 text-sm leading-6 text-foreground">
+        <div className="rounded-2xl border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3 text-[13px] leading-6 text-foreground">
           {job.summary_note}
         </div>
       )}
 
       {reportHref ? (
-        <div className="rounded-lg border border-[color:var(--success)]/25 bg-[color:var(--success)]/10 px-4 py-3">
+        <div className="rounded-2xl border border-[color:var(--success)]/25 bg-[color:var(--success)]/10 px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div className="text-sm font-semibold text-foreground">{copy.jobDetail.reportReadyTitle}</div>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">{copy.jobDetail.reportReadyBody}</p>
+              <div className="text-[13px] font-bold text-foreground">{copy.jobDetail.reportReadyTitle}</div>
+              <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{copy.jobDetail.reportReadyBody}</p>
             </div>
             <Link
               href={reportHref}
-              className="inline-flex items-center rounded-md border border-[color:var(--success)]/25 bg-background/60 px-3 py-1.5 text-xs font-medium text-[color:var(--success)] transition-colors hover:bg-background"
+              className="workspace-btn-secondary px-3 py-1.5 text-[13px] font-medium"
             >
               {copy.jobDetail.viewReport}
             </Link>
@@ -327,10 +317,10 @@ export function JobDetailClient({
       ) : null}
 
       {typeof job.progress_pct === "number" && !isTerminal && (
-        <div className="rounded-md border border-border bg-card p-3">
+        <div className="rounded-2xl border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Execution progress</div>
-            <div className="mono text-xs text-muted-foreground">{job.progress_pct}%</div>
+            <div className="text-[13px] font-bold text-muted-foreground">{locale === "zh-CN" ? "执行进度" : "Execution progress"}</div>
+            <div className="mono text-[13px] text-muted-foreground">{job.progress_pct}%</div>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted/40">
             <div
@@ -342,27 +332,27 @@ export function JobDetailClient({
       )}
 
       {showMetrics && (
-        <div className="grid gap-3 grid-cols-1 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
           <JobMetricCard
             label="AUC"
             value={formatMetricValue(job.metrics?.auc)}
-            note="Membership separation strength"
+            note={locale === "zh-CN" ? "成员分离强度" : "Membership separation strength"}
           />
           <JobMetricCard
             label="ASR"
             value={formatMetricValue(job.metrics?.asr)}
-            note="Attack success rate"
+            note={locale === "zh-CN" ? "攻击成功率" : "Attack success rate"}
           />
           <JobMetricCard
             label="TPR@1%FPR"
             value={formatMetricValue(job.metrics?.tpr)}
-            note="Low false-positive operating point"
+            note={locale === "zh-CN" ? "低误报率工作点" : "Low false-positive operating point"}
           />
         </div>
       )}
 
       {/* Detail fields */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <DetailCard label={copy.jobDetail.labels.contractKey} value={job.contract_key} mono />
         <DetailCard label={copy.jobDetail.labels.workspace} value={job.workspace_name} />
         <DetailCard label={copy.jobDetail.labels.type} value={job.job_type} mono />
@@ -392,8 +382,8 @@ export function JobDetailClient({
 
       {/* Error message */}
       {job.status === "failed" && job.error && (
-        <div className="border border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)]/20 rounded-md p-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-warning mb-1">
+        <div className="border border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)]/20 rounded-2xl p-4">
+          <div className="text-[13px] font-bold text-warning mb-1">
             {copy.jobDetail.labels.error}
           </div>
           <pre className="mono text-[10px] text-warning whitespace-pre-wrap break-all">
@@ -422,7 +412,7 @@ export function JobDetailClient({
           <LogTail label={copy.jobDetail.labels.stderrTail} content={sanitizeRuntimeText(job.stderr_tail) ?? ""} linesLabel={copy.jobDetail.labels.lines} />
         )}
         {!job.stdout_tail && !job.stderr_tail && (
-          <div className="text-xs text-muted-foreground text-center py-4">
+          <div className="text-[13px] text-muted-foreground text-center py-4">
             {copy.jobDetail.labels.noLogOutput}
           </div>
         )}
@@ -430,19 +420,16 @@ export function JobDetailClient({
 
       {/* Suggested next steps — 7.2.2 */}
       {suggestions.length > 0 && (
-        <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-lg p-3">
+        <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
           <div className="flex items-start gap-2">
-            <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[color:var(--accent-blue)] mt-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4M12 8h.01" />
-            </svg>
+            <Info size={16} strokeWidth={2} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
             <div>
-              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
+              <h3 className="text-[13px] font-bold text-[color:var(--accent-blue)] mb-1">
                 {copy.jobDetail.nextStepsTitle}
               </h3>
               <ul className="space-y-1">
                 {suggestions.map((s, i) => (
-                  <li key={i} className="text-xs text-muted-foreground">{s}</li>
+                  <li key={i} className="text-[13px] text-muted-foreground">{s}</li>
                 ))}
               </ul>
             </div>
@@ -456,7 +443,7 @@ export function JobDetailClient({
           <button
             onClick={() => setShowCancelModal(true)}
             disabled={cancelling}
-            className="rounded-md border border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)]/20 px-4 py-2 text-sm font-medium text-[color:var(--warning)] hover:bg-[color:var(--warning-soft)]/30 disabled:opacity-50 transition-colors"
+            className="workspace-btn-secondary px-4 py-2 text-[13px] font-medium disabled:opacity-50"
           >
             {cancelling ? copy.jobDetail.cancelling : copy.jobDetail.cancelJob}
           </button>
@@ -474,25 +461,25 @@ export function JobDetailClient({
             <button
               onClick={() => setShowCancelModal(false)}
               disabled={cancelling}
-              className="rounded-md px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] transition-colors"
+              className="workspace-btn-secondary px-4 py-2 text-[13px]"
             >
               {copy.jobDetail.keepRunning}
             </button>
             <button
               onClick={handleCancelJob}
               disabled={cancelling}
-              className="rounded-md bg-[color:var(--warning)] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 transition-colors"
+              className="workspace-btn-primary px-4 py-2 text-[13px] font-medium disabled:opacity-50"
             >
               {cancelling ? copy.jobDetail.cancelling : copy.jobDetail.confirmCancel}
             </button>
           </>
         }
       >
-        <p className="text-sm text-[var(--color-text-secondary)]">
+        <p className="text-[13px] text-muted-foreground">
           {copy.jobDetail.cancelBody}
         </p>
-        <p className="mt-2 mono text-xs text-[var(--color-text-muted)]">
-          Job: {job.job_id}
+        <p className="mt-2 mono text-[13px] text-muted-foreground">
+          {locale === "zh-CN" ? "任务" : "Job"}: {job.job_id}
         </p>
       </Modal>
     </div>
@@ -509,11 +496,11 @@ function DetailCard({
   mono?: boolean;
 }) {
   return (
-    <div className="rounded-md border border-border bg-card p-3">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+    <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="text-[13px] font-bold text-muted-foreground mb-1">
         {label}
       </div>
-      <div className={`text-sm truncate ${mono ? "mono" : ""}`}>{value}</div>
+      <div className={`text-[13px] truncate ${mono ? "mono" : ""}`}>{value}</div>
     </div>
   );
 }

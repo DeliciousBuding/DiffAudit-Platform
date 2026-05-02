@@ -1,4 +1,6 @@
 import { headers } from "next/headers";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -20,15 +22,17 @@ async function renderJobDetailPage({
 
   return (
     <div className="space-y-4">
+      {/* Back button */}
+      <Link
+        href="/workspace/audits"
+        className="inline-flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={16} strokeWidth={1.5} /> {copy.backToAudits}
+      </Link>
+
       {/* Page header */}
       <div className="border-b border-border pb-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {copy.eyebrow}
-        </div>
-        <h1 className="mt-1 text-lg font-semibold">{copy.title}</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          {copy.description}
-        </p>
+        <h1 className="text-lg font-semibold">{copy.title}</h1>
       </div>
 
       <JobDetailClient jobId={jobId} locale={resolvedLocale} />

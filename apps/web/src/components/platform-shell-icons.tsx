@@ -1,111 +1,23 @@
+import { LayoutDashboard, ClipboardList, Database, ShieldAlert, FileBarChart, Key, User, Settings } from "lucide-react";
 import { BrandMark as SiteBrandMark } from "@/components/brand-mark";
 
 export function BrandMark() {
   return <SiteBrandMark compact href="/" prefetch={false} />;
 }
 
-export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "model" | "risk" | "report" | "key" | "account" }) {
-  if (icon === "key") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
-        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-      </svg>
-    );
-  }
+export function NavIcon({ icon }: { icon: "spark" | "dashboard" | "model" | "risk" | "report" | "key" | "account" | "settings" }) {
+  const iconMap: Record<string, React.ReactNode> = {
+    settings: <Settings size={18} strokeWidth={1.5} />,
+    key: <Key size={18} strokeWidth={1.5} />,
+    model: <Database size={18} strokeWidth={1.5} />,
+    spark: <LayoutDashboard size={18} strokeWidth={1.5} />,
+    dashboard: <LayoutDashboard size={18} strokeWidth={1.5} />,
+    report: <FileBarChart size={18} strokeWidth={1.5} />,
+    risk: <ShieldAlert size={18} strokeWidth={1.5} />,
+    account: <User size={18} strokeWidth={1.5} />,
+  };
 
-  if (icon === "model") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
-        <path d="M12 3.5 19 7.3v9.4l-7 3.8-7-3.8V7.3l7-3.8Z" />
-        <path d="M5.4 7.6 12 11.2l6.6-3.6" />
-        <path d="M12 11.2v8.8" />
-      </svg>
-    );
-  }
-
-  if (icon === "spark") {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-      >
-        <path d="m12 3 1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3Z" />
-        <path d="M18.5 15.5 20 19l-3.5-1.5L15 14l3.5 1.5Z" />
-        <path d="M7 15.2 8 18l-2.8-1-1-2.8 2.8 1Z" />
-      </svg>
-    );
-  }
-
-  if (icon === "dashboard") {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-      >
-        <rect x="3.5" y="4" width="7.5" height="7.5" rx="1.8" />
-        <rect x="13" y="4" width="7.5" height="4.5" rx="1.8" />
-        <rect x="13" y="10.5" width="7.5" height="9.5" rx="1.8" />
-        <rect x="3.5" y="13.5" width="7.5" height="6.5" rx="1.8" />
-      </svg>
-    );
-  }
-
-  if (icon === "report") {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-      >
-        <path d="M7 3.5h8l4 4V19a1.8 1.8 0 0 1-1.8 1.8H7A1.8 1.8 0 0 1 5.2 19V5.3A1.8 1.8 0 0 1 7 3.5Z" />
-        <path d="M15 3.8V8h4.2" />
-        <path d="M8.5 12h7" />
-        <path d="M8.5 15.5h7" />
-      </svg>
-    );
-  }
-
-  if (icon === "risk") {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-      >
-        <path d="M12 3.4 21 19.5H3L12 3.4Z" />
-        <path d="M12 8.8v5.2" />
-        <path d="M12 17.2h.01" />
-      </svg>
-    );
-  }
-
-  if (icon === "account") {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-      >
-        <path d="M12 4.2a3.4 3.4 0 1 1 0 6.8a3.4 3.4 0 0 1 0-6.8Z" />
-        <path d="M4.8 19.4c1.7-3.2 4.1-4.8 7.2-4.8s5.5 1.6 7.2 4.8" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]"
-    >
-      <path d="M12 3.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 0 1 0-6.4Z" />
-      <path d="M4.5 19.2c1.8-3.1 4.3-4.6 7.5-4.6s5.7 1.5 7.5 4.6" />
-      <path d="M6 7.5h.01" />
-      <path d="M18 7.5h.01" />
-    </svg>
-  );
+  return <>{iconMap[icon] ?? <LayoutDashboard size={18} strokeWidth={1.5} />}</>;
 }
 
 export function GithubIcon() {

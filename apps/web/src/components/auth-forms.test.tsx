@@ -89,7 +89,7 @@ describe("auth forms", () => {
     searchParamsValue = "";
     const markup = renderToStaticMarkup(
       <LoginForm
-        redirectTo="/workspace"
+        redirectTo="/workspace/start"
         oauthEnabled={{ google: true, github: true }}
         copy={loginCopy}
         pageCopy={loginPageCopy}
@@ -110,7 +110,7 @@ describe("auth forms", () => {
     searchParamsValue = "";
     const markup = renderToStaticMarkup(
       <LoginForm
-        redirectTo="/workspace"
+        redirectTo="/workspace/start"
         oauthEnabled={{ google: false, github: false }}
         copy={loginCopy}
         pageCopy={loginPageCopy}
@@ -144,7 +144,7 @@ describe("auth forms", () => {
     searchParamsValue = "error=oauth_network_google";
     const markup = renderToStaticMarkup(
       <LoginForm
-        redirectTo="/workspace"
+        redirectTo="/workspace/start"
         oauthEnabled={{ google: true, github: true }}
         copy={loginCopy}
         pageCopy={loginPageCopy}

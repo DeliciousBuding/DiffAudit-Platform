@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Info, Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
@@ -46,6 +47,10 @@ const MOCK_KEYS: ApiKey[] = [
   },
 ];
 
+const ALL_SCOPES = ["audit:read", "audit:write", "results:read", "results:export", "admin"] as const;
+
+const DEFAULT_SCOPES: string[] = ["audit:read", "audit:write", "results:read", "results:export"];
+
 let demoIdCounter = 0;
 
 function randomDemoToken(bytes = 12) {
@@ -75,10 +80,59 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
+  const [copyCooldown, setCopyCooldown] = useState(false);
   const [pendingRevokeId, setPendingRevokeId] = useState<string | null>(null);
+  const [revokeSuccess, setRevokeSuccess] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(
-    () => new Set(["audit:read", "audit:write", "results:read", "results:export"]),
+    () => new Set(DEFAULT_SCOPES),
   );
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // ESC key to close revoke modal
+  useEffect(() => {
+    if (!pendingRevokeId) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setPendingRevokeId(null);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [pendingRevokeId]);
+
+  // Auto-dismiss revoke success toast
+  useEffect(() => {
+    if (!revokeSuccess) return;
+    const timer = setTimeout(() => setRevokeSuccess(false), 2500);
+    return () => clearTimeout(timer);
+  }, [revokeSuccess]);
+
+  // Focus trap for revoke modal
+  useEffect(() => {
+    if (!pendingRevokeId || !modalRef.current) return;
+    const el = modalRef.current;
+    el.focus();
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Tab") return;
+      const focusable = el.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    el.addEventListener("keydown", onKeyDown);
+    return () => el.removeEventListener("keydown", onKeyDown);
+  }, [pendingRevokeId]);
 
   function handleToggleScope(scope: string) {
     setSelectedScopes((prev) => {
@@ -92,8 +146,10 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     });
   }
 
+  const canGenerate = newKeyName.trim().length > 0 && selectedScopes.size > 0;
+
   function handleCreate() {
-    if (!newKeyName.trim()) return;
+    if (!canGenerate) return;
     const fakeKey = `da_demo_${randomDemoToken()}`;
     const newKey: ApiKey = {
       id: createDemoId(),
@@ -107,16 +163,21 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     setKeys((prev) => [newKey, ...prev]);
     setCreatedKey(fakeKey);
     setNewKeyName("");
+    setShowCreate(false);
   }
 
   function handleCopy() {
-    if (!createdKey) return;
+    if (!createdKey || copyCooldown) return;
     navigator.clipboard.writeText(createdKey).then(() => {
       setCopied(true);
+      setCopyCooldown(true);
       window.setTimeout(() => setCopied(false), 2000);
+      window.setTimeout(() => setCopyCooldown(false), 2500);
     }).catch(() => {
       setCopyFailed(true);
+      setCopyCooldown(true);
       setTimeout(() => setCopyFailed(false), 2000);
+      setTimeout(() => setCopyCooldown(false), 2500);
     });
   }
 
@@ -125,47 +186,50 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       prev.map((k) => (k.id === keyId ? { ...k, status: "revoked" as const } : k)),
     );
     setPendingRevokeId(null);
+    setRevokeSuccess(true);
+  }
+
+  function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (e.target === modalRef.current) {
+      setPendingRevokeId(null);
+    }
+  }
+
+  function resetCreateForm() {
+    setNewKeyName("");
+    setSelectedScopes(new Set(DEFAULT_SCOPES));
   }
 
   return (
     <WorkspacePageFrame
-      eyebrow={copy.eyebrow}
       title={copy.title}
-      description={copy.description}
       titleClassName="text-xl"
-      descriptionClassName="text-sm"
     >
     <div className="workspace-page-container" style={{ maxWidth: 1180 }}>
-      <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div className="rounded-3xl border border-amber-300/40 bg-[linear-gradient(135deg,rgba(245,158,11,0.16),rgba(47,109,246,0.06))] px-5 py-4 text-sm text-foreground shadow-sm dark:border-amber-500/25 dark:bg-[linear-gradient(135deg,rgba(245,158,11,0.14),rgba(47,109,246,0.08))]">
-          <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400/15 text-amber-300">
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path d="M12 9v4" />
-                <path d="M12 17h.01" />
-                <path d="M10.3 3.7 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0Z" />
-              </svg>
-            </span>
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-300/90">{copy.demoKeyPrefix}</div>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy.demoNotice}</p>
-            </div>
+      {/* Info banner + create button row */}
+      <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+        <div className="flex items-start gap-3 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.06] px-5 py-3.5 text-sm shadow-sm dark:border-[var(--accent-blue)]/15 dark:bg-[var(--accent-blue)]/[0.08]">
+          <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
+            <Info size={14} strokeWidth={2} />
+          </span>
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-blue)]">{copy.demoKeyPrefix}</span>
+            <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">{copy.demoNotice}</p>
           </div>
         </div>
         {!showCreate && !createdKey ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="workspace-btn-primary justify-center px-5 py-3 text-sm font-semibold shadow-[0_18px_40px_rgba(47,109,246,0.18)] hover:opacity-95"
+            className="workspace-btn-primary self-center px-5 py-2.5 text-sm font-semibold shadow-[0_12px_32px_rgba(47,109,246,0.16)] hover:opacity-95"
           >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M12 5v14M5 12h14" />
-            </svg>
+            <Plus size={14} strokeWidth={2} />
             {copy.create}
           </button>
         ) : null}
       </div>
 
-      <div className="mb-8">
+      {/* Create / created key panels */}
+      <div className="mb-6">
 
         {showCreate && !createdKey ? (
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
@@ -183,26 +247,32 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
             <div className="mb-5">
               <label className="mb-2 block text-xs font-medium text-muted-foreground">{copy.permissions}</label>
               <div className="flex flex-wrap gap-2">
-                {["audit:read", "audit:write", "results:read", "results:export", "admin"].map((scope) => (
-                  <label key={scope} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs hover:border-[var(--accent-blue)]/30 transition-colors">
+                {ALL_SCOPES.map((scope) => (
+                  <label key={scope} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs transition-colors hover:border-[var(--accent-blue)]/30">
                     <input type="checkbox" checked={selectedScopes.has(scope)} onChange={() => handleToggleScope(scope)} className="rounded border-border" />
                     <code className="font-mono text-[11px]">{scope}</code>
                   </label>
                 ))}
               </div>
+              {selectedScopes.has("admin") ? (
+                <p className="mt-2 text-[11px] text-[var(--accent-coral)]">{copy.adminScopeWarning}</p>
+              ) : null}
+              {selectedScopes.size === 0 ? (
+                <p className="mt-2 text-[11px] text-[var(--accent-coral)]">{copy.noScopeError}</p>
+              ) : null}
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCreate}
-                disabled={!newKeyName.trim()}
-                className="workspace-btn-primary px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
+                disabled={!canGenerate}
+                className="workspace-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
               >
                 {copy.generate}
               </button>
               <button
                 onClick={() => {
                   setShowCreate(false);
-                  setSelectedScopes(new Set(["audit:read", "audit:write", "results:read", "results:export"]));
+                  resetCreateForm();
                 }}
                 className="workspace-btn-secondary px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
               >
@@ -216,15 +286,13 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           <div className="rounded-2xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 p-6">
             <div className="flex items-start gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-green)]/10">
-                <svg viewBox="0 0 24 24" className="h-4 w-4 text-[var(--accent-green)]" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
+                <Check size={16} strokeWidth={2.5} className="text-[var(--accent-green)]" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="mb-1 text-sm font-semibold text-foreground">{copy.createdTitle}</h3>
                 <p className="mb-3 text-xs text-muted-foreground">{copy.createdBody}</p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 truncate rounded-lg border border-border bg-background px-3 py-2 text-xs font-mono text-foreground">
+                  <code className="flex-1 truncate rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs text-foreground">
                     {createdKey}
                   </code>
                   <button
@@ -241,7 +309,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 onClick={() => {
                   setCreatedKey(null);
                   setShowCreate(false);
-                  setSelectedScopes(new Set(["audit:read", "audit:write", "results:read", "results:export"]));
+                  resetCreateForm();
                 }}
                 className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
@@ -252,78 +320,95 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         ) : null}
       </div>
 
-      <div className="overflow-hidden rounded-[28px] border border-border/80 bg-[linear-gradient(180deg,var(--card),rgba(47,109,246,0.025))] shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
-        <div className="border-b border-border/70 bg-muted/10 px-6 py-4">
-          <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            {copy.activeKeys} · {keys.filter((k) => k.status === "active").length}
-          </h3>
+      {/* Keys table */}
+      <h3 className="mb-3 text-sm font-semibold text-foreground">{copy.activeKeys}</h3>
+      <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm dark:border-border/50 dark:shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
+        {/* Table header */}
+        <div className="hidden border-b border-border/70 bg-muted/40 px-6 py-3 dark:bg-muted/20 md:grid md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:gap-4">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.keyName}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.prefix}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.permissions}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.status}</span>
+          <span className="text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.actions}</span>
         </div>
-        <div className="divide-y divide-border/70">
+        {/* Table rows */}
+        <div className="divide-y divide-border/60 dark:divide-border/30">
           {keys.map((key) => (
             <div
               key={key.id}
-              className={`flex flex-col gap-4 px-6 py-5 transition-colors hover:bg-muted/5 xl:flex-row xl:items-center ${key.status === "revoked" ? "opacity-50" : ""}`}
+              className={`group grid gap-3 px-6 py-4 transition-colors hover:bg-muted/40 dark:hover:bg-muted/20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:items-center md:gap-4 ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
-              <div className="flex min-w-0 flex-1 gap-3">
-                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                  key.status === "active"
-                    ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
-                    : "bg-muted/30 text-muted-foreground"
-                }`}>
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                  </svg>
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="min-w-0 truncate text-sm font-medium text-foreground">{key.name}</span>
-                    <span className={`inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
-                      key.status === "active"
-                        ? "bg-[var(--accent-green)]/10 text-[var(--accent-green)]"
-                        : "bg-muted/30 text-muted-foreground"
-                    }`}>
-                      {key.status === "active" ? copy.active : copy.revoked}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-                    <code className="rounded-lg border border-border/70 bg-background/60 px-2 py-1 font-mono text-foreground/85">{key.prefix}</code>
-                    <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px]">{copy.demoKeyPrefix}</span>
-                    <span>{copy.createdAt} {key.created}</span>
-                    {key.lastUsed ? <span>{copy.lastUsed} {key.lastUsed}</span> : null}
-                  </div>
+              {/* Key name + metadata */}
+              <div className="min-w-0">
+                <span className="truncate text-sm font-medium text-foreground">{key.name}</span>
+                <div className="mt-1 flex flex-wrap items-center gap-x-2.5 text-[11px] text-muted-foreground">
+                  <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px] dark:bg-muted/25">{copy.demoKeyPrefix}</span>
+                  <span>{copy.createdAt} {key.created}</span>
+                  {key.lastUsed ? <span>{copy.lastUsed} {key.lastUsed}</span> : null}
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 xl:max-w-[360px] xl:justify-end xl:shrink-0">
+              {/* Prefix */}
+              <div className="min-w-0">
+                <code className="inline-block truncate rounded-md border border-border/60 bg-muted/20 px-2 py-1 font-mono text-[11px] text-foreground/80 dark:bg-muted/15">{key.prefix}</code>
+              </div>
+
+              {/* Permissions / scopes */}
+              <div className="flex flex-wrap gap-1.5">
                 {key.scopes.map((scope) => (
                   <span
                     key={scope}
-                    className="inline-flex items-center rounded-full border border-border bg-background/80 px-2 py-1 text-[10px] font-mono text-muted-foreground"
+                    className="inline-flex items-center rounded-full border border-border/60 bg-background/80 px-2 py-0.5 font-mono text-[10px] text-muted-foreground dark:bg-background/50"
                   >
                     {scope}
                   </span>
                 ))}
               </div>
 
-              {key.status === "active" ? (
-                <button
-                  onClick={() => setPendingRevokeId(key.id)}
-                  className="min-h-11 shrink-0 self-end rounded-full border border-border bg-background/70 px-4 py-2 text-[11px] font-medium text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] xl:self-center"
-                >
-                  {copy.revoke}
-                </button>
-              ) : null}
+              {/* Status */}
+              <div>
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                  key.status === "active"
+                    ? "bg-[var(--accent-green)]/10 text-[var(--accent-green)]"
+                    : "bg-muted/40 text-muted-foreground dark:bg-muted/25"
+                }`}>
+                  {key.status === "active" ? copy.active : copy.revoked}
+                </span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end">
+                {key.status === "active" ? (
+                  <button
+                    onClick={() => setPendingRevokeId(key.id)}
+                    className="rounded-lg border border-border/60 bg-background/60 px-3.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] dark:bg-background/40"
+                  >
+                    {copy.revoke}
+                  </button>
+                ) : (
+                  <span className="text-[11px] text-muted-foreground/50">{copy.revokedLabel}</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Revoke confirmation modal */}
       {pendingRevokeId ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 px-4 backdrop-blur-sm">
+        <div
+          ref={modalRef}
+          onClick={handleBackdropClick}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 px-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="revoke-dialog-title"
+          tabIndex={-1}
+        >
           <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
-            <h3 className="text-sm font-semibold text-foreground">{copy.revokeConfirmTitle}</h3>
+            <h3 id="revoke-dialog-title" className="text-sm font-semibold text-foreground">{copy.revokeConfirmTitle}</h3>
             <p className="mt-2 text-xs leading-6 text-muted-foreground">{copy.revokeConfirmBody}</p>
+            <p className="mt-1 text-[11px] leading-5 text-[var(--accent-coral)]">{copy.revokeConfirmIrreversible}</p>
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
@@ -344,15 +429,21 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <div className="mt-8 overflow-hidden rounded-[28px] border border-border bg-[#111318] shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
-        <div className="flex items-center justify-between border-b border-white/[0.06] bg-[#222326] px-4 py-2">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[#9ca0aa]">bash</span>
-            <span className="text-xs text-[#9ca0aa]">{copy.usageExample}</span>
-          </div>
+      {/* Revoke success toast */}
+      {revokeSuccess ? (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/10 px-4 py-2.5 text-xs font-medium text-[var(--accent-green)] shadow-lg backdrop-blur-sm">
+          {copy.revokeSuccess}
         </div>
-        <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-          <code className="text-[#e0e4ec]">{`# Demo preview only: send an audit request via the API
+      ) : null}
+
+      {/* Code example */}
+      <div className="api-code-block mt-6 overflow-hidden rounded-2xl shadow-sm dark:shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
+        <div className="api-code-block-header flex items-center gap-2 px-4 py-2.5">
+          <span className="inline-flex items-center rounded-md bg-[var(--accent-blue)]/10 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[var(--accent-blue)] dark:text-[#9ca0aa]">bash</span>
+          <span className="text-[11px] text-muted-foreground dark:text-[#9ca0aa]">{copy.usageExample}</span>
+        </div>
+        <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed border-0 rounded-none m-0">
+          <code>{`# ${copy.codeComment}
 curl -X POST https://your-platform.example/api/v1/audit/jobs \\
   -H "Authorization: Bearer da_demo_your_key_here" \\
   -H "Content-Type: application/json" \\

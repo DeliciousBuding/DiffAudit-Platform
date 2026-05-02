@@ -1,5 +1,6 @@
 "use client";
 
+import { RefreshCw, FileText, ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
@@ -9,6 +10,12 @@ import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { PrintableAuditReport } from "@/components/printable-audit-report";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type Locale } from "@/components/language-picker";
+import {
+  waitForPrintableWindow,
+  buildPrintHtmlTemplate,
+  buildCsvMetadataHeader,
+  PDF_CLEANUP_TIMEOUT_MS,
+} from "@/lib/report-export-utils";
 
 interface ExportReportButtonProps {
   rows: AttackDefenseRowViewModel[];
@@ -56,18 +63,6 @@ export function buildReportCsv(rows: AttackDefenseRowViewModel[], locale: Locale
   ].join("\n");
 }
 
-async function waitForPrintableWindow(printWindow: Window) {
-  if ("fonts" in printWindow.document) {
-    await printWindow.document.fonts.ready.catch(() => undefined);
-  }
-
-  await new Promise<void>((resolve) => {
-    printWindow.requestAnimationFrame(() => {
-      printWindow.setTimeout(() => resolve(), 320);
-    });
-  });
-}
-
 export function ExportReportButton({ rows, contracts, label, locale }: ExportReportButtonProps) {
   const copy = WORKSPACE_COPY[locale].exportButton;
   const [isExporting, setIsExporting] = useState(false);
@@ -91,6 +86,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
 
     let printWindow: Window | null = null;
     let root: ReturnType<typeof createRoot> | null = null;
+    let cleanupTimer: ReturnType<typeof setTimeout> | null = null;
 
     try {
       printWindow = window.open("", "_blank", "width=1120,height=900");
@@ -99,53 +95,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
       }
 
       printWindow.document.open();
-      printWindow.document.write(`<!doctype html>
-<html lang="${locale}">
-  <head>
-    <meta charset="utf-8" />
-    <title>DiffAudit Report</title>
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        background: #dfe5ec;
-      }
-      body {
-        min-height: 100vh;
-      }
-      #print-root {
-        display: grid;
-        justify-content: center;
-        gap: 18px;
-        padding: 24px 0 40px;
-      }
-      @page {
-        size: A4;
-        margin: 0;
-      }
-      @media print {
-        html, body {
-          background: #ffffff;
-        }
-        #print-root {
-          display: block;
-          padding: 0;
-        }
-        [data-print-page] {
-          page-break-after: always;
-          break-after: page;
-        }
-        [data-print-page]:last-child {
-          page-break-after: auto;
-          break-after: auto;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="print-root"></div>
-  </body>
-</html>`);
+      printWindow.document.write(buildPrintHtmlTemplate(locale));
       printWindow.document.close();
 
       const mountNode = printWindow.document.getElementById("print-root");
@@ -167,17 +117,25 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
       await waitForPrintableWindow(printWindow);
 
       const cleanup = () => {
+        if (cleanupTimer !== null) {
+          clearTimeout(cleanupTimer);
+          cleanupTimer = null;
+        }
         root?.unmount();
         root = null;
         printWindow?.close();
         printWindow = null;
       };
 
+      // Timeout cleanup: if onafterprint never fires, force-close
+      cleanupTimer = setTimeout(cleanup, PDF_CLEANUP_TIMEOUT_MS);
+
       printWindow.onafterprint = cleanup;
       printWindow.focus();
       printWindow.print();
     } catch (error) {
       console.error("Printable PDF export failed:", error);
+      if (cleanupTimer !== null) clearTimeout(cleanupTimer);
       root?.unmount();
       printWindow?.close();
     } finally {
@@ -191,7 +149,9 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
 
     try {
       const csvContent = buildReportCsv(rows, locale);
-      const blob = new Blob([`\uFEFF${csvContent}`], { type: "text/csv;charset=utf-8;" });
+      const metadata = buildCsvMetadataHeader(locale, rows.length);
+      const fullCsv = metadata + "\n\n" + csvContent;
+      const blob = new Blob([`\uFEFF${fullCsv}`], { type: "text/csv;charset=utf-8;" });
       objectUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = objectUrl;
@@ -290,24 +250,14 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
       >
         {isExporting ? (
           <span className="inline-flex items-center gap-1.5">
-            <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
+            <RefreshCw size={12} strokeWidth={2} className="animate-spin" />
             {copy.exporting}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="12" y1="18" x2="12" y2="12" />
-              <line x1="9" y1="15" x2="15" y2="15" />
-            </svg>
+            <FileText size={14} strokeWidth={1.5} />
             {label}
-            <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2}>
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+            <ChevronDown size={12} strokeWidth={2} />
           </span>
         )}
       </button>

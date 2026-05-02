@@ -122,7 +122,7 @@ const HOME_COPY: Record<
             {
               title: "工作台入口",
               description: "直接进入当前审计工作区",
-              href: "/workspace",
+              href: "/workspace/start",
             },
           ],
         },
@@ -179,7 +179,7 @@ const HOME_COPY: Record<
             {
               title: "查看状态",
               description: "跟踪运行进度、关键指标和输出结果",
-              href: "/workspace",
+              href: "/workspace/start",
             },
             {
               title: "导出报告",
@@ -192,7 +192,7 @@ const HOME_COPY: Record<
       workbench: {
         id: "workbench",
         label: "工作台",
-        href: "/workspace",
+        href: "/workspace/start",
         dropdown: {
           title: "工作台",
           description: "任务、报告和设置都收在同一套结构里",
@@ -200,7 +200,7 @@ const HOME_COPY: Record<
             {
               title: "工作台首页",
               description: "查看待办、最近任务和关键指标",
-              href: "/workspace",
+              href: "/workspace/start",
             },
             {
               title: "审计流程",
@@ -349,7 +349,7 @@ const HOME_COPY: Record<
             {
               title: "Workspace entry",
               description: "Go directly to the current audit workspace",
-              href: "/workspace",
+              href: "/workspace/start",
             },
           ],
         },
@@ -406,7 +406,7 @@ const HOME_COPY: Record<
             {
               title: "Track status",
               description: "Review runtime progress, metrics, and outputs",
-              href: "/workspace",
+              href: "/workspace/start",
             },
             {
               title: "Export reports",
@@ -419,7 +419,7 @@ const HOME_COPY: Record<
       workbench: {
         id: "workbench",
         label: "Workbench",
-        href: "/workspace",
+        href: "/workspace/start",
         dropdown: {
           title: "Workbench",
           description: "Tasks, reports, and settings stay inside one structure",
@@ -427,7 +427,7 @@ const HOME_COPY: Record<
             {
               title: "Workspace home",
               description: "Review todos, recent jobs, and key metrics",
-              href: "/workspace",
+              href: "/workspace/start",
             },
             {
               title: "Audit flow",
@@ -608,7 +608,7 @@ function DropdownPanel({
 
 export function MarketingHome({
   loggedIn,
-  workbenchUrl = "/workspace",
+  workbenchUrl = "/workspace/start",
   initialLocale,
 }: {
   loggedIn: boolean;
@@ -667,7 +667,7 @@ export function MarketingHome({
         ...copy.nav.workbench.dropdown,
         links: copy.nav.workbench.dropdown.links.map((link) => ({
           ...link,
-          href: link.href === "/workspace" ? workbenchUrl : link.href,
+          href: link.href === "/workspace/start" ? workbenchUrl : link.href,
         })),
       },
     },

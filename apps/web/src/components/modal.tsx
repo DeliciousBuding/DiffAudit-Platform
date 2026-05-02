@@ -88,7 +88,7 @@ export function Modal({ open, onClose, title, children, actions, closeLabel = "C
       <div
         ref={contentRef}
         tabIndex={-1}
-        className="mx-4 w-full max-w-md rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] shadow-xl"
+        className="mx-4 w-full max-w-md rounded-[20px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] shadow-xl"
         style={{ animation: "modal-content-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
       >
         {/* Header */}

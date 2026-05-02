@@ -58,7 +58,7 @@ describe("Marketing HomePage", () => {
     const markup = renderToStaticMarkup(await HomePage());
 
     expect(markup).toContain('data-initial-locale="zh-CN"');
-    expect(markup).toContain('data-workbench-url="/workspace"');
+    expect(markup).toContain('data-workbench-url="/workspace/start"');
     expect(markup).toContain('data-logged-in="false"');
   });
 });

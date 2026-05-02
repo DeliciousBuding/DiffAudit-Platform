@@ -21,5 +21,8 @@
     "format:api": "gofmt -w apps/api-go",
     "check:fast": "python scripts/run_local_checks.py --fast",
     "check:all": "python scripts/run_local_checks.py"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
   }
 }

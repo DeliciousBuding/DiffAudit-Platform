@@ -26,7 +26,7 @@ describe("TrackReportPage", () => {
     expect(markup).not.toContain("历史对照");
   });
 
-  it("switches to the audit view and falls back to em dash when provenance is missing", async () => {
+  it("switches to the audit view and hides empty provenance fields", async () => {
     const markup = renderToStaticMarkup(
       await renderTrackReportPage({
         locale: "zh-CN",
@@ -39,11 +39,11 @@ describe("TrackReportPage", () => {
     expect(markup).toContain("历史对照");
     expect(markup).not.toContain("pending workspace");
     expect(markup).toContain("mainline");
-    expect(markup).toContain("—");
     expect(markup).toContain("来源路径");
     expect(markup).toContain("调度");
-    expect(markup).toContain("Seed");
-    expect(markup).toContain("Fixture 版本");
+    // Empty provenance fields are now hidden
+    expect(markup).not.toContain("Seed");
+    expect(markup).not.toContain("Fixture 版本");
   });
 
   it("renders completed job context and highlights matching rows", async () => {

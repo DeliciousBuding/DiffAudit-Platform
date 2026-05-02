@@ -187,36 +187,36 @@ export function CompareView({ rows, locale }: CompareViewProps) {
           </h2>
         </div>
         <div className="overflow-auto max-h-[480px]">
-          <table className="min-w-[900px] w-full border-collapse text-xs">
+          <table className="min-w-[900px] w-full border-collapse text-[13px]">
             <thead className="sticky top-0 bg-muted/30">
               <tr className="border-b border-border">
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.attack}</th>
-                <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.defense}</th>
-                <th colSpan={3} className="px-3 py-1.5 text-center font-semibold text-muted-foreground border-l border-border">
+                <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.attack}</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.defense}</th>
+                <th colSpan={3} className="px-3 py-2.5 text-center font-semibold text-muted-foreground border-l border-border">
                   {copy.noDefense}
                 </th>
-                <th colSpan={3} className="px-3 py-1.5 text-center font-semibold text-muted-foreground border-l border-border">
+                <th colSpan={3} className="px-3 py-2.5 text-center font-semibold text-muted-foreground border-l border-border">
                   {copy.defense}
                 </th>
-                <th colSpan={3} className="px-3 py-1.5 text-center font-semibold text-[color:var(--accent-blue)] border-l border-border">
+                <th colSpan={3} className="px-3 py-2.5 text-center font-semibold text-[color:var(--accent-blue)] border-l border-border">
                   {copy.delta}
                 </th>
-                <th className="px-3 py-1.5 text-center font-semibold text-muted-foreground border-l border-border">
+                <th className="px-3 py-2.5 text-center font-semibold text-muted-foreground border-l border-border">
                   {copy.visualization}
                 </th>
               </tr>
-              <tr className="border-b border-border text-[10px] text-muted-foreground">
+              <tr className="border-b border-border text-[11px] text-muted-foreground">
                 <th></th><th></th>
-                <th className="px-2 py-1 text-right mono">{copy.auc}</th>
-                <th className="px-2 py-1 text-right mono">{copy.asr}</th>
-                <th className="px-2 py-1 text-right mono">{copy.tpr}</th>
-                <th className="px-2 py-1 text-right mono border-l border-border">{copy.auc}</th>
-                <th className="px-2 py-1 text-right mono">{copy.asr}</th>
-                <th className="px-2 py-1 text-right mono">{copy.tpr}</th>
-                <th className="px-2 py-1 text-right border-l border-border text-[color:var(--accent-blue)]">{copy.auc}</th>
-                <th className="px-2 py-1 text-right text-[color:var(--accent-blue)]">{copy.asr}</th>
-                <th className="px-2 py-1 text-right text-[color:var(--accent-blue)]">{copy.tpr}</th>
-                <th className="px-2 py-1 border-l border-border"></th>
+                <th className="px-2 py-1.5 text-right mono">{copy.auc}</th>
+                <th className="px-2 py-1.5 text-right mono">{copy.asr}</th>
+                <th className="px-2 py-1.5 text-right mono">{copy.tpr}</th>
+                <th className="px-2 py-1.5 text-right mono border-l border-border">{copy.auc}</th>
+                <th className="px-2 py-1.5 text-right mono">{copy.asr}</th>
+                <th className="px-2 py-1.5 text-right mono">{copy.tpr}</th>
+                <th className="px-2 py-1.5 text-right border-l border-border text-[color:var(--accent-blue)]">{copy.auc}</th>
+                <th className="px-2 py-1.5 text-right text-[color:var(--accent-blue)]">{copy.asr}</th>
+                <th className="px-2 py-1.5 text-right text-[color:var(--accent-blue)]">{copy.tpr}</th>
+                <th className="px-2 py-1.5 border-l border-border"></th>
               </tr>
             </thead>
             <tbody>
@@ -228,24 +228,24 @@ export function CompareView({ rows, locale }: CompareViewProps) {
                     key={`${pair.attack}-${pair.defended?.defense ?? i}`}
                     className={`border-b border-border ${i % 2 === 0 ? "bg-background" : "bg-muted/10"}`}
                   >
-                    <td className="px-3 py-2 font-medium">{pair.attack}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{d?.defense ?? "—"}</td>
-                    <td className="mono px-2 py-2 text-right">{u ? u.auc.toFixed(3) : "—"}</td>
-                    <td className="mono px-2 py-2 text-right">{u ? u.asr.toFixed(3) : "—"}</td>
-                    <td className="mono px-2 py-2 text-right">{u ? u.tpr.toFixed(3) : "—"}</td>
-                    <td className="mono px-2 py-2 text-right border-l border-border">{d ? d.auc.toFixed(3) : "—"}</td>
-                    <td className="mono px-2 py-2 text-right">{d ? d.asr.toFixed(3) : "—"}</td>
-                    <td className="mono px-2 py-2 text-right">{d ? d.tpr.toFixed(3) : "—"}</td>
-                    <td className="px-2 py-2 text-right border-l border-border">
+                    <td className="px-3 py-3 font-medium">{pair.attack}</td>
+                    <td className="px-3 py-3 text-muted-foreground">{d?.defense ?? "—"}</td>
+                    <td className="mono px-2 py-3 text-right">{u ? u.auc.toFixed(3) : "—"}</td>
+                    <td className="mono px-2 py-3 text-right">{u ? u.asr.toFixed(3) : "—"}</td>
+                    <td className="mono px-2 py-3 text-right">{u ? u.tpr.toFixed(3) : "—"}</td>
+                    <td className="mono px-2 py-3 text-right border-l border-border">{d ? d.auc.toFixed(3) : "—"}</td>
+                    <td className="mono px-2 py-3 text-right">{d ? d.asr.toFixed(3) : "—"}</td>
+                    <td className="mono px-2 py-3 text-right">{d ? d.tpr.toFixed(3) : "—"}</td>
+                    <td className="px-2 py-3 text-right border-l border-border">
                       <DeltaCell value={pair.deltaAuc} labelLowerIsBetter />
                     </td>
-                    <td className="px-2 py-2 text-right">
+                    <td className="px-2 py-3 text-right">
                       <DeltaCell value={pair.deltaAsr} labelLowerIsBetter />
                     </td>
-                    <td className="px-2 py-2 text-right">
+                    <td className="px-2 py-3 text-right">
                       <DeltaCell value={pair.deltaTpr} />
                     </td>
-                    <td className="px-2 py-2 border-l border-border min-w-[180px]">
+                    <td className="px-2 py-3 border-l border-border min-w-[180px]">
                       {u && d && <DefenseBar undefendedAuc={u.auc} defendedAuc={d.auc} copy={copy} />}
                     </td>
                   </tr>

@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { renderWorkspaceSettingsPage } from "./render-workspace-settings";
 
-export default function WorkspaceSettingsPage() {
-  redirect("/workspace/api-keys");
+export default async function SettingsPage() {
+  return renderWorkspaceSettingsPage({ mode: "settings" });
 }

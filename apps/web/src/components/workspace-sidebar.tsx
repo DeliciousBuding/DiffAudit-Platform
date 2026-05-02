@@ -12,9 +12,10 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
   const items = getNavItems(locale);
   const current = findActiveNavItem(pathname, items);
+  const sidebarLabel = locale === "zh-CN" ? "侧边栏导航" : "Sidebar navigation";
 
   return (
-    <nav className="flex flex-col gap-0.5" aria-label="Sidebar navigation">
+    <nav className="flex flex-col gap-0.5" aria-label={sidebarLabel}>
       {items.map((item) => {
         const active = current.href === item.href;
         return (

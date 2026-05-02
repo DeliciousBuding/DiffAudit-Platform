@@ -35,16 +35,16 @@ export function ResultsTable({ rows, emptyMessage }: ResultsTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-xs">
+      <table className="w-full border-collapse text-[13px]">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Attack</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Model</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Evidence</th>
-            <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">AUC</th>
-            <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">Risk</th>
-            <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">ASR</th>
-            <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">TPR</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Attack</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Model</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Evidence</th>
+            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">AUC</th>
+            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Risk</th>
+            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">ASR</th>
+            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">TPR</th>
           </tr>
         </thead>
         <tbody>
@@ -58,22 +58,22 @@ export function ResultsTable({ rows, emptyMessage }: ResultsTableProps) {
                   index % 2 === 0 ? "bg-background" : "bg-muted/10"
                 }`}
               >
-                <td className="px-3 py-2 font-medium">{row.attack}</td>
-                <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-3 font-medium">{row.attack}</td>
+                <td className="px-3 py-3 text-muted-foreground">{row.model}</td>
+                <td className="px-3 py-3">
                   <StatusBadge tone="info">{row.evidenceLevel}</StatusBadge>
                 </td>
                 <td
-                  className="mono px-3 py-2 text-right font-semibold"
+                  className="mono px-3 py-3 text-right font-semibold"
                   style={{ color: RISK_COLOR[riskLevel] }}
                 >
                   {row.aucLabel}
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-3">
                   <RiskBadge auc={auc} />
                 </td>
-                <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
-                <td className="mono px-3 py-2 text-right">{row.tprLabel}</td>
+                <td className="mono px-3 py-3 text-right">{row.asrLabel}</td>
+                <td className="mono px-3 py-3 text-right">{row.tprLabel}</td>
               </tr>
             );
           })}

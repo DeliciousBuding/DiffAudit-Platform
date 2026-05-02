@@ -10,25 +10,28 @@ export function WorkspacePageFrame({
   titleClassName = "text-2xl",
   descriptionClassName = "text-sm",
 }: {
-  eyebrow: string;
-  title: string;
-  description: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
   actions?: ReactNode;
   children: ReactNode;
   rightRail?: ReactNode;
   titleClassName?: string;
   descriptionClassName?: string;
 }) {
+  const hasHeader = eyebrow || title || description || actions;
   return (
     <div className="workspace-page-frame">
-      <div className={`workspace-page-header ${actions ? "has-actions" : ""}`}>
-        <div>
-          <div className="workspace-page-eyebrow">{eyebrow}</div>
-          <h1 className={`workspace-page-title ${titleClassName}`.trim()}>{title}</h1>
-          <p className={`workspace-page-description ${descriptionClassName}`.trim()}>{description}</p>
+      {hasHeader ? (
+        <div className={`workspace-page-header ${actions ? "has-actions" : ""}`}>
+          <div>
+            {eyebrow ? <div className="workspace-page-eyebrow">{eyebrow}</div> : null}
+            {title ? <h1 className={`workspace-page-title ${titleClassName}`.trim()}>{title}</h1> : null}
+            {description ? <p className={`workspace-page-description ${descriptionClassName}`.trim()}>{description}</p> : null}
+          </div>
+          {actions ? <div className="workspace-page-actions">{actions}</div> : null}
         </div>
-        {actions ? <div className="workspace-page-actions">{actions}</div> : null}
-      </div>
+      ) : null}
       {rightRail ? (
         <div className="workspace-page-with-rail">
           <div className="workspace-page-primary">{children}</div>

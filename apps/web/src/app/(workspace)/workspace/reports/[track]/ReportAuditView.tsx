@@ -34,8 +34,8 @@ type ReportAuditViewProps = {
   highlightedRowKeys?: string[];
 };
 
-function valueOrDash(value?: string | null) {
-  return value && value.trim().length > 0 ? value : "—";
+function hasValue(value?: string | null): boolean {
+  return !!value && value.trim().length > 0 && value.trim() !== "—";
 }
 
 export function ReportAuditView({
@@ -95,7 +95,7 @@ export function ReportAuditView({
   return (
     <div className="space-y-4">
       {jobContext ? (
-        <section className="rounded-lg border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3">
+        <section className="rounded-2xl border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-sm font-semibold text-foreground">{copy.jobContext.title}</div>
@@ -135,28 +135,28 @@ export function ReportAuditView({
         </section>
       ) : null}
 
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)]">
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)]">
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {t.summaryTitle}
             </h2>
           </div>
-          <div className="grid gap-3 p-3 sm:grid-cols-3">
-            <div className="border border-border bg-background px-3 py-3">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border bg-background px-3 py-3">
+              <div className="text-[13px] text-muted-foreground">
                 {t.resultRows}
               </div>
               <div className="mt-2 text-2xl font-semibold">{rows.length}</div>
             </div>
-            <div className="border border-border bg-background px-3 py-3">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-2xl border border-border bg-background px-3 py-3">
+              <div className="text-[13px] text-muted-foreground">
                 {t.defendedRows}
               </div>
               <div className="mt-2 text-2xl font-semibold">{defendedRows}</div>
             </div>
-            <div className="border border-border bg-background px-3 py-3">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-2xl border border-border bg-background px-3 py-3">
+              <div className="text-[13px] text-muted-foreground">
                 {t.undefendedRows}
               </div>
               <div className="mt-2 text-2xl font-semibold">{undefendedRows}</div>
@@ -164,90 +164,113 @@ export function ReportAuditView({
           </div>
         </section>
 
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {t.provenanceTitle}
             </h2>
           </div>
-          <dl className="grid gap-3 p-3 text-xs">
-            <div>
-              <dt className="font-semibold text-foreground">{t.runDirectory}</dt>
-              <dd className="mt-1 break-all text-muted-foreground">{valueOrDash(provenance.runDirectoryPath)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.seed}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.seed)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.schedule}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.schedule)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.fixtureVersion}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.fixtureVersion)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.summaryPath}</dt>
-              <dd className="mt-1 break-all text-muted-foreground">{valueOrDash(provenance.summaryPath)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.evidenceLevel}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.evidenceLevel)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.admissionStatus}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.admissionStatus)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.admissionLevel}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.admissionLevel)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.provenanceStatus}</dt>
-              <dd className="mt-1 text-muted-foreground">{valueOrDash(provenance.provenanceStatus)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-foreground">{t.intakeManifest}</dt>
-              <dd className="mt-1 break-all text-muted-foreground">{valueOrDash(provenance.intakeManifest)}</dd>
-            </div>
+          <dl className="grid gap-3 text-[13px]">
+            {hasValue(provenance.runDirectoryPath) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.runDirectory}</dt>
+                <dd className="mt-1 break-all text-muted-foreground">{provenance.runDirectoryPath}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.seed) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.seed}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.seed}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.schedule) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.schedule}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.schedule}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.fixtureVersion) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.fixtureVersion}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.fixtureVersion}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.summaryPath) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.summaryPath}</dt>
+                <dd className="mt-1 break-all text-muted-foreground">{provenance.summaryPath}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.evidenceLevel) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.evidenceLevel}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.evidenceLevel}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.admissionStatus) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.admissionStatus}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.admissionStatus}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.admissionLevel) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.admissionLevel}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.admissionLevel}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.provenanceStatus) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.provenanceStatus}</dt>
+                <dd className="mt-1 text-muted-foreground">{provenance.provenanceStatus}</dd>
+              </div>
+            ) : null}
+            {hasValue(provenance.intakeManifest) ? (
+              <div>
+                <dt className="font-semibold text-foreground">{t.intakeManifest}</dt>
+                <dd className="mt-1 break-all text-muted-foreground">{provenance.intakeManifest}</dd>
+              </div>
+            ) : null}
+            {!hasValue(provenance.runDirectoryPath) && !hasValue(provenance.seed) && !hasValue(provenance.schedule) && !hasValue(provenance.fixtureVersion) && !hasValue(provenance.summaryPath) && !hasValue(provenance.evidenceLevel) && !hasValue(provenance.admissionStatus) && !hasValue(provenance.admissionLevel) && !hasValue(provenance.provenanceStatus) && !hasValue(provenance.intakeManifest) ? (
+              <p className="text-muted-foreground text-[11px] italic">No provenance data available.</p>
+            ) : null}
           </dl>
         </section>
       </div>
 
-      <section className="border border-border bg-card">
-        <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <section className="rounded-2xl border border-border bg-card p-4">
+        <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {t.historyTitle}
             </h2>
         </div>
-        <div className="space-y-2 p-3 text-xs text-muted-foreground">
+        <div className="space-y-2 text-[13px] text-muted-foreground">
           <p>{historyPlaceholder}</p>
-          <div className="border border-dashed border-border bg-background px-3 py-4">
+          <div className="rounded-2xl border border-dashed border-border bg-background px-3 py-4">
               {t.historyPlaceholder}
             </div>
         </div>
       </section>
 
-      <section className="border border-border bg-card">
-        <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <section className="rounded-2xl border border-border bg-card p-4">
+        <div className="border-b border-border pb-3 mb-3">
+          <h2 className="text-[13px] font-bold text-foreground">
             {copy.sections.auditResults}
           </h2>
         </div>
         <div className="overflow-auto">
           {rows.length > 0 ? (
-            <table className="min-w-[900px] w-full border-collapse text-xs">
+            <table className="min-w-[900px] w-full border-collapse text-[13px]">
               <thead className="sticky top-0 bg-muted/30">
                 <tr className="border-b border-border">
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.defense}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.defense}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,7 +286,7 @@ export function ReportAuditView({
                           : index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
                     >
-                    <td className="px-3 py-2 font-medium">
+                    <td className="px-3 py-3 font-medium">
                       {isHighlighted ? (
                         <span className="mb-1 inline-flex rounded-full border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-blue)]">
                           {copy.jobContext.matchedRow}
@@ -271,15 +294,15 @@ export function ReportAuditView({
                       ) : null}
                       <div>{row.attack}</div>
                     </td>
-                    <td className="px-3 py-2 text-muted-foreground">{row.defense}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-3 text-muted-foreground">{row.defense}</td>
+                    <td className="px-3 py-3 text-muted-foreground">{row.model}</td>
+                    <td className="px-3 py-3">
                       <ReportEvidenceStack locale={locale} row={row} />
                     </td>
-                    <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
-                    <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
-                    <td className="mono px-3 py-2 text-right">{row.tprLabel}</td>
-                    <td className="px-3 py-2">
+                    <td className="mono px-3 py-3 text-right">{row.aucLabel}</td>
+                    <td className="mono px-3 py-3 text-right">{row.asrLabel}</td>
+                    <td className="mono px-3 py-3 text-right">{row.tprLabel}</td>
+                    <td className="px-3 py-3">
                       <RiskBadge
                         auc={parseFloat(row.aucLabel)}
                         label={riskLabel(row.riskLevel, locale)}

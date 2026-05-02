@@ -21,7 +21,21 @@ const rows: AttackDefenseRowViewModel[] = [
 ];
 
 describe("ReportAuditView", () => {
-  it("renders the zh-CN intake manifest label in Chinese", () => {
+  it("renders the zh-CN intake manifest label in Chinese when data is present", () => {
+    const markup = renderToStaticMarkup(
+      <ReportAuditView
+        locale="zh-CN"
+        rows={[]}
+        provenance={{ intakeManifest: "manifest-v2.json" }}
+      />,
+    );
+
+    expect(markup).toContain("导入清单");
+    expect(markup).toContain("manifest-v2.json");
+    expect(markup).not.toContain("Intake Manifest");
+  });
+
+  it("hides empty provenance fields when no data is present", () => {
     const markup = renderToStaticMarkup(
       <ReportAuditView
         locale="zh-CN"
@@ -30,8 +44,10 @@ describe("ReportAuditView", () => {
       />,
     );
 
-    expect(markup).toContain("导入清单");
-    expect(markup).not.toContain("Intake Manifest");
+    expect(markup).not.toContain("导入清单");
+    expect(markup).not.toContain("Run 目录");
+    expect(markup).not.toContain("Seed");
+    expect(markup).toContain("No provenance data available.");
   });
 
   it("shows a compact completed-job banner and matched row marker", () => {

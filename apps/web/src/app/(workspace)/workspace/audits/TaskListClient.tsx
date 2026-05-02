@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
-import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-interface JobRecord {
+export interface JobRecord {
   job_id: string;
   status: string;
   contract_key: string;
@@ -32,6 +31,12 @@ interface JobRecord {
 interface TaskListClientProps {
   mode: "active" | "history";
   locale: Locale;
+  filter?: string;
+  search?: string;
+  jobs: JobRecord[];
+  loading: boolean;
+  loadError: boolean;
+  onRefresh: () => void;
 }
 
 function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
@@ -61,16 +66,17 @@ function formatTime(iso: string, locale: Locale): string {
   }
 }
 
-function formatDuration(created: string, updated: string | null): string {
+function formatDuration(created: string, updated: string | null, locale: Locale = "en-US"): string {
   const start = new Date(created).getTime();
   const end = updated ? new Date(updated).getTime() : Date.now();
   const diffMs = Math.max(0, end - start);
   const secs = Math.floor(diffMs / 1000);
-  if (secs < 60) return `${secs}s`;
+  const isZh = locale === "zh-CN";
+  if (secs < 60) return isZh ? `${secs}秒` : `${secs}s`;
   const mins = Math.floor(secs / 60);
-  if (mins < 60) return `${mins}m ${secs % 60}s`;
+  if (mins < 60) return isZh ? `${mins}分${secs % 60}秒` : `${mins}m ${secs % 60}s`;
   const hours = Math.floor(mins / 60);
-  return `${hours}h ${mins % 60}m`;
+  return isZh ? `${hours}时${mins % 60}分` : `${hours}h ${mins % 60}m`;
 }
 
 function formatMetricValue(value: number | undefined, digits = 3) {
@@ -91,64 +97,40 @@ function ProgressStrip({ value }: { value: number }) {
   );
 }
 
-export function TaskListClient({ mode, locale }: TaskListClientProps) {
+export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, loading, loadError, onRefresh }: TaskListClientProps) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tableCopy = copy.taskTable;
 
-  const [jobs, setJobs] = useState<JobRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [refreshToken, setRefreshToken] = useState(0);
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
+  // Filter by mode (active = running/queued, history = completed/failed/cancelled)
+  const modeFiltered =
+    mode === "active"
+      ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
+      : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
 
-    async function fetchJobs() {
-      try {
-        const res = await fetch("/api/v1/audit/jobs", {
-          signal: controller.signal,
-        });
-        if (!res.ok) {
-          throw new Error(`jobs request failed: ${res.status}`);
-        }
-        const data = await res.json();
-        const allJobs = normalizeAuditJobList<JobRecord>(data);
-        if (!allJobs) {
-          throw new Error("jobs payload is not a supported list shape");
-        }
-        const filtered =
-          mode === "active"
-            ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
-            : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
-        setJobs(filtered);
-        setLoadError(false);
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          setLoadError(true);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
+  // Apply status filter
+  const statusFiltered = filter && filter !== "all"
+    ? modeFiltered.filter((j) => j.status === filter)
+    : modeFiltered;
 
-    void fetchJobs();
-
-    if (mode === "active") {
-      const interval = setInterval(fetchJobs, 3000);
-      return () => {
-        controller.abort();
-        clearInterval(interval);
-      };
-    }
-
-    return () => controller.abort();
-  }, [mode, refreshToken]);
+  // Apply search filter
+  const displayed = search
+    ? statusFiltered.filter((j) => {
+        const q = search.toLowerCase();
+        return (
+          j.job_id.toLowerCase().includes(q) ||
+          j.contract_key.toLowerCase().includes(q) ||
+          j.workspace_name.toLowerCase().includes(q) ||
+          (j.target_model ?? "").toLowerCase().includes(q)
+        );
+      })
+    : statusFiltered;
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
     try {
-      await fetch("/api/v1/audit/jobs", {
+      const res = await fetch("/api/v1/audit/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -157,6 +139,9 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
           job_type: job.job_type,
         }),
       });
+      if (res.ok) {
+        onRefresh();
+      }
     } catch {
       // Ignore — user can try again
     } finally {
@@ -178,12 +163,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
         <div>{copy.jobsUnavailable}</div>
         <button
           type="button"
-          onClick={() => {
-            setLoading(true);
-            setLoadError(false);
-            setJobs([]);
-            setRefreshToken((value) => value + 1);
-          }}
+          onClick={onRefresh}
           className="workspace-btn-secondary mt-3 px-3 py-2 text-xs font-medium"
         >
           {copy.retry}
@@ -192,7 +172,14 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
     );
   }
 
-  if (jobs.length === 0) {
+  if (displayed.length === 0) {
+    if (filter && filter !== "all") {
+      return (
+        <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+          {mode === "history" ? copy.emptyHistoryFiltered : copy.emptyJobs}
+        </div>
+      );
+    }
     return (
       <div className="px-3 py-4 text-xs text-muted-foreground text-center">
         {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
@@ -203,8 +190,8 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
   // Active tasks: compact list with live pulse
   if (mode === "active") {
     return (
-      <div className="divide-y divide-border/70">
-        {jobs.map((job) => (
+      <div className="divide-y divide-border/30">
+        {displayed.map((job) => (
           <div key={job.job_id} className="px-4 py-3 transition-colors hover:bg-[color:var(--accent-blue)]/5">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
@@ -216,7 +203,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="truncate">{job.workspace_name}</span>
               <span className="text-[10px] whitespace-nowrap ml-2">
-                {formatDuration(job.created_at, job.updated_at)}
+                {formatDuration(job.created_at, job.updated_at, locale)}
               </span>
             </div>
             {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
@@ -228,7 +215,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
               </div>
             )}
             {job.error && (
-              <div className="mono mt-1.5 text-[10px] text-warning truncate">
+              <div className="mono mt-1.5 text-[10px] text-[color:var(--warning)] truncate">
                 {sanitizeRuntimeText(job.error)}
               </div>
             )}
@@ -247,47 +234,43 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
   // History: full table view
   return (
     <div className="overflow-x-auto">
-      <table className="workspace-data-table w-full border-collapse text-xs">
+      <table className="workspace-data-table w-full border-collapse text-[13px]">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.name}</th>
-            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.type}</th>
-            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.model}</th>
-            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.status}</th>
-            <th className="px-4 py-3 text-left font-semibold text-muted-foreground">{tableCopy.created}</th>
-            <th className="px-4 py-3 text-right font-semibold text-muted-foreground">{tableCopy.duration}</th>
-            <th className="px-4 py-3 text-right font-semibold text-muted-foreground">{tableCopy.action}</th>
+            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[200px]">{tableCopy.name}</th>
+            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.type}</th>
+            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.model}</th>
+            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.status}</th>
+            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.created}</th>
+            <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.duration}</th>
+            <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.action}</th>
           </tr>
         </thead>
         <tbody>
-          {jobs.map((job, index) => {
+          {displayed.map((job, index) => {
               const reportHref = buildCompletedJobReportHref(job);
 
               return (
                 <tr
                   key={job.job_id}
-                  className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
-                    index === 0 ? "workspace-row-selected" : ""
-                  } ${
-                    index % 2 === 0 ? "bg-background" : "bg-muted/10"
-                  }`}
+                  className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
                 >
-                  <td className="px-3 py-2">
-                    <div className="font-medium text-xs">{job.job_id}</div>
-                    <div className="mono text-[10px] text-muted-foreground mt-0.5">{job.contract_key}</div>
+                  <td className="px-4 py-3">
+                    <div className="font-medium text-xs whitespace-nowrap">{job.job_id}</div>
+                    <div className="mono text-[10px] text-muted-foreground mt-0.5 whitespace-nowrap">{job.contract_key}</div>
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-4 py-3">
                     <span className="text-xs text-muted-foreground">{job.job_type}</span>
                   </td>
-                  <td className="px-3 py-2">
-                    <span className="mono text-xs">{job.target_model ?? "--"}</span>
+                  <td className="px-4 py-3">
+                    <span className="mono text-xs whitespace-nowrap">{job.target_model ?? "--"}</span>
                     {job.summary_note && (
                       <div className="mt-1 text-[10px] leading-4 text-muted-foreground max-w-[18rem]">
                         {job.summary_note}
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-4 py-3">
                     <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
                     {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
                       <div className="mt-1">
@@ -295,21 +278,21 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-4 py-3">
                     <span className="mono text-xs text-muted-foreground">{formatTime(job.created_at, locale)}</span>
                   </td>
-                  <td className="mono px-3 py-2 text-right text-xs">
-                    {formatDuration(job.created_at, job.updated_at)}
+                  <td className="mono px-4 py-3 text-right text-xs">
+                    {formatDuration(job.created_at, job.updated_at, locale)}
                     {job.metrics && (
                       <div className="mt-1 text-[10px] leading-4 text-muted-foreground">
-                        AUC {formatMetricValue(job.metrics.auc)}
+                        {tableCopy.auc} {formatMetricValue(job.metrics.auc)}
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-right">
+                  <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link
-                        href={`/workspace/audits/${job.job_id}`}
+                        href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
                         className="text-xs text-[var(--accent-blue)] hover:underline"
                       >
                         {copy.viewDetails}
@@ -326,7 +309,7 @@ export function TaskListClient({ mode, locale }: TaskListClientProps) {
                         <button
                           onClick={() => handleRetry(job)}
                           disabled={retryingJobId === job.job_id}
-                          className="text-xs text-[var(--accent-amber)] hover:underline disabled:opacity-50"
+                          className="text-xs text-[color:var(--warning)] hover:underline disabled:opacity-50"
                           title={copy.retryTitle}
                         >
                           {retryingJobId === job.job_id ? copy.retrying : copy.retry}

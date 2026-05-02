@@ -90,7 +90,7 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
                 Try again
               </button>
               <a
-                href="/workspace"
+                href="/workspace/start"
                 className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
               >
                 Go to workspace

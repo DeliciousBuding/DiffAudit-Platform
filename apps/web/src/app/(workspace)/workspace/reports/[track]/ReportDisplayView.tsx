@@ -7,7 +7,7 @@ import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale } from "@/components/language-picker";
 import { type AttackDefenseRowViewModel } from "@/lib/workspace-source";
-import { classifyRisk, riskLabel } from "@/lib/risk-report";
+import { classifyRisk, riskLabel, HIGH_RISK_AUC_THRESHOLD } from "@/lib/risk-report";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
@@ -24,7 +24,7 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 function computeCoverageGaps(rows: Array<{ attack: string; defense: string; aucLabel: string }>) {
   return rows
     .map((row) => ({ attack: row.attack, defense: row.defense, auc: parseFloat(row.aucLabel) }))
-    .filter((row) => !Number.isNaN(row.auc) && row.auc >= 0.7)
+    .filter((row) => !Number.isNaN(row.auc) && row.auc > HIGH_RISK_AUC_THRESHOLD)
     .sort((left, right) => right.auc - left.auc)
     .slice(0, 10);
 }
@@ -81,69 +81,69 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
 
   return (
     <>
-      <div className="grid gap-3 lg:grid-cols-2" id="report-charts">
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="grid gap-4 lg:grid-cols-2" id="report-charts">
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.sections.aucDistribution}
             </h2>
           </div>
-          <div className="p-3">
+          <div>
             {aucDistData.length > 0 ? (
               <ChartAucDistribution data={aucDistData} />
             ) : (
-              <div className="flex h-[220px] items-center justify-center text-xs text-muted-foreground">
+              <div className="flex h-[220px] items-center justify-center text-[13px] text-muted-foreground">
                 {copy.emptyResults}
               </div>
             )}
           </div>
         </section>
 
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.sections.rocCurve}
             </h2>
           </div>
-          <div className="p-3">
+          <div>
             <ChartRocCurve data={generateRocData(avgAuc)} />
           </div>
         </section>
 
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.sections.riskDistribution}
             </h2>
           </div>
-          <div className="p-3">
+          <div>
             <ChartRiskDistribution data={riskDistData} />
           </div>
         </section>
 
-        <section className="border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.sections.attackComparison}
             </h2>
           </div>
-          <div className="p-3">
+          <div>
             <ChartAttackComparison data={attackComparisonData} />
           </div>
         </section>
       </div>
 
       {gapData.length > 0 && (
-        <section className="border border-border bg-card" id="coverage-gaps">
-          <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <section className="rounded-2xl border border-border bg-card p-4" id="coverage-gaps">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.sections.coverageGaps}
             </h2>
-            <span className="text-[10px] text-[color:var(--warning)]">
+            <span className="text-[13px] text-[color:var(--warning)]">
               {gapData.length} {copy.sections.highRiskGaps}
             </span>
           </div>
-          <div className="space-y-2 p-3">
+          <div className="space-y-2">
             {gapData.map((gap) => {
               const pct = Math.round(gap.auc * 100);
               const barColor = gap.auc >= 0.85
@@ -154,9 +154,9 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
 
               return (
                 <div key={`${gap.attack}-${gap.defense}-${gap.auc}`} className="flex items-center gap-3">
-                  <div className="w-36 shrink-0 text-xs font-medium" title={`${gap.attack} -> ${gap.defense}`}>
+                  <div className="w-36 shrink-0 font-medium text-[13px]" title={`${gap.attack} -> ${gap.defense}`}>
                     <div className="truncate">{gap.attack}</div>
-                    <div className="truncate text-[10px] text-muted-foreground">{gap.defense}</div>
+                    <div className="truncate text-[13px] text-muted-foreground">{gap.defense}</div>
                   </div>
                   <div className="h-5 flex-1 overflow-hidden rounded-sm bg-muted/20">
                     <div
@@ -164,7 +164,7 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
                       style={{ width: `${pct}%`, backgroundColor: barColor }}
                     />
                   </div>
-                  <span className="mono w-14 text-right text-xs">{gap.auc.toFixed(3)}</span>
+                  <span className="mono w-14 text-right text-[13px]">{gap.auc.toFixed(3)}</span>
                 </div>
               );
             })}
@@ -172,26 +172,26 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
         </section>
       )}
 
-      <section className="border border-border bg-card" id="report-table">
-        <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <section className="rounded-2xl border border-border bg-card p-4" id="report-table">
+        <div className="border-b border-border pb-3 mb-3">
+          <h2 className="text-[13px] font-bold text-foreground">
             {copy.sections.auditResults}
           </h2>
         </div>
         <div className="max-h-[440px] overflow-auto">
           {rows.length > 0 ? (
-            <table className="min-w-[900px] w-full border-collapse text-xs">
+            <table className="min-w-[900px] w-full border-collapse text-[13px]">
               <thead className="sticky top-0 bg-muted/30">
                 <tr className="border-b border-border">
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.defense}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.track}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
-                  <th className="px-3 py-1.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
-                  <th className="px-3 py-1.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.defense}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.track}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>
               <tbody>
@@ -202,19 +202,19 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
                       index % 2 === 0 ? "bg-background" : "bg-muted/10"
                     }`}
                   >
-                    <td className="px-3 py-2 font-medium">{row.attack}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{row.defense}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{row.model}</td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-3 font-medium">{row.attack}</td>
+                    <td className="px-3 py-3 text-muted-foreground">{row.defense}</td>
+                    <td className="px-3 py-3 text-muted-foreground">{row.model}</td>
+                    <td className="px-3 py-3">
                       <StatusBadge tone="info">{row.track}</StatusBadge>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-3">
                       <ReportEvidenceStack locale={locale} row={row} />
                     </td>
-                    <td className="mono px-3 py-2 text-right">{row.aucLabel}</td>
-                    <td className="mono px-3 py-2 text-right">{row.asrLabel}</td>
-                    <td className="mono px-3 py-2 text-right">{row.tprLabel}</td>
-                    <td className="px-3 py-2">
+                    <td className="mono px-3 py-3 text-right">{row.aucLabel}</td>
+                    <td className="mono px-3 py-3 text-right">{row.asrLabel}</td>
+                    <td className="mono px-3 py-3 text-right">{row.tprLabel}</td>
+                    <td className="px-3 py-3">
                       <RiskBadge
                         auc={parseFloat(row.aucLabel)}
                         label={riskLabel(row.riskLevel, locale)}
@@ -226,7 +226,7 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
               </tbody>
             </table>
           ) : (
-            <div className="px-3 py-4 text-center text-xs text-muted-foreground">
+            <div className="px-3 py-4 text-center text-[13px] text-muted-foreground">
               {copy.emptyResults}
             </div>
           )}

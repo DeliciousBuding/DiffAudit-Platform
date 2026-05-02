@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import {
@@ -14,6 +15,7 @@ import { type EvidenceSummaryPayload } from "@/lib/audit-client";
 import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { ReportAuditView, type ReportProvenance } from "./ReportAuditView";
 import { ReportDisplayView } from "./ReportDisplayView";
 
@@ -243,35 +245,35 @@ export async function renderTrackReportPage({
   const catalogEntries = catalog?.tracks.find((item) => item.track === track)?.entries ?? [];
   const provenance = await fetchTrackProvenance(pickPrimaryEntry(catalogEntries));
   const label = trackLabel(resolvedLocale, track);
+  const copy = WORKSPACE_COPY[resolvedLocale].reports;
   const displayHref = `/workspace/reports/${track}?view=display`;
   const auditHref = `/workspace/reports/${track}?view=audit`;
 
   return (
     <div className="space-y-4">
+      <Link href="/workspace/reports" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+        <ArrowLeft size={16} strokeWidth={2} />
+        {copy.backToReports}
+      </Link>
+
       <div className="flex items-start justify-between gap-4 border-b border-border pb-3">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {label}
-          </div>
-          <h1 className="mt-1 text-lg font-semibold">{pageTitle(resolvedLocale, label)}</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {pageDescription(resolvedLocale, label)}
-          </p>
+          <h1 className="text-lg font-semibold">{pageTitle(resolvedLocale, label)}</h1>
         </div>
 
-        <div className="inline-flex items-center border border-border bg-card p-1 text-xs">
+        <div className="inline-flex items-center rounded-2xl border border-border bg-card p-1 text-xs">
           <Link
             href={displayHref}
-            className={`px-3 py-1.5 ${
-              currentView === "display" ? "bg-muted text-foreground" : "text-muted-foreground"
+            className={`rounded-xl px-3 py-1.5 transition-colors ${
+              currentView === "display" ? "bg-muted text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {toggleLabel(resolvedLocale, "display")}
           </Link>
           <Link
             href={auditHref}
-            className={`px-3 py-1.5 ${
-              currentView === "audit" ? "bg-muted text-foreground" : "text-muted-foreground"
+            className={`rounded-xl px-3 py-1.5 transition-colors ${
+              currentView === "audit" ? "bg-muted text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {toggleLabel(resolvedLocale, "audit")}

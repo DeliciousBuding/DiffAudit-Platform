@@ -45,6 +45,7 @@ export function RiskBadge({ auc, label, compact = false, locale = "en-US" }: Ris
       <span
         className="risk-badge-compact"
         title={displayLabel}
+        aria-label={displayLabel}
         style={{
           display: "inline-block",
           width: 8,
@@ -63,23 +64,23 @@ export function RiskBadge({ auc, label, compact = false, locale = "en-US" }: Ris
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 6,
+        gap: 5,
         borderRadius: 9999,
-        padding: "2px 10px",
+        padding: "3px 10px",
         fontSize: 11,
         fontWeight: 600,
         lineHeight: 1,
         whiteSpace: "nowrap",
         color: config.color,
         background: config.bg,
-        border: `1px solid ${config.bg}`,
+        border: `1px solid transparent`,
       }}
     >
       <span
         style={{
           display: "inline-block",
-          width: 7,
-          height: 7,
+          width: 6,
+          height: 6,
           borderRadius: "50%",
           background: config.color,
           flexShrink: 0,

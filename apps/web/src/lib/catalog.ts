@@ -57,6 +57,7 @@ export type CatalogEntryViewModel = {
   bestWorkspace: string;
   bestSummaryPath: string;
   systemGap: string;
+  description?: string;
   admissionStatus?: string;
   admissionLevel?: string;
   provenanceStatus?: string;
@@ -83,7 +84,7 @@ function isCatalogAvailability(value: unknown): value is CatalogAvailability {
 
 function formatRuntimeLabel(entry: CatalogEntryPayload) {
   if (!entry.backend) {
-    return "unassigned runtime";
+    return "";
   }
 
   return entry.scheduler ? `${entry.backend} / ${entry.scheduler}` : entry.backend;
@@ -97,11 +98,12 @@ function toEntryViewModel(entry: CatalogEntryPayload): CatalogEntryViewModel {
     availability: entry.availability,
     evidenceLevel: entry.evidence_level ?? "catalog",
     capabilityLabel: `${entry.attack_family} / ${entry.target_key}`,
-    paper: entry.paper ?? "unknown",
+    paper: entry.paper ?? "",
     runtimeLabel: formatRuntimeLabel(entry),
-    bestWorkspace: entry.best_workspace ?? "pending workspace",
-    bestSummaryPath: entry.best_summary_path ?? "pending summary",
-    systemGap: entry.system_gap ?? "pending system gap explanation",
+    bestWorkspace: entry.best_workspace ?? "",
+    bestSummaryPath: entry.best_summary_path ?? "",
+    systemGap: entry.system_gap ?? "",
+    description: "",
     ...(entry.admission_status ? { admissionStatus: entry.admission_status } : {}),
     ...(entry.admission_level ? { admissionLevel: entry.admission_level } : {}),
     ...(entry.provenance_status ? { provenanceStatus: entry.provenance_status } : {}),

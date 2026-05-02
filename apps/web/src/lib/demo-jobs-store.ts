@@ -15,7 +15,27 @@ declare global {
 
 function getStore() {
   if (!globalThis.__diffauditDemoJobs__) {
-    globalThis.__diffauditDemoJobs__ = [...DEMO_JOBS];
+    const now = new Date();
+    const recentIso = new Date(now.getTime() - 6_000).toISOString();
+    const alwaysRunning: DemoJobRecord = {
+      job_id: "job_demo_live",
+      status: "running",
+      contract_key: "gsa_runtime_mainline",
+      workspace_name: "live-defense-sweep",
+      job_type: "gsa_runtime_mainline",
+      created_at: recentIso,
+      updated_at: now.toISOString(),
+      target_model: "stable-diffusion-v1-4",
+      summary_note: "White-box GSA sweep is actively running — checking memorization vectors.",
+      progress_pct: 42,
+      stdout_tail: "[demo] worker allocated\n[demo] sampling posterior slices\n[demo] score separation in progress",
+      stderr_tail: "",
+      state_history: [
+        { state: "queued", timestamp: recentIso },
+        { state: "running", timestamp: new Date(now.getTime() - 3_000).toISOString() },
+      ],
+    };
+    globalThis.__diffauditDemoJobs__ = [alwaysRunning, ...DEMO_JOBS];
   }
   return globalThis.__diffauditDemoJobs__;
 }
@@ -64,6 +84,19 @@ function buildRunningTail(job: DemoJobRecord, elapsedMs: number) {
 function materializeDemoJob(job: DemoJobRecord): DemoJobRecord {
   if (job.status === "completed" || job.status === "failed" || job.status === "cancelled") {
     return job;
+  }
+
+  // Perpetually running demo job — always shows as actively running
+  if (job.job_id === "job_demo_live") {
+    const now = Date.now();
+    const elapsedSec = Math.floor(Math.random() * 120) + 60;
+    return {
+      ...job,
+      status: "running",
+      updated_at: new Date(now).toISOString(),
+      progress_pct: 35 + Math.floor(Math.random() * 40),
+      stdout_tail: buildRunningTail(job, elapsedSec * 1000),
+    };
   }
 
   const createdAt = new Date(job.created_at).getTime();

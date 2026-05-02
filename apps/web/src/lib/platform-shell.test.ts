@@ -15,6 +15,7 @@ describe("platform shell helpers", () => {
       "report",
       "key",
       "account",
+      "settings",
     ]);
   });
 

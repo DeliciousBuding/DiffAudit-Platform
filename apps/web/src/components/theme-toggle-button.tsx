@@ -5,6 +5,22 @@ import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } fro
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
 
+type ThemeToggleLabels = {
+  light: string;
+  dark: string;
+  system: string;
+  active: string;
+  prefix: string;
+};
+
+const DEFAULT_LABELS: ThemeToggleLabels = {
+  light: "Light",
+  dark: "Dark",
+  system: "System",
+  active: "Active",
+  prefix: "Theme",
+};
+
 function SunIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
@@ -29,8 +45,9 @@ function MoonIcon() {
   );
 }
 
-export function ThemeToggleButton() {
+export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabels> } = {}) {
   const { theme, resolvedTheme, setTheme } = useTheme();
+  const mergedLabels = { ...DEFAULT_LABELS, ...labels };
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mounted = useSyncExternalStore(
@@ -51,11 +68,11 @@ export function ThemeToggleButton() {
   }, [open]);
 
   const options: Array<{ value: ThemeMode; label: string; icon: ReactNode }> = [
-    { value: "light", label: "Light", icon: <SunIcon /> },
-    { value: "dark", label: "Dark", icon: <MoonIcon /> },
+    { value: "light", label: mergedLabels.light, icon: <SunIcon /> },
+    { value: "dark", label: mergedLabels.dark, icon: <MoonIcon /> },
     {
       value: "system",
-      label: "System",
+      label: mergedLabels.system,
       icon: (
         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-none stroke-current stroke-[1.8]">
           <rect x="3.5" y="4.5" width="17" height="12" rx="2" />
@@ -89,10 +106,10 @@ export function ThemeToggleButton() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         className="header-pill header-pill-icon text-muted-foreground hover:text-foreground"
-        aria-label={`Theme: ${activeOption.label}`}
+        aria-label={`${mergedLabels.prefix}: ${activeOption.label}`}
         aria-expanded={open}
         aria-haspopup="true"
-        title={`Theme: ${activeOption.label}`}
+        title={`${mergedLabels.prefix}: ${activeOption.label}`}
       >
         {previewIcon}
       </button>
@@ -119,7 +136,7 @@ export function ThemeToggleButton() {
                   <span className="shrink-0">{option.icon}</span>
                   <span>{option.label}</span>
                 </span>
-                {selected ? <span className="text-xs font-semibold text-[color:var(--accent-blue)]">Active</span> : null}
+                {selected ? <span className="text-xs font-semibold text-[color:var(--accent-blue)]">{mergedLabels.active}</span> : null}
               </button>
             );
           })}

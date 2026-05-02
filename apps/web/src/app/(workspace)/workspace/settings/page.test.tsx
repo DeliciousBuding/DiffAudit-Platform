@@ -2,9 +2,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: () => {} }),
-  redirect: vi.fn((url: string) => {
-    throw new Error(`REDIRECT:${url}`);
-  }),
 }));
 
 const headersMock = vi.fn();
@@ -35,7 +32,7 @@ describe("WorkspaceSettingsPage locale", () => {
     vi.resetModules();
   });
 
-  it("redirects to the API keys page", async () => {
+  it("renders settings page with SettingsClient", async () => {
     headersMock.mockResolvedValue(new Headers([["cookie", "platform-locale-v2=zh-CN; diffaudit_session=test-session"]]));
     cookiesMock.mockResolvedValue({
       get: (name: string) => (name === "diffaudit_session" ? { value: "test-session" } : undefined),
@@ -45,6 +42,8 @@ describe("WorkspaceSettingsPage locale", () => {
     getCurrentUserProfileMock.mockReturnValue(null);
 
     const { default: WorkspaceSettingsPage } = await import("./page");
-    await expect(async () => WorkspaceSettingsPage({})).rejects.toThrow("REDIRECT:/workspace/api-keys");
+    const result = await WorkspaceSettingsPage({});
+    expect(result).toBeDefined();
+    expect(result.props.mode).toBe("settings");
   });
 });

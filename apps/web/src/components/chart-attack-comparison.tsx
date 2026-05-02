@@ -12,20 +12,17 @@ import {
 } from "recharts";
 
 interface AttackComparisonProps {
-  data: {
-    dimension: string;
-    Recon: number;
-    PIA: number;
-    GSA: number;
-  }[];
+  data: Record<string, string | number>[];
 }
 
-/** Track colors using CSS variables for theme consistency */
-const TRACK_COLORS = {
-  recon: "var(--risk-high, #ff5f46)",
-  pia: "var(--risk-medium, #b67619)",
-  gsa: "var(--accent-blue, #2f6df6)",
-};
+/** Color palette for attack families */
+const FAMILY_COLORS = [
+  "var(--risk-high, #ff5f46)",
+  "var(--risk-medium, #b67619)",
+  "var(--accent-blue, #2f6df6)",
+  "var(--success, #22c55e)",
+  "var(--info, #3b82f6)",
+];
 
 /** Shared tooltip style for charts */
 const chartTooltipStyle: React.CSSProperties = {
@@ -36,7 +33,24 @@ const chartTooltipStyle: React.CSSProperties = {
   color: "var(--foreground)",
 };
 
+/** Extract numeric data keys from the data (exclude string keys like "dimension") */
+function getNumericKeys(data: Record<string, string | number>[]): string[] {
+  if (data.length === 0) return [];
+  const first = data[0];
+  return Object.keys(first).filter((k) => typeof first[k] === "number");
+}
+
 export function ChartAttackComparison({ data }: AttackComparisonProps) {
+  const keys = getNumericKeys(data);
+
+  if (data.length === 0 || keys.length === 0) {
+    return (
+      <div className="flex h-[260px] items-center justify-center text-xs text-muted-foreground">
+        No data available
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={260}>
       <RadarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
@@ -55,33 +69,18 @@ export function ChartAttackComparison({ data }: AttackComparisonProps) {
         <Legend
           wrapperStyle={{ fontSize: 10 }}
         />
-        <Radar
-          name="Recon"
-          dataKey="Recon"
-          stroke={TRACK_COLORS.recon}
-          fill={TRACK_COLORS.recon}
-          fillOpacity={0.12}
-          strokeWidth={2}
-          isAnimationActive={false}
-        />
-        <Radar
-          name="PIA"
-          dataKey="PIA"
-          stroke={TRACK_COLORS.pia}
-          fill={TRACK_COLORS.pia}
-          fillOpacity={0.12}
-          strokeWidth={2}
-          isAnimationActive={false}
-        />
-        <Radar
-          name="GSA"
-          dataKey="GSA"
-          stroke={TRACK_COLORS.gsa}
-          fill={TRACK_COLORS.gsa}
-          fillOpacity={0.12}
-          strokeWidth={2}
-          isAnimationActive={false}
-        />
+        {keys.map((key, i) => (
+          <Radar
+            key={key}
+            name={key}
+            dataKey={key}
+            stroke={FAMILY_COLORS[i % FAMILY_COLORS.length]}
+            fill={FAMILY_COLORS[i % FAMILY_COLORS.length]}
+            fillOpacity={0.12}
+            strokeWidth={2}
+            isAnimationActive={false}
+          />
+        ))}
       </RadarChart>
     </ResponsiveContainer>
   );

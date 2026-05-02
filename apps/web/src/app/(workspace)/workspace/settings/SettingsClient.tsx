@@ -4,12 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
 
+import { Calendar } from "lucide-react";
+
 import { ProviderIcon } from "@/components/auth-icons";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
 import { StatusBadge } from "@/components/status-badge";
-import { type Locale } from "@/components/language-picker";
+import { type Locale, LanguagePicker, setStoredLocale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
+import { useTheme } from "@/hooks/use-theme";
+import type { ThemeMode } from "@/lib/theme";
 import type { CurrentUserProfile } from "@/lib/auth";
 import { setDemoModeClient } from "@/lib/demo-mode-client";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -22,8 +26,17 @@ const STORAGE_KEYS = {
   RUNTIME_PORT: "platform-runtime-port-v1",
 } as const;
 
-type EmailVerificationStatus = "1" | "missing" | "invalid" | "expired" | "missing_pending_email";
-type ProviderLinkStatus =
+const TEMPLATES_STORAGE_KEY = "platform-audit-templates-v1";
+
+type SavedTemplate = {
+  id: string;
+  rounds: string;
+  batchSize: string;
+  createdAt: string;
+};
+
+export type EmailVerificationStatus = "1" | "missing" | "invalid" | "expired" | "missing_pending_email";
+export type ProviderLinkStatus =
   | "google_connected"
   | "google_already_connected"
   | "google_in_use"
@@ -168,10 +181,9 @@ export function SettingsClient({
   const copy = localeCopy.settings;
   const shellCopy = localeCopy.shell;
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const isAccountMode = mode === "account";
-  const pageEyebrow = isAccountMode ? copy.account.title : copy.eyebrow;
   const pageTitle = isAccountMode ? copy.account.title : copy.title;
-  const pageDescription = isAccountMode ? copy.account.securityNote : copy.description;
 
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [defaultRounds, setDefaultRounds] = useState("10");
@@ -186,6 +198,8 @@ export function SettingsClient({
   const [passwordPending, setPasswordPending] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [showPasswordEditor, setShowPasswordEditor] = useState(false);
+  const [passwordSaveNotice, setPasswordSaveNotice] = useState<string | null>(null);
+  const passwordNoticeTimerRef = useRef<number | null>(null);
   const [emailInput, setEmailInput] = useState(initialProfile?.pendingEmail ?? initialProfile?.email ?? "");
   const [emailPending, setEmailPending] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -206,6 +220,10 @@ export function SettingsClient({
   const [runtimeTesting, setRuntimeTesting] = useState(false);
   const [runtimeConnected, setRuntimeConnected] = useState<boolean | null>(null);
   const [gatewayHealth, setGatewayHealth] = useState<GatewayHealth | null>(null);
+  const [gatewayHealthError, setGatewayHealthError] = useState(false);
+
+  // Audit templates
+  const [templates, setTemplates] = useState<SavedTemplate[]>([]);
 
   // Load from localStorage
   useEffect(() => {
@@ -232,6 +250,13 @@ export function SettingsClient({
     try {
       const port = window.localStorage.getItem(STORAGE_KEYS.RUNTIME_PORT);
       if (port) setRuntimePort(port);
+    } catch {}
+    try {
+      const stored = window.localStorage.getItem(TEMPLATES_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as SavedTemplate[];
+        if (Array.isArray(parsed)) setTemplates(parsed);
+      }
     } catch {}
   }, [demoModeLocked]);
 
@@ -276,11 +301,16 @@ export function SettingsClient({
           cache: "no-store",
           signal: controller.signal,
         });
-        if (!response.ok) return;
+        if (!response.ok) {
+          setGatewayHealthError(true);
+          return;
+        }
         const payload = (await response.json().catch(() => null)) as GatewayHealth | null;
         setGatewayHealth(payload);
+        setGatewayHealthError(false);
       } catch {
         setGatewayHealth(null);
+        setGatewayHealthError(true);
       } finally {
         window.clearTimeout(timeoutId);
       }
@@ -307,14 +337,11 @@ export function SettingsClient({
   useEffect(() => {
     return () => {
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current);
     };
   }, []);
 
   function handleDemoModeToggle(checked: boolean) {
-    if (demoModeLocked && !checked) {
-      setDemoMode(true);
-      return;
-    }
     setDemoMode(checked);
     setDemoModeClient(checked);
     router.refresh();
@@ -322,25 +349,44 @@ export function SettingsClient({
 
   function handleRoundsChange(value: string) {
     setDefaultRounds(value);
+  }
+
+  function commitRounds() {
+    const parsed = parseInt(defaultRounds, 10);
+    const clamped = isNaN(parsed) ? 10 : Math.min(1000, Math.max(1, parsed));
+    const value = String(clamped);
+    setDefaultRounds(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_ROUNDS, value);
     } catch {}
+    showSaved("audit");
   }
 
   function handleBatchSizeChange(value: string) {
     setDefaultBatchSize(value);
+  }
+
+  function commitBatchSize() {
+    const parsed = parseInt(defaultBatchSize, 10);
+    const clamped = isNaN(parsed) ? 32 : Math.min(1024, Math.max(1, parsed));
+    const value = String(clamped);
+    setDefaultBatchSize(value);
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, value);
     } catch {}
+    showSaved("audit");
   }
 
   async function handleTestRuntime() {
     setRuntimeTesting(true);
     setRuntimeConnected(null);
     try {
-      const url = `${runtimeHost}:${runtimePort}/health`;
-      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-      setRuntimeConnected(res.ok);
+      const params = new URLSearchParams({ host: runtimeHost, port: runtimePort });
+      const res = await fetch(`/api/v1/settings/runtime-health?${params}`, {
+        signal: AbortSignal.timeout(8000),
+      });
+      const payload = (await res.json().catch(() => null)) as { connected?: boolean } | null;
+      setRuntimeConnected(payload?.connected ?? false);
     } catch {
       setRuntimeConnected(false);
     } finally {
@@ -348,24 +394,69 @@ export function SettingsClient({
     }
   }
 
-  function handleSaveRuntimeHost(value: string) {
+  function handleRuntimeHostChange(value: string) {
     setRuntimeHost(value);
+  }
+
+  function commitRuntimeHost() {
     try {
-      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, value);
+      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, runtimeHost);
       showSaved("runtime");
     } catch {}
   }
 
-  function handleSaveRuntimePort(value: string) {
+  function handleRuntimePortChange(value: string) {
     setRuntimePort(value);
+  }
+
+  function commitRuntimePort() {
     try {
-      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, value);
+      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, runtimePort);
       showSaved("runtime");
     } catch {}
+  }
+
+  function persistTemplates(next: SavedTemplate[]) {
+    setTemplates(next);
+    try {
+      window.localStorage.setItem(TEMPLATES_STORAGE_KEY, JSON.stringify(next));
+    } catch {}
+  }
+
+  function handleSaveTemplate() {
+    commitRounds();
+    commitBatchSize();
+    const roundsParsed = parseInt(defaultRounds, 10);
+    const rounds = isNaN(roundsParsed) ? "10" : String(Math.min(1000, Math.max(1, roundsParsed)));
+    const batchParsed = parseInt(defaultBatchSize, 10);
+    const batch = isNaN(batchParsed) ? "32" : String(Math.min(1024, Math.max(1, batchParsed)));
+    const template: SavedTemplate = {
+      id: Date.now().toString(36),
+      rounds,
+      batchSize: batch,
+      createdAt: new Date().toISOString(),
+    };
+    persistTemplates([...templates, template]);
+    showSaved("templates");
+  }
+
+  function handleLoadTemplate(template: SavedTemplate) {
+    setDefaultRounds(template.rounds);
+    setDefaultBatchSize(template.batchSize);
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.DEFAULT_ROUNDS, template.rounds);
+      window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, template.batchSize);
+    } catch {}
+    showSaved("templates");
+  }
+
+  function handleDeleteTemplate(id: string) {
+    persistTemplates(templates.filter((t) => t.id !== id));
   }
 
   async function handlePasswordSave() {
     setPasswordError(null);
+    setPasswordSaveNotice(null);
 
     if (newPassword.length < 8) {
       setPasswordError(copy.account.passwordTooShort);
@@ -401,6 +492,12 @@ export function SettingsClient({
       setConfirmPassword("");
       setShowPasswordEditor(false);
       showSaved("account");
+      setPasswordSaveNotice(copy.account.passwordSaved);
+      if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current);
+      passwordNoticeTimerRef.current = window.setTimeout(() => {
+        setPasswordSaveNotice(null);
+        passwordNoticeTimerRef.current = null;
+      }, 3000);
     } catch {
       setPasswordError(copy.account.passwordSaveFailed);
     } finally {
@@ -516,18 +613,15 @@ export function SettingsClient({
 
   return (
     <WorkspacePageFrame
-      eyebrow={pageEyebrow}
       title={pageTitle}
-      description={pageDescription}
-      titleClassName="text-lg"
-      descriptionClassName="text-xs"
+      titleClassName="text-xl"
     >
       <div className={`grid gap-3 ${isAccountMode ? "" : "lg:grid-cols-3"}`}>
         {!isAccountMode ? (
           <>
-        {/* About System — 置顶，作为设置入口的系统说明 */}
-        <section className="order-1 border border-border bg-card lg:col-span-2">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
+        {/* About System */}
+        <section className="order-1 settings-section-card lg:col-span-2">
+          <div className="settings-section-card-header">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.aboutSystem.title}
             </h2>
@@ -537,7 +631,7 @@ export function SettingsClient({
               <h3 className="mb-2 text-xs font-medium">{copy.aboutSystem.useCases}</h3>
               <div className="grid gap-2 sm:grid-cols-2">
                 {copy.aboutSystem.useCaseItems.map((item) => (
-                  <div key={item.title} className="rounded border border-border bg-muted/10 px-2.5 py-2">
+                  <div key={item.title} className="rounded-2xl border border-border bg-muted/10 px-2.5 py-2">
                     <div className="text-xs font-medium">{item.title}</div>
                     <div className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">{item.desc}</div>
                   </div>
@@ -556,7 +650,7 @@ export function SettingsClient({
               <h3 className="mb-2 text-xs font-medium">{copy.aboutSystem.framework}</h3>
               <div className="grid gap-2 sm:grid-cols-3">
                 {copy.aboutSystem.frameworkItems.map((item, index) => (
-                  <div key={item.tier} className="rounded border border-border px-2.5 py-2">
+                  <div key={item.tier} className="rounded-2xl border border-border px-2.5 py-2">
                     <div className="mb-1 flex items-center gap-1.5">
                       <span
                         className={`inline-block h-1.5 w-1.5 rounded-full ${
@@ -578,8 +672,8 @@ export function SettingsClient({
         </section>
 
         {/* System status */}
-        <section className="order-2 border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
+        <section className="order-2 settings-section-card">
+          <div className="settings-section-card-header">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.systemStatus.title}
             </h2>
@@ -589,7 +683,7 @@ export function SettingsClient({
               <span className="text-xs text-muted-foreground">{copy.systemStatus.runtime}</span>
               <RuntimeStatusBadge locale={locale} />
             </div>
-            <div className="rounded-[14px] border border-border bg-muted/10 p-3">
+            <div className="rounded-lg border border-border bg-muted/10 p-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-muted-foreground">{copy.systemStatus.snapshot}</span>
                 <StatusBadge tone={gatewayHealth?.snapshot_available ? "success" : "warning"} compact>
@@ -603,8 +697,13 @@ export function SettingsClient({
                 </span>
               </div>
             </div>
+            {gatewayHealthError ? (
+              <div className="rounded-lg border border-[color:var(--warning)]/30 bg-[color:var(--warning)]/10 px-3 py-2 text-[11px] leading-5 text-[color:var(--warning)]">
+                {copy.systemStatus.gatewayError}
+              </div>
+            ) : null}
 
-            <div className="rounded-[18px] border border-border bg-muted/10 p-3">
+            <div className="rounded-xl border border-border bg-muted/10 p-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                 <span className={`mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full ${
@@ -612,10 +711,7 @@ export function SettingsClient({
                     ? "bg-[color:var(--accent-blue)]/14 text-[color:var(--accent-blue)]"
                     : "bg-muted/20 text-muted-foreground"
                 }`}>
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                    <path d="M5 7.5h14M8 5v5M16 5v5M6 11h12l-1 7H7l-1-7Z" />
-                    <path d="M10 14.5h4" />
-                  </svg>
+                  <Calendar size={16} strokeWidth={1.5} aria-hidden="true" />
                 </span>
                 <div>
                   <div className="text-xs font-medium text-foreground">{copy.systemStatus.demoMode}</div>
@@ -628,17 +724,13 @@ export function SettingsClient({
                   {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
                 </StatusBadge>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 rounded-xl border border-border bg-background/70 p-1">
+              <div className="mt-3 settings-toggle-track">
                 <button
                   type="button"
                   onClick={() => handleDemoModeToggle(false)}
                   aria-pressed={!demoMode}
                   disabled={demoModeLocked}
-                  className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                    !demoMode
-                      ? "bg-card text-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted/20"
-                  } ${demoModeLocked ? "cursor-not-allowed opacity-50" : ""}`}
+                  className={`settings-toggle-btn ${!demoMode ? "is-active" : ""} ${demoModeLocked ? "cursor-not-allowed opacity-50" : ""}`}
                 >
                   {shellCopy.liveMode}
                 </button>
@@ -647,11 +739,7 @@ export function SettingsClient({
                   onClick={() => handleDemoModeToggle(true)}
                   aria-pressed={demoMode}
                   disabled={demoModeLocked}
-                  className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                    demoMode
-                      ? "bg-[color:var(--accent-blue)] text-white shadow-sm"
-                      : "text-muted-foreground hover:bg-muted/20"
-                  } ${demoModeLocked ? "cursor-not-allowed opacity-90" : ""}`}
+                  className={`settings-toggle-btn ${demoMode ? "is-active-blue" : ""} ${demoModeLocked ? "cursor-not-allowed" : ""}`}
                 >
                   {shellCopy.demoMode}
                 </button>
@@ -664,8 +752,8 @@ export function SettingsClient({
         </section>
 
         {/* Audit configuration */}
-        <section className="order-4 border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
+        <section className="order-4 settings-section-card">
+          <div className="settings-section-card-header">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditConfig.title}
             </h2>
@@ -685,7 +773,7 @@ export function SettingsClient({
                 type="number"
                 value={defaultRounds}
                 onChange={(e) => handleRoundsChange(e.target.value)}
-                onBlur={() => showSaved("audit")}
+                onBlur={commitRounds}
                 min={1}
                 max={1000}
                 className="settings-input"
@@ -701,7 +789,7 @@ export function SettingsClient({
                 type="number"
                 value={defaultBatchSize}
                 onChange={(e) => handleBatchSizeChange(e.target.value)}
-                onBlur={() => showSaved("audit")}
+                onBlur={commitBatchSize}
                 min={1}
                 max={1024}
                 className="settings-input"
@@ -710,9 +798,9 @@ export function SettingsClient({
           </div>
         </section>
 
-        {/* Runtime Connection — 2.2.2 */}
-        <section className="order-3 border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center justify-between">
+        {/* Runtime Connection */}
+        <section className="order-3 settings-section-card">
+          <div className="settings-section-card-header">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.runtimeConfig.title}
             </h2>
@@ -731,7 +819,8 @@ export function SettingsClient({
               <input
                 type="text"
                 value={runtimeHost}
-                onChange={(e) => handleSaveRuntimeHost(e.target.value)}
+                onChange={(e) => handleRuntimeHostChange(e.target.value)}
+                onBlur={commitRuntimeHost}
                 placeholder={copy.runtimeConfig.hostPlaceholder}
                 className="settings-input mono"
               />
@@ -745,7 +834,8 @@ export function SettingsClient({
               <input
                 type="text"
                 value={runtimePort}
-                onChange={(e) => handleSaveRuntimePort(e.target.value)}
+                onChange={(e) => handleRuntimePortChange(e.target.value)}
+                onBlur={commitRuntimePort}
                 className="settings-input mono"
               />
             </div>
@@ -755,50 +845,148 @@ export function SettingsClient({
               <button
                 onClick={handleTestRuntime}
                 disabled={runtimeTesting}
-                className="workspace-btn-primary flex-1 px-3 py-1.5 text-xs font-medium hover:opacity-90 disabled:opacity-50"
+                className="settings-btn-test"
               >
-                {runtimeTesting ? copy.runtimeConfig.testing : copy.runtimeConfig.testConnection}
+                {runtimeTesting ? (
+                  <>
+                    <span className="settings-spinner" />
+                    {copy.runtimeConfig.testing}
+                  </>
+                ) : (
+                  copy.runtimeConfig.testConnection
+                )}
               </button>
               {runtimeConnected === true && (
-                <span className="text-[10px] text-[color:var(--success)]">{copy.runtimeConfig.connected}</span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--success)]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--success)]" />
+                  {copy.runtimeConfig.connected}
+                </span>
               )}
               {runtimeConnected === false && (
-                <span className="text-[10px] text-[color:var(--warning)]">{copy.runtimeConfig.disconnected}</span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--warning)]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--warning)]" />
+                  {copy.runtimeConfig.disconnected}
+                </span>
               )}
             </div>
           </div>
         </section>
 
-        {/* Audit Templates — 2.2.3 */}
-        <section className="order-5 border border-border bg-card">
-          <div className="border-b border-border bg-muted/20 px-3 py-2">
+        {/* Audit Templates */}
+        <section className="order-5 settings-section-card">
+          <div className="settings-section-card-header">
             <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {copy.auditTemplates.title}
             </h2>
+            {savedSection === "templates" && (
+              <span className="text-[10px] text-[color:var(--success)]">
+                {copy.auditTemplates.saved}
+              </span>
+            )}
           </div>
           <div className="p-3">
             <p className="text-xs text-muted-foreground mb-3">
               {copy.auditTemplates.description}
             </p>
             <button
-              onClick={() => {
-                try {
-                  const template = {
-                    rounds: defaultRounds,
-                    batchSize: defaultBatchSize,
-                    createdAt: new Date().toISOString(),
-                  };
-                  window.localStorage.setItem(
-                    "platform-audit-template-default",
-                    JSON.stringify(template)
-                  );
-                  showSaved("templates");
-                } catch {}
-              }}
-              className="workspace-btn-secondary w-full px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+              onClick={handleSaveTemplate}
+              className="workspace-btn-secondary w-full px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
             >
               {copy.auditTemplates.saveCurrent}
             </button>
+            {templates.length > 0 ? (
+              <div className="mt-3 space-y-1.5">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {copy.auditTemplates.savedTemplatesTitle}
+                </div>
+                {templates.map((t) => (
+                  <div
+                    key={t.id}
+                    className="flex items-center justify-between rounded border border-border bg-muted/10 px-2.5 py-1.5"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-[11px] text-muted-foreground">
+                        R:{t.rounds} / B:{t.batchSize}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Intl.DateTimeFormat(locale === "zh-CN" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(t.createdAt))}
+                      </span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleLoadTemplate(t)}
+                        className="rounded px-2 py-0.5 text-[10px] font-medium text-[color:var(--accent-blue)] hover:bg-[color:var(--accent-blue)]/10"
+                      >
+                        {copy.auditTemplates.loadTemplate}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTemplate(t.id)}
+                        className="rounded px-2 py-0.5 text-[10px] font-medium text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10"
+                      >
+                        {copy.auditTemplates.deleteTemplate}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                {copy.auditTemplates.noTemplates}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Preferences */}
+        <section className="order-6 settings-section-card">
+          <div className="settings-section-card-header">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {copy.preferences.title}
+            </h2>
+          </div>
+          <div className="p-3 space-y-3">
+            {/* Theme */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                {copy.preferences.theme}
+              </label>
+              <div className="settings-toggle-track settings-toggle-track--3">
+                {(["light", "dark", "system"] as ThemeMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setTheme(mode)}
+                    aria-pressed={theme === mode}
+                    className={`settings-toggle-btn ${theme === mode ? "is-active" : ""}`}
+                  >
+                    {mode === "light"
+                      ? copy.preferences.themeLight
+                      : mode === "dark"
+                        ? copy.preferences.themeDark
+                        : copy.preferences.themeSystem}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Language */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">
+                {copy.preferences.language}
+              </label>
+              <p className="text-[11px] text-muted-foreground mb-2">
+                {copy.preferences.languageNote}
+              </p>
+              <LanguagePicker
+                value={locale}
+                onChange={(next) => {
+                  setStoredLocale(next);
+                  router.refresh();
+                }}
+              />
+            </div>
           </div>
         </section>
           </>
@@ -811,11 +999,10 @@ export function SettingsClient({
             <div className="space-y-3">
               {profile ? (
                 <>
-                  <div className="relative overflow-hidden rounded-[30px] border border-border/80 bg-[radial-gradient(circle_at_top_left,rgba(47,109,246,0.22),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
-                    <div className="absolute right-[-42px] top-[-58px] h-40 w-40 rounded-full bg-[color:var(--accent-blue)]/10 blur-2xl" />
-                    <div className="relative flex items-center gap-4">
+                  <div className="settings-section-card p-6">
+                    <div className="flex items-center gap-4">
                     <div
-                      className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[color:var(--primary)]/15 text-xl font-semibold text-foreground shadow-inner"
+                      className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-border bg-[color:var(--primary)]/15 text-xl font-semibold text-foreground shadow-inner"
                       style={
                         profile.avatarUrl
                           ? {
@@ -835,11 +1022,11 @@ export function SettingsClient({
                       <div className="mt-1 truncate text-sm text-muted-foreground">@{profile.username}</div>
                     </div>
                     </div>
-                    <div className="relative mt-5 rounded-2xl border border-white/10 bg-background/35 px-4 py-3 text-sm leading-6 text-muted-foreground backdrop-blur">
+                    <div className="mt-5 rounded-xl border border-border bg-muted/10 px-4 py-3 text-sm leading-6 text-muted-foreground">
                       {accessSummary}
                     </div>
                   </div>
-                  <div className="space-y-3 rounded-[26px] border border-border/80 bg-card/80 p-5 shadow-sm">
+                  <div className="settings-section-card p-5 space-y-3">
                     <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                       {copy.account.email}
                     </div>
@@ -866,7 +1053,7 @@ export function SettingsClient({
                     </div>
                   </div>
                   {showEmailEditor ? (
-                    <div className="space-y-3 rounded-[22px] border border-border bg-card p-4">
+                    <div className="space-y-3 rounded-xl border border-border bg-card p-4">
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground" htmlFor="settings-email">
                           {copy.account.email}
@@ -881,7 +1068,7 @@ export function SettingsClient({
                         />
                       </div>
                       {emailError ? (
-                        <p className="text-[11px] text-[#bf2f2f]">{emailError}</p>
+                        <p className="text-[11px] text-[color:var(--error)]">{emailError}</p>
                       ) : null}
                       <div className="flex gap-2">
                         <button
@@ -907,7 +1094,7 @@ export function SettingsClient({
                     </div>
                   ) : null}
                   {profile.pendingEmail ? (
-                    <div className="space-y-3 rounded-[22px] border border-border bg-muted/10 p-4">
+                    <div className="space-y-3 rounded-xl border border-border bg-muted/10 p-4">
                       <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                         {copy.account.pendingEmail}
                       </div>
@@ -959,7 +1146,7 @@ export function SettingsClient({
                         </a>
                       ) : null}
                       {verificationUrl && showVerificationDetails ? (
-                        <div className="space-y-2 rounded-md border border-border bg-card p-3">
+                        <div className="space-y-2 rounded-lg border border-border bg-card p-3">
                           <button
                             type="button"
                             onClick={handleCopyVerificationLink}
@@ -967,7 +1154,7 @@ export function SettingsClient({
                           >
                             {copy.account.copyVerificationLink}
                           </button>
-                          <div className="rounded-md border border-border bg-muted/10 px-3 py-2 font-mono text-[11px] text-muted-foreground break-all">
+                          <div className="rounded-lg border border-border bg-muted/10 px-3 py-2 font-mono text-[11px] text-muted-foreground break-all">
                             {verificationUrl}
                           </div>
                         </div>
@@ -976,10 +1163,10 @@ export function SettingsClient({
                   ) : null}
                   {emailVerificationNotice ? (
                     <div
-                      className={`rounded-[14px] border px-3 py-2 text-[11px] leading-5 ${
+                      className={`rounded-lg border px-3 py-2 text-[11px] leading-5 ${
                         emailVerificationNotice.tone === "success"
                           ? "border-[color:var(--success)]/30 bg-[color:var(--success)]/10 text-[color:var(--success)]"
-                          : "border-[#bf2f2f]/20 bg-[#bf2f2f]/8 text-[#bf2f2f]"
+                          : "border-[color:var(--error)]/20 bg-[color:var(--error)]/8 text-[color:var(--error)]"
                       }`}
                     >
                       {emailVerificationNotice.message}
@@ -987,16 +1174,16 @@ export function SettingsClient({
                   ) : null}
                   {providerLinkNotice ? (
                     <div
-                      className={`rounded-[14px] border px-3 py-2 text-[11px] leading-5 ${
+                      className={`rounded-lg border px-3 py-2 text-[11px] leading-5 ${
                         providerLinkNotice.tone === "success"
                           ? "border-[color:var(--success)]/30 bg-[color:var(--success)]/10 text-[color:var(--success)]"
-                          : "border-[#bf2f2f]/20 bg-[#bf2f2f]/8 text-[#bf2f2f]"
+                          : "border-[color:var(--error)]/20 bg-[color:var(--error)]/8 text-[color:var(--error)]"
                       }`}
                     >
                       {providerLinkNotice.message}
                     </div>
                   ) : null}
-                  <p className="rounded-2xl border border-border/70 bg-muted/10 px-4 py-3 text-[11px] leading-5 text-muted-foreground">
+                  <p className="rounded-lg border border-border bg-muted/10 px-4 py-3 text-[11px] leading-5 text-muted-foreground">
                     {copy.account.securityNote}{" "}
                     <Link href="/docs/privacy" className="auth-inline-link">{copy.account.privacy}</Link>
                     {" · "}
@@ -1013,8 +1200,8 @@ export function SettingsClient({
               )}
             </div>
 
-            <div className="space-y-5 rounded-[30px] border border-border/80 bg-[linear-gradient(180deg,var(--card),rgba(47,109,246,0.035))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
-              <div className="space-y-2 rounded-[22px] border border-border/80 bg-background/55 p-4">
+            <div className="settings-section-card p-5 space-y-5">
+              <div className="space-y-2 rounded-xl border border-border bg-muted/10 p-4">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                   {copy.account.accessSummary}
                 </div>
@@ -1042,7 +1229,7 @@ export function SettingsClient({
               {availableProviderConnectors.length ? (
                 <div className="space-y-1">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-                    {copy.account.accessSummary}
+                    {copy.account.connectAnotherProvider}
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {availableProviderConnectors.map((provider) => (
@@ -1060,7 +1247,7 @@ export function SettingsClient({
               ) : null}
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1 rounded-[20px] border border-border/70 bg-background/45 p-4">
+                <div className="space-y-1 rounded-xl border border-border bg-muted/10 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.password}
                   </div>
@@ -1068,7 +1255,7 @@ export function SettingsClient({
                     {profile?.hasPassword ? copy.account.passwordSet : copy.account.passwordUnset}
                   </div>
                 </div>
-                <div className="space-y-1 rounded-[20px] border border-border/70 bg-background/45 p-4">
+                <div className="space-y-1 rounded-xl border border-border bg-muted/10 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.loginId}
                   </div>
@@ -1080,7 +1267,7 @@ export function SettingsClient({
                 </div>
               </div>
 
-              <div className="space-y-3 rounded-[22px] border border-border/80 bg-background/45 p-4">
+              <div className="space-y-3 rounded-xl border border-border bg-muted/10 p-4">
                 <div className="space-y-1">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.passwordManage}
@@ -1095,6 +1282,7 @@ export function SettingsClient({
                     type="button"
                     onClick={() => {
                       setPasswordError(null);
+                      setPasswordSaveNotice(null);
                       setShowPasswordEditor(true);
                     }}
                     className="workspace-btn-secondary w-full px-3 py-3 text-xs font-medium"
@@ -1102,7 +1290,7 @@ export function SettingsClient({
                     {profile?.hasPassword ? copy.account.openPasswordChange : copy.account.openPasswordCreate}
                   </button>
                 ) : (
-                  <div className="space-y-3 rounded-[18px] border border-border bg-card p-3">
+                  <div className="space-y-3 rounded-lg border border-border bg-card p-3">
                     {profile?.hasPassword ? (
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground" htmlFor="settings-current-password">
@@ -1111,6 +1299,7 @@ export function SettingsClient({
                         <input
                           id="settings-current-password"
                           type="password"
+                          autoComplete="current-password"
                           className="settings-input"
                           value={currentPassword}
                           onChange={(event) => setCurrentPassword(event.target.value)}
@@ -1126,6 +1315,7 @@ export function SettingsClient({
                       <input
                         id="settings-new-password"
                         type="password"
+                        autoComplete="new-password"
                         className="settings-input"
                         value={newPassword}
                         onChange={(event) => setNewPassword(event.target.value)}
@@ -1140,6 +1330,7 @@ export function SettingsClient({
                       <input
                         id="settings-confirm-password"
                         type="password"
+                        autoComplete="new-password"
                         className="settings-input"
                         value={confirmPassword}
                         onChange={(event) => setConfirmPassword(event.target.value)}
@@ -1148,7 +1339,7 @@ export function SettingsClient({
                     </div>
 
                     {passwordError ? (
-                      <p className="text-[11px] text-[#bf2f2f]">{passwordError}</p>
+                      <p className="text-[11px] text-[color:var(--error)]">{passwordError}</p>
                     ) : null}
 
                     <div className="flex gap-2">
@@ -1165,6 +1356,9 @@ export function SettingsClient({
                         onClick={() => {
                           setShowPasswordEditor(false);
                           setPasswordError(null);
+                          setCurrentPassword("");
+                          setNewPassword("");
+                          setConfirmPassword("");
                         }}
                         className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                       >
@@ -1174,6 +1368,12 @@ export function SettingsClient({
                   </div>
                 )}
               </div>
+
+              {passwordSaveNotice ? (
+                <div className="rounded-lg border border-[color:var(--success)]/30 bg-[color:var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[color:var(--success)]">
+                  {passwordSaveNotice}
+                </div>
+              ) : null}
 
               <div className="pt-1">
                 <LogoutButton label={copy.account.logout} />

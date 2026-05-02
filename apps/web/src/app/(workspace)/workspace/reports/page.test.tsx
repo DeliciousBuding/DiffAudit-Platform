@@ -25,13 +25,10 @@ describe("WorkspaceReportsPage", () => {
     const { default: WorkspaceReportsPage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceReportsPage());
 
-    expect(markup).toContain("审计结果和覆盖缺口");
-    expect(markup).toContain("这里汇总了所有审计结果，帮你发现模型防御的薄弱环节");
-    expect(markup).toContain("审计结果");
-    expect(markup).toContain("覆盖缺口");
-    expect(markup).toContain("recon");
-    expect(markup).toContain("证据边界");
-    expect(markup).toContain("来源路径");
+    expect(markup).toContain("报告生成");
+    expect(markup).toContain("按审计模式生成");
+    expect(markup).toContain("已生成报告");
+    expect(markup).toContain("综合分析");
     expect(markup).toContain("导出报告");
   });
 
@@ -40,10 +37,11 @@ describe("WorkspaceReportsPage", () => {
     const { default: WorkspaceReportsPage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceReportsPage());
 
-    expect(markup).toContain("Audit results and coverage gaps");
-    expect(markup).toContain("Aggregate audit results and identify weak spots in your model&#x27;s defenses.");
-    expect(markup).toContain("recon");
-    expect(markup).toContain("stable-diffusion-v1-4");
+    expect(markup).toContain("Reports");
+    expect(markup).toContain("Report Generation");
+    expect(markup).toContain("Generate by Audit Mode");
+    expect(markup).toContain("Generated Reports");
+    expect(markup).toContain("Comprehensive Analysis");
     expect(markup).toContain("Export report");
   });
 });

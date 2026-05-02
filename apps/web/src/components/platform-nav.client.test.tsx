@@ -31,7 +31,7 @@ describe("platform nav prefetch", () => {
   });
 
   it("disables desktop nav prefetch for workspace routes", () => {
-    usePathnameMock.mockReturnValue("/workspace");
+    usePathnameMock.mockReturnValue("/workspace/start");
 
     renderToStaticMarkup(<PlatformNavDesktop locale="en-US" />);
 

@@ -37,7 +37,7 @@ export default function NotFound() {
                 打开 Docs
               </Link>
               <Link
-                href="/workspace"
+                href="/workspace/start"
                 className="inline-flex items-center justify-center rounded-xl border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-px hover:bg-[var(--accent-blue-hover)]"
               >
                 返回工作台

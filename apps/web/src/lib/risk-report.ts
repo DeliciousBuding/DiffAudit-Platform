@@ -1,7 +1,13 @@
 export type RiskLevel = "high" | "medium" | "low";
 
+/** AUC threshold at or above which a result is classified as high risk. */
+export const HIGH_RISK_AUC_THRESHOLD = 0.85;
+
+/** Maximum number of coverage gaps to display in the report center. */
+export const MAX_COVERAGE_GAPS = 10;
+
 export function classifyRisk(auc: number): RiskLevel {
-  if (auc > 0.85) return "high";
+  if (auc > HIGH_RISK_AUC_THRESHOLD) return "high";
   if (auc >= 0.65) return "medium";
   return "low";
 }
