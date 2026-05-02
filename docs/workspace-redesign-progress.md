@@ -354,3 +354,10 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 3. Primary action always visible, reduces navigation friction
 
 28 rounds total, 26 commits to main. 136/136 tests.
+
+### Phase 29: Trust & Copy Polish (COMPLETED)
+1. **Removed "Example data" label** from Reports page Recommended Defenses section
+   (undermined user trust - users questioned if any data was real)
+2. **Removed 2 unused imports** (ArrowRight, FileText) from reports/page.tsx
+
+29 rounds total, 27 commits to main. 136/136 tests.
