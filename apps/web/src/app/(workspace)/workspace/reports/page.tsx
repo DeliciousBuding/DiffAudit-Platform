@@ -85,29 +85,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
   const highestAuc = highestRiskRow ? parseFloat(highestRiskRow.aucLabel) : 0;
 
   // Top 3 defense strategies
-  const defenseStrategies = [
-    {
-      name: locale === "zh-CN" ? "差分隐私 (DP) 训练" : "Differential Privacy (DP) Training",
-      desc: locale === "zh-CN"
-        ? "将 GSA AUC 从 0.998 降至 0.489。"
-        : "Reduces GSA AUC from 0.998 to 0.489.",
-      tag: locale === "zh-CN" ? "最强" : "Strongest",
-    },
-    {
-      name: locale === "zh-CN" ? "对抗训练 (Adv. Training)" : "Adversarial Training",
-      desc: locale === "zh-CN"
-        ? "将 PIA AUC 从 0.841 降至 0.828，保持生成质量。"
-        : "Reduces PIA AUC from 0.841 to 0.828 while preserving quality.",
-      tag: locale === "zh-CN" ? "推荐" : "Recommended",
-    },
-    {
-      name: locale === "zh-CN" ? "模型蒸馏 (Distillation)" : "Model Distillation",
-      desc: locale === "zh-CN"
-        ? "将 Recon AUC 从 0.726 降至 0.697。"
-        : "Reduces Recon AUC from 0.726 to 0.697.",
-      tag: locale === "zh-CN" ? "有效" : "Effective",
-    },
-  ];
+  const defenseStrategies = copy.defenseStrategies;
 
   const pageContent = rows.length > 0 ? (
     <>
@@ -200,7 +178,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                       <button
                         type="button"
                         disabled
-                        title={locale === "zh-CN" ? "下载功能即将推出" : "Download coming soon"}
+                        title={copy.downloadComingSoon}
                         className="rounded-xl border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground/60 cursor-not-allowed"
                       >
                         {copy.download}
@@ -234,7 +212,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
             </div>
             <p className="text-xs leading-5 text-foreground">
               {highestRiskRow
-                ? `${highestRiskRow.attack} ${locale === "zh-CN" ? "攻击" : "attack"} ${locale === "zh-CN" ? "成功率达" : "reaches AUC"} ${highestRiskRow.aucLabel}`
+                ? copy.keyFindingsDetail(highestRiskRow.attack, highestRiskRow.aucLabel)
                 : copy.noFinding}
             </p>
             <div className="mt-2.5 flex items-center gap-2">
@@ -258,9 +236,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
             {gapData.length > 0 ? (
               <>
                 <p className="text-xs leading-5 text-foreground">
-                  {locale === "zh-CN"
-                    ? `${gapData.length} 个高风险攻击/防御配对 (AUC > ${HIGH_RISK_AUC_THRESHOLD})，首项: ${gapData[0].attack} vs ${gapData[0].defense}`
-                    : `${gapData.length} high-risk attack/defense pairs (AUC > ${HIGH_RISK_AUC_THRESHOLD}). Top: ${gapData[0].attack} vs ${gapData[0].defense}`}
+                  {copy.defenseGapDetail(gapData.length, HIGH_RISK_AUC_THRESHOLD, gapData[0].attack, gapData[0].defense)}
                 </p>
                 <div className="mt-2.5 flex items-center gap-1.5">
                   <span className="inline-flex items-center rounded-full border border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">
@@ -270,7 +246,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
               </>
             ) : (
               <p className="text-xs leading-5 text-muted-foreground">
-                {locale === "zh-CN" ? "无高风险缺口" : "No high-risk gaps detected"}
+                {copy.noHighRiskGaps}
               </p>
             )}
           </div>
@@ -285,7 +261,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                 {copy.recommendedDefenses}
               </h4>
               <span className="text-[9px] text-muted-foreground/60 ml-auto">
-                {locale === "zh-CN" ? "示例数据" : "Example data"}
+                {copy.exampleDataLabel}
               </span>
             </div>
             <div className="space-y-2">
@@ -325,7 +301,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
         href="/workspace/audits/new"
         className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
       >
-        {locale === "zh-CN" ? "创建审计任务" : "Create audit task"}
+        {copy.createAuditTask}
         <ArrowRight size={14} strokeWidth={1.5} />
       </Link>
     </div>

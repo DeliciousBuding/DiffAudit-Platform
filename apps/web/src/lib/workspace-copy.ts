@@ -240,6 +240,7 @@ export const WORKSPACE_COPY: Record<
         availabilityReady: string;
         availabilityPartial: string;
         availabilityDisabled: string;
+        dismissError: string;
       };
       recommendedConfig: {
         blackBoxTitle: string; blackBoxRounds: string; blackBoxBatch: string; blackBoxAdaptive: string;
@@ -261,6 +262,7 @@ export const WORKSPACE_COPY: Record<
         stdoutTail: string; stderrTail: string; lines: string;
         noLogOutput: string; jobNotFound: string; loadFailed: string; apiUnreachable: string;
         stateHistory: string; stateTimestamp: string; noStateHistory: string;
+        executionProgress: string; metricAucNote: string; metricAsrNote: string; metricTprNote: string; jobIdLabel: string;
       };
     };
     emptyWorkspace: {
@@ -366,8 +368,15 @@ export const WORKSPACE_COPY: Record<
       date: string;
       view: string;
       download: string;
+      downloadComingSoon: string;
       popupBlocked: string;
       exportTimeout: string;
+      keyFindingsDetail: (attack: string, aucLabel: string) => string;
+      defenseGapDetail: (count: number, threshold: number, topAttack: string, topDefense: string) => string;
+      noHighRiskGaps: string;
+      exampleDataLabel: string;
+      createAuditTask: string;
+      defenseStrategies: Array<{ name: string; desc: string; tag: string }>;
     };
     apiKeys: {
       eyebrow: string;
@@ -420,7 +429,7 @@ export const WORKSPACE_COPY: Record<
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
       auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string };
       aboutSystem: { title: string; useCases: string; useCaseItems: { title: string; desc: string }[]; systemBoundary: string; boundaryNote: string; framework: string; frameworkItems: { tier: string; desc: string }[] };
-      errorPage: { title: string; description: string; retry: string; goHome: string };
+      errorPage: { title: string; description: string; retry: string; goHome: string; errorId: string; errorDetails: string };
       notFound: { title: string; description: string; goHome: string };
     };
     loginPage: {
@@ -781,6 +790,7 @@ export const WORKSPACE_COPY: Record<
         availabilityReady: "Ready",
         availabilityPartial: "Partial",
         availabilityDisabled: "Disabled",
+        dismissError: "Dismiss error",
       },
       recommendedConfig: {
         blackBoxTitle: "Recommended: Black-box Attack",
@@ -839,6 +849,11 @@ export const WORKSPACE_COPY: Record<
         stateHistory: "State history",
         stateTimestamp: "Timestamp",
         noStateHistory: "No state history available.",
+        executionProgress: "Execution progress",
+        metricAucNote: "Membership separation strength",
+        metricAsrNote: "Attack success rate",
+        metricTprNote: "Low false-positive operating point",
+        jobIdLabel: "Job",
       },
       nextSteps: {
         completed: [
@@ -982,8 +997,32 @@ export const WORKSPACE_COPY: Record<
       date: "Date",
       view: "View Report",
       download: "Download",
+      downloadComingSoon: "Download coming soon",
       popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
       exportTimeout: "PDF export timed out. Please try again.",
+      keyFindingsDetail: (attack: string, aucLabel: string) => `${attack} attack reaches AUC ${aucLabel}`,
+      defenseGapDetail: (count: number, threshold: number, topAttack: string, topDefense: string) =>
+        `${count} high-risk attack/defense pairs (AUC > ${threshold}). Top: ${topAttack} vs ${topDefense}`,
+      noHighRiskGaps: "No high-risk gaps detected",
+      exampleDataLabel: "Example data",
+      createAuditTask: "Create audit task",
+      defenseStrategies: [
+        {
+          name: "Differential Privacy (DP) Training",
+          desc: "Reduces GSA AUC from 0.998 to 0.489.",
+          tag: "Strongest",
+        },
+        {
+          name: "Adversarial Training",
+          desc: "Reduces PIA AUC from 0.841 to 0.828 while preserving quality.",
+          tag: "Recommended",
+        },
+        {
+          name: "Model Distillation",
+          desc: "Reduces Recon AUC from 0.726 to 0.697.",
+          tag: "Effective",
+        },
+      ],
     },
     apiKeys: {
       eyebrow: "API Management",
@@ -1188,6 +1227,8 @@ export const WORKSPACE_COPY: Record<
         description: "An unexpected error occurred. Please retry or return to the workspace.",
         retry: "Retry",
         goHome: "Return to workspace",
+        errorId: "Error ID",
+        errorDetails: "Error details",
       },
       notFound: {
         title: "Page not found",
@@ -1552,6 +1593,7 @@ export const WORKSPACE_COPY: Record<
         availabilityReady: "就绪",
         availabilityPartial: "部分可用",
         availabilityDisabled: "已禁用",
+        dismissError: "关闭错误提示",
       },
       recommendedConfig: {
         blackBoxTitle: "黑盒攻击推荐配置",
@@ -1610,6 +1652,11 @@ export const WORKSPACE_COPY: Record<
         stateHistory: "状态变更历史",
         stateTimestamp: "时间戳",
         noStateHistory: "暂无状态变更记录。",
+        executionProgress: "执行进度",
+        metricAucNote: "成员分离强度",
+        metricAsrNote: "攻击成功率",
+        metricTprNote: "低误报率工作点",
+        jobIdLabel: "任务",
       },
       nextSteps: {
         completed: [
@@ -1753,8 +1800,32 @@ export const WORKSPACE_COPY: Record<
       date: "日期",
       view: "查看审计报告",
       download: "下载",
+      downloadComingSoon: "下载功能即将推出",
       popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
       exportTimeout: "PDF 导出超时，请重试。",
+      keyFindingsDetail: (attack: string, aucLabel: string) => `${attack} 攻击成功率达 ${aucLabel}`,
+      defenseGapDetail: (count: number, threshold: number, topAttack: string, topDefense: string) =>
+        `${count} 个高风险攻击/防御配对 (AUC > ${threshold})，首项: ${topAttack} vs ${topDefense}`,
+      noHighRiskGaps: "无高风险缺口",
+      exampleDataLabel: "示例数据",
+      createAuditTask: "创建审计任务",
+      defenseStrategies: [
+        {
+          name: "差分隐私 (DP) 训练",
+          desc: "将 GSA AUC 从 0.998 降至 0.489。",
+          tag: "最强",
+        },
+        {
+          name: "对抗训练 (Adv. Training)",
+          desc: "将 PIA AUC 从 0.841 降至 0.828，保持生成质量。",
+          tag: "推荐",
+        },
+        {
+          name: "模型蒸馏 (Distillation)",
+          desc: "将 Recon AUC 从 0.726 降至 0.697。",
+          tag: "有效",
+        },
+      ],
     },
     apiKeys: {
       eyebrow: "API 管理",
@@ -1959,6 +2030,8 @@ export const WORKSPACE_COPY: Record<
         description: "发生了意外错误，请稍后重试，或返回工作台",
         retry: "重试",
         goHome: "返回工作台",
+        errorId: "错误 ID",
+        errorDetails: "错误详情",
       },
       notFound: {
         title: "页面未找到",

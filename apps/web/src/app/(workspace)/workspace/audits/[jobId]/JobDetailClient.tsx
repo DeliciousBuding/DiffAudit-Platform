@@ -338,7 +338,7 @@ export function JobDetailClient({
       {typeof job.progress_pct === "number" && !isTerminal && (
         <div className="rounded-2xl border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-[13px] font-bold text-muted-foreground">{locale === "zh-CN" ? "执行进度" : "Execution progress"}</div>
+            <div className="text-[13px] font-bold text-muted-foreground">{copy.jobDetail.labels.executionProgress}</div>
             <div className="mono text-[13px] text-muted-foreground">{job.progress_pct}%</div>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted/40">
@@ -355,17 +355,17 @@ export function JobDetailClient({
           <JobMetricCard
             label="AUC"
             value={formatMetricValue(job.metrics?.auc)}
-            note={locale === "zh-CN" ? "成员分离强度" : "Membership separation strength"}
+            note={copy.jobDetail.labels.metricAucNote}
           />
           <JobMetricCard
             label="ASR"
             value={formatMetricValue(job.metrics?.asr)}
-            note={locale === "zh-CN" ? "攻击成功率" : "Attack success rate"}
+            note={copy.jobDetail.labels.metricAsrNote}
           />
           <JobMetricCard
             label="TPR@1%FPR"
             value={formatMetricValue(job.metrics?.tpr)}
-            note={locale === "zh-CN" ? "低误报率工作点" : "Low false-positive operating point"}
+            note={copy.jobDetail.labels.metricTprNote}
           />
         </div>
       )}
@@ -498,7 +498,7 @@ export function JobDetailClient({
           {copy.jobDetail.cancelBody}
         </p>
         <p className="mt-2 mono text-[13px] text-muted-foreground">
-          {locale === "zh-CN" ? "任务" : "Job"}: {job.job_id}
+          {copy.jobDetail.labels.jobIdLabel}: {job.job_id}
         </p>
       </Modal>
     </div>

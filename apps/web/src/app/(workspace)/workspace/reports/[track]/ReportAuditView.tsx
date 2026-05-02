@@ -170,7 +170,7 @@ export function ReportAuditView({
               {t.provenanceTitle}
             </h2>
           </div>
-          <dl className="grid gap-3 text-[13px]">
+          <dl className="grid gap-4 text-[13px]">
             {hasValue(provenance.runDirectoryPath) ? (
               <div>
                 <dt className="font-semibold text-foreground">{t.runDirectory}</dt>

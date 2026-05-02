@@ -44,13 +44,13 @@ export default function GlobalError({
 
             {error.digest && (
               <p className="text-xs text-muted-foreground mb-3">
-                {locale === "zh-CN" ? "错误 ID" : "Error ID"}: {error.digest}
+                {copy.errorId}: {error.digest}
               </p>
             )}
 
             <details className="mb-4">
               <summary className="text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                {locale === "zh-CN" ? "错误详情" : "Error details"}
+                {copy.errorDetails}
               </summary>
               <pre className="mt-2 p-3 bg-muted/30 rounded-md text-xs overflow-auto max-h-32 border border-border">
                 {error.message}

@@ -336,7 +336,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           {keys.map((key) => (
             <div
               key={key.id}
-              className={`group grid gap-3 px-6 py-4 transition-colors hover:bg-muted/20 dark:hover:bg-muted/20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:items-center md:gap-4 ${key.status === "revoked" ? "opacity-50" : ""}`}
+              className={`group grid gap-4 px-6 py-4 transition-colors hover:bg-muted/20 dark:hover:bg-muted/20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:items-center md:gap-4 ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
               {/* Key name + metadata */}
               <div className="min-w-0">

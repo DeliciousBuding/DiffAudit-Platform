@@ -587,7 +587,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                               )}
                               <StatusBadge tone={availabilityTone(entry.availability)} compact>{copy.availabilityLabels[entry.availability] ?? entry.availability}</StatusBadge>
                             </div>
-                            <div className="grid grid-cols-3 gap-3 mt-2">
+                            <div className="grid grid-cols-3 gap-4 mt-2">
                               {/* [issue 6] Only render fields with real values */}
                               {entry.runtimeLabel && (
                                 <div>
