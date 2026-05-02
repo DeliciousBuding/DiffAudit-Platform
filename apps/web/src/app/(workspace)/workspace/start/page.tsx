@@ -378,15 +378,14 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
                   {copy.sections.suggestedNextSteps}
                 </h3>
-                <ul className="space-y-1">
+                <div className="flex flex-wrap gap-2 mt-1">
                   {suggestions.map((s, i) => (
-                    <li key={i} className="text-xs text-muted-foreground">
-                      <Link href={s.href} className="hover:text-[color:var(--accent-blue)] hover:underline transition-colors">
-                        {s.text}
-                      </Link>
-                    </li>
+                    <Link key={i} href={s.href} className="inline-flex items-center gap-1.5 rounded-[10px] border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/20">
+                      {s.text}
+                      <ArrowRight size={10} strokeWidth={2} aria-hidden="true" />
+                    </Link>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
           </section>

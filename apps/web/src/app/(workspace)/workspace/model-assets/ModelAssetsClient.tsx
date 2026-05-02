@@ -744,7 +744,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                               <span className="text-xs font-semibold text-foreground">{entry.label}</span>
                               {/* [issue 5] Changed from "Current" to "Best Evidence" */}
                               {isBestEvidence && (
-                                <span className="inline-flex items-center rounded-full bg-[var(--accent-blue)]/10 px-2 py-0.5 text-[9px] font-semibold text-[var(--accent-blue)]">{copy.bestEvidence}</span>
+                                <span className="inline-flex items-center rounded-full bg-[var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-blue)]">{copy.bestEvidence}</span>
                               )}
                               <StatusBadge tone={availabilityTone(entry.availability)} compact>{copy.availabilityLabels[entry.availability] ?? entry.availability}</StatusBadge>
                             </div>

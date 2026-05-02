@@ -164,11 +164,35 @@ const COMMANDS: CommandItem[] = [
   },
 ];
 
-const CATEGORY_LABELS: Record<CommandCategory, { en: string; zh: string }> = {
+const CATEGORY_LABELS: Record<string, { en: string; zh: string }> = {
+  recent: { en: "Recent", zh: "最近使用" },
   navigation: { en: "Navigation", zh: "导航" },
   actions: { en: "Actions", zh: "操作" },
   info: { en: "Info", zh: "信息" },
 };
+
+const RECENT_KEY = "diffaudit-recent-commands";
+const MAX_RECENT = 5;
+
+function getRecentCommandIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function addRecentCommand(id: string) {
+  try {
+    const recent = getRecentCommandIds().filter((c) => c !== id);
+    recent.unshift(id);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
+  } catch {
+    // localStorage may be unavailable
+  }
+}
 
 /* -------------------------------------------------------------------------- */
 /*  Component                                                                 */
@@ -196,6 +220,34 @@ export function CommandPalette({ locale }: { locale: Locale }) {
           return text.includes(normalized);
         })
       : COMMANDS;
+
+    // When no query, show recent commands first
+    if (!normalized) {
+      const recentIds = getRecentCommandIds();
+      const recentCmds = recentIds
+        .map((id) => COMMANDS.find((c) => c.id === id))
+        .filter(Boolean) as CommandItem[];
+      const remaining = COMMANDS.filter((c) => !recentIds.includes(c.id));
+
+      const groups: Array<{ category: string; items: CommandItem[] }> = [];
+      if (recentCmds.length > 0) {
+        groups.push({ category: "recent", items: recentCmds });
+      }
+      const catGroups: Record<CommandCategory, CommandItem[]> = {
+        navigation: [],
+        actions: [],
+        info: [],
+      };
+      for (const cmd of remaining) {
+        catGroups[cmd.category].push(cmd);
+      }
+      for (const cat of ["navigation", "actions", "info"] as const) {
+        if (catGroups[cat].length > 0) {
+          groups.push({ category: cat, items: catGroups[cat] });
+        }
+      }
+      return groups;
+    }
 
     const groups: Record<CommandCategory, CommandItem[]> = {
       navigation: [],
@@ -282,6 +334,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
 
   /* ---- Execute a command ---- */
   function execute(cmd: CommandItem) {
+    addRecentCommand(cmd.id);
     closePalette();
     cmd.action(router, toast, locale);
   }
