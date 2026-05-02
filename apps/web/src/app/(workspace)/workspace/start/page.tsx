@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRight, ChevronRight, Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -36,15 +36,15 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
   return points;
 }
 
-/** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1 */
-function KpiCardWithTrend({ label, value, note, trend, alert }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; alert?: "danger" | "warning" | "info" | null }) {
+/** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1, clickable drill-down */
+function KpiCardWithTrend({ label, value, note, trend, alert, href, ariaLabel }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; alert?: "danger" | "warning" | "info" | null; href?: string; ariaLabel?: string }) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
   const alertBorder = alert === "danger" ? "border-l-2 border-l-[var(--risk-high)]" : alert === "warning" ? "border-l-2 border-l-[var(--warning)]" : alert === "info" ? "border-l-2 border-l-[var(--accent-blue)]" : "";
   const alertBg = alert === "danger" ? "bg-[color:var(--risk-high)]/[0.03]" : alert === "warning" ? "bg-[color:var(--warning)]/[0.03]" : "";
-  return (
-    <div className={`rounded-2xl border border-border bg-card p-4 ${alertBorder} ${alertBg}`}>
+  const content = (
+    <>
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <AnimatedValue value={value} className={`text-2xl font-bold leading-none ${alert === "danger" ? "text-[color:var(--risk-high)]" : ""}`} />
@@ -52,6 +52,32 @@ function KpiCardWithTrend({ label, value, note, trend, alert }: { label: React.R
         {alert === "danger" && <span className="text-base text-[color:var(--risk-high)]" role="img" aria-label="needs attention">!</span>}
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
+      {href && (
+        <ChevronRight
+          size={14}
+          strokeWidth={1.5}
+          className="absolute top-3 right-3 text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        />
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        role="link"
+        aria-label={ariaLabel}
+        className={`group relative rounded-2xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/30 hover:-translate-y-px cursor-pointer ${alertBorder} ${alertBg}`}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={`rounded-2xl border border-border bg-card p-4 ${alertBorder} ${alertBg}`}>
+      {content}
     </div>
   );
 }
@@ -182,12 +208,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* KPI row — with trend indicators 2.4.1 */}
+      {/* KPI row — with trend indicators 2.4.1, clickable drill-down */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
-        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} />
-        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} alert={avgAucAlert ? "danger" : null} />
-        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} />
+        <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" href="/workspace/audits" ariaLabel={`${copy.kpis.liveContractsLabel} — ${copy.kpis.liveContractsNote}`} />
+        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.defendedRowsLabel} — ${copy.kpis.defendedRowsNote}`} />
+        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
+        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
       </div>
 
       {/* Audit track quick-access cards — Platform Boost */}

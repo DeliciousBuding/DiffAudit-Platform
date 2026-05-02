@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, FileText, ArrowRight, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
@@ -119,6 +119,22 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
     durationMs: new Date(j.updated_at).getTime() - new Date(j.created_at).getTime(),
   }));
   const { sorted: sortedHistory, sortKey, sortDir, toggleSort } = useSort(sortableDisplayed);
+
+  // Scroll container ref for fade gradient
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = tableScrollRef.current;
+    if (!el) return;
+    function checkScrollable() {
+      if (el) {
+        el.classList.toggle("is-scrollable", el.scrollWidth > el.clientWidth);
+      }
+    }
+    checkScrollable();
+    const observer = new ResizeObserver(checkScrollable);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [displayed]);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
@@ -256,14 +272,19 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
 
   // History: full table view
   return (
-    <div className="overflow-x-auto">
+    <div
+      ref={tableScrollRef}
+      className="workspace-table-scroll"
+      role="region"
+      aria-label={tableCopy.name}
+    >
       <table className={`workspace-data-table w-full border-collapse text-[13px] ${densityClass(density)}`}>
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <SortableHeader label={tableCopy.name} sortKey="name" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[200px]">{tableCopy.name}</th>
             <SortableHeader label={tableCopy.type} sortKey="job_type" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
             <SortableHeader label={tableCopy.model} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-            <SortableHeader label={tableCopy.status} sortKey="status" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[90px]">{tableCopy.status}</th>
             <SortableHeader label={tableCopy.created} sortKey="created_at" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
             <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("durationMs")}>
               <span className="inline-flex items-center gap-1 justify-end">

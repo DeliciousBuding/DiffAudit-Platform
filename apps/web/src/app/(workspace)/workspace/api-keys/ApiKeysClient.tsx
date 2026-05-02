@@ -91,6 +91,22 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     () => new Set(DEFAULT_SCOPES),
   );
   const modalRef = useRef<HTMLDivElement>(null);
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll container ref for fade gradient
+  useEffect(() => {
+    const el = tableScrollRef.current;
+    if (!el) return;
+    function checkScrollable() {
+      if (el) {
+        el.classList.toggle("is-scrollable", el.scrollWidth > el.clientWidth);
+      }
+    }
+    checkScrollable();
+    const observer = new ResizeObserver(checkScrollable);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [keys]);
 
   // ESC key to close revoke modal
   useEffect(() => {
@@ -329,6 +345,12 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       ) : (
       <>
       <h3 className="mb-3 text-sm font-semibold text-foreground">{copy.activeKeys}</h3>
+      <div
+        ref={tableScrollRef}
+        className="workspace-table-scroll"
+        role="region"
+        aria-label={copy.activeKeys}
+      >
       <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm dark:border-border/50 dark:shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
         {/* Table header */}
         <div className="hidden border-b border-border/70 bg-muted/40 px-6 py-3 dark:bg-muted/20 md:grid md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:gap-4">
@@ -400,6 +422,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
             </div>
           ))}
         </div>
+      </div>
       </div>
       </>
       )}

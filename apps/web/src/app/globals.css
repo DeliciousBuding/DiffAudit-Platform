@@ -2676,6 +2676,36 @@ html.dark .header-pill-primary:hover {
   box-shadow: inset 2px 0 0 var(--accent-blue);
 }
 
+/* ===== Scrollable table container ===== */
+.workspace-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+/* Fade-out gradient on the right edge when content overflows */
+.workspace-table-scroll::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 32px;
+  pointer-events: none;
+  background: linear-gradient(to left, var(--background, #fff), transparent);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.workspace-table-scroll.is-scrollable::after {
+  opacity: 1;
+}
+
+html[data-theme="dark"] .workspace-table-scroll::after,
+html.dark .workspace-table-scroll::after {
+  background: linear-gradient(to left, var(--background, #121317), transparent);
+}
+
 .workspace-main-content section.border.border-border.bg-card {
   border-color: rgba(226, 232, 240, 0.9);
   border-radius: 18px;

@@ -58,6 +58,10 @@ const COPY: Record<string, {
   clearSearch: string;
   searchPlaceholder: string;
   createAuditTask: string;
+  presetAll: string;
+  presetHighUnmitigated: string;
+  presetMitigated: string;
+  presetHighAuc: string;
 }> = {
   "en-US": {
     totalFindings: "Total Findings",
@@ -96,6 +100,10 @@ const COPY: Record<string, {
     clearSearch: "Clear search",
     searchPlaceholder: "Search by description or model...",
     createAuditTask: "Create audit task",
+    presetAll: "All",
+    presetHighUnmitigated: "High Risk Unmitigated",
+    presetMitigated: "Mitigated",
+    presetHighAuc: "High AUC",
   },
   "zh-CN": {
     totalFindings: "发现总数",
@@ -134,6 +142,10 @@ const COPY: Record<string, {
     clearSearch: "清除搜索",
     searchPlaceholder: "搜索描述或模型...",
     createAuditTask: "创建审计任务",
+    presetAll: "全部",
+    presetHighUnmitigated: "高危未防御",
+    presetMitigated: "已有防御",
+    presetHighAuc: "高 AUC",
   },
 };
 
@@ -232,6 +244,26 @@ function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value
 }
 
 /* ------------------------------------------------------------------ */
+/*  Quick filter presets                                                */
+/* ------------------------------------------------------------------ */
+
+type QuickFilterId = "all" | "high-unmitigated" | "mitigated" | "high-auc";
+
+type QuickFilterPreset = {
+  id: QuickFilterId;
+  labelKey: keyof typeof COPY["en-US"];
+  severity: string;
+  status: string;
+};
+
+const QUICK_FILTERS: QuickFilterPreset[] = [
+  { id: "all", labelKey: "presetAll", severity: "", status: "" },
+  { id: "high-unmitigated", labelKey: "presetHighUnmitigated", severity: "high", status: "investigating" },
+  { id: "mitigated", labelKey: "presetMitigated", severity: "", status: "has-defense" },
+  { id: "high-auc", labelKey: "presetHighAuc", severity: "high", status: "" },
+];
+
+/* ------------------------------------------------------------------ */
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -279,14 +311,30 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   /* -- selected finding for detail panel ---------------------------- */
   const [selectedFinding, setSelectedFinding] = useState<AttackDefenseRowViewModel | null>(null);
 
-  /* -- unified filter change handler (resets pagination) ----------- */
+  /* -- quick filter preset state ------------------------------------ */
+  const [activePreset, setActivePreset] = useState<QuickFilterId | null>("all");
+
+  /* -- unified filter change handler (resets pagination, clears preset) -- */
   const handleFilterChange = useCallback(
     (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
       setter(value);
+      setActivePreset(null);
       setCurrentPage(1);
     },
     [],
   );
+
+  /* -- apply a quick filter preset ---------------------------------- */
+  const applyPreset = useCallback((preset: QuickFilterPreset) => {
+    setActivePreset(preset.id);
+    setSeverityFilter(preset.severity);
+    setStatusFilter(preset.status);
+    // Presets only control severity + status; clear category/model for a clean view
+    setCategoryFilter("");
+    setModelFilter("");
+    setSearchQuery("");
+    setCurrentPage(1);
+  }, []);
 
   /* -- clear all filters ------------------------------------------ */
   const clearAllFilters = useCallback(() => {
@@ -295,6 +343,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
     setModelFilter("");
     setStatusFilter("");
     setSearchQuery("");
+    setActivePreset("all");
     setCurrentPage(1);
   }, []);
 
@@ -377,6 +426,12 @@ export function RiskFindingsClient({ rows, locale }: Props) {
     setStatusFilter(urlStatus);
     setSearchQuery(urlQ);
     setCurrentPage(urlPage > 0 ? urlPage : 1);
+
+    // Derive active preset from URL params
+    const matchedPreset = QUICK_FILTERS.find(
+      (p) => p.severity === validSeverity && p.status === urlStatus && !urlCategory && !urlModel && !urlQ.trim(),
+    );
+    setActivePreset(matchedPreset?.id ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
@@ -396,6 +451,22 @@ export function RiskFindingsClient({ rows, locale }: Props) {
     return () => mq.removeEventListener("change", update);
   }, []);
   const pageWindow = getPaginationWindow(currentPage, totalPages, maxVisiblePages);
+
+  /* -- scroll container ref for fade gradient ---------------------- */
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = tableScrollRef.current;
+    if (!el) return;
+    function checkScrollable() {
+      if (el) {
+        el.classList.toggle("is-scrollable", el.scrollWidth > el.clientWidth);
+      }
+    }
+    checkScrollable();
+    const observer = new ResizeObserver(checkScrollable);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filtered]);
 
   /* -- localized number formatter ---------------------------------- */
   const nf = useMemo(() => new Intl.NumberFormat(locale === "zh-CN" ? "zh-CN" : "en-US"), [locale]);
@@ -434,6 +505,27 @@ export function RiskFindingsClient({ rows, locale }: Props) {
       {/* Divider */}
       <div className="h-px bg-border/60" />
 
+      {/* Quick Filter Presets */}
+      <div className="flex flex-wrap items-center gap-2">
+        {QUICK_FILTERS.map((preset) => {
+          const isActive = activePreset === preset.id;
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => applyPreset(preset)}
+              className={`rounded-[10px] px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+                isActive
+                  ? "bg-[var(--accent-blue)] text-white shadow-sm"
+                  : "border border-border text-muted-foreground hover:border-[var(--accent-blue)]/40 hover:text-foreground"
+              }`}
+            >
+              {copy[preset.labelKey]}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Filter Bar */}
       <div className="rounded-2xl border border-border bg-card">
         <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
@@ -443,14 +535,14 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+              onChange={(e) => { setSearchQuery(e.target.value); setActivePreset(null); setCurrentPage(1); }}
               placeholder={copy.searchPlaceholder}
               className="w-full rounded-xl border border-border bg-background py-2 pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => { setSearchQuery(""); setCurrentPage(1); }}
+                onClick={() => { setSearchQuery(""); setActivePreset(null); setCurrentPage(1); }}
                 aria-label={copy.clearSearch}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
               >
@@ -531,11 +623,16 @@ export function RiskFindingsClient({ rows, locale }: Props) {
       {/* Table */}
       <WorkspaceSectionCard title={copy.findingsTable}>
         {filtered.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div
+            ref={tableScrollRef}
+            className="workspace-table-scroll"
+            role="region"
+            aria-label={copy.findingsTable}
+          >
             <table className={`w-full text-[13px] ${densityClass(density)}`}>
               <thead>
                 <tr className="border-b border-border">
-                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.riskDescription}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-[220px]">{copy.riskDescription}</th>
                   <SortableHeader label={copy.severity} sortKey="severityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.category} sortKey="track" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.sourceModel} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />

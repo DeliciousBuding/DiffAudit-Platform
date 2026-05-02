@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { WORKSPACE_NAV_REGISTRY } from "@/lib/workspace-registry";
-import { useToast } from "@/components/toast-provider";
+import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";
 
 /**
  * Global keyboard shortcuts for the workspace.
@@ -15,11 +15,21 @@ import { useToast } from "@/components/toast-provider";
  *   Ctrl+B  — Toggle sidebar collapse
  *   Ctrl+1..8 — Navigate to sidebar items
  *   Ctrl+,  — Settings
- *   ?       — Show shortcuts help (when not in input)
+ *   ?       — Show shortcuts modal (when not in input)
  */
 export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
   const router = useRouter();
-  const { toast } = useToast();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const closeModal = useCallback(() => setModalOpen(false), []);
+
+  useEffect(() => {
+    function onShowShortcuts() {
+      setModalOpen(true);
+    }
+    window.addEventListener("workspace:show-shortcuts", onShowShortcuts);
+    return () => window.removeEventListener("workspace:show-shortcuts", onShowShortcuts);
+  }, []);
 
   useEffect(() => {
     function isInputElement(el: EventTarget | null): boolean {
@@ -71,23 +81,22 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
         return;
       }
 
-      // ?: Show keyboard shortcuts help (only when not in input)
+      // ?: Show keyboard shortcuts modal (only when not in input)
       if (event.key === "?" && !event.ctrlKey && !event.metaKey && !isInputElement(target)) {
         event.preventDefault();
-        const isZh = locale === "zh-CN";
-        toast({
-          type: "info",
-          title: isZh
-            ? "快捷键: Ctrl+K 命令面板 | Ctrl+B 侧栏折叠 | Ctrl+N 新建 | Ctrl+1-8 导航 | Ctrl+, 设置"
-            : "Shortcuts: Ctrl+K Command Palette | Ctrl+B Sidebar | Ctrl+N New | Ctrl+1-8 Navigate | Ctrl+, Settings",
-          duration: 5000,
-        });
+        setModalOpen((prev) => !prev);
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [router, toast, locale]);
+  }, [router]);
 
-  return null;
+  return (
+    <KeyboardShortcutsModal
+      locale={(locale ?? "en-US") as "zh-CN" | "en-US"}
+      open={modalOpen}
+      onClose={closeModal}
+    />
+  );
 }

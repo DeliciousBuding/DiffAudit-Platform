@@ -154,6 +154,22 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadComplete, setUploadComplete] = useState(false);
   const uploadTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const evidenceScrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll container ref for fade gradient on evidence table
+  useEffect(() => {
+    const el = evidenceScrollRef.current;
+    if (!el) return;
+    function checkScrollable() {
+      if (el) {
+        el.classList.toggle("is-scrollable", el.scrollWidth > el.clientWidth);
+      }
+    }
+    checkScrollable();
+    const observer = new ResizeObserver(checkScrollable);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [selectedEntry, evidencePage]);
 
   // --- CRUD helpers ---
   function addEntryToCatalog(entry: CatalogEntryViewModel) {
@@ -757,12 +773,17 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <p className="py-8 text-center text-xs text-muted-foreground">{copy.emptyEvidence}</p>
                 ) : (
                   <>
-                    <div className="overflow-x-auto rounded-lg border border-border/60">
+                    <div
+                      ref={evidenceScrollRef}
+                      className="workspace-table-scroll rounded-lg border border-border/60"
+                      role="region"
+                      aria-label={copy.tabEvidence}
+                    >
                       <table className="w-full text-[12px]">
                         <thead>
                           <tr className="border-b border-border/60 bg-muted/20 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                            <th scope="col" className="px-4 py-3">{copy.attack}</th>
-                            <th scope="col" className="px-4 py-3">{copy.defense}</th>
+                            <th scope="col" className="px-4 py-3 min-w-[140px]">{copy.attack}</th>
+                            <th scope="col" className="px-4 py-3 min-w-[100px]">{copy.defense}</th>
                             <th scope="col" className="px-4 py-3 text-right"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.auc}</MetricTooltip></th>
                             <th scope="col" className="px-4 py-3 text-right"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.asr}</MetricTooltip></th>
                             <th scope="col" className="px-4 py-3 text-right"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.tpr}</MetricTooltip></th>

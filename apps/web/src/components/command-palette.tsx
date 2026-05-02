@@ -150,15 +150,8 @@ const COMMANDS: CommandItem[] = [
     labelZh: "显示快捷键",
     category: "info",
     icon: Keyboard,
-    action: (_router, toast, locale) => {
-      const isZh = locale === "zh-CN";
-      toast({
-        type: "info",
-        title: isZh
-          ? "快捷键: Ctrl+K 命令面板 | Ctrl+N 新建 | Ctrl+1-8 导航 | Ctrl+, 设置"
-          : "Shortcuts: Ctrl+K Command Palette | Ctrl+N New | Ctrl+1-8 Navigate | Ctrl+, Settings",
-        duration: 6000,
-      });
+    action: () => {
+      window.dispatchEvent(new CustomEvent("workspace:show-shortcuts"));
     },
   },
   {
