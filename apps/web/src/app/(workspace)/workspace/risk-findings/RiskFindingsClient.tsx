@@ -8,12 +8,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "@/components/empty-state";
 import { SortableHeader } from "@/components/sortable-header";
 import { StatusBadge } from "@/components/status-badge";
+import { TableDensityToggle, readPersistedDensity, densityClass, type Density } from "@/components/table-density-toggle";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { useSort } from "@/hooks/use-sort";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import type { Locale } from "@/components/language-picker";
+import { FindingDetailPanel } from "./FindingDetailPanel";
 
 /* ------------------------------------------------------------------ */
 /*  Localized copy                                                     */
@@ -267,6 +269,16 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const hasActiveFilters = severityFilter || categoryFilter || modelFilter || statusFilter || searchQuery.trim();
 
+  /* -- table density ------------------------------------------------ */
+  const DENSITY_KEY = "diffaudit-risk-density";
+  const [density, setDensity] = useState<Density>(() => readPersistedDensity(DENSITY_KEY));
+  useEffect(() => {
+    localStorage.setItem(DENSITY_KEY, density);
+  }, [density]);
+
+  /* -- selected finding for detail panel ---------------------------- */
+  const [selectedFinding, setSelectedFinding] = useState<AttackDefenseRowViewModel | null>(null);
+
   /* -- unified filter change handler (resets pagination) ----------- */
   const handleFilterChange = useCallback(
     (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
@@ -511,16 +523,16 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               {copy.clearFilters}
             </button>
           )}
+          {!hasActiveFilters && <div className="ml-auto" />}
+          <TableDensityToggle density={density} onChange={setDensity} />
         </div>
       </div>
 
       {/* Table */}
-      {/* TODO: Detail view for individual findings is planned but not yet implemented.
-          When ready, add onClick handlers to table rows to open a detail panel. */}
       <WorkspaceSectionCard title={copy.findingsTable}>
         {filtered.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
+            <table className={`w-full text-[13px] ${densityClass(density)}`}>
               <thead>
                 <tr className="border-b border-border">
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.riskDescription}</th>
@@ -541,7 +553,16 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                   return (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}`}
-                      className={`border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedFinding(row)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedFinding(row);
+                        }
+                      }}
+                      className={`cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""}`}
                     >
                       <td className="max-w-[280px] px-4 py-3">
                         <div className="font-medium text-foreground">{getRiskDescription(row.attack, row.note ?? "", locale)}</div>
@@ -629,6 +650,13 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           </div>
         )}
       </WorkspaceSectionCard>
+
+      {/* Finding detail slide-over panel */}
+      <FindingDetailPanel
+        finding={selectedFinding}
+        locale={locale}
+        onClose={() => setSelectedFinding(null)}
+      />
     </div>
   );
 }

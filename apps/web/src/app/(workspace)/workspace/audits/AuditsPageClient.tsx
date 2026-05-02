@@ -10,6 +10,7 @@ import { inferReportTrack } from "@/lib/audit-flow";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
 import { KpiCard } from "@/components/kpi-card";
+import { TableDensityToggle, readPersistedDensity, type Density } from "@/components/table-density-toggle";
 import { type JobRecord, TaskListClient } from "./TaskListClient";
 
 /* ── Component ────────────────────────────────────────────────────────── */
@@ -27,6 +28,13 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
   const [refreshToken, setRefreshToken] = useState(0);
   const [filter, setFilter] = useState(() => searchParams.get("filter") ?? "all");
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
+
+  /* -- table density ------------------------------------------------ */
+  const DENSITY_KEY = "diffaudit-audits-density";
+  const [density, setDensity] = useState<Density>(() => readPersistedDensity(DENSITY_KEY));
+  useEffect(() => {
+    localStorage.setItem(DENSITY_KEY, density);
+  }, [density]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -181,6 +189,9 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <div className="ml-auto">
+          <TableDensityToggle density={density} onChange={setDensity} />
+        </div>
       </div>
 
       {/* Main layout: list + sidebar */}
@@ -201,6 +212,7 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
                 loading={loading}
                 loadError={loadError}
                 onRefresh={refreshJobs}
+                density={density}
               />
             </div>
           </WorkspaceSectionCard>
@@ -217,6 +229,7 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
                 loading={loading}
                 loadError={loadError}
                 onRefresh={refreshJobs}
+                density={density}
               />
             </div>
           </WorkspaceSectionCard>

@@ -253,3 +253,14 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
    - RiskFindings reads URL param to pre-set filter
 
 15 rounds total, 13 commits to main. 136/136 tests.
+
+### Phase 16: URL State Persistence + Dark Mode Toggle (COMPLETED)
+1. **URL state persistence**: filter/search/pagination synced to URL params
+   - Risk Findings: severity, category, model, status, search, page
+   - Audits: filter, search
+   - Model Assets: search, selected model
+   - Bidirectional sync, browser back/forward support
+2. **Dark mode sidebar toggle**: Sun/Moon icon at sidebar bottom
+   - Uses useTheme hook, bilingual labels
+
+16 rounds total, 14 commits to main. 136/136 tests.

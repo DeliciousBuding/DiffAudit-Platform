@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/empty-state";
 import { SortableHeader } from "@/components/sortable-header";
 import { StatusBadge } from "@/components/status-badge";
 import { InfoTooltip } from "@/components/info-tooltip";
+import { densityClass, type Density } from "@/components/table-density-toggle";
 import { useSort } from "@/hooks/use-sort";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
@@ -44,6 +45,7 @@ interface TaskListClientProps {
   loading: boolean;
   loadError: boolean;
   onRefresh: () => void;
+  density?: Density;
 }
 
 function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
@@ -79,7 +81,7 @@ function ProgressStrip({ value }: { value: number }) {
   );
 }
 
-export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, loading, loadError, onRefresh }: TaskListClientProps) {
+export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, loading, loadError, onRefresh, density = "default" }: TaskListClientProps) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tableCopy = copy.taskTable;
 
@@ -255,7 +257,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
   // History: full table view
   return (
     <div className="overflow-x-auto">
-      <table className="workspace-data-table w-full border-collapse text-[13px]">
+      <table className={`workspace-data-table w-full border-collapse text-[13px] ${densityClass(density)}`}>
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
             <SortableHeader label={tableCopy.name} sortKey="name" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />

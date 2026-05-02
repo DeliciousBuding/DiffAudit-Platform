@@ -4949,3 +4949,30 @@ html.dark .command-palette-empty {
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* Table density */
+.table-density-compact td,
+.table-density-compact th {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 12px;
+}
+
+.table-density-comfortable td,
+.table-density-comfortable th {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-size: 14px;
+}
+
+/* Slide-over panel animation */
+@keyframes slide-over-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
