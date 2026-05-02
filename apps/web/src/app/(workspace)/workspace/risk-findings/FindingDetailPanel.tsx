@@ -324,7 +324,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
               <div className="flex items-center gap-2">
                 {finding.defense !== "none" ? (
                   <>
-                    <ShieldCheck size={14} strokeWidth={1.5} className="text-[var(--success)]" />
+                    <ShieldCheck size={14} strokeWidth={1.5} className="text-[color:var(--success)]" />
                     <span className="mono text-[12px]">{finding.defense}</span>
                     <CopyButton text={finding.defense} label="defense" />
                   </>

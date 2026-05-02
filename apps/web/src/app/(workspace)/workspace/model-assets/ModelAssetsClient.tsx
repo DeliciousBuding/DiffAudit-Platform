@@ -734,7 +734,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                     {timelineEntries.map((entry, index) => {
                       const isBestEvidence = index === 0;
                       return (
-                        <div key={entry.contractKey} className="flex gap-4 rounded-lg border border-border/60 p-4 transition-colors hover:border-border">
+                        <div key={entry.contractKey} className="flex gap-4 rounded-xl border border-border/60 p-4 transition-colors hover:border-border">
                           <div className="flex flex-col items-center">
                             <div className={`h-3 w-3 rounded-full ${isBestEvidence ? "bg-[var(--accent-blue)]" : "bg-border"}`} aria-hidden="true" />
                             {index < timelineEntries.length - 1 && <div className="w-[2px] flex-1 bg-border/40 mt-1" aria-hidden="true" />}

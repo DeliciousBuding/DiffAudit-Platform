@@ -252,16 +252,18 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* System health summary */}
       {healthStatus && (
-        <div className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] ${
+        <Link
+          href={healthStatus.tone === "warning" ? "/workspace/risk-findings" : "#"}
+          className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] transition-colors ${
           healthStatus.tone === "warning"
-            ? "border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 text-[color:var(--warning)]"
+            ? "border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 cursor-pointer"
             : healthStatus.tone === "info"
               ? "border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 text-[color:var(--accent-blue)]"
               : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
         }`}>
           <span className="shrink-0">{healthStatus.icon}</span>
           <span className="font-medium">{healthStatus.text}</span>
-        </div>
+        </Link>
       )}
 
       {/* Audit track quick-access cards — Platform Boost */}
