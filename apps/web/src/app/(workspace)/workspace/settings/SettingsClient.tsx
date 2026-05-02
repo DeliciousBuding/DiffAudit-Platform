@@ -693,7 +693,7 @@ export function SettingsClient({
               </div>
             ) : null}
 
-            <div className="rounded-xl border border-border bg-muted/10 p-3">
+            <div className="rounded-2xl border border-border bg-muted/10 p-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                 <span className={`mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full ${
@@ -875,13 +875,13 @@ export function SettingsClient({
             </button>
             {templates.length > 0 ? (
               <div className="mt-3 space-y-1.5">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <div className="text-[13px] font-bold text-foreground">
                   {copy.auditTemplates.savedTemplatesTitle}
                 </div>
                 {templates.map((t) => (
                   <div
                     key={t.id}
-                    className="flex items-center justify-between rounded border border-border bg-muted/10 px-2.5 py-1.5"
+                    className="flex items-center justify-between rounded-lg border border-border bg-muted/10 px-2.5 py-1.5"
                   >
                     <div className="flex flex-col">
                       <span className="text-[11px] text-muted-foreground">

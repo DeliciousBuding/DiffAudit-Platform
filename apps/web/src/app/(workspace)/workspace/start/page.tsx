@@ -91,6 +91,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     getWorkspaceCatalogData(),
     getWorkspaceAttackDefenseData(),
   ]);
+  const dataFetchedAt = new Date();
 
   const activeContracts = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
@@ -216,6 +217,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   };
   const tcs = locale === "zh-CN" ? " 项评估" : " evals";
 
+  // System health summary
+  const healthStatus = riskCounts.high > 0
+    ? { tone: "warning" as const, icon: "⚠" as const, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注` : `${riskCounts.high} high-risk findings need attention` }
+    : totalRows > 0
+      ? { tone: "success" as const, icon: "✓" as const, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成 · 防御率 ${Math.round(defenseRate * 100)}%` : `Systems healthy · ${totalRows} evaluations · ${Math.round(defenseRate * 100)}% defense rate` }
+      : null;
+
   return (
     <>
       {/* KPI row — with trend indicators 2.4.1, clickable drill-down */}
@@ -226,8 +234,20 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
       </div>
       <div className="text-[11px] text-muted-foreground/50 text-right">
-        {locale === "zh-CN" ? `数据更新于 ${new Date().toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}` : `Data updated ${new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`}
+        {locale === "zh-CN" ? `数据更新于 ${dataFetchedAt.toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}` : `Data updated ${dataFetchedAt.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`}
       </div>
+
+      {/* System health summary */}
+      {healthStatus && (
+        <div className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] ${
+          healthStatus.tone === "warning"
+            ? "border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 text-[color:var(--warning)]"
+            : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
+        }`}>
+          <span className="text-sm" aria-hidden="true">{healthStatus.icon}</span>
+          <span className="font-medium">{healthStatus.text}</span>
+        </div>
+      )}
 
       {/* Audit track quick-access cards — Platform Boost */}
       <div className="grid gap-4 md:grid-cols-3">
