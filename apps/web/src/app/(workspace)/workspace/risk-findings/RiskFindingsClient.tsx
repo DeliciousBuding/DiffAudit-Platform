@@ -49,6 +49,7 @@ const COPY: Record<string, {
   clearFilters: string;
   clearSearch: string;
   searchPlaceholder: string;
+  createAuditTask: string;
 }> = {
   "en-US": {
     totalFindings: "Total Findings",
@@ -86,6 +87,7 @@ const COPY: Record<string, {
     clearFilters: "Clear filters",
     clearSearch: "Clear search",
     searchPlaceholder: "Search by description or model...",
+    createAuditTask: "Create audit task",
   },
   "zh-CN": {
     totalFindings: "发现总数",
@@ -123,6 +125,7 @@ const COPY: Record<string, {
     clearFilters: "清除筛选",
     clearSearch: "清除搜索",
     searchPlaceholder: "搜索描述或模型...",
+    createAuditTask: "创建审计任务",
   },
 };
 
@@ -502,7 +505,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 href="/workspace/audits/new"
                 className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
-                {locale === "zh-CN" ? "创建审计任务" : "Create audit task"}
+                {copy.createAuditTask}
                 <ArrowRight size={14} strokeWidth={1.5} />
               </Link>
             )}

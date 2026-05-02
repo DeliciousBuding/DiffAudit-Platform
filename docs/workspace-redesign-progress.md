@@ -168,3 +168,10 @@ Round 5 verification: 136/136 tests, strokeWidth CLEAN in workspace, radius CLEA
 Round 6 fixes: 4 gap-3→4, 23 inline locale ternaries centralized to workspace-copy.ts (reports 15, JobDetail 5, error 2, CreateTask 1)
 
 Final state: 136/136 tests, ~4 inline locale helpers remaining (non-user-facing), all design tokens converged.
+
+Round 7 product polish (3 parallel agents):
+- Data: Intl.NumberFormat, shared format.ts utility, status badge localization, chart tooltip labels
+- Accessibility: ARIA roles/labels on tabs/filters/pagination/progress bars, table scope, decorative icons aria-hidden, mobile KPI stacking
+- Polish: --accent-green CSS var fixed, shared formatters, improved empty/loading/error states, API keys dates localized
+
+7 rounds total, 7 commits to main. 136/136 tests passing.

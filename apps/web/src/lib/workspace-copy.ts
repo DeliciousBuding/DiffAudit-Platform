@@ -376,6 +376,8 @@ export const WORKSPACE_COPY: Record<
       noHighRiskGaps: string;
       exampleDataLabel: string;
       createAuditTask: string;
+      docxComingSoon: string;
+      pptxComingSoon: string;
       defenseStrategies: Array<{ name: string; desc: string; tag: string }>;
     };
     apiKeys: {
@@ -1007,6 +1009,8 @@ export const WORKSPACE_COPY: Record<
       noHighRiskGaps: "No high-risk gaps detected",
       exampleDataLabel: "Example data",
       createAuditTask: "Create audit task",
+      docxComingSoon: "DOCX export coming soon",
+      pptxComingSoon: "PPTX export coming soon",
       defenseStrategies: [
         {
           name: "Differential Privacy (DP) Training",
@@ -1811,6 +1815,8 @@ export const WORKSPACE_COPY: Record<
       noHighRiskGaps: "无高风险缺口",
       exampleDataLabel: "示例数据",
       createAuditTask: "创建审计任务",
+      docxComingSoon: "DOCX 导出即将推出",
+      pptxComingSoon: "PPTX 导出即将推出",
       defenseStrategies: [
         {
           name: "差分隐私 (DP) 训练",

@@ -68,6 +68,7 @@ export function ReportAuditView({
         historyTitle: "历史对照",
         historyPlaceholder:
           "历史对照数据将在后续版本接入，敬请期待。",
+        noProvenanceData: "暂无溯源数据。",
       }
     : {
         summaryTitle: "Audit view summary",
@@ -88,6 +89,7 @@ export function ReportAuditView({
         historyTitle: "History comparison",
         historyPlaceholder:
           "Historical comparison data will be available in a future release.",
+        noProvenanceData: "No provenance data available.",
       };
   const defendedRows = rows.filter((row) => row.defense !== "none" && row.defense !== "None").length;
   const undefendedRows = rows.length - defendedRows;
@@ -232,7 +234,7 @@ export function ReportAuditView({
               </div>
             ) : null}
             {!hasValue(provenance.runDirectoryPath) && !hasValue(provenance.seed) && !hasValue(provenance.schedule) && !hasValue(provenance.fixtureVersion) && !hasValue(provenance.summaryPath) && !hasValue(provenance.evidenceLevel) && !hasValue(provenance.admissionStatus) && !hasValue(provenance.admissionLevel) && !hasValue(provenance.provenanceStatus) && !hasValue(provenance.intakeManifest) ? (
-              <p className="text-muted-foreground text-[11px] italic">{locale === "zh-CN" ? "暂无溯源数据。" : "No provenance data available."}</p>
+              <p className="text-muted-foreground text-[11px] italic">{t.noProvenanceData}</p>
             ) : null}
           </dl>
         </section>

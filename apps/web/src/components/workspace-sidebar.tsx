@@ -7,12 +7,13 @@ import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";
 import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
   const items = getNavItems(locale);
   const current = findActiveNavItem(pathname, items);
-  const sidebarLabel = locale === "zh-CN" ? "侧边栏导航" : "Sidebar navigation";
+  const sidebarLabel = WORKSPACE_COPY[locale].shell.desktopNavAriaLabel;
 
   return (
     <nav className="flex flex-col gap-0.5" aria-label={sidebarLabel}>

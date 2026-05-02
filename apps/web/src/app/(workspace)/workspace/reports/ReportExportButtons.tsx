@@ -131,7 +131,7 @@ export function ReportExportButtons({ rows, locale, contracts }: ReportExportBut
       <button
         type="button"
         disabled
-        title={locale === "zh-CN" ? "DOCX 导出即将推出" : "DOCX export coming soon"}
+        title={copy.docxComingSoon}
         className={`${btnBase} border border-border text-muted-foreground/60 cursor-not-allowed`}
       >
         DOCX
@@ -139,7 +139,7 @@ export function ReportExportButtons({ rows, locale, contracts }: ReportExportBut
       <button
         type="button"
         disabled
-        title={locale === "zh-CN" ? "PPTX 导出即将推出" : "PPTX export coming soon"}
+        title={copy.pptxComingSoon}
         className={`${btnBase} border border-border text-muted-foreground/60 cursor-not-allowed`}
       >
         PPTX
