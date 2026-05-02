@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Info, Key, Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { formatDateOnly } from "@/lib/format";
@@ -360,8 +361,9 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               </div>
 
               {/* Prefix */}
-              <div className="min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
                 <code className="inline-block truncate rounded-md border border-border/60 bg-muted/20 px-2 py-1 font-mono text-[11px] text-foreground/80 dark:bg-muted/15">{key.prefix}</code>
+                <CopyButton text={key.prefix} label="key prefix" />
               </div>
 
               {/* Permissions / scopes */}

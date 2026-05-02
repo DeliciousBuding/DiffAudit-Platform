@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { CopyButton } from "@/components/copy-button";
 import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/skeleton";
 import { Modal } from "@/components/modal";
@@ -269,6 +270,7 @@ export function JobDetailClient({
       {/* Header: job ID + status badge */}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="mono text-sm font-medium">{job.job_id}</span>
+        <CopyButton text={job.job_id} label="job ID" />
         <StatusBadge tone={statusTone(job.status)} compact>
           {statusLabel(job.status, copy.jobDetail.statusLabels)}
         </StatusBadge>
@@ -334,8 +336,8 @@ export function JobDetailClient({
 
       {/* Detail fields */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <DetailCard label={copy.jobDetail.labels.contractKey} value={job.contract_key} mono />
-        <DetailCard label={copy.jobDetail.labels.workspace} value={job.workspace_name} />
+        <DetailCard label={copy.jobDetail.labels.contractKey} value={job.contract_key} mono copyText={job.contract_key} />
+        <DetailCard label={copy.jobDetail.labels.workspace} value={job.workspace_name} copyText={job.workspace_name} />
         <DetailCard label={copy.jobDetail.labels.type} value={job.job_type} mono />
         <DetailCard
           label={copy.jobDetail.labels.targetModel}
@@ -471,17 +473,22 @@ function DetailCard({
   label,
   value,
   mono,
+  copyText,
 }: {
   label: string;
   value: string;
   mono?: boolean;
+  copyText?: string;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-[13px] font-bold text-muted-foreground mb-1">
         {label}
       </div>
-      <div className={`text-[13px] truncate ${mono ? "mono" : ""}`}>{value}</div>
+      <div className="flex items-center gap-1.5">
+        <div className={`text-[13px] truncate ${mono ? "mono" : ""}`}>{value}</div>
+        {copyText ? <CopyButton text={copyText} label={label} /> : null}
+      </div>
     </div>
   );
 }

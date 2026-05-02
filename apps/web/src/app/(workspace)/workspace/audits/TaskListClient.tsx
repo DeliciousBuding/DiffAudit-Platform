@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ClipboardList, FileText, ArrowRight, RefreshCw } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { InfoTooltip } from "@/components/info-tooltip";
@@ -265,7 +266,10 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                   className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
                 >
                   <td className="px-4 py-3">
-                    <div className="font-medium text-xs whitespace-nowrap">{job.job_id}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-medium text-xs whitespace-nowrap">{job.job_id}</span>
+                      <CopyButton text={job.job_id} label="job ID" />
+                    </div>
                     <div className="mono text-[10px] text-muted-foreground mt-0.5 whitespace-nowrap">{job.contract_key}</div>
                   </td>
                   <td className="px-4 py-3">

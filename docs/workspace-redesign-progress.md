@@ -204,3 +204,22 @@ Round 9: final 6 inline locale ternaries centralized (RiskFindings, ReportExport
 
 New files: metric-tooltip.tsx, info-tooltip.tsx, animated-value.tsx, workspace-keyboard-shortcuts.tsx, use-count-up.ts
 Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × consistency × innovation)
+
+### Phase 11: Command Palette + Empty States + Smart Data (COMPLETED)
+1. **Command Palette** (Ctrl+K):
+   - 14 commands: 8 navigation + 3 actions + 3 info
+   - Full keyboard nav (arrows, Enter, Escape)
+   - Live search, bilingual, backdrop blur
+   - Replaced old Ctrl+K search handler
+
+2. **Empty States**:
+   - Shared EmptyState component (icon + title + description + action)
+   - Applied to 5 pages: model-assets, risk-findings, reports, api-keys, audits
+   - Bilingual copy in workspace-copy.ts
+
+3. **Smart Data Highlights**:
+   - Risk color coding on table rows (high=coral, medium=amber, low=green)
+   - Smart status messages on running tasks ("采样中... 42%")
+   - KPI anomaly alerts: AUC >0.85 → danger, defense <50% → warning
+
+12 rounds total, 10 commits to main. 136/136 tests.

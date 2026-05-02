@@ -1707,6 +1707,7 @@ html.dark .header-pill-primary:hover {
 .workspace-page-frame {
   display: grid;
   gap: 22px;
+  animation: page-enter 0.3s ease-out;
 }
 
 .workspace-page-header {
@@ -3358,6 +3359,18 @@ html.dark .brand-logo-dark {
   animation: page-fade-in 0.35s ease-out;
 }
 
+/* Page entrance animation for workspace pages */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===== Dark Mode variables — 3.1 ===== */
 
 html[data-theme="dark"],
@@ -4377,6 +4390,7 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   .table-row-hover,
   .card-animate,
   .page-entrance,
+  .workspace-page-frame,
   .animate-pulse,
   button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button) {
     animation: none !important;

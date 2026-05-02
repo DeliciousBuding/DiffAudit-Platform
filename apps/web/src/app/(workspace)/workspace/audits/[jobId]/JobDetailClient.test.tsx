@@ -27,6 +27,10 @@ vi.mock("@/components/modal", () => ({
   Modal: ({ children }: React.PropsWithChildren) => React.createElement(React.Fragment, null, children),
 }));
 
+vi.mock("@/components/copy-button", () => ({
+  CopyButton: () => null,
+}));
+
 describe("JobDetailClient", () => {
   afterEach(() => {
     useStateMock.mockReset();

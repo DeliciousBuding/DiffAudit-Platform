@@ -3,6 +3,7 @@
 import { Search, Plus, Pencil, Trash2, X, ChevronLeft, ChevronRight, Upload, Check, Database } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
 
+import { CopyButton } from "@/components/copy-button";
 import { Modal } from "@/components/modal";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
@@ -513,7 +514,10 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <Database size={18} strokeWidth={1.5} aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-semibold text-foreground truncate">{selectedEntry.label}</h3>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-semibold text-foreground truncate">{selectedEntry.label}</h3>
+                    <CopyButton text={selectedEntry.label} label="model name" />
+                  </div>
                   <p className="text-[11px] text-muted-foreground truncate">{selectedEntry.capabilityLabel}</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -600,6 +604,10 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                                 <span className="inline-flex items-center rounded-full bg-[var(--accent-blue)]/10 px-2 py-0.5 text-[9px] font-semibold text-[var(--accent-blue)]">{copy.bestEvidence}</span>
                               )}
                               <StatusBadge tone={availabilityTone(entry.availability)} compact>{copy.availabilityLabels[entry.availability] ?? entry.availability}</StatusBadge>
+                            </div>
+                            <div className="flex items-center gap-1 mb-2">
+                              <span className="mono text-[10px] text-muted-foreground truncate">{entry.contractKey}</span>
+                              <CopyButton text={entry.contractKey} label="contract key" />
                             </div>
                             <div className="grid grid-cols-3 gap-4 mt-2">
                               {/* [issue 6] Only render fields with real values */}
