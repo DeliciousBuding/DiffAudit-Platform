@@ -453,7 +453,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               <button
                 type="button"
                 onClick={() => handleRevoke(pendingRevokeId)}
-                className="rounded-lg bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+                className="rounded-xl bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
               >
                 {copy.revokeConfirmAction}
               </button>

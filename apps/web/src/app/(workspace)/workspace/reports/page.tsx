@@ -266,7 +266,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
             <div className="space-y-2">
               {defenseStrategies.map((strategy) => (
                 <div key={strategy.name} className="flex items-start gap-2">
-                  <span className="mt-0.5 inline-flex shrink-0 items-center rounded-full border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/10 px-1.5 py-0.5 text-[9px] font-semibold text-[var(--accent-blue)]">
+                  <span className="mt-0.5 inline-flex shrink-0 items-center rounded-full border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--accent-blue)]">
                     {strategy.tag}
                   </span>
                   <div className="min-w-0">
@@ -328,8 +328,8 @@ async function renderWorkspaceReportsPage({ locale }: WorkspaceReportsPageOption
             <div className="mt-1 h-3 w-48 animate-pulse rounded bg-muted/30" />
           </div>
           <div className="grid gap-3 lg:grid-cols-2">
-            <div className="h-64 animate-pulse rounded-lg border border-border bg-muted/10" />
-            <div className="h-64 animate-pulse rounded-lg border border-border bg-muted/10" />
+            <div className="h-64 animate-pulse rounded-2xl border border-border bg-muted/10" />
+            <div className="h-64 animate-pulse rounded-2xl border border-border bg-muted/10" />
           </div>
         </>
       }>

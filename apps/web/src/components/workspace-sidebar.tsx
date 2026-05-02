@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, Moon, Sun, Plus } from "lucide-react";
@@ -73,6 +73,21 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   }, [collapsed]);
 
   const createLabel = isZh ? "新建审计任务" : "New audit task";
+  const navRef = useRef<HTMLElement>(null);
+
+  // Arrow key navigation between sidebar links
+  const onNavKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    const links = navRef.current?.querySelectorAll<HTMLAnchorElement>("a.workspace-sidebar-link");
+    if (!links || links.length === 0) return;
+    const current = Array.from(links).indexOf(e.target as HTMLAnchorElement);
+    if (current < 0) return;
+    e.preventDefault();
+    const next = e.key === "ArrowDown"
+      ? (current + 1) % links.length
+      : (current - 1 + links.length) % links.length;
+    links[next].focus();
+  }, []);
 
   return (
     <div className="flex flex-col h-full">
@@ -83,7 +98,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
         <Plus size={14} strokeWidth={2} aria-hidden="true" />
         <span className="workspace-sidebar-label">{createLabel}</span>
       </Link>
-      <nav className="flex flex-col gap-0.5" aria-label={sidebarLabel}>
+      <nav ref={navRef} className="flex flex-col gap-0.5" aria-label={sidebarLabel} onKeyDown={onNavKeyDown}>
         {items.map((item, index) => {
           const active = current.href === item.href;
           return (
@@ -101,7 +116,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
                 <NavIcon icon={item.icon} />
                 <div className="workspace-sidebar-label flex flex-col min-w-0">
                   <span className="text-[13px] font-medium leading-tight truncate">{item.title}</span>
-                  <span className="workspace-sidebar-subtitle text-[10px] leading-tight text-muted-foreground/60 truncate">{item.subtitle}</span>
+                  <span className="workspace-sidebar-subtitle text-[11px] leading-tight text-muted-foreground/80 truncate">{item.subtitle}</span>
                 </div>
               </Link>
             </div>
