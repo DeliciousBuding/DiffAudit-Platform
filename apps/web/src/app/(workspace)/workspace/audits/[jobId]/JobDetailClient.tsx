@@ -363,6 +363,25 @@ export function JobDetailClient({
         )}
       </div>
 
+      {/* Suggested next steps — moved above logs for visibility */}
+      {suggestions.length > 0 && (
+        <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
+          <div className="flex items-start gap-2">
+            <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
+            <div>
+              <h3 className="text-[13px] font-bold text-[color:var(--accent-blue)] mb-1">
+                {copy.jobDetail.nextStepsTitle}
+              </h3>
+              <ul className="space-y-1">
+                {suggestions.map((s, i) => (
+                  <li key={i} className="text-[13px] text-muted-foreground">{s}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Error message */}
       {job.status === "failed" && job.error && (
         <div className="border border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)]/20 rounded-2xl p-4">
@@ -400,25 +419,6 @@ export function JobDetailClient({
           </div>
         )}
       </div>
-
-      {/* Suggested next steps — 7.2.2 */}
-      {suggestions.length > 0 && (
-        <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
-          <div className="flex items-start gap-2">
-            <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
-            <div>
-              <h3 className="text-[13px] font-bold text-[color:var(--accent-blue)] mb-1">
-                {copy.jobDetail.nextStepsTitle}
-              </h3>
-              <ul className="space-y-1">
-                {suggestions.map((s, i) => (
-                  <li key={i} className="text-[13px] text-muted-foreground">{s}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Cancel button for running/queued jobs */}
       {(job.status === "running" || job.status === "queued") && (

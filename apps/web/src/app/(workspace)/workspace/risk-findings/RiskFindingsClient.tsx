@@ -4,6 +4,7 @@ import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, Che
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { SortableHeader } from "@/components/sortable-header";
@@ -620,6 +621,9 @@ export function RiskFindingsClient({ rows, locale }: Props) {
       </div>
 
       {/* Table */}
+      <ContextualTip id="risk-findings-row-click" locale={locale}>
+        {locale === "zh-CN" ? "点击表格行可查看完整风险详情，包括指标、防御信息和来源。" : "Click any table row to see full risk details, including metrics, defense info, and provenance."}
+      </ContextualTip>
       <WorkspaceSectionCard title={copy.findingsTable}>
         {filtered.length > 0 ? (
           <div
