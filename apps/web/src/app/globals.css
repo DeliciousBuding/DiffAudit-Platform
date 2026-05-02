@@ -1182,11 +1182,18 @@ html.dark .header-pill-primary:hover {
   transition:
     background-color var(--transition-base) ease,
     border-color var(--transition-base) ease,
-    color var(--transition-base) ease;
+    color var(--transition-base) ease,
+    transform 0.1s ease,
+    box-shadow var(--transition-base) ease;
 }
 
 .workspace-btn-primary:hover {
   background: var(--accent-blue-hover);
+  box-shadow: 0 2px 8px rgba(47, 109, 246, 0.18);
+}
+
+.workspace-btn-primary:active {
+  transform: scale(0.97);
 }
 
 .workspace-btn-secondary {
@@ -1201,15 +1208,18 @@ html.dark .header-pill-primary:hover {
   transition:
     background-color var(--transition-base) ease,
     border-color var(--transition-base) ease,
-    color var(--transition-base) ease;
+    color var(--transition-base) ease,
+    transform 0.1s ease,
+    box-shadow var(--transition-base) ease;
 }
 .workspace-btn-secondary:hover {
   background: rgba(47, 109, 246, 0.06);
   border-color: rgba(47, 109, 246, 0.22);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .workspace-btn-secondary:active {
-  transform: none;
+  transform: scale(0.97);
   box-shadow: none;
 }
 

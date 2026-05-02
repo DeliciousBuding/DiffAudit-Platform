@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 type SortDirection = "asc" | "desc" | null;
@@ -11,7 +12,7 @@ export function SortableHeader({
   currentDir,
   onSort,
 }: {
-  label: string;
+  label: ReactNode;
   sortKey: string;
   currentSort: string | null;
   currentDir: SortDirection;

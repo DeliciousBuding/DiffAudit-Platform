@@ -222,7 +222,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     ? { tone: "warning" as const, icon: "⚠" as const, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注` : `${riskCounts.high} high-risk findings need attention` }
     : totalRows > 0
       ? { tone: "success" as const, icon: "✓" as const, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成 · 防御率 ${Math.round(defenseRate * 100)}%` : `Systems healthy · ${totalRows} evaluations · ${Math.round(defenseRate * 100)}% defense rate` }
-      : null;
+      : { tone: "info" as const, icon: "→" as const, text: locale === "zh-CN" ? "暂无评估数据 — 创建你的第一个审计任务" : "No evaluations yet — create your first audit task" };
 
   return (
     <>
@@ -242,7 +242,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <div className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] ${
           healthStatus.tone === "warning"
             ? "border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 text-[color:var(--warning)]"
-            : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
+            : healthStatus.tone === "info"
+              ? "border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 text-[color:var(--accent-blue)]"
+              : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
         }`}>
           <span className="text-sm" aria-hidden="true">{healthStatus.icon}</span>
           <span className="font-medium">{healthStatus.text}</span>

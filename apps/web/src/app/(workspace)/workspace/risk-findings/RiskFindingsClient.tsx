@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EmptyState } from "@/components/empty-state";
+import { InfoTooltip } from "@/components/info-tooltip";
 import { SortableHeader } from "@/components/sortable-header";
 import { StatusBadge } from "@/components/status-badge";
 import { TableDensityToggle, readPersistedDensity, densityClass, type Density } from "@/components/table-density-toggle";
@@ -633,8 +634,8 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 <tr className="border-b border-border">
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-[220px]">{copy.riskDescription}</th>
                   <SortableHeader label={copy.severity} sortKey="severityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-                  <SortableHeader label="AUC" sortKey="aucLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-                  <SortableHeader label="ASR" sortKey="asrLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>AUC</InfoTooltip>} sortKey="aucLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.asr}>ASR</InfoTooltip>} sortKey="asrLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.category} sortKey="track" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.sourceModel} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.status} sortKey="statusKey" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
