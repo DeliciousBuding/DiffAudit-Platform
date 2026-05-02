@@ -243,8 +243,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} trendValue={aucTrendValue} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
         <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
       </div>
-      <div className="text-[11px] text-muted-foreground/50 text-right">
-        {locale === "zh-CN" ? `数据更新于 ${dataFetchedAt.toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}` : `Data updated ${dataFetchedAt.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`}
+      <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <span className="text-muted-foreground/60">{locale === "zh-CN" ? "数据更新于" : "Updated"}</span>
+          <span className="font-medium">{dataFetchedAt.toLocaleString(locale === "zh-CN" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+        </span>
       </div>
 
       {/* System health summary */}

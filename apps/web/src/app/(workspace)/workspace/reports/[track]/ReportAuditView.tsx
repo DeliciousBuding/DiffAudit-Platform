@@ -108,7 +108,7 @@ export function ReportAuditView({
                   : copy.jobContext.notAdmitted}
               </p>
             </div>
-            <div className="grid gap-1 text-right text-[10px] text-muted-foreground sm:grid-cols-2 sm:text-left">
+            <div className="grid gap-1 text-right text-[11px] text-muted-foreground sm:grid-cols-2 sm:text-left">
               {jobContext.contractKey ? (
                 <div>
                   <span className="font-semibold text-foreground">{copy.jobContext.contract}: </span>
@@ -235,7 +235,7 @@ export function ReportAuditView({
               </div>
             ) : null}
             {!hasValue(provenance.runDirectoryPath) && !hasValue(provenance.seed) && !hasValue(provenance.schedule) && !hasValue(provenance.fixtureVersion) && !hasValue(provenance.summaryPath) && !hasValue(provenance.evidenceLevel) && !hasValue(provenance.admissionStatus) && !hasValue(provenance.admissionLevel) && !hasValue(provenance.provenanceStatus) && !hasValue(provenance.intakeManifest) ? (
-              <p className="text-muted-foreground text-[11px] italic">{t.noProvenanceData}</p>
+              <p className="text-muted-foreground text-[13px] italic">{t.noProvenanceData}</p>
             ) : null}
           </dl>
         </section>
