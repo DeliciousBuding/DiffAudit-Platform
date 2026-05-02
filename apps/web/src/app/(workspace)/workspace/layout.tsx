@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { CommandPalette } from "@/components/command-palette";
 import { PlatformShell } from "@/components/platform-shell";
 import { Providers } from "@/components/providers";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { WorkspaceKeyboardShortcuts } from "@/components/workspace-keyboard-shortcuts";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 
@@ -19,6 +20,7 @@ export default async function WorkspaceLayout({
       <PlatformShell>
         <CommandPalette locale={locale} />
         <WorkspaceKeyboardShortcuts locale={locale} />
+        <ScrollToTop />
         {children}
       </PlatformShell>
     </Providers>
