@@ -1364,16 +1364,16 @@ html.dark .header-pill-primary:hover {
 }
 
 .workspace-sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  position: relative;
+  flex-shrink: 0;
   width: 226px;
   z-index: 40;
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border);
   background: var(--card);
+  transition: width 200ms ease;
+  overflow: hidden;
 }
 
 .workspace-sidebar-header {
@@ -1440,9 +1440,64 @@ html.dark .header-pill-primary:hover {
   outline-offset: -2px;
 }
 
+/* Sidebar collapsed state */
+.workspace-sidebar.is-collapsed {
+  width: 60px;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-header {
+  padding: 18px 12px 16px;
+  justify-content: center;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-body {
+  padding: 16px 8px 10px;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-label,
+.workspace-sidebar.is-collapsed .workspace-sidebar-subtitle {
+  display: none;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-link {
+  justify-content: center;
+  padding: 8px;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-link svg {
+  flex-shrink: 0;
+}
+
+.sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-collapse-btn:hover {
+  background: rgba(47, 109, 246, 0.055);
+  color: var(--foreground);
+}
+
+.sidebar-collapse-btn svg {
+  transition: transform 200ms ease;
+}
+
+.workspace-sidebar.is-collapsed .sidebar-collapse-btn svg {
+  transform: rotate(180deg);
+}
+
 .workspace-main-area {
   flex: 1;
-  margin-left: 226px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -2769,10 +2824,6 @@ html.dark .header-pill-primary:hover {
 @media (max-width: 1024px) {
   .workspace-sidebar {
     display: none;
-  }
-
-  .workspace-main-area {
-    margin-left: 0;
   }
 
   .workspace-main-content {
@@ -4372,6 +4423,22 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   transform: scale(0.98);
 }
 
+/* Chart load animation */
+@keyframes chart-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chart-animate {
+  animation: chart-fade-in 0.5s ease-out;
+}
+
 /* Skeleton pulse refinement (4.2.4) — smoother than Tailwind default */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
@@ -4392,6 +4459,9 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   .page-entrance,
   .workspace-page-frame,
   .animate-pulse,
+  .chart-animate,
+  .sidebar-collapse-btn,
+  .workspace-sidebar,
   button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button) {
     animation: none !important;
     transition: none !important;

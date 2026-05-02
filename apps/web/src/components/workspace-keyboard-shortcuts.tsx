@@ -12,6 +12,7 @@ import { useToast } from "@/components/toast-provider";
  * Shortcuts:
  *   Ctrl+K  — Command palette (handled by CommandPalette)
  *   Ctrl+N  — New audit task
+ *   Ctrl+B  — Toggle sidebar collapse
  *   Ctrl+1..8 — Navigate to sidebar items
  *   Ctrl+,  — Settings
  *   ?       — Show shortcuts help (when not in input)
@@ -42,6 +43,16 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
         return;
       }
 
+      // Ctrl+B: Toggle sidebar collapse
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        const toggleFn = (window as Record<string, unknown>).__toggleSidebar;
+        if (typeof toggleFn === "function") {
+          toggleFn();
+        }
+        return;
+      }
+
       // Ctrl+,: Settings
       if ((event.ctrlKey || event.metaKey) && event.key === ",") {
         event.preventDefault();
@@ -67,8 +78,8 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
         toast({
           type: "info",
           title: isZh
-            ? "快捷键: Ctrl+K 命令面板 | Ctrl+N 新建 | Ctrl+1-8 导航 | Ctrl+, 设置"
-            : "Shortcuts: Ctrl+K Command Palette | Ctrl+N New | Ctrl+1-8 Navigate | Ctrl+, Settings",
+            ? "快捷键: Ctrl+K 命令面板 | Ctrl+B 侧栏折叠 | Ctrl+N 新建 | Ctrl+1-8 导航 | Ctrl+, 设置"
+            : "Shortcuts: Ctrl+K Command Palette | Ctrl+B Sidebar | Ctrl+N New | Ctrl+1-8 Navigate | Ctrl+, Settings",
           duration: 5000,
         });
       }

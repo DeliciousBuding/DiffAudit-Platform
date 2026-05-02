@@ -356,6 +356,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <WorkspaceSectionCard
             title={copy.sections.chartTitles.riskRadar}
             actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
+            className="chart-animate"
           >
             <div className="p-4">
               <ChartRiskRadar data={radarData} height={220} />
@@ -366,7 +367,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* Charts grid */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <WorkspaceSectionCard title={copy.sections.chartTitles.aucDistribution}>
+        <WorkspaceSectionCard title={copy.sections.chartTitles.aucDistribution} className="chart-animate">
           <div className="p-4">
             {aucDistData.length > 0 ? (
               <ChartAucDistribution data={aucDistData} />
@@ -378,21 +379,21 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </WorkspaceSectionCard>
 
-        <WorkspaceSectionCard title={`${copy.sections.chartTitles.rocCurve}${copy.sections.chartTitles.syntheticSuffix}`}>
+        <WorkspaceSectionCard title={`${copy.sections.chartTitles.rocCurve}${copy.sections.chartTitles.syntheticSuffix}`} className="chart-animate">
           <div className="p-4">
             <ChartRocCurve data={rocData} />
           </div>
         </WorkspaceSectionCard>
 
         {totalRisk > 0 && (
-          <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution}>
+          <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution} className="chart-animate">
             <div className="p-4">
               <InteractiveRiskDistribution data={riskDistData} />
             </div>
           </WorkspaceSectionCard>
         )}
 
-        <WorkspaceSectionCard title={copy.sections.chartTitles.attackComparison}>
+        <WorkspaceSectionCard title={copy.sections.chartTitles.attackComparison} className="chart-animate">
           <div className="p-4">
             {attackComparisonData.length > 0 ? (
               <ChartAttackComparison data={attackComparisonData} />

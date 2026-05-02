@@ -264,3 +264,12 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
    - Uses useTheme hook, bilingual labels
 
 16 rounds total, 14 commits to main. 136/136 tests.
+
+### Phase 17: Table Density Toggle + Finding Detail Panel (COMPLETED)
+1. **Table density toggle**: compact/default/comfortable modes, localStorage persistence
+   - Applied to: Risk Findings, Audits history
+2. **Risk finding detail panel**: slide-over panel on row click
+   - Full details: description, severity, category, model, metrics, defense info
+   - Keyboard accessible, Escape to close, selected row highlight
+
+17 rounds total, 15 commits to main. 136/136 tests.

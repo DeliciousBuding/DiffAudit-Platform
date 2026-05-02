@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Moon, Sun } from "lucide-react";
+import { ChevronLeft, Moon, Sun } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";
@@ -10,6 +11,17 @@ import { useTheme } from "@/hooks/use-theme";
 import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
+const STORAGE_KEY = "diffaudit-sidebar-collapsed";
+
+function getCollapsedFromStorage(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
 
 export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
@@ -21,6 +33,40 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const themeLabel = isDark
     ? WORKSPACE_COPY[locale].userMenu.themeDark
     : WORKSPACE_COPY[locale].userMenu.themeLight;
+
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    setCollapsed(getCollapsedFromStorage());
+  }, []);
+
+  const toggleCollapse = useCallback(() => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(STORAGE_KEY, String(next));
+      } catch {
+        // localStorage may be unavailable
+      }
+      return next;
+    });
+  }, []);
+
+  // Expose toggle for keyboard shortcut
+  useEffect(() => {
+    (window as Record<string, unknown>).__toggleSidebar = toggleCollapse;
+    return () => {
+      delete (window as Record<string, unknown>).__toggleSidebar;
+    };
+  }, [toggleCollapse]);
+
+  // Sync collapsed class on the sidebar element
+  useEffect(() => {
+    const sidebar = document.querySelector(".workspace-sidebar");
+    if (sidebar) {
+      sidebar.classList.toggle("is-collapsed", collapsed);
+    }
+  }, [collapsed]);
 
   return (
     <div className="flex flex-col h-full">
@@ -34,12 +80,12 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
             prefetch={false}
             aria-current={active ? "page" : undefined}
             className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
-            title={item.subtitle}
+            title={collapsed ? item.title : item.subtitle}
             >
               <NavIcon icon={item.icon} />
-              <div className="flex flex-col min-w-0">
+              <div className="workspace-sidebar-label flex flex-col min-w-0">
                 <span className="text-[13px] font-medium leading-tight truncate">{item.title}</span>
-                <span className="text-[10px] leading-tight text-muted-foreground/60 truncate">{item.subtitle}</span>
+                <span className="workspace-sidebar-subtitle text-[10px] leading-tight text-muted-foreground/60 truncate">{item.subtitle}</span>
               </div>
             </Link>
           );
@@ -54,7 +100,16 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
           title={themeLabel}
         >
           {isDark ? <Moon size={16} strokeWidth={1.5} /> : <Sun size={16} strokeWidth={1.5} />}
-          <span className="text-[13px] font-medium leading-tight truncate">{themeLabel}</span>
+          <span className="workspace-sidebar-label text-[13px] font-medium leading-tight truncate">{themeLabel}</span>
+        </button>
+        <button
+          type="button"
+          onClick={toggleCollapse}
+          className="sidebar-collapse-btn"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <ChevronLeft size={16} strokeWidth={1.5} />
         </button>
       </div>
     </div>
