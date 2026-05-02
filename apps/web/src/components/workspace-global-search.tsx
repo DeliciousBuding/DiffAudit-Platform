@@ -173,7 +173,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
       {open ? (
         <div className="workspace-search-menu" id="search-listbox" ref={listRef} role="listbox">
           {isRecent && (
-            <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">
+            <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">
               {recentLabel}
             </div>
           )}

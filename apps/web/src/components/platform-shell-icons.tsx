@@ -1,4 +1,4 @@
-import { LayoutDashboard, ClipboardList, Database, ShieldAlert, FileBarChart, Key, User, Settings } from "lucide-react";
+import { LayoutDashboard, Database, ShieldAlert, FileBarChart, Key, User, Settings } from "lucide-react";
 import { BrandMark as SiteBrandMark } from "@/components/brand-mark";
 
 export function BrandMark() {

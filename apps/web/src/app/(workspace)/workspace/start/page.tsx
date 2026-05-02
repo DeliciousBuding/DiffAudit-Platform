@@ -37,7 +37,7 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 }
 
 /** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1, clickable drill-down */
-function KpiCardWithTrend({ label, value, note, trend, alert, href, ariaLabel }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; alert?: "danger" | "warning" | "info" | null; href?: string; ariaLabel?: string }) {
+function KpiCardWithTrend({ label, value, note, trend, trendValue, alert, href, ariaLabel }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; trendValue?: string; alert?: "danger" | "warning" | "info" | null; href?: string; ariaLabel?: string }) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
@@ -48,7 +48,12 @@ function KpiCardWithTrend({ label, value, note, trend, alert, href, ariaLabel }:
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <AnimatedValue value={value} className={`text-2xl font-bold leading-none ${alert === "danger" ? "text-[color:var(--risk-high)]" : ""}`} />
-        {trendIcon ? <span className={`text-base ${trendColor}`} aria-label={trendLabel} role="img">{trendIcon}</span> : null}
+        {trendIcon ? (
+          <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${trendColor}`} aria-label={trendLabel} role="img">
+            {trendIcon}
+            {trendValue && <span>{trendValue}</span>}
+          </span>
+        ) : null}
         {alert === "danger" && <span className="text-base text-[color:var(--risk-high)]" role="img" aria-label="needs attention">!</span>}
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
@@ -119,6 +124,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     .map((r) => parseFloat(r.aucLabel))
     .filter((v): v is number => !isNaN(v));
   let aucTrend: "up" | "down" | "flat" = "flat";
+  let aucTrendValue = "";
   if (allAuc.length >= 10) {
     const recent = allAuc.slice(0, 5);
     const previous = allAuc.slice(5, 10);
@@ -126,6 +132,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     const previousAvg = previous.reduce((a, b) => a + b, 0) / previous.length;
     const delta = recentAvg - previousAvg;
     aucTrend = delta > 0.02 ? "up" : delta < -0.02 ? "down" : "flat";
+    if (aucTrend !== "flat" && previousAvg > 0) {
+      const pctChange = Math.abs((delta / previousAvg) * 100);
+      aucTrendValue = `${pctChange.toFixed(1)}%`;
+    }
   }
 
   // Build AUC distribution histogram (bin by 0.1 intervals)
@@ -230,7 +240,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" href="/workspace/audits" ariaLabel={`${copy.kpis.liveContractsLabel} — ${copy.kpis.liveContractsNote}`} />
         <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.defendedRowsLabel} — ${copy.kpis.defendedRowsNote}`} />
-        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
+        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} trendValue={aucTrendValue} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
         <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
       </div>
       <div className="text-[11px] text-muted-foreground/50 text-right">

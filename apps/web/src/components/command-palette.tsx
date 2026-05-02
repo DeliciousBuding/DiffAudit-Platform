@@ -268,12 +268,6 @@ export function CommandPalette({ locale }: { locale: Locale }) {
   );
 
   /* ---- Open / close ---- */
-  const openPalette = useCallback(() => {
-    previousFocusRef.current = document.activeElement as HTMLElement;
-    setOpen(true);
-    setQuery("");
-    setActiveIndex(0);
-  }, []);
 
   const closePalette = useCallback(() => {
     setOpen(false);

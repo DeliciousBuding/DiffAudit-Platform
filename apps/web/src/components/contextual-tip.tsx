@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Lightbulb } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 
 const DISMISSED_KEY = "diffaudit-dismissed-tips";
 
