@@ -454,3 +454,13 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 **Design & Engineering audits:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 35 rounds total, 33 commits to main. 136/136 tests.
+
+### Phase 36: Modal Typography & Padding Consistency (COMPLETED)
+Late design audit findings from R35:
+
+1. ✅ Shortcuts modal: group headers text-[10px] → text-[11px]
+2. ✅ Shortcuts modal: footer py-2 → py-3 (matches header padding)
+3. ✅ FindingDetailPanel: header text-sm → text-[13px] font-bold (matches other overlays)
+4. ✅ FindingDetailPanel: source path text-[11px] → text-[12px] (matches other detail values)
+
+36 rounds total, 34 commits to main. 136/136 tests.
