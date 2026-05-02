@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AlertTriangle, Box, Crosshair, FileBarChart, ShieldCheck, Target } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -91,6 +92,10 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
 
   const pageContent = rows.length > 0 ? (
     <>
+      <ContextualTip id="reports-chart-click" locale={locale}>
+        {locale === "zh-CN" ? "点击风险分布图表中的柱状条，可直接跳转到对应严重度的风险发现。" : "Click any bar in the risk distribution chart to jump directly to that severity level's findings."}
+      </ContextualTip>
+
       {/* ---- Report Generation: 2-column layout ---- */}
       <section className="workspace-section-card">
         <div className="workspace-section-card-header">
@@ -263,7 +268,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                   </span>
                   <div className="min-w-0">
                     <div className="text-[11px] font-medium text-foreground">{strategy.name}</div>
-                    <div className="text-[10px] leading-4 text-muted-foreground">{strategy.desc}</div>
+                    <div className="text-[11px] leading-4 text-muted-foreground">{strategy.desc}</div>
                   </div>
                 </div>
               ))}

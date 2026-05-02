@@ -52,6 +52,7 @@ function statusTone(status: string): "info" | "success" | "warning" | "primary" 
   if (status === "completed") return "success";
   if (status === "failed") return "warning";
   if (status === "running") return "info";
+  if (status === "queued") return "neutral";
   if (status === "cancelled") return "neutral";
   return "primary";
 }
