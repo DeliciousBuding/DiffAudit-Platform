@@ -478,3 +478,19 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 37 rounds total, 35 commits to main. 136/136 tests.
+
+### Phase 38: Sidebar Hover Border, Trust Fixes, Design Polish (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Reports: removed disabled download button (eroded trust — non-functional CTA)
+2. ✅ ReportAuditView: removed duplicate history placeholder
+
+**Design findings fixed:**
+3. ✅ Sidebar: subtle blue left-border accent on hover (matches active state)
+4. ✅ Dark mode: hover/active border colors properly themed
+5. ✅ RiskFindingsClient: rounded-[10px] → rounded-xl (standard button radius)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+38 rounds total, 36 commits to main. 136/136 tests.
