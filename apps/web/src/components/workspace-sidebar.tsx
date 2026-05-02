@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, Moon, Sun } from "lucide-react";
+import { ChevronLeft, Moon, Sun, Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";
@@ -72,8 +72,17 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
     }
   }, [collapsed]);
 
+  const createLabel = isZh ? "新建审计任务" : "New audit task";
+
   return (
     <div className="flex flex-col h-full">
+      <Link
+        href="/workspace/audits/new"
+        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-[10px] bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+      >
+        <Plus size={14} strokeWidth={2} aria-hidden="true" />
+        <span className="workspace-sidebar-label">{createLabel}</span>
+      </Link>
       <nav className="flex flex-col gap-0.5" aria-label={sidebarLabel}>
         {items.map((item, index) => {
           const active = current.href === item.href;
