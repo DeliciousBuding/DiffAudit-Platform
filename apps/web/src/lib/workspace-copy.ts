@@ -1532,7 +1532,7 @@ export const WORKSPACE_COPY: Record<
         batchSize: "批次大小",
         adaptiveSampling: "自适应采样",
         adaptiveSamplingNote: "根据中间结果动态调整采样策略，节省计算资源",
-        reviewSummary: "提交前最后确认一下配置",
+        reviewSummary: "提交前请确认审计配置",
         reviewAttackType: "攻击方式",
         reviewModel: "目标模型",
         reviewRounds: "轮次",
@@ -1641,7 +1641,7 @@ export const WORKSPACE_COPY: Record<
     reports: {
       eyebrow: "报告",
       title: "审计结果和覆盖缺口",
-      description: "这里汇总了所有审计结果，帮你发现模型防御的薄弱环节",
+      description: "汇总所有审计结果，发现模型防御薄弱环节",
       backToReports: "返回报告中心",
       reportTabs: {
         results: "审计结果",

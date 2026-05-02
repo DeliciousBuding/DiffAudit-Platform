@@ -139,3 +139,16 @@ Round 1 fixes (3 parallel agents):
 - fix-interactions: job detail retry, success timing, error dismiss, real report data, hide empty column
 
 Loop scheduled every 30m via cron (Job ID: 140b22a6) until manual stop.
+
+Round 2 findings (4 agents: copy/UIUX/engineer/userflow):
+- Copy: 18 issues (version leak, duration i18n, 7 inline ternaries, dead showToast)
+- UI/UX screenshots: 13 issues (Settings headers 10px→13px, spacing gaps, button radius)
+- Engineering: 7 strokeWidth remnants, 4 missing loading.tsx, dead code, hex colors
+- User Flow: 6 issues (dead recommended config, duplicate export UI, popup error silent)
+
+Round 2 fixes (5 parallel agents):
+- r2-fix-copy: version "14.2" removed, formatDuration localized, emptyResults polished, DiffAudit user fallback, aria-label
+- r2-fix-eng: 7 strokeWidth unified, dead showToast removed, hex→CSS vars, 4 loading.tsx created
+- r2-fix-interact: recommended config moved to step 2, popup-blocked error feedback, duplicate export removed
+- r2-fix-settings-ui: Settings headers 13px bold, gap-3→4, p-3→4, button radius unified
+- r2-uiux: screenshot review confirmed visual improvements

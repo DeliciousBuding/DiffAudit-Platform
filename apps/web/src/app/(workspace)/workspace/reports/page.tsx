@@ -121,14 +121,14 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
         <div className="grid gap-0 lg:grid-cols-2">
           {/* Left: Available Reports */}
           <div className="border-b border-border p-4 lg:border-b-0 lg:border-r lg:pr-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+            <h3 className="text-[13px] font-bold text-foreground mb-3">
               {copy.generateByTrack}
             </h3>
             <div className="space-y-2.5">
               {tracks.map((track) => (
                 <div
                   key={track}
-                  className="group flex items-center justify-between rounded-lg border border-border bg-background p-3.5 transition-colors hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
+                  className="group flex items-center justify-between rounded-2xl border border-border bg-background p-3.5 transition-colors hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
@@ -161,7 +161,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
 
           {/* Right: Generated Reports */}
           <div className="p-4">
-            <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+            <h3 className="text-[13px] font-bold text-foreground mb-3">
               {copy.generatedReports}
             </h3>
             <div className="space-y-2.5">
@@ -174,7 +174,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                 return (
                   <div
                     key={track}
-                    className="flex items-center justify-between rounded-lg border border-border bg-background px-3.5 py-3 transition-colors hover:bg-muted/20"
+                    className="flex items-center justify-between rounded-2xl border border-border bg-background px-3.5 py-3 transition-colors hover:bg-muted/20"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -221,14 +221,14 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
             {copy.comprehensiveAnalysis}
           </h2>
         </div>
-        <div className="grid gap-3 p-4 sm:grid-cols-3">
+        <div className="grid gap-4 p-4 sm:grid-cols-3">
           {/* Key Findings */}
           <div className="rounded-2xl border border-border bg-card p-3.5">
             <div className="flex items-center gap-2 mb-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
                 <Target size={14} strokeWidth={1.5} />
               </span>
-              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <h4 className="text-[13px] font-bold text-foreground">
                 {copy.keyFindings}
               </h4>
             </div>
@@ -251,7 +251,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
               <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[color:var(--warning-soft)] text-[color:var(--warning)]">
                 <AlertTriangle size={14} strokeWidth={1.5} />
               </span>
-              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <h4 className="text-[13px] font-bold text-foreground">
                 {copy.defenseGap}
               </h4>
             </div>
@@ -281,7 +281,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
               <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[color:var(--success-soft)] text-[color:var(--success)]">
                 <ShieldCheck size={14} strokeWidth={1.5} />
               </span>
-              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <h4 className="text-[13px] font-bold text-foreground">
                 {copy.recommendedDefenses}
               </h4>
               <span className="text-[9px] text-muted-foreground/60 ml-auto">

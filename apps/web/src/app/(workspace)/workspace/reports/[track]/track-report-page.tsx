@@ -109,8 +109,8 @@ function toggleLabel(locale: Locale, view: ViewMode) {
 
 function historyPlaceholder(locale: Locale, label: string) {
   return locale === "zh-CN"
-    ? `${label} track 的 prior verdict 还没有进入 append-only 消费链，当前只保留占位。`
-    : `Prior verdict stacking for the ${label.toLowerCase()} track is not wired yet; this placeholder reserves the slot.`;
+    ? "该审计线路的历史对比功能将在后续版本接入，当前为占位区域。"
+    : "Historical comparison for this track will be available in a future release. This area is reserved.";
 }
 
 function sanitizePath(value?: string | null) {

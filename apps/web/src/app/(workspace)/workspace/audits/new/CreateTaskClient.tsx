@@ -235,7 +235,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {form.step === 1 && (
             <div className="space-y-3">
               <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step1Desc}</div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
                 {(
                   [
                     {
@@ -286,7 +286,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
             <div className="space-y-3">
               {/* Recommended configuration — 7.2.1 */}
               {form.attackType && (
-                <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-3">
+                <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
                   <div className="flex items-start gap-2">
                     <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
                     <div className="space-y-1">
@@ -327,7 +327,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         }}
                         aria-pressed={isSelected}
                         disabled={isDisabled}
-                        className={`text-left rounded-2xl border p-3 transition-all ${
+                        className={`text-left rounded-2xl border p-4 transition-all ${
                           isSelected
                             ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
                             : isDisabled

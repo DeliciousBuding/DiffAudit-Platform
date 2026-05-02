@@ -142,7 +142,7 @@ export function ReportAuditView({
               {t.summaryTitle}
             </h2>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-border bg-background px-3 py-3">
               <div className="text-[13px] text-muted-foreground">
                 {t.resultRows}

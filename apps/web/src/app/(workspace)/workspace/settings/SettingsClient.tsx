@@ -678,12 +678,12 @@ export function SettingsClient({
               {copy.systemStatus.title}
             </h2>
           </div>
-          <div className="space-y-3 p-3">
+          <div className="space-y-4 p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">{copy.systemStatus.runtime}</span>
               <RuntimeStatusBadge locale={locale} />
             </div>
-            <div className="rounded-lg border border-border bg-muted/10 p-3">
+            <div className="rounded-2xl border border-border bg-muted/10 p-4">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-muted-foreground">{copy.systemStatus.snapshot}</span>
                 <StatusBadge tone={gatewayHealth?.snapshot_available ? "success" : "warning"} compact>
@@ -1146,7 +1146,7 @@ export function SettingsClient({
                         </a>
                       ) : null}
                       {verificationUrl && showVerificationDetails ? (
-                        <div className="space-y-2 rounded-lg border border-border bg-card p-3">
+                        <div className="space-y-2 rounded-2xl border border-border bg-card p-4">
                           <button
                             type="button"
                             onClick={handleCopyVerificationLink}
@@ -1290,7 +1290,7 @@ export function SettingsClient({
                     {profile?.hasPassword ? copy.account.openPasswordChange : copy.account.openPasswordCreate}
                   </button>
                 ) : (
-                  <div className="space-y-3 rounded-lg border border-border bg-card p-3">
+                  <div className="space-y-3 rounded-2xl border border-border bg-card p-4">
                     {profile?.hasPassword ? (
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground" htmlFor="settings-current-password">
