@@ -1622,6 +1622,11 @@ html.dark .header-pill-primary:hover {
   background: rgba(47, 109, 246, 0.08);
 }
 
+.workspace-search-menu button.is-active,
+.workspace-search-menu button[data-search-active="true"] {
+  background: rgba(47, 109, 246, 0.1);
+}
+
 .workspace-search-menu button span {
   color: var(--foreground);
   font-size: 13px;
