@@ -249,9 +249,6 @@ export function ReportAuditView({
         </div>
         <div className="space-y-2 text-[13px] text-muted-foreground">
           <p>{historyPlaceholder}</p>
-          <div className="rounded-2xl border border-dashed border-border bg-background px-3 py-4">
-              {t.historyPlaceholder}
-            </div>
         </div>
       </section>
 

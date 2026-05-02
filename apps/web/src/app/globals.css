@@ -1432,11 +1432,13 @@ html.dark .header-pill-primary:hover {
 .workspace-sidebar-link:hover {
   background: rgba(47, 109, 246, 0.055);
   color: var(--foreground);
+  border-left-color: rgba(47, 109, 246, 0.25);
   transform: translateX(2px);
 }
 
 .workspace-sidebar-link.is-active {
   background: rgba(47, 109, 246, 0.1);
+  border-left-color: var(--accent-blue);
   color: var(--accent-blue);
   font-weight: 600;
 }
@@ -3601,11 +3603,13 @@ html.dark .workspace-search-empty {
 html[data-theme="dark"] .workspace-sidebar-link:hover,
 html.dark .workspace-sidebar-link:hover {
   background: rgba(91, 142, 249, 0.09);
+  border-left-color: rgba(91, 142, 249, 0.3);
 }
 
 html[data-theme="dark"] .workspace-sidebar-link.is-active,
 html.dark .workspace-sidebar-link.is-active {
   background: rgba(91, 142, 249, 0.14);
+  border-left-color: #8db0ff;
   color: #8db0ff;
 }
 

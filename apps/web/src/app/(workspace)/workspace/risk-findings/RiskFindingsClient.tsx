@@ -514,7 +514,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               key={preset.id}
               type="button"
               onClick={() => applyPreset(preset)}
-              className={`rounded-[10px] px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+              className={`rounded-xl px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
                 isActive
                   ? "bg-[var(--accent-blue)] text-white shadow-sm"
                   : "border border-border text-muted-foreground hover:border-[var(--accent-blue)]/40 hover:text-foreground"

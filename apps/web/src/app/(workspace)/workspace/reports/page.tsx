@@ -177,14 +177,6 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                       >
                         {copy.view}
                       </Link>
-                      <button
-                        type="button"
-                        disabled
-                        title={copy.downloadComingSoon}
-                        className="rounded-xl border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground/60 cursor-not-allowed"
-                      >
-                        {copy.download}
-                      </button>
                     </div>
                   </div>
                 );
