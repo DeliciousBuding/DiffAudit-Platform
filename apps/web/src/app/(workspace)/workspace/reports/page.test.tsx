@@ -29,7 +29,7 @@ describe("WorkspaceReportsPage", () => {
     expect(markup).toContain("按审计模式生成");
     expect(markup).toContain("已生成报告");
     expect(markup).toContain("综合分析");
-    expect(markup).toContain("导出报告");
+    expect(markup).toContain("导出选项");
   });
 
   it("renders en-US copy with forced demo data", async () => {
@@ -42,6 +42,6 @@ describe("WorkspaceReportsPage", () => {
     expect(markup).toContain("Generate by Audit Mode");
     expect(markup).toContain("Generated Reports");
     expect(markup).toContain("Comprehensive Analysis");
-    expect(markup).toContain("Export report");
+    expect(markup).toContain("Export Options");
   });
 });

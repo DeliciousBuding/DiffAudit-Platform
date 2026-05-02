@@ -278,6 +278,12 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* Step 2: Target model selection */}
+          {form.step === 2 && (
+            <div className="space-y-3">
               {/* Recommended configuration — 7.2.1 */}
               {form.attackType && (
                 <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-3">
@@ -302,12 +308,6 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Step 2: Target model selection */}
-          {form.step === 2 && (
-            <div className="space-y-3">
               <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step2Desc}</div>
               {filteredModels.length === 0 ? (
                 <div className="text-[13px] text-muted-foreground text-center py-6 border border-dashed border-border rounded-2xl">
@@ -543,7 +543,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         setErrorMessage(null);
                       }}
                       className="shrink-0 rounded p-0.5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 transition-colors"
-                      aria-label="Dismiss error"
+                      aria-label={locale === "zh-CN" ? "关闭错误提示" : "Dismiss error"}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18" />

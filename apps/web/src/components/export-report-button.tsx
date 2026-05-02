@@ -66,6 +66,7 @@ export function buildReportCsv(rows: AttackDefenseRowViewModel[], locale: Locale
 export function ExportReportButton({ rows, contracts, label, locale }: ExportReportButtonProps) {
   const copy = WORKSPACE_COPY[locale].exportButton;
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -83,6 +84,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
 
   const exportAsPdf = useCallback(async () => {
     setIsExporting(true);
+    setExportError(null);
 
     let printWindow: Window | null = null;
     let root: ReturnType<typeof createRoot> | null = null;
@@ -91,7 +93,8 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
     try {
       printWindow = window.open("", "_blank", "width=1120,height=900");
       if (!printWindow) {
-        throw new Error("Print window could not be opened.");
+        setExportError(copy.popupBlocked);
+        return;
       }
 
       printWindow.document.open();
@@ -141,7 +144,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
     } finally {
       setIsExporting(false);
     }
-  }, [contracts, locale, rows]);
+  }, [contracts, copy.popupBlocked, locale, rows]);
 
   const exportAsCsv = useCallback(() => {
     setIsExporting(true);
@@ -301,6 +304,11 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
             {copy.csv}
           </button>
         </div>
+      ) : null}
+      {exportError ? (
+        <p className="absolute right-0 top-full mt-1 text-[10px] text-[color:var(--warning)] whitespace-nowrap" role="alert">
+          {exportError}
+        </p>
       ) : null}
     </div>
   );

@@ -67,7 +67,7 @@ export function ReportAuditView({
         intakeManifest: "导入清单",
         historyTitle: "历史对照",
         historyPlaceholder:
-          "同一 track 的既往 verdict diff 将在 14.2 接入；这里预留堆叠卡位，不填造数据。",
+          "历史对照数据将在后续版本接入，敬请期待。",
       }
     : {
         summaryTitle: "Audit view summary",
@@ -87,7 +87,7 @@ export function ReportAuditView({
         intakeManifest: "Intake manifest",
         historyTitle: "History comparison",
         historyPlaceholder:
-          "Historical verdict diffs for this track will land in 14.2. This slot is intentionally reserved without fabricated data.",
+          "Historical comparison data will be available in a future release.",
       };
   const defendedRows = rows.filter((row) => row.defense !== "none" && row.defense !== "None").length;
   const undefendedRows = rows.length - defendedRows;

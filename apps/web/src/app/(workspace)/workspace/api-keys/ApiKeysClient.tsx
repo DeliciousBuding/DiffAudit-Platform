@@ -439,8 +439,8 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       {/* Code example */}
       <div className="api-code-block mt-6 overflow-hidden rounded-2xl shadow-sm dark:shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
         <div className="api-code-block-header flex items-center gap-2 px-4 py-2.5">
-          <span className="inline-flex items-center rounded-md bg-[var(--accent-blue)]/10 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[var(--accent-blue)] dark:text-[#9ca0aa]">bash</span>
-          <span className="text-[11px] text-muted-foreground dark:text-[#9ca0aa]">{copy.usageExample}</span>
+          <span className="inline-flex items-center rounded-md bg-[var(--accent-blue)]/10 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[var(--accent-blue)] dark:text-muted-foreground">bash</span>
+          <span className="text-[11px] text-muted-foreground dark:text-muted-foreground">{copy.usageExample}</span>
         </div>
         <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed border-0 rounded-none m-0">
           <code>{`# ${copy.codeComment}

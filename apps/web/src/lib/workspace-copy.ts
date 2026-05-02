@@ -519,6 +519,7 @@ export const WORKSPACE_COPY: Record<
       exporting: string;
       pdf: string;
       csv: string;
+      popupBlocked: string;
     };
     liveJobsPanel: {
       justUpdated: string;
@@ -1290,6 +1291,7 @@ export const WORKSPACE_COPY: Record<
       exporting: "Exporting...",
       pdf: "Export as PDF",
       csv: "Export as CSV",
+      popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
     },
     liveJobsPanel: {
       justUpdated: "Just updated",
@@ -1427,7 +1429,7 @@ export const WORKSPACE_COPY: Record<
         "查看最新的审计结果，确认是否需要导出报告",
         "更新团队设置、密钥和个人偏好",
       ],
-      emptyResults: "还没有审计结果，去创建一个任务试试",
+      emptyResults: "暂无审计结果。请创建审计任务以获取结果。",
     },
     audits: {
       eyebrow: "审计流程",
@@ -2060,6 +2062,7 @@ export const WORKSPACE_COPY: Record<
       exporting: "导出中...",
       pdf: "导出为 PDF",
       csv: "导出为 CSV",
+      popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
     },
     liveJobsPanel: {
       justUpdated: "刚刚更新",

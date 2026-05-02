@@ -11,7 +11,8 @@ export default async function WorkspaceAccountPage() {
   const locale = resolveLocaleFromHeaderStore(await headers());
   const cookieStore = await cookies();
   const profile = getCurrentUserProfile(cookieStore.get(SESSION_COOKIE_NAME)?.value);
-  const displayName = profile?.displayName || profile?.username || "DiffAudit user";
+  const fallbackName = locale === "zh-CN" ? "DiffAudit 用户" : "DiffAudit user";
+  const displayName = profile?.displayName || profile?.username || fallbackName;
   const handle = profile?.username ? `@${profile.username}` : "@workspace-user";
   const copy = locale === "zh-CN"
     ? {

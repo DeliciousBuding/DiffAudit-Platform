@@ -362,7 +362,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 onClick={() => { setSearchQuery(""); setCurrentPage(1); }}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
               >
-                <X size={12} strokeWidth={2} />
+                <X size={12} strokeWidth={1.5} />
               </button>
             )}
           </div>
@@ -511,7 +511,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/30 disabled:opacity-30"
               >
-                <ChevronLeft size={14} strokeWidth={2} />
+                <ChevronLeft size={14} strokeWidth={1.5} />
               </button>
               {pageWindow[0] > 1 && (
                 <span className="text-xs text-muted-foreground/50">...</span>
@@ -539,7 +539,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/30 disabled:opacity-30"
               >
-                <ChevronRight size={14} strokeWidth={2} />
+                <ChevronRight size={14} strokeWidth={1.5} />
               </button>
             </div>
           </div>

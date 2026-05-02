@@ -67,15 +67,21 @@ function formatTime(iso: string, locale: Locale): string {
   }
 }
 
-function formatDuration(created: string, updated: string | null): string {
+function formatDuration(created: string, updated: string | null, locale: string): string {
   const start = new Date(created).getTime();
   const end = updated ? new Date(updated).getTime() : Date.now();
   const diffMs = Math.max(0, end - start);
   const secs = Math.floor(diffMs / 1000);
-  if (secs < 60) return `${secs}s`;
   const mins = Math.floor(secs / 60);
-  if (mins < 60) return `${mins}m ${secs % 60}s`;
   const hours = Math.floor(mins / 60);
+  if (locale === "zh-CN") {
+    if (secs < 60) return `${secs}秒`;
+    if (mins < 60) return `${mins}分${secs % 60}秒`;
+    return `${hours}时${mins % 60}分`;
+  }
+  // English fallback
+  if (secs < 60) return `${secs}s`;
+  if (mins < 60) return `${mins}m ${secs % 60}s`;
   return `${hours}h ${mins % 60}m`;
 }
 
@@ -381,7 +387,7 @@ export function JobDetailClient({
         />
         <DetailCard
           label={copy.jobDetail.labels.duration}
-          value={formatDuration(job.created_at, job.updated_at)}
+          value={formatDuration(job.created_at, job.updated_at, locale)}
           mono
         />
         {job.updated_at && (

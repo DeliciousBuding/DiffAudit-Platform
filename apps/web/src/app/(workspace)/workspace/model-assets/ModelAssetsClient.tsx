@@ -1,7 +1,7 @@
 "use client";
 
 import { Search, Plus, Pencil, Trash2, X, ChevronLeft, ChevronRight, Upload, Check, Database } from "lucide-react";
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 
 import { Modal } from "@/components/modal";
 import { StatusBadge } from "@/components/status-badge";
@@ -130,15 +130,6 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadComplete, setUploadComplete] = useState(false);
   const uploadTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // --- Toast state ---
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const showToast = useCallback((msg: string) => {
-    setToastMessage(msg);
-    const timer = setTimeout(() => setToastMessage(null), 2500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // --- CRUD helpers ---
   function addEntryToCatalog(entry: CatalogEntryViewModel) {
@@ -425,7 +416,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                   title={copy.clearSearch}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
                 >
-                  <X size={12} strokeWidth={2} />
+                  <X size={12} strokeWidth={1.5} />
                 </button>
               )}
             </div>
@@ -434,7 +425,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
               onClick={handleOpenAdd}
               className="workspace-btn-primary shrink-0 text-xs px-3 py-1.5 flex items-center gap-1"
             >
-              <Plus size={12} strokeWidth={2} />
+              <Plus size={12} strokeWidth={1.5} />
               {copy.addModel}
             </button>
           </div>
@@ -449,7 +440,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
               {localCatalog.tracks.map((track) => {
                 const entries = entriesByTrack.get(track.track) ?? [];
                 if (entries.length === 0) return null;
-                const dotColor = TRACK_DOT_COLORS[track.track] ?? "#94a3b8";
+                const dotColor = TRACK_DOT_COLORS[track.track] ?? "var(--muted-foreground)";
 
                 return (
                   <div key={track.track} className="mb-2">
@@ -728,7 +719,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
             <label className="block text-xs font-medium text-foreground mb-1.5">{copy.uploadFile}</label>
             {uploadComplete ? (
               <div className="flex items-center gap-2 rounded-[10px] border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 px-3 py-2.5 text-xs">
-                <Check size={14} strokeWidth={2} className="shrink-0 text-[var(--accent-green)]" />
+                <Check size={14} strokeWidth={1.5} className="shrink-0 text-[var(--accent-green)]" />
                 <span className="text-[var(--accent-green)] font-medium">{copy.uploadComplete}</span>
               </div>
             ) : uploadProgress !== null ? (
@@ -845,12 +836,6 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
         </div>
       )}
 
-      {/* Toast notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/10 px-4 py-2.5 text-xs font-medium text-[var(--accent-green)] shadow-lg backdrop-blur-sm">
-          {toastMessage}
-        </div>
-      )}
     </div>
   );
 }

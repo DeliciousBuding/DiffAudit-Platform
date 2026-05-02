@@ -616,17 +616,17 @@ export function SettingsClient({
       title={pageTitle}
       titleClassName="text-xl"
     >
-      <div className={`grid gap-3 ${isAccountMode ? "" : "lg:grid-cols-3"}`}>
+      <div className={`grid gap-4 ${isAccountMode ? "" : "lg:grid-cols-3"}`}>
         {!isAccountMode ? (
           <>
         {/* About System */}
         <section className="order-1 settings-section-card lg:col-span-2">
           <div className="settings-section-card-header">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.aboutSystem.title}
             </h2>
           </div>
-          <div className="p-3 space-y-4">
+          <div className="p-4 space-y-4">
             <div>
               <h3 className="mb-2 text-xs font-medium">{copy.aboutSystem.useCases}</h3>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -674,7 +674,7 @@ export function SettingsClient({
         {/* System status */}
         <section className="order-2 settings-section-card">
           <div className="settings-section-card-header">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.systemStatus.title}
             </h2>
           </div>
@@ -754,7 +754,7 @@ export function SettingsClient({
         {/* Audit configuration */}
         <section className="order-4 settings-section-card">
           <div className="settings-section-card-header">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.auditConfig.title}
             </h2>
             {savedSection === "audit" && (
@@ -763,7 +763,7 @@ export function SettingsClient({
               </span>
             )}
           </div>
-          <div className="p-3">
+          <div className="p-4">
             {/* Default rounds */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">
@@ -801,7 +801,7 @@ export function SettingsClient({
         {/* Runtime Connection */}
         <section className="order-3 settings-section-card">
           <div className="settings-section-card-header">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.runtimeConfig.title}
             </h2>
             {savedSection === "runtime" && (
@@ -810,7 +810,7 @@ export function SettingsClient({
               </span>
             )}
           </div>
-          <div className="p-3 space-y-3">
+          <div className="p-4 space-y-3">
             {/* Host */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">
@@ -875,7 +875,7 @@ export function SettingsClient({
         {/* Audit Templates */}
         <section className="order-5 settings-section-card">
           <div className="settings-section-card-header">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.auditTemplates.title}
             </h2>
             {savedSection === "templates" && (
@@ -884,7 +884,7 @@ export function SettingsClient({
               </span>
             )}
           </div>
-          <div className="p-3">
+          <div className="p-4">
             <p className="text-xs text-muted-foreground mb-3">
               {copy.auditTemplates.description}
             </p>
@@ -942,11 +942,11 @@ export function SettingsClient({
         {/* Preferences */}
         <section className="order-6 settings-section-card">
           <div className="settings-section-card-header">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-[13px] font-bold text-foreground">
               {copy.preferences.title}
             </h2>
           </div>
-          <div className="p-3 space-y-3">
+          <div className="p-4 space-y-3">
             {/* Theme */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">

@@ -7,7 +7,6 @@ import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { ExportReportButton } from "@/components/export-report-button";
 import { RiskBadge } from "@/components/risk-badge";
 import { classifyRisk, riskLabel, HIGH_RISK_AUC_THRESHOLD, MAX_COVERAGE_GAPS } from "@/lib/risk-report";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
@@ -151,7 +150,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                   </div>
                   <Link
                     href={buildReportHref(track, "audit")}
-                    className="ml-3 shrink-0 rounded-md border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-semibold text-[var(--accent-blue)] transition-colors hover:bg-[var(--accent-blue)]/20"
+                    className="ml-3 shrink-0 rounded-xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-semibold text-[var(--accent-blue)] transition-colors hover:bg-[var(--accent-blue)]/20"
                   >
                     {copy.generateReport}
                   </Link>
@@ -194,7 +193,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                       <RiskBadge auc={auc} locale={locale} compact />
                       <Link
                         href={buildReportHref(track, "audit")}
-                        className="rounded-md border border-border px-2.5 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/30"
+                        className="rounded-xl border border-border px-2.5 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/30"
                       >
                         {copy.view}
                       </Link>
@@ -202,7 +201,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                         type="button"
                         disabled
                         title={locale === "zh-CN" ? "下载功能即将推出" : "Download coming soon"}
-                        className="rounded-md border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground/60 cursor-not-allowed"
+                        className="rounded-xl border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground/60 cursor-not-allowed"
                       >
                         {copy.download}
                       </button>
@@ -336,14 +335,6 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
     <WorkspacePageFrame
       title={copy.title}
       titleClassName="text-xl"
-      actions={
-        <ExportReportButton
-          rows={rows}
-          contracts={contracts}
-          label={copy.exportSummary}
-          locale={locale}
-        />
-      }
     >
       {pageContent}
     </WorkspacePageFrame>
