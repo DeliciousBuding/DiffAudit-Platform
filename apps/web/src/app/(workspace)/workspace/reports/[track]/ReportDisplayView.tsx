@@ -5,6 +5,7 @@ import { ChartRocCurve } from "@/components/chart-roc-curve";
 import { RiskBadge } from "@/components/risk-badge";
 import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { StatusBadge } from "@/components/status-badge";
+import { MetricTooltip } from "@/components/metric-tooltip";
 import { type Locale } from "@/components/language-picker";
 import { type AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import { classifyRisk, riskLabel, HIGH_RISK_AUC_THRESHOLD } from "@/lib/risk-report";
@@ -208,9 +209,9 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
                   <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.model}</th>
                   <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.track}</th>
                   <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.evidence}</th>
-                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.auc}</th>
-                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.asr}</th>
-                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.tableHeaders.auc}</MetricTooltip></th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.tableHeaders.asr}</MetricTooltip></th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.tableHeaders.tpr}</MetricTooltip></th>
                   <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>

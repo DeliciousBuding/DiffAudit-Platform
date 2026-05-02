@@ -536,6 +536,13 @@ export const WORKSPACE_COPY: Record<
       justUpdated: string;
       noSummary: string;
     };
+    tooltips: {
+      auc: string;
+      asr: string;
+      tpr: string;
+      fpr: string;
+      defenseRate: string;
+    };
   }
 > = {
   "en-US": {
@@ -1343,6 +1350,13 @@ export const WORKSPACE_COPY: Record<
       justUpdated: "Just updated",
       noSummary: "Summary path will appear after the run completes.",
     },
+    tooltips: {
+      auc: "Area Under the ROC Curve — measures how well an attacker can distinguish member from non-member data. 0.5 = random guess, 1.0 = perfect separation. Lower is better.",
+      asr: "Attack Success Rate — proportion of targeted samples where the attacker successfully recovers private training information. Lower is better.",
+      tpr: "True Positive Rate at 1% FPR — how many real attacks are caught while keeping false alarms under 1%. Higher is better for defenders.",
+      fpr: "False Positive Rate — proportion of non-member samples incorrectly flagged as members by the attacker's classifier.",
+      defenseRate: "Proportion of audit results that have an active defense comparison. Higher coverage means more results are evaluated against defenses.",
+    },
   },
   "zh-CN": {
     shell: {
@@ -2148,6 +2162,13 @@ export const WORKSPACE_COPY: Record<
     liveJobsPanel: {
       justUpdated: "刚刚更新",
       noSummary: "运行完成后会显示结果摘要",
+    },
+    tooltips: {
+      auc: "ROC 曲线下面积 — 衡量攻击者区分成员与非成员数据的能力。0.5 = 随机猜测，1.0 = 完美分离。越低越好。",
+      asr: "攻击成功率 — 攻击者成功恢复私密训练信息的目标样本比例。越低越好。",
+      tpr: "1% 误报率下的真阳性率 — 在假阳性控制在 1% 以下时能捕获多少真实攻击。对防御方来说越高越好。",
+      fpr: "假阳性率 — 攻击者分类器将非成员数据误判为成员数据的比例。",
+      defenseRate: "已有防御对照的审计结果占全部结果的比例。覆盖率越高，说明越多结果经过了防御评估。",
     },
   },
 };

@@ -164,6 +164,7 @@ export default async function ModelAssetsPage() {
         catalog={catalog}
         attackDefense={attackDefense}
         copy={copy}
+        locale={locale}
       />
     </WorkspacePageFrame>
   );

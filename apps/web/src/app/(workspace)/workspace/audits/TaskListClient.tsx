@@ -6,6 +6,7 @@ import { FileText, ArrowRight, RefreshCw } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
+import { InfoTooltip } from "@/components/info-tooltip";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
@@ -290,7 +291,9 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                     {formatDuration(job.created_at, job.updated_at, locale)}
                     {job.metrics && (
                       <div className="mt-1 text-[10px] leading-4 text-muted-foreground">
-                        {tableCopy.auc} {formatMetricValue(job.metrics.auc)}
+                        {index === 0 ? (
+                          <InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>{tableCopy.auc}</InfoTooltip>
+                        ) : tableCopy.auc} {formatMetricValue(job.metrics.auc)}
                       </div>
                     )}
                   </td>

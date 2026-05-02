@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 import { type Locale } from "@/components/language-picker";
+import { MetricTooltip } from "@/components/metric-tooltip";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 
@@ -207,15 +208,15 @@ export function CompareView({ rows, locale }: CompareViewProps) {
               </tr>
               <tr className="border-b border-border text-[11px] text-muted-foreground">
                 <th></th><th></th>
-                <th className="px-2 py-1.5 text-right mono">{copy.auc}</th>
-                <th className="px-2 py-1.5 text-right mono">{copy.asr}</th>
-                <th className="px-2 py-1.5 text-right mono">{copy.tpr}</th>
-                <th className="px-2 py-1.5 text-right mono border-l border-border">{copy.auc}</th>
-                <th className="px-2 py-1.5 text-right mono">{copy.asr}</th>
-                <th className="px-2 py-1.5 text-right mono">{copy.tpr}</th>
-                <th className="px-2 py-1.5 text-right border-l border-border text-[color:var(--accent-blue)]">{copy.auc}</th>
-                <th className="px-2 py-1.5 text-right text-[color:var(--accent-blue)]">{copy.asr}</th>
-                <th className="px-2 py-1.5 text-right text-[color:var(--accent-blue)]">{copy.tpr}</th>
+                <th className="px-2 py-1.5 text-right mono"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.auc}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right mono"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.asr}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right mono"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.tpr}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right mono border-l border-border"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.auc}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right mono"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.asr}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right mono"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.tpr}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right border-l border-border text-[color:var(--accent-blue)]"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.auc}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right text-[color:var(--accent-blue)]"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.asr}</MetricTooltip></th>
+                <th className="px-2 py-1.5 text-right text-[color:var(--accent-blue)]"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.tpr}</MetricTooltip></th>
                 <th className="px-2 py-1.5 border-l border-border"></th>
               </tr>
             </thead>

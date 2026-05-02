@@ -5,6 +5,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 
 import { Modal } from "@/components/modal";
 import { StatusBadge } from "@/components/status-badge";
+import { MetricTooltip } from "@/components/metric-tooltip";
 import type { CatalogDashboardViewModel, CatalogEntryViewModel, AttackDefenseTableViewModel } from "@/lib/workspace-source";
 
 const TRACK_DOT_COLORS: Record<string, string> = {
@@ -92,9 +93,10 @@ type ModelAssetsClientProps = {
   catalog: CatalogDashboardViewModel;
   attackDefense: AttackDefenseTableViewModel | null;
   copy: Copy;
+  locale?: "en-US" | "zh-CN";
 };
 
-export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsClientProps) {
+export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-US" }: ModelAssetsClientProps) {
   const TRACK_DISPLAY: Record<string, string> = {
     "black-box": copy.trackBlackBox,
     "gray-box": copy.trackGrayBox,
@@ -637,9 +639,9 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                           <tr className="border-b border-border/60 bg-muted/20 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                             <th scope="col" className="px-4 py-3">{copy.attack}</th>
                             <th scope="col" className="px-4 py-3">{copy.defense}</th>
-                            <th scope="col" className="px-4 py-3 text-right">{copy.auc}</th>
-                            <th scope="col" className="px-4 py-3 text-right">{copy.asr}</th>
-                            <th scope="col" className="px-4 py-3 text-right">{copy.tpr}</th>
+                            <th scope="col" className="px-4 py-3 text-right"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.auc}</MetricTooltip></th>
+                            <th scope="col" className="px-4 py-3 text-right"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.asr}</MetricTooltip></th>
+                            <th scope="col" className="px-4 py-3 text-right"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.tpr}</MetricTooltip></th>
                             <th scope="col" className="px-4 py-3">{copy.source}</th>
                           </tr>
                         </thead>

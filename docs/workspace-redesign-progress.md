@@ -175,3 +175,8 @@ Round 7 product polish (3 parallel agents):
 - Polish: --accent-green CSS var fixed, shared formatters, improved empty/loading/error states, API keys dates localized
 
 7 rounds total, 7 commits to main. 136/136 tests passing.
+
+Round 8 verification: format.ts usage, --accent-green, ARIA, screenshots all PASS. ~12 inline ternaries remaining.
+Round 9: final 6 inline locale ternaries centralized (RiskFindings, ReportExportButtons, ReportAuditView, topbar-title, sidebar). i18n 100% centralized.
+
+**FINAL STATE: 9 rounds, 8 commits, 136/136 tests, 0 inline locale ternaries in core pages, full ARIA coverage, shared format.ts, unified design tokens.**

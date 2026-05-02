@@ -13,6 +13,7 @@ import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 import { buildReportHref } from "@/lib/audit-flow";
 import { ReportExportButtons } from "@/app/(workspace)/workspace/reports/ReportExportButtons";
+import { InfoTooltip } from "@/components/info-tooltip";
 
 /** Track icons for report generation cards */
 function TrackIcon({ track }: { track: TrackKey }) {
@@ -218,7 +219,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
             <div className="mt-2.5 flex items-center gap-2">
               <RiskBadge auc={highestAuc} locale={locale} />
               <span className="mono text-xs text-muted-foreground">
-                AUC {highestAuc > 0 ? highestAuc.toFixed(3) : "--"}
+                <InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>AUC</InfoTooltip> {highestAuc > 0 ? highestAuc.toFixed(3) : "--"}
               </span>
             </div>
           </div>

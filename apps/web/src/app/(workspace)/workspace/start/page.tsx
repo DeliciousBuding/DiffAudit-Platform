@@ -16,6 +16,9 @@ import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { ChartRiskRadar } from "@/components/chart-risk-radar";
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
+import { MetricTooltip } from "@/components/metric-tooltip";
+import { InfoTooltip } from "@/components/info-tooltip";
+import { AnimatedValue } from "@/components/animated-value";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 
 export const dynamic = "force-dynamic";
@@ -33,8 +36,8 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
   return points;
 }
 
-/** KPI card with trend arrow (up/down/flat) — 2.4.1 */
-function KpiCardWithTrend({ label, value, note, trend }: { label: string; value: string; note: string; trend?: "up" | "down" | "flat" }) {
+/** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1 */
+function KpiCardWithTrend({ label, value, note, trend }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat" }) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
@@ -42,7 +45,7 @@ function KpiCardWithTrend({ label, value, note, trend }: { label: string; value:
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-2xl font-bold leading-none">{value}</span>
+        <AnimatedValue value={value} className="text-2xl font-bold leading-none" />
         {trendIcon ? <span className={`text-base ${trendColor}`} aria-label={trendLabel} role="img">{trendIcon}</span> : null}
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
@@ -177,7 +180,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
         <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
-        <KpiCardWithTrend label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
+        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
         <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
       </div>
 
@@ -409,9 +412,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
                     <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.model}</th>
                     <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.track}</th>
-                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.auc}</th>
-                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.asr}</th>
-                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.tpr}</th>
+                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.sections.tableHeaders.auc}</MetricTooltip></th>
+                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.sections.tableHeaders.asr}</MetricTooltip></th>
+                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.sections.tableHeaders.tpr}</MetricTooltip></th>
                   </tr>
                 </thead>
                 <tbody>

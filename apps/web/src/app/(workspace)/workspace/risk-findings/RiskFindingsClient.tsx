@@ -6,6 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
+import { InfoTooltip } from "@/components/info-tooltip";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import type { Locale } from "@/components/language-picker";
 
@@ -206,7 +208,7 @@ function getPaginationWindow(current: number, total: number, maxVisible: number)
 /*  KPI Card                                                           */
 /* ------------------------------------------------------------------ */
 
-function KpiCard({ label, value, accent, icon }: { label: string; value: string | number; accent: string; icon: React.ReactNode }) {
+function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value: string | number; accent: string; icon: React.ReactNode }) {
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5">
       <div
@@ -342,7 +344,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           icon={<Shield size={16} strokeWidth={1.5} aria-hidden="true" />}
         />
         <KpiCard
-          label={copy.defenseRate}
+          label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.defenseRate}>{copy.defenseRate}</InfoTooltip>}
           value={defenseRate !== null ? `${defenseRate}%` : copy.na}
           accent="var(--accent-blue)"
           icon={<BarChart3 size={16} strokeWidth={1.5} aria-hidden="true" />}
