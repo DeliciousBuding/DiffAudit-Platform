@@ -7,6 +7,7 @@ import { type Locale } from "@/components/language-picker";
 import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
+import { useToast } from "@/components/toast-provider";
 import { formatDateOnly } from "@/lib/format";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -77,6 +78,7 @@ function createDemoId() {
 
 export function ApiKeysClient({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].apiKeys;
+  const { toast } = useToast();
   const [keys, setKeys] = useState<ApiKey[]>(MOCK_KEYS);
   const [showCreate, setShowCreate] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
@@ -85,7 +87,6 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
   const [copyFailed, setCopyFailed] = useState(false);
   const [copyCooldown, setCopyCooldown] = useState(false);
   const [pendingRevokeId, setPendingRevokeId] = useState<string | null>(null);
-  const [revokeSuccess, setRevokeSuccess] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(
     () => new Set(DEFAULT_SCOPES),
   );
@@ -100,13 +101,6 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [pendingRevokeId]);
-
-  // Auto-dismiss revoke success toast
-  useEffect(() => {
-    if (!revokeSuccess) return;
-    const timer = setTimeout(() => setRevokeSuccess(false), 2500);
-    return () => clearTimeout(timer);
-  }, [revokeSuccess]);
 
   // Focus trap for revoke modal
   useEffect(() => {
@@ -167,6 +161,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     setCreatedKey(fakeKey);
     setNewKeyName("");
     setShowCreate(false);
+    toast({ type: "success", title: copy.createdTitle });
   }
 
   function handleCopy() {
@@ -189,7 +184,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       prev.map((k) => (k.id === keyId ? { ...k, status: "revoked" as const } : k)),
     );
     setPendingRevokeId(null);
-    setRevokeSuccess(true);
+    toast({ type: "success", title: copy.revokeSuccess });
   }
 
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -441,13 +436,6 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               </button>
             </div>
           </div>
-        </div>
-      ) : null}
-
-      {/* Revoke success toast */}
-      {revokeSuccess ? (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/10 px-4 py-2.5 text-xs font-medium text-[var(--accent-green)] shadow-lg backdrop-blur-sm">
-          {copy.revokeSuccess}
         </div>
       ) : null}
 

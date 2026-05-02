@@ -12,7 +12,7 @@ import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
 import { classifyRisk } from "@/lib/risk-report";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
-import { ChartRiskDistribution } from "@/components/chart-risk-distribution";
+import { InteractiveRiskDistribution } from "@/components/chart-risk-distribution";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { ChartRiskRadar } from "@/components/chart-risk-radar";
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
@@ -387,7 +387,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         {totalRisk > 0 && (
           <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution}>
             <div className="p-4">
-              <ChartRiskDistribution data={riskDistData} />
+              <InteractiveRiskDistribution data={riskDistData} />
             </div>
           </WorkspaceSectionCard>
         )}

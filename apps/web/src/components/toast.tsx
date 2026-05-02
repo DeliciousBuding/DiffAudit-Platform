@@ -35,7 +35,7 @@ const variantClasses: Record<ToastItem["type"], string> = {
 function ToastCard({ toast, onDismiss }: { toast: ToastItem; onDismiss: () => void }) {
   return (
     <div
-      className={`pointer-events-auto flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium shadow-lg ${variantClasses[toast.type]}`}
+      className={`pointer-events-auto flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium shadow-xl ${variantClasses[toast.type]}`}
       role="alert"
       style={{
         animation: "toast-slide-in 0.25s ease-out forwards",

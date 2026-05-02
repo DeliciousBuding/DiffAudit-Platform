@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   BarChart,
   Bar,
@@ -13,6 +14,7 @@ import {
 
 interface RiskDistributionProps {
   data: { key: string; label: string; count: number }[];
+  onClick?: (entry: { key: string; label: string; count: number }) => void;
 }
 
 const RISK_COLORS: Record<string, string> = {
@@ -30,7 +32,7 @@ const chartTooltipStyle: React.CSSProperties = {
   color: "var(--foreground)",
 };
 
-export function ChartRiskDistribution({ data }: RiskDistributionProps) {
+export function ChartRiskDistribution({ data, onClick }: RiskDistributionProps) {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
@@ -50,7 +52,14 @@ export function ChartRiskDistribution({ data }: RiskDistributionProps) {
           contentStyle={chartTooltipStyle}
           formatter={((value: number) => [value, "Count"]) as (...args: unknown[]) => React.ReactNode}
         />
-        <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={60} isAnimationActive={false}>
+        <Bar
+          dataKey="count"
+          radius={[4, 4, 0, 0]}
+          maxBarSize={60}
+          isAnimationActive={false}
+          onClick={onClick ? (entry) => onClick(entry as { key: string; label: string; count: number }) : undefined}
+          style={onClick ? { cursor: "pointer" } : undefined}
+        >
           {data.map((entry, index) => (
             <Cell key={index} fill={RISK_COLORS[entry.key] || "var(--accent-blue)"} />
           ))}
@@ -58,4 +67,19 @@ export function ChartRiskDistribution({ data }: RiskDistributionProps) {
       </BarChart>
     </ResponsiveContainer>
   );
+}
+
+/** Interactive wrapper that navigates to risk-findings on bar click */
+export function InteractiveRiskDistribution({
+  data,
+}: {
+  data: { key: string; label: string; count: number }[];
+}) {
+  const router = useRouter();
+
+  function handleClick(entry: { key: string }) {
+    router.push(`/workspace/risk-findings?severity=${entry.key}`);
+  }
+
+  return <ChartRiskDistribution data={data} onClick={handleClick} />;
 }

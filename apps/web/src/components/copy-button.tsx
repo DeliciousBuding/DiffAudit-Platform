@@ -2,13 +2,18 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
+import { useToast } from "@/components/toast-provider";
+
 export function CopyButton({ text, label }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      const isZh = typeof navigator !== "undefined" && navigator.language.startsWith("zh");
+      toast({ type: "success", title: isZh ? "已复制" : "Copied" });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for non-HTTPS
@@ -19,6 +24,8 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
       document.execCommand("copy");
       document.body.removeChild(textarea);
       setCopied(true);
+      const isZh = typeof navigator !== "undefined" && navigator.language.startsWith("zh");
+      toast({ type: "success", title: isZh ? "已复制" : "Copied" });
       setTimeout(() => setCopied(false), 2000);
     }
   }

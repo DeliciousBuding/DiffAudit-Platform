@@ -2,6 +2,7 @@
 
 import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { EmptyState } from "@/components/empty-state";
@@ -239,6 +240,7 @@ type Props = {
 
 export function RiskFindingsClient({ rows, locale }: Props) {
   const copy = COPY[locale] ?? COPY["en-US"];
+  const searchParams = useSearchParams();
   const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -248,8 +250,11 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const resolvedCount = rows.filter((r) => r.defense !== "none").length;
   const defenseRate = totalFindings > 0 ? Math.round((resolvedCount / totalFindings) * 100) : null;
 
-  /* -- filter state ------------------------------------------------ */
-  const [severityFilter, setSeverityFilter] = useState("");
+  /* -- filter state (reads initial severity from URL ?severity=) --- */
+  const [severityFilter, setSeverityFilter] = useState(() => {
+    const urlSeverity = searchParams.get("severity");
+    return urlSeverity === "high" || urlSeverity === "medium" || urlSeverity === "low" ? urlSeverity : "";
+  });
   const [categoryFilter, setCategoryFilter] = useState("");
   const [modelFilter, setModelFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");

@@ -232,3 +232,12 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
    - Respects prefers-reduced-motion
 
 13 rounds total, 11 commits to main. 136/136 tests.
+
+### Phase 14: Table Sorting + Inline Editing (COMPLETED)
+1. **Table Sorting**: useSort hook + SortableHeader component
+   - Risk Findings: sort by severity, category, source model, status
+   - Audits history: sort by name, type, model, status, created, duration
+   - Chevron indicators, aria-sort accessibility
+2. **Inline Model Name Editing**: click model name to edit, pencil icon on hover, Enter/blur saves, Escape cancels
+
+14 rounds total, 12 commits to main. 136/136 tests.

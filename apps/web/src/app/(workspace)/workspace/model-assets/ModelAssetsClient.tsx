@@ -8,6 +8,7 @@ import { Modal } from "@/components/modal";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { MetricTooltip } from "@/components/metric-tooltip";
+import { useToast } from "@/components/toast-provider";
 import type { CatalogDashboardViewModel, CatalogEntryViewModel, AttackDefenseTableViewModel } from "@/lib/workspace-source";
 
 const TRACK_DOT_COLORS: Record<string, string> = {
@@ -100,6 +101,8 @@ type ModelAssetsClientProps = {
 };
 
 export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-US" }: ModelAssetsClientProps) {
+  const { toast } = useToast();
+
   const TRACK_DISPLAY: Record<string, string> = {
     "black-box": copy.trackBlackBox,
     "gray-box": copy.trackGrayBox,
@@ -312,6 +315,8 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     setActiveTab("timeline");
     setEvidencePage(1);
     setShowAddModal(false);
+    const isZh = locale === "zh-CN";
+    toast({ type: "success", title: isZh ? `模型「${name}」已添加` : `Model "${name}" added` });
   }
 
   // --- Edit Model ---
@@ -341,6 +346,8 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
         : prev,
     );
     setShowEditModal(false);
+    const isZh = locale === "zh-CN";
+    toast({ type: "success", title: isZh ? `模型「${name}」已更新` : `Model "${name}" updated` });
   }
 
   // --- Delete Model ---
@@ -362,6 +369,8 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     setActiveTab("timeline");
     setEvidencePage(1);
     setShowDeleteConfirm(false);
+    const isZh = locale === "zh-CN";
+    toast({ type: "success", title: isZh ? "模型已删除" : "Model deleted" });
   }
 
   // [issue 1] Filter entries by search — also match track display name

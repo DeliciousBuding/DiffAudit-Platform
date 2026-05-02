@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -39,7 +40,9 @@ export default async function RiskFindingsPage() {
         </Link>
       }
     >
-      <RiskFindingsClient rows={rows} locale={locale} />
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/20" />}>
+        <RiskFindingsClient rows={rows} locale={locale} />
+      </Suspense>
     </WorkspacePageFrame>
   );
 }

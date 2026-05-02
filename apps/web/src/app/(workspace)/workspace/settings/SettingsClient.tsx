@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { Calendar } from "lucide-react";
 
@@ -12,6 +12,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale, LanguagePicker, setStoredLocale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
+import { useToast } from "@/components/toast-provider";
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
 import type { CurrentUserProfile } from "@/lib/auth";
@@ -182,15 +183,13 @@ export function SettingsClient({
   const shellCopy = localeCopy.shell;
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
   const isAccountMode = mode === "account";
   const pageTitle = isAccountMode ? copy.account.title : copy.title;
 
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [defaultRounds, setDefaultRounds] = useState("10");
   const [defaultBatchSize, setDefaultBatchSize] = useState("32");
-  type SavedSection = "audit" | "runtime" | "account" | "templates";
-  const [savedSection, setSavedSection] = useState<SavedSection | null>(null);
-  const savedTimerRef = useRef<number | null>(null);
   const [profile, setProfile] = useState<CurrentUserProfile | null>(initialProfile ?? null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -324,19 +323,9 @@ export function SettingsClient({
     };
   }, []);
 
-  const showSaved = useCallback((section: SavedSection) => {
-    setSavedSection(section);
-    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
-    savedTimerRef.current = window.setTimeout(() => {
-      setSavedSection(null);
-      savedTimerRef.current = null;
-    }, 2000);
-  }, []);
-
   // Clean up saved indicator timer on unmount
   useEffect(() => {
     return () => {
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current);
     };
   }, []);
@@ -359,7 +348,7 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_ROUNDS, value);
     } catch {}
-    showSaved("audit");
+    toast({ type: "success", title: copy.auditConfig.saved });
   }
 
   function handleBatchSizeChange(value: string) {
@@ -374,7 +363,7 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, value);
     } catch {}
-    showSaved("audit");
+    toast({ type: "success", title: copy.auditConfig.saved });
   }
 
   async function handleTestRuntime() {
@@ -401,8 +390,8 @@ export function SettingsClient({
   function commitRuntimeHost() {
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, runtimeHost);
-      showSaved("runtime");
     } catch {}
+    toast({ type: "success", title: copy.runtimeConfig.saved });
   }
 
   function handleRuntimePortChange(value: string) {
@@ -412,8 +401,8 @@ export function SettingsClient({
   function commitRuntimePort() {
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, runtimePort);
-      showSaved("runtime");
     } catch {}
+    toast({ type: "success", title: copy.runtimeConfig.saved });
   }
 
   function persistTemplates(next: SavedTemplate[]) {
@@ -437,7 +426,7 @@ export function SettingsClient({
       createdAt: new Date().toISOString(),
     };
     persistTemplates([...templates, template]);
-    showSaved("templates");
+    toast({ type: "success", title: copy.auditTemplates.saved });
   }
 
   function handleLoadTemplate(template: SavedTemplate) {
@@ -447,7 +436,7 @@ export function SettingsClient({
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_ROUNDS, template.rounds);
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, template.batchSize);
     } catch {}
-    showSaved("templates");
+    toast({ type: "success", title: copy.auditTemplates.saved });
   }
 
   function handleDeleteTemplate(id: string) {
@@ -491,7 +480,7 @@ export function SettingsClient({
       setNewPassword("");
       setConfirmPassword("");
       setShowPasswordEditor(false);
-      showSaved("account");
+      toast({ type: "success", title: copy.account.passwordSaved });
       setPasswordSaveNotice(copy.account.passwordSaved);
       if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current);
       passwordNoticeTimerRef.current = window.setTimeout(() => {
@@ -757,11 +746,6 @@ export function SettingsClient({
             <h2 className="text-[13px] font-bold text-foreground">
               {copy.auditConfig.title}
             </h2>
-            {savedSection === "audit" && (
-              <span className="text-[10px] text-[color:var(--success)]">
-                {copy.auditConfig.saved}
-              </span>
-            )}
           </div>
           <div className="p-4">
             {/* Default rounds */}
@@ -804,11 +788,6 @@ export function SettingsClient({
             <h2 className="text-[13px] font-bold text-foreground">
               {copy.runtimeConfig.title}
             </h2>
-            {savedSection === "runtime" && (
-              <span className="text-[10px] text-[color:var(--success)]">
-                {copy.runtimeConfig.saved}
-              </span>
-            )}
           </div>
           <div className="p-4 space-y-3">
             {/* Host */}
@@ -878,11 +857,6 @@ export function SettingsClient({
             <h2 className="text-[13px] font-bold text-foreground">
               {copy.auditTemplates.title}
             </h2>
-            {savedSection === "templates" && (
-              <span className="text-[10px] text-[color:var(--success)]">
-                {copy.auditTemplates.saved}
-              </span>
-            )}
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-3">
