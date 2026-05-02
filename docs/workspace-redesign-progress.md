@@ -464,3 +464,17 @@ Late design audit findings from R35:
 4. ✅ FindingDetailPanel: source path text-[11px] → text-[12px] (matches other detail values)
 
 36 rounds total, 34 commits to main. 136/136 tests.
+
+### Phase 37: Lucide Icons, Row Highlighting, CSS Cleanup (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Dashboard health banner: emoji → Lucide icons (AlertTriangle, CheckCircle, ArrowRight)
+2. ✅ Risk Findings: subtle severity-based row background tints
+
+**Design findings fixed:**
+3. ✅ CreateTaskClient: replaced 5 hardcoded rgba(47,109,246,...) with CSS variable syntax
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+37 rounds total, 35 commits to main. 136/136 tests.
