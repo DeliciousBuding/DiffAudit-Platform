@@ -162,3 +162,9 @@ Round 3 fixes (2 parallel agents):
 - r3-fix-reports: 5 section headers text-[10px]→text-[13px], track items rounded-lg→rounded-2xl, casual copy polish
 
 Cumulative: 60+ issues fixed across 3 rounds. Convergence detected.
+
+Round 4 fixes: Settings gap-5→4, password gap-3→4, strokeWidth 2→1.5 (2 icons), button radius unified
+Round 5 verification: 136/136 tests, strokeWidth CLEAN in workspace, radius CLEAN, headers CLEAN, 4 gap-3 + 29 ternaries remaining
+Round 6 fixes: 4 gap-3→4, 23 inline locale ternaries centralized to workspace-copy.ts (reports 15, JobDetail 5, error 2, CreateTask 1)
+
+Final state: 136/136 tests, ~4 inline locale helpers remaining (non-user-facing), all design tokens converged.

@@ -47,6 +47,7 @@ const COPY: Record<string, {
   catWhiteBox: string;
   catOther: string;
   clearFilters: string;
+  clearSearch: string;
   searchPlaceholder: string;
 }> = {
   "en-US": {
@@ -83,6 +84,7 @@ const COPY: Record<string, {
     catWhiteBox: "Prompt Security",
     catOther: "Safety Bypass",
     clearFilters: "Clear filters",
+    clearSearch: "Clear search",
     searchPlaceholder: "Search by description or model...",
   },
   "zh-CN": {
@@ -119,6 +121,7 @@ const COPY: Record<string, {
     catWhiteBox: "提示安全",
     catOther: "安全绕过",
     clearFilters: "清除筛选",
+    clearSearch: "清除搜索",
     searchPlaceholder: "搜索描述或模型...",
   },
 };
@@ -309,6 +312,9 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   }, []);
   const pageWindow = getPaginationWindow(currentPage, totalPages, maxVisiblePages);
 
+  /* -- localized number formatter ---------------------------------- */
+  const nf = useMemo(() => new Intl.NumberFormat(locale === "zh-CN" ? "zh-CN" : "en-US"), [locale]);
+
   /* -- render ------------------------------------------------------ */
   return (
     <div className="space-y-6">
@@ -316,27 +322,27 @@ export function RiskFindingsClient({ rows, locale }: Props) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label={copy.totalFindings}
-          value={totalFindings}
+          value={nf.format(totalFindings)}
           accent="var(--info)"
-          icon={<FileText size={16} strokeWidth={1.5} />}
+          icon={<FileText size={16} strokeWidth={1.5} aria-hidden="true" />}
         />
         <KpiCard
           label={copy.highRisk}
-          value={criticalHigh}
+          value={nf.format(criticalHigh)}
           accent="var(--warning)"
-          icon={<AlertTriangle size={16} strokeWidth={1.5} />}
+          icon={<AlertTriangle size={16} strokeWidth={1.5} aria-hidden="true" />}
         />
         <KpiCard
           label={copy.hasDefense}
-          value={resolvedCount}
+          value={nf.format(resolvedCount)}
           accent="var(--success)"
-          icon={<Shield size={16} strokeWidth={1.5} />}
+          icon={<Shield size={16} strokeWidth={1.5} aria-hidden="true" />}
         />
         <KpiCard
           label={copy.defenseRate}
           value={defenseRate !== null ? `${defenseRate}%` : copy.na}
           accent="var(--accent-blue)"
-          icon={<BarChart3 size={16} strokeWidth={1.5} />}
+          icon={<BarChart3 size={16} strokeWidth={1.5} aria-hidden="true" />}
         />
       </div>
 
@@ -348,7 +354,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
         <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
           {/* Search input */}
           <div className="relative min-w-[200px] flex-1 sm:flex-none sm:w-[260px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} strokeWidth={1.5} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} strokeWidth={1.5} aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
@@ -360,6 +366,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <button
                 type="button"
                 onClick={() => { setSearchQuery(""); setCurrentPage(1); }}
+                aria-label={copy.clearSearch}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
               >
                 <X size={12} strokeWidth={1.5} />
@@ -373,44 +380,48 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           {/* Filter selects */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
-              <Layers className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} />
+              <Layers className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} aria-hidden="true" />
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={severityFilter}
                 onChange={(e) => handleFilterChange(setSeverityFilter, e.target.value)}
+                aria-label={copy.allSeverities}
               >
                 <option value="">{copy.allSeverities}</option>
                 {severities.map((s) => <option key={s} value={s}>{s === "high" ? copy.high : s === "medium" ? copy.medium : copy.low}</option>)}
               </select>
             </div>
             <div className="relative">
-              <Tag className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} />
+              <Tag className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} aria-hidden="true" />
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={categoryFilter}
                 onChange={(e) => handleFilterChange(setCategoryFilter, e.target.value)}
+                aria-label={copy.allCategories}
               >
                 <option value="">{copy.allCategories}</option>
                 {trackValues.map((t) => <option key={t} value={t}>{getCategory(t, copy)}</option>)}
               </select>
             </div>
             <div className="relative">
-              <LayoutGrid className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} />
+              <LayoutGrid className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} aria-hidden="true" />
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={modelFilter}
                 onChange={(e) => handleFilterChange(setModelFilter, e.target.value)}
+                aria-label={copy.allModels}
               >
                 <option value="">{copy.allModels}</option>
                 {models.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <div className="relative">
-              <CheckCircle2 className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} />
+              <CheckCircle2 className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={13} strokeWidth={1.5} aria-hidden="true" />
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={statusFilter}
                 onChange={(e) => handleFilterChange(setStatusFilter, e.target.value)}
+                aria-label={copy.allStatuses}
               >
                 <option value="">{copy.allStatuses}</option>
                 {statuses.map((s) => <option key={s} value={s}>{s === "has-defense" ? copy.hasDefenseStatus : s === "monitoring" ? copy.monitoring : copy.investigating}</option>)}
@@ -439,11 +450,11 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             <table className="w-full text-[13px]">
               <thead>
                 <tr className="border-b border-border text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-3">{copy.riskDescription}</th>
-                  <th className="px-4 py-3">{copy.severity}</th>
-                  <th className="px-4 py-3">{copy.category}</th>
-                  <th className="px-4 py-3">{copy.sourceModel}</th>
-                  <th className="px-4 py-3">{copy.status}</th>
+                  <th scope="col" className="px-4 py-3">{copy.riskDescription}</th>
+                  <th scope="col" className="px-4 py-3">{copy.severity}</th>
+                  <th scope="col" className="px-4 py-3">{copy.category}</th>
+                  <th scope="col" className="px-4 py-3">{copy.sourceModel}</th>
+                  <th scope="col" className="px-4 py-3">{copy.status}</th>
                 </tr>
               </thead>
               <tbody>
@@ -482,7 +493,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12">
-            <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} />
+            <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} aria-hidden="true" />
             <p className="mb-4 text-sm text-muted-foreground">
               {hasActiveFilters ? copy.emptyNoResults : copy.emptyNoData}
             </p>
@@ -502,13 +513,14 @@ export function RiskFindingsClient({ rows, locale }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-border px-5 py-3">
             <span className="text-[11px] text-muted-foreground">
-              {filtered.length} {copy.totalFindings.toLowerCase()}
+              {nf.format(filtered.length)} {copy.totalFindings.toLowerCase()}
             </span>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 disabled={currentPage <= 1}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                aria-label={copy.previous}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/30 disabled:opacity-30"
               >
                 <ChevronLeft size={14} strokeWidth={1.5} />
@@ -537,6 +549,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 type="button"
                 disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                aria-label={copy.next}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/30 disabled:opacity-30"
               >
                 <ChevronRight size={14} strokeWidth={1.5} />

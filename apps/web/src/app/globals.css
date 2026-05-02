@@ -29,6 +29,7 @@
   --accent-blue: #2f6df6;
   --accent-blue-hover: #1f5ce0;
   --accent-coral: #ff5f46;
+  --accent-green: #16a34a;
   --background: var(--palette-grey-0);
   --foreground: var(--palette-grey-1200);
   --card: rgba(255, 255, 255, 0.82);
@@ -3372,6 +3373,7 @@ html.dark {
   --accent-blue: #5b8ef9;
   --accent-blue-hover: #7aa3fb;
   --accent-coral: #ff7a64;
+  --accent-green: #22c55e;
 
   --background: var(--palette-grey-0);
   --foreground: var(--palette-grey-1200);

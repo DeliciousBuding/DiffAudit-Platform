@@ -37,12 +37,13 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 function KpiCardWithTrend({ label, value, note, trend }: { label: string; value: string; note: string; trend?: "up" | "down" | "flat" }) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
+  const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <span className="text-2xl font-bold leading-none">{value}</span>
-        {trendIcon ? <span className={`text-base ${trendColor}`}>{trendIcon}</span> : null}
+        {trendIcon ? <span className={`text-base ${trendColor}`} aria-label={trendLabel} role="img">{trendIcon}</span> : null}
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>
@@ -173,7 +174,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   return (
     <>
       {/* KPI row — with trend indicators 2.4.1 */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
         <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
         <KpiCardWithTrend label={copy.kpis.avgAucLabel} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
@@ -258,7 +259,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
           <div className="flex items-start gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20">
-              <Info size={16} strokeWidth={1.5} className="text-[color:var(--accent-blue)]" />
+              <Info size={16} strokeWidth={1.5} className="text-[color:var(--accent-blue)]" aria-hidden="true" />
             </div>
             <div className="flex-1">
               <h3 className="text-sm font-semibold mb-1">{localeData.emptyWorkspace.title}</h3>
@@ -404,13 +405,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <table className="w-full border-collapse text-xs">
                 <thead className="sticky top-0 bg-muted/30">
                   <tr className="border-b border-border">
-                    <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
-                    <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
-                    <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.model}</th>
-                    <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.track}</th>
-                    <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.auc}</th>
-                    <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.asr}</th>
-                    <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.tpr}</th>
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.model}</th>
+                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.track}</th>
+                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.auc}</th>
+                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.asr}</th>
+                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.tpr}</th>
                   </tr>
                 </thead>
                 <tbody>

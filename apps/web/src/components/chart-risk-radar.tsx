@@ -88,7 +88,7 @@ export function ChartRiskRadar({ data, height = 260 }: ChartRiskRadarProps) {
             return (
               <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4, padding: "6px 10px", ...chartTooltipStyle }}>
                 <div style={{ fontWeight: 600 }}>{p.payload?.label ?? p.name}</div>
-                <div style={{ color: "var(--muted-foreground)" }}>{(p.value as number)?.toFixed(2)}</div>
+                <div style={{ color: "var(--muted-foreground)" }}>{(p.value as number)?.toFixed(3)}</div>
               </div>
             );
           }}

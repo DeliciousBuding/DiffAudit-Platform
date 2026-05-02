@@ -250,7 +250,7 @@ export const WORKSPACE_COPY: Record<
     };
     jobDetail: {
       eyebrow: string; title: string; description: string;
-      backToAudits: string; cancelJob: string; cancelling: string; confirmCancel: string;
+      backToAudits: string; retry: string; cancelJob: string; cancelling: string; confirmCancel: string;
       closeDialog: string;
       keepRunning: string; cancelTitle: string; cancelBody: string; nextStepsTitle: string;
       reportReadyTitle: string; reportReadyBody: string; viewReport: string;
@@ -812,6 +812,7 @@ export const WORKSPACE_COPY: Record<
       title: "Audit Job",
       description: "View status, logs, and details for this audit job.",
       backToAudits: "Back to audits",
+      retry: "Retry",
       cancelJob: "Cancel job",
       cancelling: "Cancelling...",
       confirmCancel: "Confirm cancel",
@@ -1615,6 +1616,7 @@ export const WORKSPACE_COPY: Record<
       title: "审计任务",
       description: "查看任务状态、运行日志和详细信息",
       backToAudits: "返回任务列表",
+      retry: "重试",
       cancelJob: "取消任务",
       cancelling: "取消中...",
       confirmCancel: "确认取消",

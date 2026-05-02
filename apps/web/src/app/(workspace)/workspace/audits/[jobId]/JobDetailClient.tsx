@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/skeleton";
 import { Modal } from "@/components/modal";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
+import { formatFullTime, formatDuration, formatMetricValue } from "@/lib/format";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -48,45 +49,6 @@ function statusTone(status: string): "info" | "success" | "warning" | "primary" 
 
 function statusLabel(status: string, labels: Record<string, string>): string {
   return labels[status] ?? status;
-}
-
-function formatTime(iso: string, locale: Locale): string {
-  try {
-    const tag = locale === "zh-CN" ? "zh-CN" : "en-US";
-    return new Date(iso).toLocaleString(tag, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function formatDuration(created: string, updated: string | null, locale: string): string {
-  const start = new Date(created).getTime();
-  const end = updated ? new Date(updated).getTime() : Date.now();
-  const diffMs = Math.max(0, end - start);
-  const secs = Math.floor(diffMs / 1000);
-  const mins = Math.floor(secs / 60);
-  const hours = Math.floor(mins / 60);
-  if (locale === "zh-CN") {
-    if (secs < 60) return `${secs}秒`;
-    if (mins < 60) return `${mins}分${secs % 60}秒`;
-    return `${hours}时${mins % 60}分`;
-  }
-  // English fallback
-  if (secs < 60) return `${secs}s`;
-  if (mins < 60) return `${mins}m ${secs % 60}s`;
-  return `${hours}h ${mins % 60}m`;
-}
-
-function formatMetricValue(value: number | undefined, digits = 3) {
-  return typeof value === "number" ? value.toFixed(digits) : "--";
 }
 
 function JobMetricCard({
@@ -166,7 +128,7 @@ function StateHistory({
               </StatusBadge>
             </div>
             <div className="mono text-[13px] text-muted-foreground" title={`${labels.stateTimestamp}: ${entry.timestamp}`}>
-              {formatTime(entry.timestamp, locale)}
+              {formatFullTime(entry.timestamp, locale)}
             </div>
           </div>
         ))}
@@ -382,7 +344,7 @@ export function JobDetailClient({
         />
         <DetailCard
           label={copy.jobDetail.labels.created}
-          value={formatTime(job.created_at, locale)}
+          value={formatFullTime(job.created_at, locale)}
           mono
         />
         <DetailCard
@@ -393,7 +355,7 @@ export function JobDetailClient({
         {job.updated_at && (
           <DetailCard
             label={copy.jobDetail.labels.updated}
-            value={formatTime(job.updated_at, locale)}
+            value={formatFullTime(job.updated_at, locale)}
             mono
           />
         )}

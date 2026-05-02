@@ -5,6 +5,7 @@ import { Check, Info, Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
+import { formatDateOnly } from "@/lib/format";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 interface ApiKey {
@@ -343,8 +344,8 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 <span className="truncate text-sm font-medium text-foreground">{key.name}</span>
                 <div className="mt-1 flex flex-wrap items-center gap-x-2.5 text-[11px] text-muted-foreground">
                   <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px] dark:bg-muted/25">{copy.demoKeyPrefix}</span>
-                  <span>{copy.createdAt} {key.created}</span>
-                  {key.lastUsed ? <span>{copy.lastUsed} {key.lastUsed}</span> : null}
+                  <span>{copy.createdAt} {formatDateOnly(key.created, locale)}</span>
+                  {key.lastUsed ? <span>{copy.lastUsed} {formatDateOnly(key.lastUsed, locale)}</span> : null}
                 </div>
               </div>
 

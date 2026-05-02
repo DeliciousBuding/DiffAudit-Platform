@@ -38,13 +38,13 @@ export function ResultsTable({ rows, emptyMessage }: ResultsTableProps) {
       <table className="w-full border-collapse text-[13px]">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Attack</th>
-            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Model</th>
-            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Evidence</th>
-            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">AUC</th>
-            <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">Risk</th>
-            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">ASR</th>
-            <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">TPR</th>
+            <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Attack</th>
+            <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Model</th>
+            <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Evidence</th>
+            <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">AUC</th>
+            <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Risk</th>
+            <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">ASR</th>
+            <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">TPR</th>
           </tr>
         </thead>
         <tbody>

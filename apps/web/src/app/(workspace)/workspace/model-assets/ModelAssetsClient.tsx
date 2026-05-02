@@ -142,7 +142,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
           tracks: [
             ...prev.tracks,
             {
-              track: entry.track as CatalogEntryViewModel["track"] & string,
+              track: entry.track as "black-box" | "gray-box" | "white-box",
               total: 1,
               ready: entry.availability === "ready" ? 1 : 0,
               partial: entry.availability === "partial" ? 1 : 0,
@@ -392,7 +392,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
   }, [evidenceRows, evidencePage]);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
+    <div className="grid gap-4 lg:grid-cols-[320px_1fr] grid-cols-1">
       {/* LEFT: Model List */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         {/* Search + Add Model */}
@@ -425,7 +425,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
               onClick={handleOpenAdd}
               className="workspace-btn-primary shrink-0 text-xs px-3 py-1.5 flex items-center gap-1"
             >
-              <Plus size={12} strokeWidth={1.5} />
+              <Plus size={12} strokeWidth={1.5} aria-hidden="true" />
               {copy.addModel}
             </button>
           </div>
@@ -469,7 +469,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                           <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                             isSelected ? "bg-[var(--accent-blue)]/20 text-[var(--accent-blue)]" : "bg-muted/30 text-muted-foreground"
                           }`}>
-                            <Database size={14} strokeWidth={1.5} />
+                            <Database size={14} strokeWidth={1.5} aria-hidden="true" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="text-xs font-medium text-foreground truncate">{entry.label}</div>
@@ -504,7 +504,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
             <div className="border-b border-border px-5 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
-                  <Database size={18} strokeWidth={1.5} />
+                  <Database size={18} strokeWidth={1.5} aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-semibold text-foreground truncate">{selectedEntry.label}</h3>
@@ -519,7 +519,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                     title={copy.edit}
                     className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] dark:bg-background/40"
                   >
-                    <Pencil size={14} strokeWidth={1.5} />
+                    <Pencil size={14} strokeWidth={1.5} aria-hidden="true" />
                   </button>
                   {/* Delete button */}
                   <button
@@ -528,7 +528,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                     title={copy.delete}
                     className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] dark:bg-background/40"
                   >
-                    <Trash2 size={14} strokeWidth={1.5} />
+                    <Trash2 size={14} strokeWidth={1.5} aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -537,9 +537,13 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-border">
+            <div className="flex border-b border-border" role="tablist" aria-label="Model detail tabs">
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === "timeline"}
+                aria-controls="tab-panel-timeline"
+                id="tab-timeline"
                 onClick={() => setActiveTab("timeline")}
                 className={`px-5 py-2.5 text-xs font-medium transition-colors ${
                   activeTab === "timeline"
@@ -551,6 +555,10 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === "evidence"}
+                aria-controls="tab-panel-evidence"
+                id="tab-evidence"
                 onClick={() => setActiveTab("evidence")}
                 className={`px-5 py-2.5 text-xs font-medium transition-colors ${
                   activeTab === "evidence"
@@ -563,7 +571,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
             </div>
 
             {/* Tab content */}
-            <div className="p-5">
+            <div className="p-5" role="tabpanel" id={`tab-panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
               {activeTab === "timeline" ? (
                 /* Version Timeline */
                 timelineEntries.length === 0 ? (
@@ -627,12 +635,12 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                       <table className="w-full text-[12px]">
                         <thead>
                           <tr className="border-b border-border/60 bg-muted/20 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                            <th className="px-4 py-3">{copy.attack}</th>
-                            <th className="px-4 py-3">{copy.defense}</th>
-                            <th className="px-4 py-3 text-right">{copy.auc}</th>
-                            <th className="px-4 py-3 text-right">{copy.asr}</th>
-                            <th className="px-4 py-3 text-right">{copy.tpr}</th>
-                            <th className="px-4 py-3">{copy.source}</th>
+                            <th scope="col" className="px-4 py-3">{copy.attack}</th>
+                            <th scope="col" className="px-4 py-3">{copy.defense}</th>
+                            <th scope="col" className="px-4 py-3 text-right">{copy.auc}</th>
+                            <th scope="col" className="px-4 py-3 text-right">{copy.asr}</th>
+                            <th scope="col" className="px-4 py-3 text-right">{copy.tpr}</th>
+                            <th scope="col" className="px-4 py-3">{copy.source}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -719,7 +727,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
             <label className="block text-xs font-medium text-foreground mb-1.5">{copy.uploadFile}</label>
             {uploadComplete ? (
               <div className="flex items-center gap-2 rounded-[10px] border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 px-3 py-2.5 text-xs">
-                <Check size={14} strokeWidth={1.5} className="shrink-0 text-[var(--accent-green)]" />
+                <Check size={14} strokeWidth={1.5} className="shrink-0 text-[var(--accent-green)]" aria-hidden="true" />
                 <span className="text-[var(--accent-green)] font-medium">{copy.uploadComplete}</span>
               </div>
             ) : uploadProgress !== null ? (
@@ -741,7 +749,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy }: ModelAssetsC
                 onClick={handleSimulateUpload}
                 className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-dashed border-border px-3 py-5 text-xs text-muted-foreground hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/5 transition-colors cursor-pointer"
               >
-                <Upload size={16} strokeWidth={1.5} />
+                <Upload size={16} strokeWidth={1.5} aria-hidden="true" />
                 {copy.uploadDragDrop}
               </button>
             )}

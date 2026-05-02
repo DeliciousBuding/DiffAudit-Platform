@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FileText, ArrowRight, RefreshCw } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
+import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -51,42 +53,17 @@ function statusLabel(status: string, labels: Record<string, string>): string {
   return labels[status] ?? status;
 }
 
-function formatTime(iso: string, locale: Locale): string {
-  try {
-    const tag = locale === "zh-CN" ? "zh-CN" : "en-US";
-    return new Date(iso).toLocaleString(tag, {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function formatDuration(created: string, updated: string | null, locale: Locale = "en-US"): string {
-  const start = new Date(created).getTime();
-  const end = updated ? new Date(updated).getTime() : Date.now();
-  const diffMs = Math.max(0, end - start);
-  const secs = Math.floor(diffMs / 1000);
-  const isZh = locale === "zh-CN";
-  if (secs < 60) return isZh ? `${secs}秒` : `${secs}s`;
-  const mins = Math.floor(secs / 60);
-  if (mins < 60) return isZh ? `${mins}分${secs % 60}秒` : `${mins}m ${secs % 60}s`;
-  const hours = Math.floor(mins / 60);
-  return isZh ? `${hours}时${mins % 60}分` : `${hours}h ${mins % 60}m`;
-}
-
-function formatMetricValue(value: number | undefined, digits = 3) {
-  return typeof value === "number" ? value.toFixed(digits) : "--";
-}
-
 function ProgressStrip({ value }: { value: number }) {
   return (
     <div className="mt-2">
-      <div className="h-1.5 overflow-hidden rounded-full bg-muted/40">
+      <div
+        className="h-1.5 overflow-hidden rounded-full bg-muted/40"
+        role="progressbar"
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Progress: ${value}%`}
+      >
         <div
           className="h-full rounded-full bg-[var(--accent-blue)] transition-all"
           style={{ width: `${Math.max(6, Math.min(100, value))}%` }}
@@ -151,20 +128,33 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
 
   if (loading) {
     return (
-      <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-        {copy.jobsRefreshNote}
+      <div className="divide-y divide-border/30">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="px-4 py-3 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="animate-pulse h-3 w-28 rounded-md bg-muted/30" />
+              <div className="animate-pulse h-4 w-16 rounded-full bg-muted/30" />
+            </div>
+            <div className="animate-pulse h-2.5 w-40 rounded-md bg-muted/30" />
+            <div className="flex items-center justify-between">
+              <div className="animate-pulse h-2.5 w-24 rounded-md bg-muted/30" />
+              <div className="animate-pulse h-2.5 w-12 rounded-md bg-muted/30" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   if (loadError) {
     return (
-      <div className="px-3 py-4 text-center text-xs text-muted-foreground">
-        <div>{copy.jobsUnavailable}</div>
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <RefreshCw className="mb-2 text-muted-foreground/40" size={28} strokeWidth={1.5} />
+        <p className="text-xs text-muted-foreground mb-3">{copy.jobsUnavailable}</p>
         <button
           type="button"
           onClick={onRefresh}
-          className="workspace-btn-secondary mt-3 px-3 py-2 text-xs font-medium"
+          className="workspace-btn-secondary px-3 py-1.5 text-xs font-medium"
         >
           {copy.retry}
         </button>
@@ -175,14 +165,29 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
   if (displayed.length === 0) {
     if (filter && filter !== "all") {
       return (
-        <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-          {mode === "history" ? copy.emptyHistoryFiltered : copy.emptyJobs}
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <FileText className="mb-2 text-muted-foreground/30" size={28} strokeWidth={1.2} />
+          <p className="text-xs text-muted-foreground">
+            {mode === "history" ? copy.emptyHistoryFiltered : copy.emptyJobs}
+          </p>
         </div>
       );
     }
     return (
-      <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-        {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <FileText className="mb-2 text-muted-foreground/30" size={28} strokeWidth={1.2} />
+        <p className="text-xs text-muted-foreground mb-3">
+          {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
+        </p>
+        {mode === "active" && (
+          <Link
+            href="/workspace/audits/new"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[var(--accent-blue)] hover:underline"
+          >
+            {copy.createTask}
+            <ArrowRight size={12} strokeWidth={1.5} />
+          </Link>
+        )}
       </div>
     );
   }
@@ -237,13 +242,13 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
       <table className="workspace-data-table w-full border-collapse text-[13px]">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[200px]">{tableCopy.name}</th>
-            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.type}</th>
-            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.model}</th>
-            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.status}</th>
-            <th className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.created}</th>
-            <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.duration}</th>
-            <th className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.action}</th>
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[200px]">{tableCopy.name}</th>
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.type}</th>
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.model}</th>
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.status}</th>
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.created}</th>
+            <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.duration}</th>
+            <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.action}</th>
           </tr>
         </thead>
         <tbody>
@@ -279,7 +284,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="mono text-xs text-muted-foreground">{formatTime(job.created_at, locale)}</span>
+                    <span className="mono text-xs text-muted-foreground">{formatCompactTime(job.created_at, locale)}</span>
                   </td>
                   <td className="mono px-4 py-3 text-right text-xs">
                     {formatDuration(job.created_at, job.updated_at, locale)}

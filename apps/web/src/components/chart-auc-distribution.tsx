@@ -40,7 +40,11 @@ export function ChartAucDistribution({ data }: AucDistributionProps) {
           tickLine={false}
           axisLine={false}
         />
-        <Tooltip contentStyle={chartTooltipStyle} />
+        <Tooltip
+          contentStyle={chartTooltipStyle}
+          formatter={((value: string | number | (string | number)[], name: string) => [value, name === "count" ? "Count" : name]) as (...args: unknown[]) => React.ReactNode}
+          labelFormatter={((label: string | number) => `AUC ${Number(label).toFixed(1)}`) as (...args: unknown[]) => React.ReactNode}
+        />
         <Bar
           dataKey="count"
           fill="var(--accent-blue)"

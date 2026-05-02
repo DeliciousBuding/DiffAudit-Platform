@@ -64,7 +64,7 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
   const completedCount = allJobs.filter((j) => j.status === "completed").length;
   const failedCount = allJobs.filter((j) => j.status === "failed").length;
   const trackSet = new Set(
-    allJobs.map((j) => inferReportTrack(j)).filter((t): t is string => t !== null),
+    allJobs.map((j) => inferReportTrack(j)).filter((t): t is NonNullable<typeof t> => t !== null),
   );
   const trackCount = trackSet.size;
 
