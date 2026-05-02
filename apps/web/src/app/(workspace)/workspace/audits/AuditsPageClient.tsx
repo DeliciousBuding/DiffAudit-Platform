@@ -1,7 +1,8 @@
 "use client";
 
 import { Clock, ShieldCheck, XCircle, LayoutList } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
@@ -15,13 +16,17 @@ import { type JobRecord, TaskListClient } from "./TaskListClient";
 
 export function AuditsPageClient({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].audits;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const urlSyncSource = useRef<"state" | "url">("state");
 
   const [allJobs, setAllJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState(() => searchParams.get("filter") ?? "all");
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -55,6 +60,30 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
       clearInterval(interval);
     };
   }, [refreshToken]);
+
+  /* ── Sync state -> URL ─────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (urlSyncSource.current === "url") {
+      urlSyncSource.current = "state";
+      return;
+    }
+    const sp = new URLSearchParams();
+    if (filter !== "all") sp.set("filter", filter);
+    if (search.trim()) sp.set("q", search.trim());
+    const qs = sp.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [filter, search, pathname, router]);
+
+  /* ── Sync URL -> state (back/forward navigation) ──────────────────────── */
+  useEffect(() => {
+    const urlFilter = searchParams.get("filter") ?? "all";
+    const urlQ = searchParams.get("q") ?? "";
+
+    urlSyncSource.current = "url";
+    setFilter(urlFilter);
+    setSearch(urlQ);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   /* ── Compute KPI stats from real data ─────────────────────────────────── */
 

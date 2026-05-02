@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,9 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
         </Link>
       }
     >
-      <AuditsPageClient locale={resolvedLocale} />
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/20" />}>
+        <AuditsPageClient locale={resolvedLocale} />
+      </Suspense>
     </WorkspacePageFrame>
   );
 }

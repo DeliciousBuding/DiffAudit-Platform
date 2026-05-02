@@ -2,6 +2,7 @@
 
 import { Search, Plus, Pencil, Trash2, X, ChevronLeft, ChevronRight, Upload, Check, Database } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { CopyButton } from "@/components/copy-button";
 import { Modal } from "@/components/modal";
@@ -102,6 +103,10 @@ type ModelAssetsClientProps = {
 
 export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-US" }: ModelAssetsClientProps) {
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const urlSyncSource = useRef<"state" | "url">("state");
 
   const TRACK_DISPLAY: Record<string, string> = {
     "black-box": copy.trackBlackBox,
@@ -119,8 +124,14 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
 
   const allEntries = useMemo(() => localCatalog.tracks.flatMap((t) => t.entries), [localCatalog]);
 
-  const [selectedEntry, setSelectedEntry] = useState<CatalogEntryViewModel | null>(() => allEntries[0] ?? null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEntry, setSelectedEntry] = useState<CatalogEntryViewModel | null>(() => {
+    const urlModel = searchParams.get("model");
+    if (urlModel) {
+      return allEntries.find((e) => e.contractKey === urlModel) ?? allEntries[0] ?? null;
+    }
+    return allEntries[0] ?? null;
+  });
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const [activeTab, setActiveTab] = useState<"timeline" | "evidence">("timeline");
   const [evidencePage, setEvidencePage] = useState(1);
 
@@ -254,6 +265,35 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
       if (uploadTimerRef.current) clearInterval(uploadTimerRef.current);
     };
   }, []);
+
+  // Sync state -> URL
+  useEffect(() => {
+    if (urlSyncSource.current === "url") {
+      urlSyncSource.current = "state";
+      return;
+    }
+    const sp = new URLSearchParams();
+    if (searchQuery.trim()) sp.set("q", searchQuery.trim());
+    if (selectedEntry) sp.set("model", selectedEntry.contractKey);
+    const qs = sp.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [searchQuery, selectedEntry, pathname, router]);
+
+  // Sync URL -> state (back/forward navigation)
+  useEffect(() => {
+    const urlQ = searchParams.get("q") ?? "";
+    const urlModel = searchParams.get("model") ?? "";
+
+    urlSyncSource.current = "url";
+    setSearchQuery(urlQ);
+    if (urlModel) {
+      const entry = allEntries.find((e) => e.contractKey === urlModel);
+      if (entry) {
+        setSelectedEntry(entry);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // --- Inline edit handlers ---
   function handleStartInlineEdit() {

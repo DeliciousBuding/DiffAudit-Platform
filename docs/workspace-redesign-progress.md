@@ -241,3 +241,15 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 2. **Inline Model Name Editing**: click model name to edit, pencil icon on hover, Enter/blur saves, Escape cancels
 
 14 rounds total, 12 commits to main. 136/136 tests.
+
+### Phase 15: Toast Notifications + Chart Click-to-Filter (COMPLETED)
+1. **Toast system**: unified useToast across copy, model CRUD, API keys, settings
+   - CopyButton: "已复制/Copied" toast
+   - ModelAssets: add/edit/delete with model name
+   - ApiKeys: replaced inline toast with proper system
+   - Settings: replaced savedSection with useToast
+2. **Chart click-to-filter**: Risk distribution chart bars are clickable
+   - Click high/medium/low bar → navigates to /workspace/risk-findings?severity={level}
+   - RiskFindings reads URL param to pre-set filter
+
+15 rounds total, 13 commits to main. 136/136 tests.

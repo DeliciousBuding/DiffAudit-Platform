@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { Suspense } from "react";
 
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -162,12 +163,14 @@ export default async function ModelAssetsPage() {
         <span>{categoryCount} {copy.categoriesCount}</span>
       </div>
 
-      <ModelAssetsClient
-        catalog={catalog}
-        attackDefense={attackDefense}
-        copy={copy}
-        locale={locale}
-      />
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/20" />}>
+        <ModelAssetsClient
+          catalog={catalog}
+          attackDefense={attackDefense}
+          copy={copy}
+          locale={locale}
+        />
+      </Suspense>
     </WorkspacePageFrame>
   );
 }

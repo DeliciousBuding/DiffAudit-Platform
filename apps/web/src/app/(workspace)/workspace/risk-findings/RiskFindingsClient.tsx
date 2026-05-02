@@ -2,8 +2,8 @@
 
 import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EmptyState } from "@/components/empty-state";
 import { SortableHeader } from "@/components/sortable-header";
@@ -241,8 +241,14 @@ type Props = {
 export function RiskFindingsClient({ rows, locale }: Props) {
   const copy = COPY[locale] ?? COPY["en-US"];
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const urlSyncSource = useRef<"state" | "url">("state");
   const PAGE_SIZE = 10;
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const page = Number(searchParams.get("page"));
+    return page > 0 ? page : 1;
+  });
 
   /* -- KPI data ---------------------------------------------------- */
   const totalFindings = rows.length;
@@ -250,15 +256,15 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const resolvedCount = rows.filter((r) => r.defense !== "none").length;
   const defenseRate = totalFindings > 0 ? Math.round((resolvedCount / totalFindings) * 100) : null;
 
-  /* -- filter state (reads initial severity from URL ?severity=) --- */
+  /* -- filter state (initialized from URL params) ------------------ */
   const [severityFilter, setSeverityFilter] = useState(() => {
-    const urlSeverity = searchParams.get("severity");
-    return urlSeverity === "high" || urlSeverity === "medium" || urlSeverity === "low" ? urlSeverity : "";
+    const v = searchParams.get("severity");
+    return v === "high" || v === "medium" || v === "low" ? v : "";
   });
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [modelFilter, setModelFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState(() => searchParams.get("category") ?? "");
+  const [modelFilter, setModelFilter] = useState(() => searchParams.get("model") ?? "");
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") ?? "");
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const hasActiveFilters = severityFilter || categoryFilter || modelFilter || statusFilter || searchQuery.trim();
 
   /* -- unified filter change handler (resets pagination) ----------- */
@@ -322,6 +328,45 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   useEffect(() => {
     setCurrentPage((prev) => Math.min(prev, totalPages));
   }, [totalPages]);
+
+  /* -- sync state -> URL -------------------------------------------- */
+  useEffect(() => {
+    if (urlSyncSource.current === "url") {
+      urlSyncSource.current = "state";
+      return;
+    }
+    const sp = new URLSearchParams();
+    if (severityFilter) sp.set("severity", severityFilter);
+    if (categoryFilter) sp.set("category", categoryFilter);
+    if (modelFilter) sp.set("model", modelFilter);
+    if (statusFilter) sp.set("status", statusFilter);
+    if (searchQuery.trim()) sp.set("q", searchQuery.trim());
+    if (currentPage > 1) sp.set("page", String(currentPage));
+    const qs = sp.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery, currentPage, pathname, router]);
+
+  /* -- sync URL -> state (back/forward navigation) ----------------- */
+  useEffect(() => {
+    const urlSeverity = searchParams.get("severity") ?? "";
+    const urlCategory = searchParams.get("category") ?? "";
+    const urlModel = searchParams.get("model") ?? "";
+    const urlStatus = searchParams.get("status") ?? "";
+    const urlQ = searchParams.get("q") ?? "";
+    const urlPage = Number(searchParams.get("page")) || 1;
+
+    const validSeverity =
+      urlSeverity === "high" || urlSeverity === "medium" || urlSeverity === "low" ? urlSeverity : "";
+
+    urlSyncSource.current = "url";
+    setSeverityFilter(validSeverity);
+    setCategoryFilter(urlCategory);
+    setModelFilter(urlModel);
+    setStatusFilter(urlStatus);
+    setSearchQuery(urlQ);
+    setCurrentPage(urlPage > 0 ? urlPage : 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   /* -- unique values for filters ----------------------------------- */
   const severities = useMemo(() => [...new Set(rows.map((r) => r.riskLevel))].sort(), [rows]);

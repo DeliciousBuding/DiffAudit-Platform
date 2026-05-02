@@ -7,6 +7,12 @@ vi.mock("next/headers", () => ({
   headers: headersMock,
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn(), refresh: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/workspace/audits",
+}));
+
 async function renderMarkup(element: React.ReactNode) {
   const stream = await renderToReadableStream(element);
   await stream.allReady;
