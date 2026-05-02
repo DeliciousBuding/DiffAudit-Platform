@@ -242,7 +242,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-[13px] font-bold text-foreground">
             {copy.findingDetail}
           </h2>
           <button
@@ -380,7 +380,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
             {finding.sourcePath && (
               <DetailRow label="Source">
                 <div className="flex items-center gap-2">
-                  <span className="mono text-[11px] text-muted-foreground truncate max-w-[260px]">
+                  <span className="mono text-[12px] text-muted-foreground truncate max-w-[260px]">
                     {finding.sourcePath}
                   </span>
                   <CopyButton text={finding.sourcePath} label="source path" />

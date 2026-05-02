@@ -106,7 +106,7 @@ export function KeyboardShortcutsModal({
         <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
           {groups.map((group) => (
             <div key={group.title}>
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2">
                 {group.title}
               </div>
               <div className="space-y-1">
@@ -127,7 +127,7 @@ export function KeyboardShortcutsModal({
         </div>
 
         {/* Footer hint */}
-        <div className="px-4 py-2 border-t border-border text-center">
+        <div className="px-4 py-3 border-t border-border text-center">
           <span className="text-[11px] text-muted-foreground/60">
             {isZh ? "按 ? 随时查看快捷键" : "Press ? anytime to view shortcuts"}
           </span>
