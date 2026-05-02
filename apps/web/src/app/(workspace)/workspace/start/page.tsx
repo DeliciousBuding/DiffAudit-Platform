@@ -280,7 +280,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               {/* CTA */}
               <Link
                 href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
+                className="inline-flex items-center gap-1.5 rounded-[10px] border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
                 <ArrowRight size={14} strokeWidth={1.5} />

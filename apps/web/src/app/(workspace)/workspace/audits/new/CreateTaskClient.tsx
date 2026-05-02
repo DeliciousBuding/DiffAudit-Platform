@@ -545,7 +545,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       className="shrink-0 rounded p-0.5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 transition-colors"
                       aria-label={locale === "zh-CN" ? "关闭错误提示" : "Dismiss error"}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18" />
                         <line x1="6" y1="6" x2="18" y2="18" />
                       </svg>

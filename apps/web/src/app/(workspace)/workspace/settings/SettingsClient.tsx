@@ -994,7 +994,7 @@ export function SettingsClient({
 
         {isAccountMode ? (
         <section className="space-y-5">
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
             {/* Username with avatar */}
             <div className="space-y-3">
               {profile ? (
@@ -1246,7 +1246,7 @@ export function SettingsClient({
                 </div>
               ) : null}
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1 rounded-xl border border-border bg-muted/10 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.password}
