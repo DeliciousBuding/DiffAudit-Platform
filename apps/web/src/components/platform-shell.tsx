@@ -35,7 +35,9 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
             <WorkspaceTopbarTitle locale={locale} />
             {dataMode !== "demo" ? (
               <StatusBadge tone="success">{copy.shell.liveMode}</StatusBadge>
-            ) : null}
+            ) : (
+              <StatusBadge tone="warning">{copy.shell.demoMode}</StatusBadge>
+            )}
           </div>
           <WorkspaceGlobalSearch locale={locale} />
           <div className="workspace-topbar-actions">

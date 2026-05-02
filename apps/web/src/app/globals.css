@@ -1707,6 +1707,12 @@ html.dark .header-pill-primary:hover {
   border-radius: 9999px;
   background: var(--accent-blue);
   box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.12);
+  animation: status-pulse 3s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.12); }
+  50% { box-shadow: 0 0 0 6px rgba(47, 109, 246, 0.06); }
 }
 
 .workspace-status-panel {
@@ -4497,6 +4503,7 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   .chart-animate,
   .sidebar-collapse-btn,
   .workspace-sidebar,
+  .workspace-status-dot,
   button:not(.language-option):not(.auth-provider-button):not(.hero-button):not([class*="portal"]):not([class*="workspace-sidebar"]):not([class*="subnav"]):not([class*="language"]):not(.btn-reset):not(.header-pill):not(.ui-button) {
     animation: none !important;
     transition: none !important;
