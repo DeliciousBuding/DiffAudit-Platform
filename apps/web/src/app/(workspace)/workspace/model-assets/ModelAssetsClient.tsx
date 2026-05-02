@@ -131,6 +131,11 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
   const [formTrack, setFormTrack] = useState<string>("black-box");
   const [formDescription, setFormDescription] = useState("");
 
+  // --- Inline edit state ---
+  const [inlineEditing, setInlineEditing] = useState(false);
+  const [inlineName, setInlineName] = useState("");
+  const inlineInputRef = useRef<HTMLInputElement>(null);
+
   // --- Upload simulation state ---
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadComplete, setUploadComplete] = useState(false);
@@ -246,6 +251,37 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
       if (uploadTimerRef.current) clearInterval(uploadTimerRef.current);
     };
   }, []);
+
+  // --- Inline edit handlers ---
+  function handleStartInlineEdit() {
+    if (!selectedEntry) return;
+    setInlineName(selectedEntry.label);
+    setInlineEditing(true);
+    // Focus the input after render
+    requestAnimationFrame(() => inlineInputRef.current?.focus());
+  }
+
+  function handleInlineSave() {
+    if (!selectedEntry) return;
+    const name = inlineName.trim();
+    if (name && name !== selectedEntry.label) {
+      updateEntryInCatalog(selectedEntry.contractKey, { label: name });
+      setSelectedEntry((prev) =>
+        prev && prev.contractKey === selectedEntry.contractKey
+          ? { ...prev, label: name }
+          : prev,
+      );
+    }
+    setInlineEditing(false);
+  }
+
+  function handleInlineKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      handleInlineSave();
+    } else if (e.key === "Escape") {
+      setInlineEditing(false);
+    }
+  }
 
   function handleAddSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -514,9 +550,36 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <Database size={18} strokeWidth={1.5} aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-semibold text-foreground truncate">{selectedEntry.label}</h3>
-                    <CopyButton text={selectedEntry.label} label="model name" />
+                  <div className="flex items-center gap-1.5 group">
+                    {inlineEditing ? (
+                      <input
+                        ref={inlineInputRef}
+                        type="text"
+                        value={inlineName}
+                        onChange={(e) => setInlineName(e.target.value)}
+                        onBlur={handleInlineSave}
+                        onKeyDown={handleInlineKeyDown}
+                        className="text-sm font-semibold text-foreground bg-transparent border-b border-[var(--accent-blue)] outline-none focus:border-[var(--accent-blue)] px-0.5 -mx-0.5 min-w-0 flex-1"
+                      />
+                    ) : (
+                      <>
+                        <h3
+                          className="text-sm font-semibold text-foreground truncate cursor-pointer hover:text-[var(--accent-blue)] transition-colors"
+                          onClick={handleStartInlineEdit}
+                          title={copy.edit}
+                        >
+                          {selectedEntry.label}
+                        </h3>
+                        <Pencil
+                          size={12}
+                          strokeWidth={1.5}
+                          className="opacity-0 group-hover:opacity-40 transition-opacity text-muted-foreground shrink-0 cursor-pointer"
+                          onClick={handleStartInlineEdit}
+                          aria-hidden="true"
+                        />
+                        <CopyButton text={selectedEntry.label} label="model name" />
+                      </>
+                    )}
                   </div>
                   <p className="text-[11px] text-muted-foreground truncate">{selectedEntry.capabilityLabel}</p>
                 </div>

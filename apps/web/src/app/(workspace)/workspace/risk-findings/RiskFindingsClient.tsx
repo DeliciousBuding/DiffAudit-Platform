@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { EmptyState } from "@/components/empty-state";
+import { SortableHeader } from "@/components/sortable-header";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
 import { InfoTooltip } from "@/components/info-tooltip";
+import { useSort } from "@/hooks/use-sort";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import type { Locale } from "@/components/language-picker";
@@ -292,9 +294,24 @@ export function RiskFindingsClient({ rows, locale }: Props) {
     [rows, severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery, locale],
   );
 
+  /* -- enriched rows with sortable computed fields ----------------- */
+  const SEVERITY_SCORE: Record<string, number> = { high: 3, medium: 2, low: 1 };
+  const enrichedRows = useMemo(
+    () =>
+      filtered.map((r) => ({
+        ...r,
+        severityScore: SEVERITY_SCORE[r.riskLevel] ?? 0,
+        statusKey: getStatus(r.defense, r.riskLevel),
+      })),
+    [filtered],
+  );
+
+  /* -- sorting ----------------------------------------------------- */
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(enrichedRows);
+
   /* -- pagination -------------------------------------------------- */
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginatedRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const paginatedRows = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   /* -- clamp currentPage when rows change ------------------------- */
   useEffect(() => {
@@ -455,12 +472,12 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-border text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  <th scope="col" className="px-4 py-3">{copy.riskDescription}</th>
-                  <th scope="col" className="px-4 py-3">{copy.severity}</th>
-                  <th scope="col" className="px-4 py-3">{copy.category}</th>
-                  <th scope="col" className="px-4 py-3">{copy.sourceModel}</th>
-                  <th scope="col" className="px-4 py-3">{copy.status}</th>
+                <tr className="border-b border-border">
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.riskDescription}</th>
+                  <SortableHeader label={copy.severity} sortKey="severityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={copy.category} sortKey="track" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={copy.sourceModel} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={copy.status} sortKey="statusKey" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                 </tr>
               </thead>
               <tbody>
@@ -517,7 +534,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-border px-5 py-3">
             <span className="text-[11px] text-muted-foreground">
-              {nf.format(filtered.length)} {copy.totalFindings.toLowerCase()}
+              {nf.format(sorted.length)} {copy.totalFindings.toLowerCase()}
             </span>
             <div className="flex items-center gap-1.5">
               <button

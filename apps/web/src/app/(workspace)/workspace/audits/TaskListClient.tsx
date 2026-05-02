@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ClipboardList, FileText, ArrowRight, RefreshCw } from "lucide-react";
+import { ClipboardList, FileText, ArrowRight, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
+import { SortableHeader } from "@/components/sortable-header";
 import { StatusBadge } from "@/components/status-badge";
 import { InfoTooltip } from "@/components/info-tooltip";
+import { useSort } from "@/hooks/use-sort";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
@@ -106,6 +108,15 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
         );
       })
     : statusFiltered;
+
+  // Sorting for history table
+  const sortableDisplayed = displayed.map((j) => ({
+    ...j,
+    name: j.job_id,
+    model: j.target_model ?? "",
+    durationMs: new Date(j.updated_at).getTime() - new Date(j.created_at).getTime(),
+  }));
+  const { sorted: sortedHistory, sortKey, sortDir, toggleSort } = useSort(sortableDisplayed);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
@@ -247,17 +258,26 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
       <table className="workspace-data-table w-full border-collapse text-[13px]">
         <thead className="sticky top-0 bg-muted/30">
           <tr className="border-b border-border">
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[200px]">{tableCopy.name}</th>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.type}</th>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.model}</th>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.status}</th>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.created}</th>
-            <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.duration}</th>
+            <SortableHeader label={tableCopy.name} sortKey="name" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <SortableHeader label={tableCopy.type} sortKey="job_type" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <SortableHeader label={tableCopy.model} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <SortableHeader label={tableCopy.status} sortKey="status" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <SortableHeader label={tableCopy.created} sortKey="created_at" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+            <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("durationMs")}>
+              <span className="inline-flex items-center gap-1 justify-end">
+                {tableCopy.duration}
+                {sortKey === "durationMs" ? (
+                  sortDir === "asc" ? <ChevronUp size={12} strokeWidth={1.5} /> : <ChevronDown size={12} strokeWidth={1.5} />
+                ) : (
+                  <ChevronsUpDown size={12} strokeWidth={1.5} className="opacity-30" />
+                )}
+              </span>
+            </th>
             <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.action}</th>
           </tr>
         </thead>
         <tbody>
-          {displayed.map((job, index) => {
+          {sortedHistory.map((job, index) => {
               const reportHref = buildCompletedJobReportHref(job);
 
               return (

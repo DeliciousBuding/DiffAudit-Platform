@@ -223,3 +223,12 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
    - KPI anomaly alerts: AUC >0.85 → danger, defense <50% → warning
 
 12 rounds total, 10 commits to main. 136/136 tests.
+
+### Phase 13: Copy-to-Clipboard + Page Transitions (COMPLETED)
+1. **CopyButton component**: one-click copy for model IDs, contract keys, job IDs, API key prefixes
+   - Fallback for non-HTTPS (document.execCommand)
+   - Integrated: ModelAssets, TaskList, JobDetail, ApiKeys
+2. **Page transitions**: 0.3s fade-in + slide-up on every workspace page
+   - Respects prefers-reduced-motion
+
+13 rounds total, 11 commits to main. 136/136 tests.
