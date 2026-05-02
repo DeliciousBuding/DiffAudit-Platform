@@ -1,7 +1,6 @@
 "use client";
 
-import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ArrowRight, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -634,6 +633,8 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 <tr className="border-b border-border">
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-[220px]">{copy.riskDescription}</th>
                   <SortableHeader label={copy.severity} sortKey="severityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label="AUC" sortKey="aucLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label="ASR" sortKey="asrLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.category} sortKey="track" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.sourceModel} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.status} sortKey="statusKey" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
@@ -669,6 +670,8 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                           {row.riskLevel === "high" ? copy.high : row.riskLevel === "medium" ? copy.medium : copy.low}
                         </StatusBadge>
                       </td>
+                      <td className="mono px-4 py-3 text-[12px] text-muted-foreground">{row.aucLabel || "--"}</td>
+                      <td className="mono px-4 py-3 text-[12px] text-muted-foreground">{row.asrLabel || "--"}</td>
                       <td className="px-4 py-3 text-muted-foreground">{getCategory(row.track, copy)}</td>
                       <td className="mono px-4 py-3 text-[12px]">{row.model}</td>
                       <td className="px-4 py-3">

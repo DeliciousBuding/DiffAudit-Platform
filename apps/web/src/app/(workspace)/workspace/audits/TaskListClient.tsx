@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ClipboardList, FileText, ArrowRight, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { ClipboardList, FileText, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { CopyButton } from "@/components/copy-button";

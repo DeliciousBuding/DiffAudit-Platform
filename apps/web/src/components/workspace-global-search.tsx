@@ -169,7 +169,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
         aria-controls="search-listbox"
         aria-activedescendant={open && matches[activeIndex] ? `search-item-${activeIndex}` : undefined}
       />
-      <kbd>Ctrl K</kbd>
+      <kbd aria-hidden="true">Ctrl K</kbd>
       {open ? (
         <div className="workspace-search-menu" id="search-listbox" ref={listRef} role="listbox">
           {isRecent && (

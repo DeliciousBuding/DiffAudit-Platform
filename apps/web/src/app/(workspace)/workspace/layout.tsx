@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 
 import { CommandPalette } from "@/components/command-palette";
+import { NavigationProgress } from "@/components/navigation-progress";
 import { PlatformShell } from "@/components/platform-shell";
 import { Providers } from "@/components/providers";
 import { ScrollToTop } from "@/components/scroll-to-top";
@@ -20,6 +21,7 @@ export default async function WorkspaceLayout({
       <PlatformShell>
         <CommandPalette locale={locale} />
         <WorkspaceKeyboardShortcuts locale={locale} />
+        <NavigationProgress />
         <ScrollToTop />
         {children}
       </PlatformShell>

@@ -231,7 +231,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* Audit track quick-access cards — Platform Boost */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Link href="/workspace/audits/new" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+        <Link href="/workspace/audits/new?track=black-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
@@ -248,7 +248,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </Link>
 
-        <Link href="/workspace/audits/new" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+        <Link href="/workspace/audits/new?track=gray-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
@@ -265,7 +265,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </Link>
 
-        <Link href="/workspace/audits/new" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
+        <Link href="/workspace/audits/new?track=white-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
@@ -295,15 +295,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
           <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--track-black)]" />
+              <span className="h-2 w-2 rounded-full bg-[color:var(--track-black)]" aria-hidden="true" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--track-gray)]" />
+              <span className="h-2 w-2 rounded-full bg-[color:var(--track-gray)]" aria-hidden="true" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--track-white)]" />
+              <span className="h-2 w-2 rounded-full bg-[color:var(--track-white)]" aria-hidden="true" />
               <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
             </div>
           </div>

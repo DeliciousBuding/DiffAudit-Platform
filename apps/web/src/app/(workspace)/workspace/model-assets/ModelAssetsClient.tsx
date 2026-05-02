@@ -515,7 +515,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
         <div className="border-b border-border p-3">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} strokeWidth={1.5} />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} strokeWidth={1.5} aria-hidden="true" />
               <input
                 type="text"
                 value={searchQuery}
@@ -563,7 +563,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <div key={track.track} className="mb-2">
                     {/* Track header */}
                     <div className="flex items-center gap-2 px-2.5 py-1.5">
-                      <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
+                      <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} aria-hidden="true" />
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {TRACK_DISPLAY[track.track] ?? track.track}
                       </span>
@@ -736,8 +736,8 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                       return (
                         <div key={entry.contractKey} className="flex gap-4 rounded-lg border border-border/60 p-4 transition-colors hover:border-border">
                           <div className="flex flex-col items-center">
-                            <div className={`h-3 w-3 rounded-full ${isBestEvidence ? "bg-[var(--accent-blue)]" : "bg-border"}`} />
-                            {index < timelineEntries.length - 1 && <div className="w-[2px] flex-1 bg-border/40 mt-1" />}
+                            <div className={`h-3 w-3 rounded-full ${isBestEvidence ? "bg-[var(--accent-blue)]" : "bg-border"}`} aria-hidden="true" />
+                            {index < timelineEntries.length - 1 && <div className="w-[2px] flex-1 bg-border/40 mt-1" aria-hidden="true" />}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
@@ -898,7 +898,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <span className="text-[11px] text-muted-foreground">{copy.uploadProgress}</span>
                   <span className="text-[11px] font-medium text-foreground">{uploadProgress}%</span>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden" role="progressbar" aria-valuenow={uploadProgress} aria-valuemin={0} aria-valuemax={100} aria-label={copy.uploadProgress}>
                   <div
                     className="h-full rounded-full bg-[var(--accent-blue)] transition-all duration-100 ease-linear"
                     style={{ width: `${uploadProgress}%` }}
