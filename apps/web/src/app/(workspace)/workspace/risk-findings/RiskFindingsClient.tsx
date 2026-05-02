@@ -1,6 +1,7 @@
 "use client";
 
-import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2 } from "lucide-react";
+import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { StatusBadge } from "@/components/status-badge";
@@ -443,7 +444,6 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                   <th className="px-4 py-3">{copy.category}</th>
                   <th className="px-4 py-3">{copy.sourceModel}</th>
                   <th className="px-4 py-3">{copy.status}</th>
-                  <th className="px-4 py-3">{copy.detected} ({copy.noDataYet})</th>
                 </tr>
               </thead>
               <tbody>
@@ -474,9 +474,6 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                           {status === "has-defense" ? copy.hasDefenseStatus : status === "monitoring" ? copy.monitoring : copy.investigating}
                         </StatusBadge>
                       </td>
-                      <td className="mono px-4 py-3 text-muted-foreground">
-                        —
-                      </td>
                     </tr>
                   );
                 })}
@@ -486,9 +483,18 @@ export function RiskFindingsClient({ rows, locale }: Props) {
         ) : (
           <div className="flex flex-col items-center justify-center py-12">
             <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} />
-            <p className="text-sm text-muted-foreground">
+            <p className="mb-4 text-sm text-muted-foreground">
               {hasActiveFilters ? copy.emptyNoResults : copy.emptyNoData}
             </p>
+            {!hasActiveFilters && (
+              <Link
+                href="/workspace/audits/new"
+                className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
+              >
+                {locale === "zh-CN" ? "创建审计任务" : "Create audit task"}
+                <ArrowRight size={14} strokeWidth={1.5} />
+              </Link>
+            )}
           </div>
         )}
 

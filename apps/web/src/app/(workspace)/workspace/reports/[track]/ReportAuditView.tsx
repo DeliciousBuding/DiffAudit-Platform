@@ -232,7 +232,7 @@ export function ReportAuditView({
               </div>
             ) : null}
             {!hasValue(provenance.runDirectoryPath) && !hasValue(provenance.seed) && !hasValue(provenance.schedule) && !hasValue(provenance.fixtureVersion) && !hasValue(provenance.summaryPath) && !hasValue(provenance.evidenceLevel) && !hasValue(provenance.admissionStatus) && !hasValue(provenance.admissionLevel) && !hasValue(provenance.provenanceStatus) && !hasValue(provenance.intakeManifest) ? (
-              <p className="text-muted-foreground text-[11px] italic">No provenance data available.</p>
+              <p className="text-muted-foreground text-[11px] italic">{locale === "zh-CN" ? "暂无溯源数据。" : "No provenance data available."}</p>
             ) : null}
           </dl>
         </section>
@@ -263,14 +263,14 @@ export function ReportAuditView({
             <table className="min-w-[900px] w-full border-collapse text-[13px]">
               <thead className="sticky top-0 bg-muted/30">
                 <tr className="border-b border-border">
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.defense}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
-                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
-                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
-                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.attack}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.defense}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.model}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.evidence}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.auc}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.asr}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>
               <tbody>
@@ -280,7 +280,7 @@ export function ReportAuditView({
                   return (
                     <tr
                       key={`${key}::${index}`}
-                      className={`border-b border-border transition-colors hover:bg-muted/30 ${
+                      className={`border-b border-border transition-colors hover:bg-muted/20 ${
                         isHighlighted
                           ? "border-l-2 border-l-[var(--accent-blue)] bg-[color:var(--accent-blue)]/5"
                           : index % 2 === 0 ? "bg-background" : "bg-muted/10"

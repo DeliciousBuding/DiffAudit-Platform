@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import Link from "next/link";
 import { getStoredLocale, type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -63,12 +64,12 @@ export default function GlobalError({
               >
                 {copy.retry}
               </button>
-              <a
+              <Link
                 href="/workspace/start"
                 className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
               >
                 {copy.goHome}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

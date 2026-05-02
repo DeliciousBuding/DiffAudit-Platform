@@ -210,7 +210,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
         <div className="flex items-start gap-3 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.06] px-5 py-3.5 text-sm shadow-sm dark:border-[var(--accent-blue)]/15 dark:bg-[var(--accent-blue)]/[0.08]">
           <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
-            <Info size={14} strokeWidth={2} />
+            <Info size={14} strokeWidth={1.5} />
           </span>
           <div>
             <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-blue)]">{copy.demoKeyPrefix}</span>
@@ -222,7 +222,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
             onClick={() => setShowCreate(true)}
             className="workspace-btn-primary self-center px-5 py-2.5 text-sm font-semibold shadow-[0_12px_32px_rgba(47,109,246,0.16)] hover:opacity-95"
           >
-            <Plus size={14} strokeWidth={2} />
+            <Plus size={14} strokeWidth={1.5} />
             {copy.create}
           </button>
         ) : null}
@@ -286,7 +286,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           <div className="rounded-2xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 p-6">
             <div className="flex items-start gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-green)]/10">
-                <Check size={16} strokeWidth={2.5} className="text-[var(--accent-green)]" />
+                <Check size={16} strokeWidth={1.5} className="text-[var(--accent-green)]" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="mb-1 text-sm font-semibold text-foreground">{copy.createdTitle}</h3>
@@ -336,7 +336,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           {keys.map((key) => (
             <div
               key={key.id}
-              className={`group grid gap-3 px-6 py-4 transition-colors hover:bg-muted/40 dark:hover:bg-muted/20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:items-center md:gap-4 ${key.status === "revoked" ? "opacity-50" : ""}`}
+              className={`group grid gap-3 px-6 py-4 transition-colors hover:bg-muted/20 dark:hover:bg-muted/20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:items-center md:gap-4 ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
               {/* Key name + metadata */}
               <div className="min-w-0">

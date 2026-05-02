@@ -69,13 +69,33 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
   ];
 
   const dims = copy.chartDimensions;
-  const attackComparisonData = [
-    { dimension: dims[0], Recon: 0.78, PIA: 0.65, GSA: 0.82 },
-    { dimension: dims[1], Recon: 0.92, PIA: 0.71, GSA: 0.45 },
-    { dimension: dims[2], Recon: 0.6, PIA: 0.85, GSA: 0.73 },
-    { dimension: dims[3], Recon: 0.88, PIA: 0.79, GSA: 0.91 },
-    { dimension: dims[4], Recon: 0.95, PIA: 0.68, GSA: 0.55 },
-  ];
+
+  // Compute attack comparison from real data — group by attack family
+  const attackFamilyMap: Record<string, { aucSum: number; count: number }> = {};
+  for (const row of rows) {
+    const auc = parseFloat(row.aucLabel);
+    if (Number.isNaN(auc)) continue;
+    const family = row.attack.toLowerCase();
+    if (!attackFamilyMap[family]) {
+      attackFamilyMap[family] = { aucSum: 0, count: 0 };
+    }
+    attackFamilyMap[family].aucSum += auc;
+    attackFamilyMap[family].count++;
+  }
+  const hasAttackData = Object.keys(attackFamilyMap).length > 0;
+  const attackComparisonData = hasAttackData
+    ? [
+        {
+          dimension: "AUC",
+          ...Object.fromEntries(
+            Object.entries(attackFamilyMap).map(([family, { aucSum, count }]) => [
+              family.charAt(0).toUpperCase() + family.slice(1),
+              count > 0 ? parseFloat((aucSum / count).toFixed(3)) : 0,
+            ]),
+          ),
+        },
+      ]
+    : [];
 
   const gapData = computeCoverageGaps(rows);
 
@@ -183,22 +203,22 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
             <table className="min-w-[900px] w-full border-collapse text-[13px]">
               <thead className="sticky top-0 bg-muted/30">
                 <tr className="border-b border-border">
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.attack}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.defense}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.model}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.track}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.evidence}</th>
-                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.auc}</th>
-                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.asr}</th>
-                  <th className="px-3 py-2.5 text-right font-semibold text-muted-foreground">{copy.tableHeaders.tpr}</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.tableHeaders.risk}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.attack}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.defense}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.model}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.track}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.evidence}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.auc}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.asr}</th>
+                  <th className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.tpr}</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.risk}</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row, index) => (
                   <tr
                     key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
-                    className={`table-row-hover border-b border-border transition-colors hover:bg-muted/30 ${
+                    className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 ${
                       index % 2 === 0 ? "bg-background" : "bg-muted/10"
                     }`}
                   >

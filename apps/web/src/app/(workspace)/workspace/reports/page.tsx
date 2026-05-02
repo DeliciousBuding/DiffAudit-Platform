@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { AlertTriangle, Box, Crosshair, ShieldCheck, Target } from "lucide-react";
+import { AlertTriangle, ArrowRight, Box, Crosshair, FileText, ShieldCheck, Target } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
@@ -18,12 +18,12 @@ import { ReportExportButtons } from "@/app/(workspace)/workspace/reports/ReportE
 /** Track icons for report generation cards */
 function TrackIcon({ track }: { track: TrackKey }) {
   if (track === "black-box") {
-    return <AlertTriangle size={18} strokeWidth={1.8} />;
+    return <AlertTriangle size={18} strokeWidth={1.5} />;
   }
   if (track === "gray-box") {
-    return <Crosshair size={18} strokeWidth={1.8} />;
+    return <Crosshair size={18} strokeWidth={1.5} />;
   }
-  return <Box size={18} strokeWidth={1.8} />;
+  return <Box size={18} strokeWidth={1.5} />;
 }
 
 export const dynamic = "force-dynamic";
@@ -227,7 +227,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
           <div className="rounded-2xl border border-border bg-card p-3.5">
             <div className="flex items-center gap-2 mb-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
-                <Target size={14} strokeWidth={2} />
+                <Target size={14} strokeWidth={1.5} />
               </span>
               <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.keyFindings}
@@ -250,7 +250,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
           <div className="rounded-2xl border border-border bg-card p-3.5">
             <div className="flex items-center gap-2 mb-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[color:var(--warning-soft)] text-[color:var(--warning)]">
-                <AlertTriangle size={14} strokeWidth={2} />
+                <AlertTriangle size={14} strokeWidth={1.5} />
               </span>
               <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.defenseGap}
@@ -280,7 +280,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
           <div className="rounded-2xl border border-border bg-card p-3.5">
             <div className="flex items-center gap-2 mb-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[color:var(--success-soft)] text-[color:var(--success)]">
-                <ShieldCheck size={14} strokeWidth={2} />
+                <ShieldCheck size={14} strokeWidth={1.5} />
               </span>
               <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.recommendedDefenses}
@@ -319,8 +319,16 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
       </section>
     </>
   ) : (
-    <div className="rounded-2xl border border-border bg-card px-4 py-8 text-center text-xs text-muted-foreground">
-      {copy.emptyResults}
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card px-4 py-12">
+      <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} />
+      <p className="mb-4 text-sm text-muted-foreground">{copy.emptyResults}</p>
+      <Link
+        href="/workspace/audits/new"
+        className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
+      >
+        {locale === "zh-CN" ? "创建审计任务" : "Create audit task"}
+        <ArrowRight size={14} strokeWidth={1.5} />
+      </Link>
     </div>
   );
 

@@ -169,7 +169,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       // Redirect after a short delay
       setTimeout(() => {
         router.push(createdJobId ? `/workspace/audits/${createdJobId}` : "/workspace/audits");
-      }, 900);
+      }, 3000);
     } catch (err) {
       setSubmitState("error");
       setErrorMessage(err instanceof Error ? err.message : labels.submissionFailed);
@@ -282,7 +282,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
               {form.attackType && (
                 <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-3">
                   <div className="flex items-start gap-2">
-                    <Info size={16} strokeWidth={2} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
+                    <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
                     <div className="space-y-1">
                       <div className="text-[13px] font-bold text-[color:var(--accent-blue)]">
                         {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxTitle : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxTitle : copy.recommendedConfig.whiteBoxTitle}
@@ -521,13 +521,36 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <div className="border border-[var(--success-soft)] rounded-2xl bg-[var(--success-soft)] p-4">
                   <div className="text-[13px] font-bold text-[color:var(--success)]">{labels.successTitle}</div>
                   <div className="text-[13px] text-muted-foreground mt-1">{labels.successBody}</div>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/workspace/audits")}
+                    className="mt-3 workspace-btn-secondary px-3 py-1.5 text-[13px] font-medium"
+                  >
+                    {labels.goToTasks}
+                  </button>
                 </div>
               )}
 
               {/* Error state */}
               {submitState === "error" && errorMessage && (
                 <div className="border border-[var(--warning-soft)] rounded-2xl bg-[var(--warning-soft)] p-4">
-                  <div className="text-[13px] text-[color:var(--warning)]">{errorMessage}</div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="text-[13px] text-[color:var(--warning)]">{errorMessage}</div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSubmitState("idle");
+                        setErrorMessage(null);
+                      }}
+                      className="shrink-0 rounded p-0.5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 transition-colors"
+                      aria-label="Dismiss error"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               )}
 

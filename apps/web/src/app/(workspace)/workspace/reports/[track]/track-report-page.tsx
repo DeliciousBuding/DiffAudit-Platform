@@ -252,13 +252,13 @@ export async function renderTrackReportPage({
   return (
     <div className="space-y-4">
       <Link href="/workspace/reports" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
-        <ArrowLeft size={16} strokeWidth={2} />
+        <ArrowLeft size={16} strokeWidth={1.5} />
         {copy.backToReports}
       </Link>
 
       <div className="flex items-start justify-between gap-4 border-b border-border pb-3">
         <div>
-          <h1 className="text-lg font-semibold">{pageTitle(resolvedLocale, label)}</h1>
+          <h1 className="text-xl font-semibold">{pageTitle(resolvedLocale, label)}</h1>
         </div>
 
         <div className="inline-flex items-center rounded-2xl border border-border bg-card p-1 text-xs">

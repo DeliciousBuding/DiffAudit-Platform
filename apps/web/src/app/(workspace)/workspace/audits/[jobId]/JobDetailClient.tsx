@@ -262,12 +262,25 @@ export function JobDetailClient({
     return (
       <div className="space-y-3">
         <div className="text-[13px] text-warning">{fetchError ?? WORKSPACE_COPY[locale].jobDetail.labels.jobNotFound}</div>
-        <Link
-          href="/workspace/audits"
-          className="inline-flex text-[13px] text-[var(--accent-blue)] hover:underline"
-        >
-          {WORKSPACE_COPY[locale].jobDetail.backToAudits}
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              setFetchError(null);
+              void fetchJob();
+            }}
+            className="workspace-btn-primary px-4 py-2 text-[13px] font-medium"
+          >
+            {copy.jobDetail.retry}
+          </button>
+          <Link
+            href="/workspace/audits"
+            className="inline-flex text-[13px] text-[var(--accent-blue)] hover:underline"
+          >
+            {WORKSPACE_COPY[locale].jobDetail.backToAudits}
+          </Link>
+        </div>
       </div>
     );
   }
@@ -422,7 +435,7 @@ export function JobDetailClient({
       {suggestions.length > 0 && (
         <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
           <div className="flex items-start gap-2">
-            <Info size={16} strokeWidth={2} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
+            <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
             <div>
               <h3 className="text-[13px] font-bold text-[color:var(--accent-blue)] mb-1">
                 {copy.jobDetail.nextStepsTitle}

@@ -47,7 +47,7 @@ describe("ReportAuditView", () => {
     expect(markup).not.toContain("导入清单");
     expect(markup).not.toContain("Run 目录");
     expect(markup).not.toContain("Seed");
-    expect(markup).toContain("No provenance data available.");
+    expect(markup).toContain("暂无溯源数据。");
   });
 
   it("shows a compact completed-job banner and matched row marker", () => {

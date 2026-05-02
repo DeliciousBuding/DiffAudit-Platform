@@ -146,8 +146,8 @@ export function CompareView({ rows, locale }: CompareViewProps) {
     <div className="space-y-4">
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-lg border border-border bg-card p-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <div className="text-[13px] font-bold text-muted-foreground">
             {copy.summaryPairs}
           </div>
           <div className="mt-1.5 text-2xl font-semibold">{pairs.length}</div>
@@ -155,8 +155,8 @@ export function CompareView({ rows, locale }: CompareViewProps) {
             {copy.effectiveCount}
           </p>
         </div>
-        <div className="rounded-lg border border-border bg-card p-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <div className="text-[13px] font-bold text-muted-foreground">
             {copy.summaryAvgChange}
           </div>
           <div className="mt-1.5 text-2xl font-semibold" style={{ color: avgAucReduction < 0 ? "var(--success)" : "var(--warning)" }}>
@@ -166,8 +166,8 @@ export function CompareView({ rows, locale }: CompareViewProps) {
             {avgAucReduction < 0 ? copy.effectiveYes : copy.effectiveNo}
           </p>
         </div>
-        <div className="rounded-lg border border-border bg-card p-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <div className="text-[13px] font-bold text-muted-foreground">
             {copy.summaryEffective}
           </div>
           <div className="mt-1.5 text-2xl font-semibold" style={{ color: "var(--success)" }}>
@@ -180,9 +180,9 @@ export function CompareView({ rows, locale }: CompareViewProps) {
       </div>
 
       {/* Comparison table */}
-      <section className="border border-border bg-card">
+      <section className="rounded-2xl border border-border bg-card">
         <div className="border-b border-border bg-muted/20 px-3 py-2">
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <h2 className="text-[13px] font-bold text-muted-foreground">
             {copy.title}
           </h2>
         </div>
@@ -190,18 +190,18 @@ export function CompareView({ rows, locale }: CompareViewProps) {
           <table className="min-w-[900px] w-full border-collapse text-[13px]">
             <thead className="sticky top-0 bg-muted/30">
               <tr className="border-b border-border">
-                <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.attack}</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-muted-foreground">{copy.defense}</th>
-                <th colSpan={3} className="px-3 py-2.5 text-center font-semibold text-muted-foreground border-l border-border">
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.attack}</th>
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.defense}</th>
+                <th colSpan={3} className="px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-l border-border">
                   {copy.noDefense}
                 </th>
-                <th colSpan={3} className="px-3 py-2.5 text-center font-semibold text-muted-foreground border-l border-border">
+                <th colSpan={3} className="px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-l border-border">
                   {copy.defense}
                 </th>
-                <th colSpan={3} className="px-3 py-2.5 text-center font-semibold text-[color:var(--accent-blue)] border-l border-border">
+                <th colSpan={3} className="px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] border-l border-border">
                   {copy.delta}
                 </th>
-                <th className="px-3 py-2.5 text-center font-semibold text-muted-foreground border-l border-border">
+                <th className="px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-l border-border">
                   {copy.visualization}
                 </th>
               </tr>
