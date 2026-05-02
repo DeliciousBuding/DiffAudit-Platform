@@ -508,3 +508,19 @@ Late design audit findings from R35:
 5. ✅ Removed unused `ClipboardList` from platform-shell-icons.tsx
 
 39 rounds total, 37 commits to main. 136/136 tests.
+
+### Phase 40: Icon Fixes, Status Mapping, Contextual Tips (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Dashboard: health banner info state ArrowRight → Info icon
+2. ✅ Task list: queued status mapped to "neutral" tone
+3. ✅ Reports: contextual tip about chart click-to-filter
+
+**Design findings fixed:**
+4. ✅ Reports: strategy description text-[10px] → text-[11px]
+5. ✅ Filter select: focus border uses CSS variable
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+40 rounds total, 38 commits to main. 136/136 tests.
