@@ -334,3 +334,23 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 6. **Sidebar**: aria-hidden on ChevronLeft icon
 
 26 rounds total, 24 commits to main. 136/136 tests.
+
+### Phase 27: Multi-Perspective Audit & Critical Fixes (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Critical fixes:**
+1. ✅ Account page: `bg-white` → `bg-background` (dark mode break)
+2. ✅ Risk Findings: added AUC and ASR sortable columns to findings table
+3. ✅ Track cards: now pass `?track=` param to audit creation form
+4. ✅ Navigation progress: thin blue bar at top during page transitions
+5. ✅ Removed 4 unused imports (ArrowRight, Link, MetricTooltip)
+6. ✅ Additional a11y: aria-hidden on decorative icons, progressbar on upload
+
+**Engineering audit results:** 136/136 tests, 0 `any` types, 0 `@ts-ignore`, 0 `console.log`, 9 unused imports (4 fixed)
+
+### Phase 28: Sidebar CTA Button (COMPLETED)
+1. **"New audit task" button**: blue accent button at top of sidebar with Plus icon
+2. Bilingual (zh-CN: "新建审计任务", en-US: "New audit task")
+3. Primary action always visible, reduces navigation friction
+
+28 rounds total, 26 commits to main. 136/136 tests.
