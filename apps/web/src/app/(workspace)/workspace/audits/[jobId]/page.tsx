@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { JobDetailClient } from "./JobDetailClient";
@@ -19,16 +18,17 @@ async function renderJobDetailPage({
   const { jobId } = await params;
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].jobDetail;
+  const isZh = resolvedLocale === "zh-CN";
+
+  const breadcrumbItems = [
+    { label: isZh ? "工作台" : "Dashboard", href: "/workspace/start" },
+    { label: isZh ? "审计任务" : "Audits", href: "/workspace/audits" },
+    { label: jobId },
+  ];
 
   return (
     <div className="space-y-4">
-      {/* Back button */}
-      <Link
-        href="/workspace/audits"
-        className="inline-flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft size={16} strokeWidth={1.5} /> {copy.backToAudits}
-      </Link>
+      <Breadcrumb items={breadcrumbItems} />
 
       {/* Page header */}
       <div className="border-b border-border pb-3">

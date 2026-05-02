@@ -33,6 +33,10 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const themeLabel = isDark
     ? WORKSPACE_COPY[locale].userMenu.themeDark
     : WORKSPACE_COPY[locale].userMenu.themeLight;
+  const isZh = locale === "zh-CN";
+
+  // Section dividers between nav groups
+  const sectionBreaks = new Set([1, 3, 5]);
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -71,23 +75,27 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   return (
     <div className="flex flex-col h-full">
       <nav className="flex flex-col gap-0.5" aria-label={sidebarLabel}>
-        {items.map((item) => {
+        {items.map((item, index) => {
           const active = current.href === item.href;
           return (
-          <Link
-            key={item.href}
-            href={item.href}
-            prefetch={false}
-            aria-current={active ? "page" : undefined}
-            className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
-            title={collapsed ? item.title : item.subtitle}
-            >
-              <NavIcon icon={item.icon} />
-              <div className="workspace-sidebar-label flex flex-col min-w-0">
-                <span className="text-[13px] font-medium leading-tight truncate">{item.title}</span>
-                <span className="workspace-sidebar-subtitle text-[10px] leading-tight text-muted-foreground/60 truncate">{item.subtitle}</span>
-              </div>
-            </Link>
+            <div key={item.href}>
+              {sectionBreaks.has(index) && (
+                <div className="my-1.5 mx-2 border-t border-border/30" aria-hidden="true" />
+              )}
+              <Link
+                href={item.href}
+                prefetch={false}
+                aria-current={active ? "page" : undefined}
+                className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
+                title={collapsed ? item.title : item.subtitle}
+              >
+                <NavIcon icon={item.icon} />
+                <div className="workspace-sidebar-label flex flex-col min-w-0">
+                  <span className="text-[13px] font-medium leading-tight truncate">{item.title}</span>
+                  <span className="workspace-sidebar-subtitle text-[10px] leading-tight text-muted-foreground/60 truncate">{item.subtitle}</span>
+                </div>
+              </Link>
+            </div>
           );
         })}
       </nav>

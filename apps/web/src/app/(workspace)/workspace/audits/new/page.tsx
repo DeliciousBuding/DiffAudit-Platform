@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { getWorkspaceCatalogData } from "@/lib/workspace-source";
@@ -32,15 +31,16 @@ async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
       )
     : [];
 
+  const isZh = resolvedLocale === "zh-CN";
+  const breadcrumbItems = [
+    { label: isZh ? "工作台" : "Dashboard", href: "/workspace/start" },
+    { label: isZh ? "审计任务" : "Audits", href: "/workspace/audits" },
+    { label: copy.title },
+  ];
+
   return (
     <div className="space-y-4">
-      {/* Back button */}
-      <Link
-        href="/workspace/audits"
-        className="inline-flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft size={16} strokeWidth={1.5} /> {copy.backToTasks}
-      </Link>
+      <Breadcrumb items={breadcrumbItems} />
 
       {/* Page header */}
       <div className="border-b border-border pb-3">
