@@ -214,7 +214,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   <span
                     className={`inline-flex items-center justify-center h-6 w-6 rounded-full text-xs font-semibold ${
                       isCompleted
-                        ? "bg-[var(--info-soft)] text-[var(--info)] border border-[rgba(47,109,246,0.2)]"
+                        ? "bg-[var(--info-soft)] text-[var(--info)] border border-[color:var(--accent-blue)]/20"
                         : isActive
                           ? "bg-[var(--accent-blue)] text-white"
                           : "bg-muted/40 text-muted-foreground border border-border"
@@ -267,8 +267,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       aria-pressed={isSelected}
                       className={`text-left rounded-2xl border p-4 flex flex-col transition-all ${
                         isSelected
-                          ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
-                          : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
+                          ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[color:var(--accent-blue)]/12"
+                          : "border-border bg-background hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
                       }`}
                     >
                       <div className="text-sm font-bold mb-1.5">{card.title}</div>
@@ -329,10 +329,10 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                         disabled={isDisabled}
                         className={`text-left rounded-2xl border p-4 transition-all ${
                           isSelected
-                            ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[rgba(47,109,246,0.12)]"
+                            ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[color:var(--accent-blue)]/12"
                             : isDisabled
                               ? "border-border bg-muted/10 opacity-55 cursor-not-allowed"
-                              : "border-border bg-background hover:border-[rgba(47,109,246,0.3)] hover:bg-muted/20"
+                              : "border-border bg-background hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">

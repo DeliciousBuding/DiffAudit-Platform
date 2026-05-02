@@ -652,6 +652,11 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                     : row.riskLevel === "medium"
                       ? "border-l-[var(--warning)]"
                       : "border-l-[var(--success)]";
+                  const severityBg = row.riskLevel === "high"
+                    ? "bg-[var(--risk-high)]/[0.02]"
+                    : row.riskLevel === "medium"
+                      ? "bg-[var(--warning)]/[0.02]"
+                      : "";
                   return (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}`}
@@ -664,7 +669,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                           setSelectedFinding(row);
                         }
                       }}
-                      className={`cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""}`}
+                      className={`cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""}`}
                     >
                       <td className="max-w-[280px] px-4 py-3">
                         <div className="font-medium text-foreground">{getRiskDescription(row.attack, row.note ?? "", locale)}</div>

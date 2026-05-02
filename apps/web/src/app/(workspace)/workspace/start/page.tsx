@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Info } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle, ChevronRight, Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -219,10 +219,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   // System health summary
   const healthStatus = riskCounts.high > 0
-    ? { tone: "warning" as const, icon: "⚠" as const, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注` : `${riskCounts.high} high-risk findings need attention` }
+    ? { tone: "warning" as const, icon: <AlertTriangle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注` : `${riskCounts.high} high-risk findings need attention` }
     : totalRows > 0
-      ? { tone: "success" as const, icon: "✓" as const, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成 · 防御率 ${Math.round(defenseRate * 100)}%` : `Systems healthy · ${totalRows} evaluations · ${Math.round(defenseRate * 100)}% defense rate` }
-      : { tone: "info" as const, icon: "→" as const, text: locale === "zh-CN" ? "暂无评估数据 — 创建你的第一个审计任务" : "No evaluations yet — create your first audit task" };
+      ? { tone: "success" as const, icon: <CheckCircle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成 · 防御率 ${Math.round(defenseRate * 100)}%` : `Systems healthy · ${totalRows} evaluations · ${Math.round(defenseRate * 100)}% defense rate` }
+      : { tone: "info" as const, icon: <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? "暂无评估数据 — 创建你的第一个审计任务" : "No evaluations yet — create your first audit task" };
 
   return (
     <>
@@ -246,7 +246,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               ? "border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 text-[color:var(--accent-blue)]"
               : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
         }`}>
-          <span className="text-sm" aria-hidden="true">{healthStatus.icon}</span>
+          <span className="shrink-0">{healthStatus.icon}</span>
           <span className="font-medium">{healthStatus.text}</span>
         </div>
       )}
