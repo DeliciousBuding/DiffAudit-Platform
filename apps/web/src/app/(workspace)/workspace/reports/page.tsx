@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, Box, Crosshair, FileBarChart, FileText, ShieldCheck, Target } from "lucide-react";
+import { AlertTriangle, Box, Crosshair, FileBarChart, ShieldCheck, Target } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { EmptyState } from "@/components/empty-state";
@@ -262,9 +262,6 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
               <h4 className="text-[13px] font-bold text-foreground">
                 {copy.recommendedDefenses}
               </h4>
-              <span className="text-[9px] text-muted-foreground/60 ml-auto">
-                {copy.exampleDataLabel}
-              </span>
             </div>
             <div className="space-y-2">
               {defenseStrategies.map((strategy) => (
