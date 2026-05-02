@@ -524,3 +524,15 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 40 rounds total, 38 commits to main. 136/136 tests.
+
+### Phase 41: Shimmer Loading Skeletons (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Innovation:**
+1. ✅ All 10 loading.tsx files now use skeleton-pulse shimmer animation
+2. ✅ Replaces static animate-pulse opacity flicker with gradient shimmer effect
+3. ✅ Consistent with existing skeleton-pulse CSS class in globals.css
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+41 rounds total, 39 commits to main. 136/136 tests.
