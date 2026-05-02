@@ -273,3 +273,50 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
    - Keyboard accessible, Escape to close, selected row highlight
 
 17 rounds total, 15 commits to main. 136/136 tests.
+
+### Phase 19: Quick Filters + Responsive Tables + KPI Drill-Down + Shortcuts Modal (COMPLETED)
+1. **Quick filter presets** for Risk Findings: All, High Risk Unmitigated, Mitigated, High AUC
+   - Pill-shaped buttons with active state highlighting
+   - Sets severity + status filters, clears others, resets pagination
+2. **Responsive tables**: `.workspace-table-scroll` with ResizeObserver scroll detection
+   - Right-edge fade gradient when content overflows
+   - `role="region"` + `aria-label` for accessibility
+   - Applied to: Risk Findings, Audits, Model Assets, API Keys
+3. **Dashboard KPI drill-down**: clickable KPI cards with navigation
+   - Hover lift effect + ChevronRight icon reveal
+   - Each card links to relevant page (audits, risk-findings, reports)
+4. **Keyboard shortcuts modal**: replaces toast for `?` key
+   - Structured by category (Navigation, Actions, General)
+   - Command palette "Show Shortcuts" opens modal via custom event
+
+19 rounds total, 17 commits to main. 136/136 tests.
+
+### Phase 20: Sidebar Section Dividers + Breadcrumb Navigation (COMPLETED)
+1. **Sidebar section grouping**: subtle dividers between nav groups (Dashboard | Workspace | Analysis | Admin)
+2. **Breadcrumb component**: reusable `Breadcrumb` with ChevronRight separators, accessible nav
+3. **Applied to 3 nested pages**: job detail, create task, report track
+   - Replaces ArrowLeft back links with proper breadcrumb hierarchy
+
+### Phase 21: Enhanced Global Search (COMPLETED)
+1. **Arrow key navigation**: up/down with active item highlighting
+2. **Recent pages tracking**: localStorage, top 3, shown with "Recent" label
+3. **ARIA combobox pattern**: aria-expanded, aria-activedescendant, role=option
+4. **Active state CSS**: keyboard-selected items highlighted
+
+21 rounds total, 19 commits to main. 136/136 tests.
+
+### Phase 22: Status Dot Pulse + Demo Mode Badge (COMPLETED)
+1. **Status dot pulse**: subtle 3s breathing animation for "alive" feel
+2. **Demo mode badge**: warning badge in topbar when viewing demo data
+3. **prefers-reduced-motion**: status dot animation disabled for accessibility
+
+### Phase 23: Data Freshness Indicator (COMPLETED)
+1. **Dashboard timestamp**: "Data updated" below KPI row
+2. Bilingual formatting (zh-CN: "数据更新于", en-US: "Data updated")
+
+### Phase 24: Scroll-to-Top Button (COMPLETED)
+1. **Fixed position**: bottom-right, appears after 400px scroll
+2. **Smooth scroll**: behavior smooth, backdrop blur, card background
+3. **Accessible**: aria-label, fade-in animation, reduced-motion safe
+
+24 rounds total, 22 commits to main. 136/136 tests.
