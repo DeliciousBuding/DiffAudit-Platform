@@ -378,3 +378,19 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 **Engineering audit:** Clean. 136/136 tests, 0 `any` types, 0 unused imports, 0 missing keys.
 
 30 rounds total, 28 commits to main. 136/136 tests.
+
+### Phase 31: Sidebar Keyboard Nav & Design Polish (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Sidebar: arrow key navigation between nav items (Up/Down)
+2. ✅ Sidebar: subtitle contrast improved (text-[10px]/60 → text-[11px]/80, WCAG AA)
+
+**Design findings fixed:**
+3. ✅ Reports: defense tag text-[9px] → text-[10px], fixed missing color: prefix
+4. ✅ Reports: skeleton rounded-lg → rounded-2xl
+5. ✅ API Keys: revoke button rounded-lg → rounded-xl
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log, 0 @ts-ignore.
+
+31 rounds total, 29 commits to main. 136/136 tests.
