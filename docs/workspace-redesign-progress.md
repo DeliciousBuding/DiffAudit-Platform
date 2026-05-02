@@ -442,3 +442,15 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log, 0 @ts-ignore.
 
 34 rounds total, 32 commits to main. 136/136 tests.
+
+### Phase 35: Contextual Tips & Job Detail UX (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ ContextualTip component: dismissible info banners with Lightbulb icon
+2. ✅ Risk Findings: tip above table ("Click any row to see full details")
+3. ✅ Job Detail: moved "Next steps" suggestions above logs (was buried below 200 lines of diagnostic output)
+
+**Design & Engineering audits:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+35 rounds total, 33 commits to main. 136/136 tests.
