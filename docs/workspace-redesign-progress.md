@@ -180,3 +180,27 @@ Round 8 verification: format.ts usage, --accent-green, ARIA, screenshots all PAS
 Round 9: final 6 inline locale ternaries centralized (RiskFindings, ReportExportButtons, ReportAuditView, topbar-title, sidebar). i18n 100% centralized.
 
 **FINAL STATE: 9 rounds, 8 commits, 136/136 tests, 0 inline locale ternaries in core pages, full ARIA coverage, shared format.ts, unified design tokens.**
+
+### Phase 10: Innovation Round (COMPLETED)
+3 new features added:
+
+1. **Metric Tooltips** (MetricTooltip + InfoTooltip):
+   - Hover AUC/ASR/TPR headers for bilingual explanations
+   - Direction indicators (higher/lower is better)
+   - Portal-based, accessible, show/hide delays
+   - Integrated: start page, model-assets, reports, risk findings, audits
+
+2. **Animated KPI Count-Up**:
+   - Dashboard numbers animate from 0 to target (800ms ease-out)
+   - useCountUp hook with cleanup
+   - Handles integers, decimals, percentages
+
+3. **Keyboard Shortcuts**:
+   - Ctrl+N: New audit task
+   - Ctrl+1-8: Navigate sidebar items
+   - Ctrl+,: Settings
+   - ?: Show shortcuts toast
+   - Input-safe (doesn't fire when typing)
+
+New files: metric-tooltip.tsx, info-tooltip.tsx, animated-value.tsx, workspace-keyboard-shortcuts.tsx, use-count-up.ts
+Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × consistency × innovation)

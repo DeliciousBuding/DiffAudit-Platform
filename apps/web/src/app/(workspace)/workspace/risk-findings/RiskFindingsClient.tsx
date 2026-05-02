@@ -1,9 +1,10 @@
 "use client";
 
-import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ArrowRight } from "lucide-react";
+import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
 import { InfoTooltip } from "@/components/info-tooltip";
@@ -466,14 +467,14 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 {paginatedRows.map((row, rowIndex) => {
                   const status = getStatus(row.defense, row.riskLevel);
                   const severityBorder = row.riskLevel === "high"
-                    ? "border-l-[var(--warning)]"
+                    ? "border-l-[var(--risk-high)]"
                     : row.riskLevel === "medium"
-                      ? "border-l-[var(--info)]"
+                      ? "border-l-[var(--warning)]"
                       : "border-l-[var(--success)]";
                   return (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}`}
-                      className={`border-b border-border/40 border-l-[3px] transition-colors hover:bg-muted/20 ${severityBorder} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""}`}
+                      className={`border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""}`}
                     >
                       <td className="max-w-[280px] px-4 py-3">
                         <div className="font-medium text-foreground">{getRiskDescription(row.attack, row.note ?? "", locale)}</div>
@@ -497,21 +498,19 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             </table>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12">
-            <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} aria-hidden="true" />
-            <p className="mb-4 text-sm text-muted-foreground">
-              {hasActiveFilters ? copy.emptyNoResults : copy.emptyNoData}
-            </p>
-            {!hasActiveFilters && (
-              <Link
-                href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
-              >
-                {copy.createAuditTask}
-                <ArrowRight size={14} strokeWidth={1.5} />
-              </Link>
-            )}
-          </div>
+          hasActiveFilters ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">{copy.emptyNoResults}</p>
+            </div>
+          ) : (
+            <EmptyState
+              icon={ShieldCheck}
+              title={copy.emptyNoData}
+              description={locale === "zh-CN" ? "完成审计任务后，风险发现将显示在此处。" : "Risk findings will appear here after completing audit tasks."}
+              action={{ label: copy.createAuditTask, href: "/workspace/audits/new" }}
+            />
+          )
         )}
 
         {/* Pagination */}

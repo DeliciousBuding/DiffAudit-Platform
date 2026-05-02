@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 
+import { CommandPalette } from "@/components/command-palette";
 import { PlatformShell } from "@/components/platform-shell";
 import { Providers } from "@/components/providers";
 import { WorkspaceKeyboardShortcuts } from "@/components/workspace-keyboard-shortcuts";
@@ -16,6 +17,7 @@ export default async function WorkspaceLayout({
   return (
     <Providers>
       <PlatformShell>
+        <CommandPalette locale={locale} />
         <WorkspaceKeyboardShortcuts locale={locale} />
         {children}
       </PlatformShell>

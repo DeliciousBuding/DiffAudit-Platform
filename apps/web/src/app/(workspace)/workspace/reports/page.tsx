@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, Box, Crosshair, FileText, ShieldCheck, Target } from "lucide-react";
+import { AlertTriangle, ArrowRight, Box, Crosshair, FileBarChart, FileText, ShieldCheck, Target } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -295,17 +296,12 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
       </section>
     </>
   ) : (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card px-4 py-12">
-      <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} />
-      <p className="mb-4 text-sm text-muted-foreground">{copy.emptyResults}</p>
-      <Link
-        href="/workspace/audits/new"
-        className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
-      >
-        {copy.createAuditTask}
-        <ArrowRight size={14} strokeWidth={1.5} />
-      </Link>
-    </div>
+    <EmptyState
+      icon={FileBarChart}
+      title={copy.emptyResults}
+      description={locale === "zh-CN" ? "完成审计任务后，报告将在此处生成。" : "Reports will be generated here after completing audit tasks."}
+      action={{ label: copy.createAuditTask, href: "/workspace/audits/new" }}
+    />
   );
 
   return (

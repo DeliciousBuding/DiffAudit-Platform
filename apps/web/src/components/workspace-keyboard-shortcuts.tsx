@@ -10,7 +10,7 @@ import { useToast } from "@/components/toast-provider";
  * Global keyboard shortcuts for the workspace.
  *
  * Shortcuts:
- *   Ctrl+K  — Focus search (handled by WorkspaceGlobalSearch)
+ *   Ctrl+K  — Command palette (handled by CommandPalette)
  *   Ctrl+N  — New audit task
  *   Ctrl+1..8 — Navigate to sidebar items
  *   Ctrl+,  — Settings
@@ -67,8 +67,8 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
         toast({
           type: "info",
           title: isZh
-            ? "快捷键: Ctrl+K 搜索 | Ctrl+N 新建 | Ctrl+1-8 导航 | Ctrl+, 设置"
-            : "Shortcuts: Ctrl+K Search | Ctrl+N New | Ctrl+1-8 Navigate | Ctrl+, Settings",
+            ? "快捷键: Ctrl+K 命令面板 | Ctrl+N 新建 | Ctrl+1-8 导航 | Ctrl+, 设置"
+            : "Shortcuts: Ctrl+K Command Palette | Ctrl+N New | Ctrl+1-8 Navigate | Ctrl+, Settings",
           duration: 5000,
         });
       }

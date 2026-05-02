@@ -31,6 +31,27 @@ export const WORKSPACE_COPY: Record<
       searchShortcut: string;
       notificationTitle: string;
     };
+    commandPalette: {
+      placeholder: string;
+      noResults: string;
+      ariaLabel: string;
+      groupNavigation: string;
+      groupActions: string;
+      groupInfo: string;
+      navDashboard: string;
+      navAudits: string;
+      navModelAssets: string;
+      navRiskFindings: string;
+      navReports: string;
+      navApiKeys: string;
+      navAccount: string;
+      navSettings: string;
+      actionNewTask: string;
+      actionAddModel: string;
+      actionExportReport: string;
+      infoShortcuts: string;
+      infoDocs: string;
+    };
     userMenu: {
       loggedIn: string;
       themeLabel: string;
@@ -543,6 +564,13 @@ export const WORKSPACE_COPY: Record<
       fpr: string;
       defenseRate: string;
     };
+    emptyState: {
+      selectModel: { title: string; description: string };
+      noRiskFindings: { title: string; description: string; action: string };
+      noReports: { title: string; description: string; action: string };
+      noApiKeys: { title: string; description: string; action: string };
+      noActiveTasks: { title: string; description: string; action: string };
+    };
   }
 > = {
   "en-US": {
@@ -572,6 +600,27 @@ export const WORKSPACE_COPY: Record<
       searchPlaceholder: "Search models, tasks, reports...",
       searchShortcut: "⌘ K",
       notificationTitle: "Notifications",
+    },
+    commandPalette: {
+      placeholder: "Type a command...",
+      noResults: "No matching commands",
+      ariaLabel: "Command palette",
+      groupNavigation: "Navigation",
+      groupActions: "Actions",
+      groupInfo: "Info",
+      navDashboard: "Go to Dashboard",
+      navAudits: "Go to Audits",
+      navModelAssets: "Go to Model Assets",
+      navRiskFindings: "Go to Risk Findings",
+      navReports: "Go to Reports",
+      navApiKeys: "Go to API Keys",
+      navAccount: "Go to Account",
+      navSettings: "Go to Settings",
+      actionNewTask: "Create New Task",
+      actionAddModel: "Add Model",
+      actionExportReport: "Export Report",
+      infoShortcuts: "Show Keyboard Shortcuts",
+      infoDocs: "View Documentation",
     },
     userMenu: {
       loggedIn: "Signed in",
@@ -1357,6 +1406,13 @@ export const WORKSPACE_COPY: Record<
       fpr: "False Positive Rate — proportion of non-member samples incorrectly flagged as members by the attacker's classifier.",
       defenseRate: "Proportion of audit results that have an active defense comparison. Higher coverage means more results are evaluated against defenses.",
     },
+    emptyState: {
+      selectModel: { title: "Select a model", description: "Select a model from the list to view details and audit evidence." },
+      noRiskFindings: { title: "No risk findings", description: "Risk findings will appear here after completing audit tasks.", action: "Create audit task" },
+      noReports: { title: "No audit reports", description: "Reports will be generated here after completing audit tasks.", action: "Create audit task" },
+      noApiKeys: { title: "No API keys", description: "Create an API key to access audit features via API.", action: "Create key" },
+      noActiveTasks: { title: "No active tasks", description: "Create a new audit task to start detecting model privacy risks.", action: "Create task" },
+    },
   },
   "zh-CN": {
     shell: {
@@ -1385,6 +1441,27 @@ export const WORKSPACE_COPY: Record<
       searchPlaceholder: "搜索模型、任务、报告...",
       searchShortcut: "⌘ K",
       notificationTitle: "通知",
+    },
+    commandPalette: {
+      placeholder: "输入命令...",
+      noResults: "没有匹配的命令",
+      ariaLabel: "命令面板",
+      groupNavigation: "导航",
+      groupActions: "操作",
+      groupInfo: "信息",
+      navDashboard: "前往工作台",
+      navAudits: "前往审计任务",
+      navModelAssets: "前往模型资产",
+      navRiskFindings: "前往风险发现",
+      navReports: "前往报告中心",
+      navApiKeys: "前往 API 管理",
+      navAccount: "前往个人账户",
+      navSettings: "前往系统设置",
+      actionNewTask: "创建新任务",
+      actionAddModel: "添加模型",
+      actionExportReport: "导出报告",
+      infoShortcuts: "显示快捷键",
+      infoDocs: "查看文档",
     },
     userMenu: {
       loggedIn: "已登录",
@@ -2169,6 +2246,13 @@ export const WORKSPACE_COPY: Record<
       tpr: "1% 误报率下的真阳性率 — 在假阳性控制在 1% 以下时能捕获多少真实攻击。对防御方来说越高越好。",
       fpr: "假阳性率 — 攻击者分类器将非成员数据误判为成员数据的比例。",
       defenseRate: "已有防御对照的审计结果占全部结果的比例。覆盖率越高，说明越多结果经过了防御评估。",
+    },
+    emptyState: {
+      selectModel: { title: "选择一个模型", description: "从左侧列表中选择一个模型查看详细信息和审计证据。" },
+      noRiskFindings: { title: "暂无风险发现", description: "完成审计任务后，风险发现将显示在此处。", action: "创建审计任务" },
+      noReports: { title: "暂无审计报告", description: "完成审计任务后，报告将在此处生成。", action: "创建审计任务" },
+      noApiKeys: { title: "暂无 API 密钥", description: "创建 API 密钥以通过 API 访问审计功能。", action: "创建密钥" },
+      noActiveTasks: { title: "暂无运行中的任务", description: "创建一个新的审计任务开始检测模型隐私风险。", action: "创建任务" },
     },
   },
 };

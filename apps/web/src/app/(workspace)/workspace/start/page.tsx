@@ -37,16 +37,19 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 }
 
 /** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1 */
-function KpiCardWithTrend({ label, value, note, trend }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat" }) {
+function KpiCardWithTrend({ label, value, note, trend, alert }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; alert?: "danger" | "warning" | "info" | null }) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
   const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
   const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
+  const alertBorder = alert === "danger" ? "border-l-2 border-l-[var(--risk-high)]" : alert === "warning" ? "border-l-2 border-l-[var(--warning)]" : alert === "info" ? "border-l-2 border-l-[var(--accent-blue)]" : "";
+  const alertBg = alert === "danger" ? "bg-[color:var(--risk-high)]/[0.03]" : alert === "warning" ? "bg-[color:var(--warning)]/[0.03]" : "";
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
+    <div className={`rounded-2xl border border-border bg-card p-4 ${alertBorder} ${alertBg}`}>
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
-        <AnimatedValue value={value} className="text-2xl font-bold leading-none" />
+        <AnimatedValue value={value} className={`text-2xl font-bold leading-none ${alert === "danger" ? "text-[color:var(--risk-high)]" : ""}`} />
         {trendIcon ? <span className={`text-base ${trendColor}`} aria-label={trendLabel} role="img">{trendIcon}</span> : null}
+        {alert === "danger" && <span className="text-base text-[color:var(--risk-high)]" role="img" aria-label="needs attention">!</span>}
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
     </div>
@@ -174,14 +177,17 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   const isEmpty = totalRows === 0;
 
+  const defenseRate = totalRows > 0 ? defendedRows / totalRows : 1;
+  const avgAucAlert = avgAuc !== "n/a" && parseFloat(avgAuc) > 0.85;
+
   return (
     <>
       {/* KPI row — with trend indicators 2.4.1 */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" />
-        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} />
-        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} />
-        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} />
+        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} />
+        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} alert={avgAucAlert ? "danger" : null} />
+        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} />
       </div>
 
       {/* Audit track quick-access cards — Platform Boost */}
@@ -420,10 +426,17 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <tbody>
                   {recentRows.map((row, index) => {
                     const auc = parseFloat(row.aucLabel);
+                    const rowBorder = !isNaN(auc)
+                      ? auc > 0.85
+                        ? "border-l-2 border-l-[var(--risk-high)]"
+                        : auc >= 0.7
+                          ? "border-l-2 border-l-[var(--warning)]"
+                          : "border-l-2 border-l-[var(--success)]"
+                      : "";
                     return (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
-                      className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
+                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 ${rowBorder}`}
                     >
                       <td className="px-4 py-3">
                         {!isNaN(auc) ? <RiskBadge auc={auc} compact /> : "—"}

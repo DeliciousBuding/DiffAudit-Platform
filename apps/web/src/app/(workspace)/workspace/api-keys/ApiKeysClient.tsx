@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Info, Plus } from "lucide-react";
+import { Check, Info, Key, Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { EmptyState } from "@/components/empty-state";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { formatDateOnly } from "@/lib/format";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -321,7 +322,16 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         ) : null}
       </div>
 
-      {/* Keys table */}
+      {/* Keys table or empty state */}
+      {keys.length === 0 && !showCreate && !createdKey ? (
+        <EmptyState
+          icon={Key}
+          title={locale === "zh-CN" ? "暂无 API 密钥" : "No API keys"}
+          description={locale === "zh-CN" ? "创建 API 密钥以通过 API 访问审计功能。" : "Create an API key to access audit features via API."}
+          action={{ label: locale === "zh-CN" ? "创建密钥" : "Create key", onClick: () => setShowCreate(true) }}
+        />
+      ) : (
+      <>
       <h3 className="mb-3 text-sm font-semibold text-foreground">{copy.activeKeys}</h3>
       <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm dark:border-border/50 dark:shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
         {/* Table header */}
@@ -394,6 +404,8 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
           ))}
         </div>
       </div>
+      </>
+      )}
 
       {/* Revoke confirmation modal */}
       {pendingRevokeId ? (

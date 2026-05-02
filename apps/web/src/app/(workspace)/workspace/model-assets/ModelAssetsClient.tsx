@@ -4,6 +4,7 @@ import { Search, Plus, Pencil, Trash2, X, ChevronLeft, ChevronRight, Upload, Che
 import { useState, useMemo, useEffect, useRef } from "react";
 
 import { Modal } from "@/components/modal";
+import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { MetricTooltip } from "@/components/metric-tooltip";
 import type { CatalogDashboardViewModel, CatalogEntryViewModel, AttackDefenseTableViewModel } from "@/lib/workspace-source";
@@ -44,6 +45,7 @@ type Copy = {
   bestEvidence: string;
   emptyNav: string;
   emptyTimeline: string;
+  emptyDetail: string;
   emptyEvidence: string;
   attack: string;
   defense: string;
@@ -497,9 +499,11 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
       {/* RIGHT: Model Details */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         {!selectedEntry ? (
-          <div className="flex h-64 items-center justify-center">
-            <p className="text-sm text-muted-foreground">{copy.emptyTimeline}</p>
-          </div>
+          <EmptyState
+            icon={Database}
+            title={copy.emptyTimeline}
+            description={copy.emptyDetail}
+          />
         ) : (
           <>
             {/* Model header */}

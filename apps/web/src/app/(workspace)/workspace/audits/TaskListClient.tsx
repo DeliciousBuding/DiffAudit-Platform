@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, ArrowRight, RefreshCw } from "lucide-react";
+import { ClipboardList, FileText, ArrowRight, RefreshCw } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
@@ -166,30 +167,22 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
   if (displayed.length === 0) {
     if (filter && filter !== "all") {
       return (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <FileText className="mb-2 text-muted-foreground/30" size={28} strokeWidth={1.2} />
-          <p className="text-xs text-muted-foreground">
-            {mode === "history" ? copy.emptyHistoryFiltered : copy.emptyJobs}
-          </p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title={mode === "history" ? copy.emptyHistoryFiltered : copy.emptyJobs}
+          description=""
+        />
       );
     }
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <FileText className="mb-2 text-muted-foreground/30" size={28} strokeWidth={1.2} />
-        <p className="text-xs text-muted-foreground mb-3">
-          {mode === "active" ? copy.emptyTasks : copy.emptyHistory}
-        </p>
-        {mode === "active" && (
-          <Link
-            href="/workspace/audits/new"
-            className="inline-flex items-center gap-1 text-xs font-medium text-[var(--accent-blue)] hover:underline"
-          >
-            {copy.createTask}
-            <ArrowRight size={12} strokeWidth={1.5} />
-          </Link>
-        )}
-      </div>
+      <EmptyState
+        icon={ClipboardList}
+        title={mode === "active" ? copy.emptyTasks : copy.emptyHistory}
+        description={mode === "active"
+          ? (locale === "zh-CN" ? "创建一个新的审计任务开始检测模型隐私风险。" : "Create a new audit task to start detecting model privacy risks.")
+          : copy.emptyHistory}
+        action={mode === "active" ? { label: copy.createTask, href: "/workspace/audits/new" } : undefined}
+      />
     );
   }
 
@@ -214,6 +207,16 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
             </div>
             {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
               <ProgressStrip value={job.progress_pct} />
+            )}
+            {job.status === "running" && typeof job.progress_pct === "number" && (
+              <div className="mt-1 text-[11px] text-[color:var(--accent-blue)]">
+                {locale === "zh-CN" ? `采样中... ${job.progress_pct}%` : `Sampling... ${job.progress_pct}%`}
+              </div>
+            )}
+            {job.status === "queued" && (
+              <div className="mt-1 text-[11px] text-muted-foreground">
+                {locale === "zh-CN" ? "等待分配..." : "Waiting for allocation..."}
+              </div>
             )}
             {job.summary_note && (
               <div className="mt-1.5 text-[11px] leading-5 text-muted-foreground">
