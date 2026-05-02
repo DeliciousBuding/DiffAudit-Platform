@@ -649,6 +649,7 @@ export function SettingsClient({
                               ? "bg-[var(--warning)]"
                               : "bg-[var(--accent-coral)]"
                         }`}
+                        aria-hidden="true"
                       />
                       <span className="text-xs font-medium">{item.tier}</span>
                     </div>
@@ -750,10 +751,11 @@ export function SettingsClient({
           <div className="p-4">
             {/* Default rounds */}
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
+              <label htmlFor="settings-default-rounds" className="text-xs text-muted-foreground">
                 {copy.auditConfig.defaultRounds}
               </label>
               <input
+                id="settings-default-rounds"
                 type="number"
                 value={defaultRounds}
                 onChange={(e) => handleRoundsChange(e.target.value)}
@@ -766,10 +768,11 @@ export function SettingsClient({
 
             {/* Default batch size */}
             <div className="mt-3 space-y-1">
-              <label className="text-xs text-muted-foreground">
+              <label htmlFor="settings-default-batch-size" className="text-xs text-muted-foreground">
                 {copy.auditConfig.defaultBatchSize}
               </label>
               <input
+                id="settings-default-batch-size"
                 type="number"
                 value={defaultBatchSize}
                 onChange={(e) => handleBatchSizeChange(e.target.value)}
@@ -792,10 +795,11 @@ export function SettingsClient({
           <div className="p-4 space-y-3">
             {/* Host */}
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
+              <label htmlFor="settings-runtime-host" className="text-xs text-muted-foreground">
                 {copy.runtimeConfig.host}
               </label>
               <input
+                id="settings-runtime-host"
                 type="text"
                 value={runtimeHost}
                 onChange={(e) => handleRuntimeHostChange(e.target.value)}
@@ -807,10 +811,11 @@ export function SettingsClient({
 
             {/* Port */}
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
+              <label htmlFor="settings-runtime-port" className="text-xs text-muted-foreground">
                 {copy.runtimeConfig.port}
               </label>
               <input
+                id="settings-runtime-port"
                 type="text"
                 value={runtimePort}
                 onChange={(e) => handleRuntimePortChange(e.target.value)}
@@ -828,7 +833,7 @@ export function SettingsClient({
               >
                 {runtimeTesting ? (
                   <>
-                    <span className="settings-spinner" />
+                    <span className="settings-spinner" aria-hidden="true" />
                     {copy.runtimeConfig.testing}
                   </>
                 ) : (
@@ -837,13 +842,13 @@ export function SettingsClient({
               </button>
               {runtimeConnected === true && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--success)]">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--success)]" />
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--success)]" aria-hidden="true" />
                   {copy.runtimeConfig.connected}
                 </span>
               )}
               {runtimeConnected === false && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--warning)]">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--warning)]" />
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--warning)]" aria-hidden="true" />
                   {copy.runtimeConfig.disconnected}
                 </span>
               )}
@@ -923,10 +928,10 @@ export function SettingsClient({
           <div className="p-4 space-y-3">
             {/* Theme */}
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground" id="settings-theme-label">
                 {copy.preferences.theme}
-              </label>
-              <div className="settings-toggle-track settings-toggle-track--3">
+              </span>
+              <div className="settings-toggle-track settings-toggle-track--3" role="group" aria-labelledby="settings-theme-label">
                 {(["light", "dark", "system"] as ThemeMode[]).map((mode) => (
                   <button
                     key={mode}
@@ -947,9 +952,9 @@ export function SettingsClient({
 
             {/* Language */}
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {copy.preferences.language}
-              </label>
+              </span>
               <p className="text-[11px] text-muted-foreground mb-2">
                 {copy.preferences.languageNote}
               </p>

@@ -200,7 +200,7 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
           {/* Active tasks section */}
           <WorkspaceSectionCard
             title={copy.sections.activeTasks}
-            actions={<span className="inline-flex h-1.5 w-1.5 rounded-full bg-info animate-pulse" />}
+            actions={<span className="inline-flex h-1.5 w-1.5 rounded-full bg-info animate-pulse" aria-hidden="true" />}
           >
             <div className="overflow-auto max-h-[420px]">
               <TaskListClient
@@ -243,7 +243,7 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
             <div className="p-4 space-y-3">
               {trackItems.map((track) => (
                 <div key={track.label} className="workspace-track-card">
-                  <div className="workspace-track-card-indicator" style={{ background: track.color }} />
+                  <div className="workspace-track-card-indicator" style={{ background: track.color }} aria-hidden="true" />
                   <div className="workspace-track-card-body">
                     <span className="workspace-track-card-label">{track.label}</span>
                     <span className="workspace-track-card-count">{track.count}{copy.trackCountUnit}</span>

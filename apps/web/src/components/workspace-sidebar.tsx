@@ -107,7 +107,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
           aria-label={themeLabel}
           title={themeLabel}
         >
-          {isDark ? <Moon size={16} strokeWidth={1.5} /> : <Sun size={16} strokeWidth={1.5} />}
+          {isDark ? <Moon size={16} strokeWidth={1.5} aria-hidden="true" /> : <Sun size={16} strokeWidth={1.5} aria-hidden="true" />}
           <span className="workspace-sidebar-label text-[13px] font-medium leading-tight truncate">{themeLabel}</span>
         </button>
         <button
@@ -117,7 +117,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <ChevronLeft size={16} strokeWidth={1.5} />
+          <ChevronLeft size={16} strokeWidth={1.5} aria-hidden="true" />
         </button>
       </div>
     </div>

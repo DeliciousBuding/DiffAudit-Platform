@@ -15,7 +15,7 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/30 mb-4">
-        <Icon size={28} strokeWidth={1.2} className="text-muted-foreground/60" />
+        <Icon size={28} strokeWidth={1.2} className="text-muted-foreground/60" aria-hidden="true" />
       </div>
       <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
       <p className="text-sm text-muted-foreground max-w-sm mb-4">{description}</p>

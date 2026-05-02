@@ -282,6 +282,16 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     };
   }, []);
 
+  // ESC key to close delete confirmation dialog
+  useEffect(() => {
+    if (!showDeleteConfirm) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowDeleteConfirm(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [showDeleteConfirm]);
+
   // Sync state -> URL
   useEffect(() => {
     if (urlSyncSource.current === "url") {
@@ -511,6 +521,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={copy.searchModels}
+                aria-label={copy.searchModels}
                 className="w-full rounded-[10px] border border-border bg-background py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
               />
               {/* [issue 8] Search clear button */}
@@ -565,6 +576,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                         <button
                           key={entry.contractKey}
                           type="button"
+                          aria-current={isSelected ? "true" : undefined}
                           onClick={() => { setSelectedEntry(entry); setActiveTab("timeline"); setEvidencePage(1); }}
                           className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                             isSelected
@@ -624,6 +636,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                         onChange={(e) => setInlineName(e.target.value)}
                         onBlur={handleInlineSave}
                         onKeyDown={handleInlineKeyDown}
+                        aria-label={copy.modelName}
                         className="text-sm font-semibold text-foreground bg-transparent border-b border-[var(--accent-blue)] outline-none focus:border-[var(--accent-blue)] px-0.5 -mx-0.5 min-w-0 flex-1"
                       />
                     ) : (
@@ -654,6 +667,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <button
                     type="button"
                     onClick={handleOpenEdit}
+                    aria-label={copy.edit}
                     title={copy.edit}
                     className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] dark:bg-background/40"
                   >
@@ -663,6 +677,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <button
                     type="button"
                     onClick={handleOpenDelete}
+                    aria-label={copy.delete}
                     title={copy.delete}
                     className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] dark:bg-background/40"
                   >
@@ -805,17 +820,17 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                       </table>
                     </div>
                     {totalEvidencePages > 1 && (
-                      <div className="flex items-center justify-center gap-1.5 mt-3">
-                        <button type="button" disabled={evidencePage <= 1} onClick={() => setEvidencePage((p) => Math.max(1, p - 1))} className="rounded p-1 text-muted-foreground hover:bg-muted/30 disabled:opacity-30 transition-colors">
-                          <ChevronLeft size={12} strokeWidth={1.5} />
+                      <div className="flex items-center justify-center gap-1.5 mt-3" role="navigation" aria-label="Evidence pagination">
+                        <button type="button" disabled={evidencePage <= 1} onClick={() => setEvidencePage((p) => Math.max(1, p - 1))} aria-label="Previous page" className="rounded p-1 text-muted-foreground hover:bg-muted/30 disabled:opacity-30 transition-colors">
+                          <ChevronLeft size={12} strokeWidth={1.5} aria-hidden="true" />
                         </button>
                         {Array.from({ length: totalEvidencePages }, (_, i) => i + 1).map((page) => (
-                          <button key={page} type="button" onClick={() => setEvidencePage(page)} className={`rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${page === evidencePage ? "bg-[var(--accent-blue)] text-white" : "text-muted-foreground hover:bg-muted/30"}`}>
+                          <button key={page} type="button" onClick={() => setEvidencePage(page)} aria-label={`Page ${page}`} aria-current={page === evidencePage ? "page" : undefined} className={`rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${page === evidencePage ? "bg-[var(--accent-blue)] text-white" : "text-muted-foreground hover:bg-muted/30"}`}>
                             {page}
                           </button>
                         ))}
-                        <button type="button" disabled={evidencePage >= totalEvidencePages} onClick={() => setEvidencePage((p) => Math.min(totalEvidencePages, p + 1))} className="rounded p-1 text-muted-foreground hover:bg-muted/30 disabled:opacity-30 transition-colors">
-                          <ChevronRight size={12} strokeWidth={1.5} />
+                        <button type="button" disabled={evidencePage >= totalEvidencePages} onClick={() => setEvidencePage((p) => Math.min(totalEvidencePages, p + 1))} aria-label="Next page" className="rounded p-1 text-muted-foreground hover:bg-muted/30 disabled:opacity-30 transition-colors">
+                          <ChevronRight size={12} strokeWidth={1.5} aria-hidden="true" />
                         </button>
                       </div>
                     )}
@@ -967,6 +982,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-dialog-title"
+          tabIndex={-1}
         >
           <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
             <h3 id="delete-dialog-title" className="text-sm font-semibold text-foreground">{copy.deleteModelTitle}</h3>
