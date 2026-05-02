@@ -394,3 +394,19 @@ Innovation evaluation: all 3 features scored ≥14/20 (user value × cost × con
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log, 0 @ts-ignore.
 
 31 rounds total, 29 commits to main. 136/136 tests.
+
+### Phase 32: Metric Tooltips, Micro-Interactions, Empty State (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Risk Findings: AUC/ASR headers wrapped with InfoTooltip for context
+2. ✅ SortableHeader: label type string → ReactNode (supports tooltip children)
+3. ✅ Dashboard: health banner shows "No evaluations yet" info state when empty
+
+**Design findings:**
+4. ✅ Button micro-interactions: scale(0.97) on press, shadow on hover
+
+**Engineering findings fixed:**
+5. ✅ Removed 3 unused imports (model-assets/loading, start/loading)
+
+32 rounds total, 30 commits to main. 136/136 tests.
