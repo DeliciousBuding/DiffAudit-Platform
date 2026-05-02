@@ -57,6 +57,7 @@ function KpiCardWithTrend({ label, value, note, trend, alert, href, ariaLabel }:
           size={14}
           strokeWidth={1.5}
           className="absolute top-3 right-3 text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          aria-hidden="true"
         />
       )}
     </>
@@ -206,6 +207,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const defenseRate = totalRows > 0 ? defendedRows / totalRows : 1;
   const avgAucAlert = avgAuc !== "n/a" && parseFloat(avgAuc) > 0.85;
 
+  // Per-track evaluation counts
+  const allRows = table?.rows ?? [];
+  const trackCounts = {
+    "black-box": allRows.filter((r) => r.track === "black-box").length,
+    "gray-box": allRows.filter((r) => r.track === "gray-box").length,
+    "white-box": allRows.filter((r) => r.track === "white-box").length,
+  };
+  const tcs = locale === "zh-CN" ? " 项评估" : " evals";
+
   return (
     <>
       {/* KPI row — with trend indicators 2.4.1, clickable drill-down */}
@@ -225,13 +235,16 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+            {trackCounts["black-box"] > 0 && (
+              <span className="ml-auto text-[10px] text-muted-foreground">{trackCounts["black-box"]}{tcs}</span>
+            )}
+            <span className={`rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]${trackCounts["black-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.high}</span>
           </div>
           <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </div>
         </Link>
 
@@ -239,13 +252,16 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]">{copy.riskBadgeLabels.high}</span>
+            {trackCounts["gray-box"] > 0 && (
+              <span className="ml-auto text-[10px] text-muted-foreground">{trackCounts["gray-box"]}{tcs}</span>
+            )}
+            <span className={`rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]${trackCounts["gray-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.high}</span>
           </div>
           <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </div>
         </Link>
 
@@ -253,13 +269,16 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
-            <span className="ml-auto rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]">{copy.riskBadgeLabels.critical}</span>
+            {trackCounts["white-box"] > 0 && (
+              <span className="ml-auto text-[10px] text-muted-foreground">{trackCounts["white-box"]}{tcs}</span>
+            )}
+            <span className={`rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]${trackCounts["white-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.critical}</span>
           </div>
           <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
           <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
             {copy.auditTracks.createAudit}
-            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </div>
         </Link>
       </div>
@@ -271,7 +290,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
           </div>
-          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden" role="progressbar" aria-valuenow={totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0} aria-valuemin={0} aria-valuemax={100} aria-label={copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}>
             <div className="h-full bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--success)] rounded-full transition-all" style={{ width: `${totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0}%` }} />
           </div>
           <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
@@ -322,7 +341,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 className="inline-flex items-center gap-1.5 rounded-[10px] border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
-                <ArrowRight size={14} strokeWidth={1.5} />
+                <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -332,7 +351,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         suggestions.length > 0 && (
           <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
             <div className="flex items-start gap-2">
-              <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
+              <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" aria-hidden="true" />
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
                   {copy.sections.suggestedNextSteps}
