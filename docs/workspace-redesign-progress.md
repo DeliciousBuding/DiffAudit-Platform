@@ -552,3 +552,15 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 42 rounds total, 40 commits to main. 136/136 tests.
+
+### Phase 43: Settings Text Sizes & Rounding Consistency (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Design findings fixed:**
+1. ✅ Settings: 5 text-[10px] → text-[11px] for descriptions, timestamps, labels
+2. ✅ Settings: gateway error banner rounded-lg → rounded-2xl
+3. ✅ Settings: template rows rounded-lg → rounded-xl
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+43 rounds total, 41 commits to main. 136/136 tests.
