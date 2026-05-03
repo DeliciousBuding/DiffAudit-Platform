@@ -97,6 +97,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
       >
         <Plus size={14} strokeWidth={2} aria-hidden="true" />
         <span className="workspace-sidebar-label">{createLabel}</span>
+        <kbd className="ml-auto hidden text-[10px] font-medium opacity-60 sidebar-kbd" aria-hidden="true">Ctrl+N</kbd>
       </Link>
       <nav ref={navRef} className="flex flex-col gap-0.5" aria-label={sidebarLabel} onKeyDown={onNavKeyDown}>
         {items.map((item, index) => {

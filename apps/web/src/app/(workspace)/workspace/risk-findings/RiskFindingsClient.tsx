@@ -61,7 +61,7 @@ const COPY: Record<string, {
   presetAll: string;
   presetHighUnmitigated: string;
   presetMitigated: string;
-  presetHighAuc: string;
+  presetHighSeverity: string;
 }> = {
   "en-US": {
     totalFindings: "Total Findings",
@@ -103,7 +103,7 @@ const COPY: Record<string, {
     presetAll: "All",
     presetHighUnmitigated: "High Risk Unmitigated",
     presetMitigated: "Mitigated",
-    presetHighAuc: "High AUC",
+    presetHighSeverity: "High Severity",
   },
   "zh-CN": {
     totalFindings: "发现总数",
@@ -145,7 +145,7 @@ const COPY: Record<string, {
     presetAll: "全部",
     presetHighUnmitigated: "高危未防御",
     presetMitigated: "已有防御",
-    presetHighAuc: "高 AUC",
+    presetHighSeverity: "高严重度",
   },
 };
 
@@ -260,7 +260,7 @@ const QUICK_FILTERS: QuickFilterPreset[] = [
   { id: "all", labelKey: "presetAll", severity: "", status: "" },
   { id: "high-unmitigated", labelKey: "presetHighUnmitigated", severity: "high", status: "investigating" },
   { id: "mitigated", labelKey: "presetMitigated", severity: "", status: "has-defense" },
-  { id: "high-auc", labelKey: "presetHighAuc", severity: "high", status: "" },
+  { id: "high-severity", labelKey: "presetHighSeverity", severity: "high", status: "" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -622,7 +622,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
 
       {/* Table */}
       <ContextualTip id="risk-findings-row-click" locale={locale}>
-        {locale === "zh-CN" ? "点击表格行可查看完整风险详情。AUC/ASR 数值按风险等级着色：红色 >0.85（高危），橙色 >0.7（中危）。" : "Click any table row for full details. AUC/ASR values are color-coded: red >0.85 (high risk), amber >0.7 (medium risk)."}
+        {locale === "zh-CN" ? "点击表格行可查看完整风险详情。AUC 着色：红色 >0.85，橙色 >0.7。ASR 着色：红色 >0.5，橙色 >0.3。" : "Click any table row for full details. AUC: red >0.85, amber >0.7. ASR: red >0.5, amber >0.3."}
       </ContextualTip>
       <WorkspaceSectionCard title={copy.findingsTable}>
         {filtered.length > 0 ? (
