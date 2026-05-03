@@ -650,7 +650,7 @@ export const WORKSPACE_COPY: Record<
       title: "Workspace Overview",
       description: "Aggregate audit tasks, results, and system status in one view.",
       kpis: {
-        liveContractsLabel: "Auditable contracts",
+        liveContractsLabel: "Auditable models",
         liveContractsNote: "Number of audit contracts currently available.",
         defendedRowsLabel: "Defended results",
         defendedRowsNote: "Result rows with defense comparisons included.",
@@ -894,7 +894,7 @@ export const WORKSPACE_COPY: Record<
         cancelled: "Cancelled",
       },
       labels: {
-        contractKey: "Contract key",
+        contractKey: "Model ID",
         workspace: "Workspace",
         type: "Type",
         targetModel: "Target model",
@@ -1017,7 +1017,7 @@ export const WORKSPACE_COPY: Record<
         asr: "ASR",
         tpr: "TPR",
         risk: "Risk",
-        contractKey: "Contract Key",
+        contractKey: "Model ID",
         label: "Label",
         systemGap: "System Gap",
         workspace: "Workspace",
@@ -1493,7 +1493,7 @@ export const WORKSPACE_COPY: Record<
       title: "工作台总览",
       description: "汇总审计任务、评估结果和系统状态，一站式掌握隐私风险态势。",
       kpis: {
-        liveContractsLabel: "可审计合约",
+        liveContractsLabel: "可审计模型",
         liveContractsNote: "当前可用的审计合约数",
         defendedRowsLabel: "已防御结果",
         defendedRowsNote: "包含防御对照的审计结果行数。",
@@ -1737,7 +1737,7 @@ export const WORKSPACE_COPY: Record<
         cancelled: "已取消",
       },
       labels: {
-        contractKey: "合约标识",
+        contractKey: "模型标识",
         workspace: "工作台",
         type: "任务类型",
         targetModel: "目标模型",
@@ -1860,7 +1860,7 @@ export const WORKSPACE_COPY: Record<
         asr: "ASR",
         tpr: "TPR",
         risk: "风险等级",
-        contractKey: "合约标识",
+        contractKey: "模型标识",
         label: "名称",
         systemGap: "系统缺口",
         workspace: "工作台",

@@ -352,14 +352,14 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-                        className="text-xs text-[var(--accent-blue)] hover:underline"
+                        className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
                       >
                         {copy.viewDetails}
                       </Link>
                       {reportHref ? (
                         <Link
                           href={reportHref}
-                          className="text-xs text-[var(--accent-blue)] hover:underline"
+                          className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
                         >
                           {copy.viewReport}
                         </Link>

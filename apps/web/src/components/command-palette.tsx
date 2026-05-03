@@ -360,7 +360,13 @@ export function CommandPalette({ locale }: { locale: Locale }) {
   /* ---- Render ---- */
   if (!open) return null;
 
-  let globalIndex = -1;
+  // Pre-compute flat index offsets per group to avoid mutable counter in render
+  const groupOffsets: number[] = [];
+  let offset = 0;
+  for (const g of filteredGroups) {
+    groupOffsets.push(offset);
+    offset += g.items.length;
+  }
 
   return (
     <div
@@ -382,6 +388,10 @@ export function CommandPalette({ locale }: { locale: Locale }) {
             className="command-palette-input"
             placeholder={isZh ? "输入命令..." : "Type a command..."}
             aria-label={isZh ? "搜索命令" : "Search commands"}
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="command-listbox"
+            aria-activedescendant={flatItems[activeIndex] ? `cmd-${flatItems[activeIndex].id}` : undefined}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onInputKeyDown}
@@ -390,25 +400,25 @@ export function CommandPalette({ locale }: { locale: Locale }) {
         </div>
 
         {/* Command list */}
-        <div className="command-palette-list" ref={listRef} role="listbox">
+        <div className="command-palette-list" ref={listRef} role="listbox" id="command-listbox">
           {flatItems.length === 0 ? (
             <div className="command-palette-empty">
               {isZh ? "没有匹配的命令" : "No matching commands"}
             </div>
           ) : (
-            filteredGroups.map((group) => (
+            filteredGroups.map((group, groupIdx) => (
               <div key={group.category} role="group" aria-label={isZh ? CATEGORY_LABELS[group.category].zh : CATEGORY_LABELS[group.category].en}>
                 <div className="command-palette-group-header">
                   {isZh ? CATEGORY_LABELS[group.category].zh : CATEGORY_LABELS[group.category].en}
                 </div>
-                {group.items.map((cmd) => {
-                  globalIndex++;
-                  const idx = globalIndex;
+                {group.items.map((cmd, localIdx) => {
+                  const idx = groupOffsets[groupIdx] + localIdx;
                   const isActive = idx === activeIndex;
                   const Icon = cmd.icon;
                   return (
                     <button
                       key={cmd.id}
+                      id={`cmd-${cmd.id}`}
                       type="button"
                       role="option"
                       aria-selected={isActive}
