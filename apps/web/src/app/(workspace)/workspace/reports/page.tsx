@@ -191,6 +191,10 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+      <ContextualTip id="reports-analysis" locale={locale}>
+        {locale === "zh-CN" ? "综合分析基于所有审计结果自动生成，帮助你快速了解整体安全态势和防御缺口。" : "Comprehensive analysis is auto-generated from all audit results, helping you quickly understand the overall security posture and defense gaps."}
+      </ContextualTip>
+
       {/* ---- Comprehensive Analysis ---- */}
       <section className="workspace-section-card bg-[color:var(--accent-blue)]/[0.02]">
         <div className="workspace-section-card-header">

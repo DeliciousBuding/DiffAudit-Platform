@@ -5,6 +5,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { CopyButton } from "@/components/copy-button";
+import { ContextualTip } from "@/components/contextual-tip";
 import { Modal } from "@/components/modal";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
@@ -509,6 +510,9 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
 
   return (
     <div className="grid gap-4 lg:grid-cols-[320px_1fr] grid-cols-1">
+      <ContextualTip id="model-assets-click" locale={locale}>
+        {locale === "zh-CN" ? "点击左侧模型查看审计证据详情，包括 AUC、ASR 等关键指标。" : "Click a model on the left to view audit evidence details, including AUC, ASR, and other key metrics."}
+      </ContextualTip>
       {/* LEFT: Model List */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         {/* Search + Add Model */}
