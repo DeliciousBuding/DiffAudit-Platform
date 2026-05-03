@@ -764,3 +764,23 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 57 rounds total, 55 commits to main. 136/136 tests.
+
+### Phase 58: CommandPalette ARIA, Terminology Standardization, Link Hover Parity (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Accessibility:**
+1. ✅ CommandPalette: full combobox ARIA pattern (role, aria-expanded, aria-controls, aria-activedescendant)
+2. ✅ CommandPalette: replace mutable globalIndex with pre-computed group offsets
+3. ✅ CommandPalette: add id to each option button for aria-activedescendant
+
+**Terminology:**
+4. ✅ "Contract key" → "Model ID" (en-US + zh-CN) across job detail and model assets
+5. ✅ "Auditable contracts" → "Auditable models" / "可审计模型" on dashboard KPI
+6. ✅ Standardizes on "Model" as user-facing term
+
+**Design:**
+7. ✅ TaskListClient history table links: add transition-colors for consistent hover
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+58 rounds total, 56 commits to main. 136/136 tests.
