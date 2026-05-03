@@ -230,9 +230,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   // System health summary
   const healthStatus = riskCounts.high > 0
     ? { tone: "warning" as const, icon: <AlertTriangle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注` : `${riskCounts.high} high-risk findings need attention` }
-    : totalRows > 0
-      ? { tone: "success" as const, icon: <CheckCircle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成 · 防御率 ${Math.round(defenseRate * 100)}%` : `Systems healthy · ${totalRows} evaluations · ${Math.round(defenseRate * 100)}% defense rate` }
-      : { tone: "info" as const, icon: <Info size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? "暂无评估数据 — 创建你的第一个审计任务" : "No evaluations yet — create your first audit task" };
+    : riskCounts.medium > 0
+      ? { tone: "warning" as const, icon: <AlertTriangle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `${riskCounts.medium} 项中危发现待处理 · ${totalRows} 项评估完成` : `${riskCounts.medium} medium-risk findings · ${totalRows} evaluations completed` }
+      : totalRows > 0
+        ? { tone: "success" as const, icon: <CheckCircle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成 · 防御率 ${Math.round(defenseRate * 100)}%` : `Systems healthy · ${totalRows} evaluations · ${Math.round(defenseRate * 100)}% defense rate` }
+        : { tone: "info" as const, icon: <Info size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? "暂无评估数据 — 创建你的第一个审计任务" : "No evaluations yet — create your first audit task" };
 
   return (
     <>
