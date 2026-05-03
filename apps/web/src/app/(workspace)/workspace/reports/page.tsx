@@ -116,7 +116,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                   className="group flex items-center justify-between rounded-2xl border border-border bg-background p-4 transition-colors hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10 text-[color:var(--accent-blue)]">
                       <TrackIcon track={track} />
                     </span>
                     <div className="min-w-0 flex-1">
@@ -135,7 +135,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                   </div>
                   <Link
                     href={buildReportHref(track, "audit")}
-                    className="ml-3 shrink-0 rounded-xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-semibold text-[var(--accent-blue)] transition-colors hover:bg-[var(--accent-blue)]/20"
+                    className="ml-3 shrink-0 rounded-xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-semibold text-[color:var(--accent-blue)] transition-colors hover:bg-[var(--accent-blue)]/20"
                   >
                     {copy.generateReport}
                   </Link>
@@ -205,7 +205,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
           {/* Key Findings */}
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-blue)]/10 text-[color:var(--accent-blue)]">
                 <Target size={14} strokeWidth={1.5} />
               </span>
               <h4 className="text-[13px] font-bold text-foreground">
@@ -276,7 +276,7 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                 </div>
               ))}
             </div>
-            <p className="mt-3 text-[10px] leading-4 text-muted-foreground/60">
+            <p className="mt-3 text-[11px] leading-4 text-muted-foreground/60">
               {locale === "zh-CN" ? "以上为行业通用建议，具体数值仅供参考。" : "Industry-standard guidance. Specific values are illustrative."}
             </p>
           </div>

@@ -902,14 +902,14 @@ export function SettingsClient({
                       <button
                         type="button"
                         onClick={() => handleLoadTemplate(t)}
-                        className="rounded px-2 py-0.5 text-[10px] font-medium text-[color:var(--accent-blue)] hover:bg-[color:var(--accent-blue)]/10"
+                        className="rounded px-2 py-0.5 text-[11px] font-medium text-[color:var(--accent-blue)] hover:bg-[color:var(--accent-blue)]/10"
                       >
                         {copy.auditTemplates.loadTemplate}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteTemplate(t.id)}
-                        className="rounded px-2 py-0.5 text-[10px] font-medium text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10"
+                        className="rounded px-2 py-0.5 text-[11px] font-medium text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10"
                       >
                         {copy.auditTemplates.deleteTemplate}
                       </button>

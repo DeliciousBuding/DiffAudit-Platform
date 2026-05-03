@@ -381,7 +381,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
       <div className="command-palette" style={{ animation: "modal-content-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}>
         {/* Search input */}
         <div className="command-palette-search">
-          <Search className="command-palette-search-icon" aria-hidden="true" />
+          <Search className="command-palette-search-icon" strokeWidth={1.5} aria-hidden="true" />
           <input
             ref={inputRef}
             type="text"
@@ -427,7 +427,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
                       onMouseEnter={() => setActiveIndex(idx)}
                       onClick={() => execute(cmd)}
                     >
-                      <Icon className="command-palette-item-icon" aria-hidden="true" />
+                      <Icon className="command-palette-item-icon" strokeWidth={1.5} aria-hidden="true" />
                       <span className="command-palette-item-label">
                         {isZh ? cmd.labelZh : cmd.label}
                       </span>

@@ -516,7 +516,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               onClick={() => applyPreset(preset)}
               className={`rounded-xl px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
                 isActive
-                  ? "bg-[var(--accent-blue)] text-white shadow-sm"
+                  ? "bg-[var(--accent-blue)] text-background shadow-sm"
                   : "border border-border text-muted-foreground hover:border-[var(--accent-blue)]/40 hover:text-foreground"
               }`}
             >
@@ -739,7 +739,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                   onClick={() => setCurrentPage(page)}
                   className={`flex h-8 min-w-[32px] items-center justify-center rounded-lg px-2 text-xs font-medium transition-colors ${
                     page === currentPage
-                      ? "bg-[var(--accent-blue)] text-white shadow-sm"
+                      ? "bg-[var(--accent-blue)] text-background shadow-sm"
                       : "text-muted-foreground hover:bg-muted/30"
                   }`}
                 >

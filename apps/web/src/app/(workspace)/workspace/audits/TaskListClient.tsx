@@ -265,7 +265,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
             )}
             <Link
               href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-              className="mt-2 inline-flex text-[11px] font-medium text-[var(--accent-blue)] transition-colors hover:text-foreground"
+              className="mt-2 inline-flex text-[11px] font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
             >
               {copy.viewDetails}
             </Link>
@@ -356,14 +356,14 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-                        className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
+                        className="text-xs text-[color:var(--accent-blue)] transition-colors hover:underline"
                       >
                         {copy.viewDetails}
                       </Link>
                       {reportHref ? (
                         <Link
                           href={reportHref}
-                          className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
+                          className="text-xs text-[color:var(--accent-blue)] transition-colors hover:underline"
                         >
                           {copy.viewReport}
                         </Link>
@@ -379,7 +379,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                             {retryingJobId === job.job_id ? copy.retrying : copy.retry}
                           </button>
                           {retryError && retryingJobId === null && (
-                            <span className="text-[10px] text-[color:var(--risk-high)]">{retryError}</span>
+                            <span className="text-[11px] text-[color:var(--risk-high)]">{retryError}</span>
                           )}
                         </>
                       )}

@@ -250,7 +250,7 @@ export function JobDetailClient({
           </button>
           <Link
             href="/workspace/audits"
-            className="inline-flex text-[13px] text-[var(--accent-blue)] hover:underline"
+            className="inline-flex text-[13px] text-[color:var(--accent-blue)] hover:underline"
           >
             {WORKSPACE_COPY[locale].jobDetail.backToAudits}
           </Link>

@@ -386,7 +386,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               {/* CTA */}
               <Link
                 href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-background transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
                 <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />
@@ -406,9 +406,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 </h3>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {suggestions.map((s, i) => (
-                    <Link key={i} href={s.href} className="inline-flex items-center gap-1.5 rounded-[10px] border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/20">
+                    <Link key={i} href={s.href} className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/20">
                       {s.text}
-                      <ArrowRight size={10} strokeWidth={2} aria-hidden="true" />
+                      <ArrowRight size={10} strokeWidth={1.5} aria-hidden="true" />
                     </Link>
                   ))}
                 </div>

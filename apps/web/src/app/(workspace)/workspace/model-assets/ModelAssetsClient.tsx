@@ -857,7 +857,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
             <button type="button" onClick={() => setShowAddModal(false)} className="workspace-btn-secondary px-4 py-2 text-xs">
               {copy.cancel}
             </button>
-            <button type="submit" form="add-model-form" className="workspace-btn-primary px-4 py-2 text-xs font-medium text-white hover:opacity-90 disabled:opacity-40">
+            <button type="submit" form="add-model-form" className="workspace-btn-primary px-4 py-2 text-xs font-medium text-background hover:opacity-90 disabled:opacity-40">
               {copy.submit}
             </button>
           </>
@@ -946,7 +946,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
             <button type="button" onClick={() => setShowEditModal(false)} className="workspace-btn-secondary px-4 py-2 text-xs">
               {copy.cancel}
             </button>
-            <button type="submit" form="edit-model-form" className="workspace-btn-primary px-4 py-2 text-xs font-medium text-white hover:opacity-90 disabled:opacity-40">
+            <button type="submit" form="edit-model-form" className="workspace-btn-primary px-4 py-2 text-xs font-medium text-background hover:opacity-90 disabled:opacity-40">
               {copy.submit}
             </button>
           </>
@@ -997,7 +997,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
             <button
               type="button"
               onClick={handleDeleteConfirm}
-              className="rounded-lg bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+              className="rounded-lg bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-background transition-opacity hover:opacity-90"
             >
               {copy.deleteModelAction}
             </button>

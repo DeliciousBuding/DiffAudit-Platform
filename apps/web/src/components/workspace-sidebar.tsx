@@ -93,9 +93,9 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
     <div className="flex flex-col h-full">
       <Link
         href="/workspace/audits/new"
-        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
       >
-        <Plus size={14} strokeWidth={2} aria-hidden="true" />
+        <Plus size={14} strokeWidth={1.5} aria-hidden="true" />
         <span className="workspace-sidebar-label">{createLabel}</span>
         <kbd className="ml-auto hidden text-[10px] font-medium opacity-60 sidebar-kbd" aria-hidden="true">Ctrl+N</kbd>
       </Link>
