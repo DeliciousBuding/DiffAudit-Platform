@@ -69,6 +69,36 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 | `/workspace/settings` | `settings/SettingsClient.tsx` | System config, templates, runtime status |
 | `/workspace/account` | `account/page.tsx` | User profile, providers, security |
 
+## Backend API (apps/api-go)
+
+The Go gateway serves snapshot-backed read endpoints and proxies audit control-plane calls to Runtime.
+
+### Typed Models (internal/proxy/models.go)
+
+- `CatalogEntry` — single audit contract (track, attack family, target, availability, evidence level)
+- `AttackDefenseRow` — single attack-defense evaluation result (AUC, ASR, TPR, defense, model)
+- `AttackDefenseTable` — top-level wrapper with schema, dataset, rows
+- `AuditJob` — audit job with status, progress, metrics, contract key
+- `JobMetrics` — completed job metrics (AUC, ASR, TPR strings)
+- `DemoJobStore` — thread-safe in-memory demo job store with time-based state progression
+
+### Demo Mode
+
+When `--demo-mode=true` (default), the Go API uses `DemoJobStore` for all `/api/v1/audit/jobs*` endpoints:
+
+- `GET /api/v1/audit/jobs` — returns 6 pre-seeded demo jobs (2 completed, 2 running, 1 failed, 1 cancelled)
+- `GET /api/v1/audit/jobs/{id}` — returns the specific demo job
+- `POST /api/v1/audit/jobs` — creates a new demo job (state: queued, progresses over time)
+- `DELETE /api/v1/audit/jobs/{id}` — cancels the demo job
+
+Running demo jobs progress 2% per second until completion, then receive synthetic metrics.
+
+### Frontend Demo Mode (Independent Layer)
+
+The frontend has its own demo mode in `apps/web/src/lib/demo-snapshot.ts` and `demo-jobs-store.ts`. When `DIFFAUDIT_DEMO_MODE=1`, the Next.js API routes serve hardcoded TypeScript demo data without calling the Go backend.
+
+To use Go backend demo data instead, disable frontend demo mode by setting `DIFFAUDIT_DEMO_MODE=0` and ensure the Go binary is running with `--demo-mode=true`.
+
 ## Knowledge Hygiene
 
 - Treat README, docs, and AGENTS as edited contracts, not append-only logs.

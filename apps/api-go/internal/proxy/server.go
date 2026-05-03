@@ -28,28 +28,31 @@ type Config struct {
 }
 
 type Server struct {
-	config   Config
-	mux      *http.ServeMux
-	client   *http.Client
-	cacheDir string // snapshot cache for 5.1.3
+	config    Config
+	mux       *http.ServeMux
+	client    *http.Client
+	cacheDir  string // snapshot cache for 5.1.3
+	demoStore *DemoJobStore
 }
 
 func NewServer(config Config) *Server {
 	mux := http.NewServeMux()
 	server := &Server{
-		config: config,
-		mux:    mux,
-		client: &http.Client{
+		config:    config,
+		mux:       mux,
+		client:    &http.Client{
 			Timeout: defaultRuntimeTimeout,
 		},
-		cacheDir: config.PublicDataDir,
+		cacheDir:  config.PublicDataDir,
+		demoStore: NewDemoJobStore(),
 	}
 	mux.HandleFunc("GET /health", server.handleHealth)
 	mux.HandleFunc("GET /api/v1/control/runtime", server.handleRuntimeHealth)
 	mux.HandleFunc("GET /api/v1/catalog", server.handleSnapshotFile("catalog.json"))
 	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleSnapshotFile("attack-defense-table.json"))
 	mux.HandleFunc("GET /api/v1/models", server.handleSnapshotFile("models.json"))
-	mux.HandleFunc("GET /api/v1/experiments/recon/best", server.handleBestReconSummary)
+	mux.HandleFunc("GET /api/v1/experiments/recon/best", server.handleBestSummaryByContract)
+	mux.HandleFunc("GET /api/v1/experiments/best", server.handleBestSummaryByContract)
 	mux.HandleFunc("GET /api/v1/experiments/{workspace}/summary", server.handleWorkspaceSummary)
 	mux.HandleFunc("GET /api/v1/audit/job-template", server.handleControlGet)
 	mux.HandleFunc("GET /api/v1/audit/jobs", server.handleControlGet)
@@ -155,13 +158,11 @@ func (s *Server) handleWorkspaceSummary(writer http.ResponseWriter, request *htt
 	s.serveSnapshot(writer, snapshotPath)
 }
 
-func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Request) {
-	type catalogEntry struct {
-		ContractKey   string `json:"contract_key"`
-		Track         string `json:"track"`
-		AttackFamily  string `json:"attack_family"`
-		Availability  string `json:"availability"`
-		BestWorkspace string `json:"best_workspace"`
+func (s *Server) handleBestSummaryByContract(writer http.ResponseWriter, request *http.Request) {
+	// Default to recon for backward compat with /api/v1/experiments/recon/best
+	contractKey := request.URL.Query().Get("contract_key")
+	if contractKey == "" {
+		contractKey = "black-box/recon/sd15-ddim"
 	}
 
 	bytes, err := s.readSnapshotFile(filepath.Join(s.config.PublicDataDir, "catalog.json"))
@@ -170,14 +171,14 @@ func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Requ
 		return
 	}
 
-	var catalog []catalogEntry
+	var catalog []CatalogEntry
 	if err := json.Unmarshal(bytes, &catalog); err != nil {
 		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "catalog snapshot is invalid"})
 		return
 	}
 
 	for _, entry := range catalog {
-		if entry.ContractKey != "black-box/recon/sd15-ddim" {
+		if entry.ContractKey != contractKey {
 			continue
 		}
 
@@ -190,7 +191,7 @@ func (s *Server) handleBestReconSummary(writer http.ResponseWriter, _ *http.Requ
 		return
 	}
 
-	writeJSON(writer, http.StatusServiceUnavailable, map[string]any{"detail": "snapshot unavailable: recon best summary"})
+	writeJSON(writer, http.StatusServiceUnavailable, map[string]any{"detail": "snapshot unavailable: best summary for contract"})
 }
 
 func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Request) {
@@ -237,22 +238,22 @@ func (s *Server) handleDemoControlGet(writer http.ResponseWriter, request *http.
 	case strings.Contains(path, "/jobs/") && !strings.HasSuffix(path, "/jobs"):
 		jobID := request.PathValue("jobID")
 		if jobID == "" {
-			// Fallback: extract from path
 			parts := strings.Split(strings.TrimSuffix(path, "/"), "/")
 			jobID = parts[len(parts)-1]
 		}
-		writeJSON(writer, http.StatusOK, map[string]any{
-			"job_id":    jobID,
-			"status":    "completed",
-			"demo_mode": true,
-			"result":    "Demo mode: job result placeholder",
-		})
+		job := s.demoStore.Find(jobID)
+		if job != nil {
+			writeJSON(writer, http.StatusOK, job)
+		} else {
+			writeJSON(writer, http.StatusNotFound, map[string]any{"detail": "job not found", "demo_mode": true})
+		}
 
 	// GET /api/v1/audit/jobs
 	default:
+		jobs := s.demoStore.List()
 		writeJSON(writer, http.StatusOK, map[string]any{
-			"jobs":      []any{},
-			"total":     0,
+			"jobs":      jobs,
+			"total":     len(jobs),
 			"demo_mode": true,
 		})
 	}
@@ -306,11 +307,13 @@ func (s *Server) snapshotExists(name string) bool {
 
 func (s *Server) handleControlDelete(writer http.ResponseWriter, request *http.Request) {
 	if s.config.DemoMode {
-		writeJSON(writer, http.StatusOK, map[string]any{
-			"status":    "cancelled",
-			"demo_mode": true,
-			"message":   "Demo mode: job cancellation not available",
-		})
+		jobID := request.PathValue("jobID")
+		job := s.demoStore.Cancel(jobID)
+		if job != nil {
+			writeJSON(writer, http.StatusOK, job)
+		} else {
+			writeJSON(writer, http.StatusNotFound, map[string]any{"detail": "job not found", "demo_mode": true})
+		}
 		return
 	}
 	s.forwardControlWithMethod(writer, request, http.MethodDelete)
@@ -478,18 +481,8 @@ func (s *Server) handleDemoJobCreation(writer http.ResponseWriter, body []byte) 
 		return
 	}
 
-	// Generate a demo job ID
-	jobID := "demo-job-" + time.Now().Format("20060102-150405")
-
-	writeJSON(writer, http.StatusAccepted, map[string]any{
-		"job_id":         jobID,
-		"status":         "queued",
-		"workspace_name": workspaceName,
-		"contract_key":   contractKey,
-		"job_type":       jobType,
-		"demo_mode":      true,
-		"message":        "Demo mode: job created successfully (not executed)",
-	})
+	job := s.demoStore.Create(contractKey, workspaceName, jobType)
+	writeJSON(writer, http.StatusAccepted, job)
 }
 
 func (s *Server) writeRuntimeError(writer http.ResponseWriter, err error) {
