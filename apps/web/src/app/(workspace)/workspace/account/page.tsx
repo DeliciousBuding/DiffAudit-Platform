@@ -76,11 +76,11 @@ export default async function WorkspaceAccountPage() {
       {/* Hero banner */}
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-lg font-bold text-[var(--accent-blue)]">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-lg font-bold text-[color:var(--accent-blue)]">
             {displayName.slice(0, 1).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--accent-blue)]">{copy.current}</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.1em] text-[color:var(--accent-blue)]">{copy.current}</div>
             <h2 className="mt-0.5 truncate text-xl font-bold text-foreground">{displayName}</h2>
             <p className="truncate text-sm text-muted-foreground">{handle}</p>
           </div>
@@ -99,12 +99,12 @@ export default async function WorkspaceAccountPage() {
         <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10">
-              <Lock size={16} strokeWidth={1.5} className="text-[var(--accent-blue)]" aria-hidden="true" />
+              <Lock size={16} strokeWidth={1.5} className="text-[color:var(--accent-blue)]" aria-hidden="true" />
             </div>
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{copy.password}</span>
           </div>
           <div className="flex items-center justify-between">
-            <strong className={`text-sm ${profile?.hasPassword ? "text-[var(--success)]" : "text-muted-foreground"}`}>
+            <strong className={`text-sm ${profile?.hasPassword ? "text-[color:var(--success)]" : "text-muted-foreground"}`}>
               {profile?.hasPassword ? copy.configured : copy.notConfigured}
             </strong>
             <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
@@ -122,7 +122,7 @@ export default async function WorkspaceAccountPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Google</span>
           </div>
           <div className="flex items-center justify-between">
-            <strong className={`text-sm ${profile?.providers.includes("google") ? "text-[var(--success)]" : "text-muted-foreground"}`}>
+            <strong className={`text-sm ${profile?.providers.includes("google") ? "text-[color:var(--success)]" : "text-muted-foreground"}`}>
               {profile?.providers.includes("google") ? copy.configured : copy.notConfigured}
             </strong>
             <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
@@ -140,7 +140,7 @@ export default async function WorkspaceAccountPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">GitHub</span>
           </div>
           <div className="flex items-center justify-between">
-            <strong className={`text-sm ${profile?.providers.includes("github") ? "text-[var(--success)]" : "text-muted-foreground"}`}>
+            <strong className={`text-sm ${profile?.providers.includes("github") ? "text-[color:var(--success)]" : "text-muted-foreground"}`}>
               {profile?.providers.includes("github") ? copy.configured : copy.notConfigured}
             </strong>
             <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
@@ -153,7 +153,7 @@ export default async function WorkspaceAccountPage() {
         <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10">
-              <Mail size={16} strokeWidth={1.5} className="text-[var(--accent-blue)]" aria-hidden="true" />
+              <Mail size={16} strokeWidth={1.5} className="text-[color:var(--accent-blue)]" aria-hidden="true" />
             </div>
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{copy.email}</span>
           </div>
@@ -174,12 +174,12 @@ export default async function WorkspaceAccountPage() {
         <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10">
-              <Shield size={16} strokeWidth={1.5} className="text-[var(--accent-blue)]" aria-hidden="true" />
+              <Shield size={16} strokeWidth={1.5} className="text-[color:var(--accent-blue)]" aria-hidden="true" />
             </div>
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{copy.twoFa}</span>
           </div>
           <div className="flex items-center justify-between">
-            <strong className={`text-sm ${profile?.twoFactorEnabled ? "text-[var(--success)]" : "text-muted-foreground"}`}>
+            <strong className={`text-sm ${profile?.twoFactorEnabled ? "text-[color:var(--success)]" : "text-muted-foreground"}`}>
               {profile?.twoFactorEnabled ? copy.configured : copy.notConfigured}
             </strong>
             <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">

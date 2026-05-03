@@ -589,7 +589,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                           }`}
                         >
                           <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                            isSelected ? "bg-[var(--accent-blue)]/20 text-[var(--accent-blue)]" : "bg-muted/30 text-muted-foreground"
+                            isSelected ? "bg-[var(--accent-blue)]/20 text-[color:var(--accent-blue)]" : "bg-muted/30 text-muted-foreground"
                           }`}>
                             <Database size={14} strokeWidth={1.5} aria-hidden="true" />
                           </div>
@@ -627,7 +627,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
             {/* Model header */}
             <div className="border-b border-border px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-blue)]/10 text-[color:var(--accent-blue)]">
                   <Database size={18} strokeWidth={1.5} aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -646,7 +646,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                     ) : (
                       <>
                         <h3
-                          className="text-sm font-semibold text-foreground truncate cursor-pointer hover:text-[var(--accent-blue)] transition-colors"
+                          className="text-sm font-semibold text-foreground truncate cursor-pointer hover:text-[color:var(--accent-blue)] transition-colors"
                           onClick={handleStartInlineEdit}
                           title={copy.edit}
                         >
@@ -673,7 +673,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                     onClick={handleOpenEdit}
                     aria-label={copy.edit}
                     title={copy.edit}
-                    className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] dark:bg-background/40"
+                    className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-blue)]/30 hover:text-[color:var(--accent-blue)] dark:bg-background/40"
                   >
                     <Pencil size={14} strokeWidth={1.5} aria-hidden="true" />
                   </button>
@@ -683,7 +683,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                     onClick={handleOpenDelete}
                     aria-label={copy.delete}
                     title={copy.delete}
-                    className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[var(--accent-coral)] dark:bg-background/40"
+                    className="rounded-lg border border-border/60 bg-background/60 p-1.5 text-muted-foreground transition-all hover:border-[var(--accent-coral)]/30 hover:text-[color:var(--accent-coral)] dark:bg-background/40"
                   >
                     <Trash2 size={14} strokeWidth={1.5} aria-hidden="true" />
                   </button>
@@ -748,7 +748,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                               <span className="text-xs font-semibold text-foreground">{entry.label}</span>
                               {/* [issue 5] Changed from "Current" to "Best Evidence" */}
                               {isBestEvidence && (
-                                <span className="inline-flex items-center rounded-full bg-[var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-blue)]">{copy.bestEvidence}</span>
+                                <span className="inline-flex items-center rounded-full bg-[var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--accent-blue)]">{copy.bestEvidence}</span>
                               )}
                               <StatusBadge tone={availabilityTone(entry.availability)} compact>{copy.availabilityLabels[entry.availability] ?? entry.availability}</StatusBadge>
                             </div>
@@ -893,8 +893,8 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
             <label className="block text-xs font-medium text-foreground mb-1.5">{copy.uploadFile}</label>
             {uploadComplete ? (
               <div className="flex items-center gap-2 rounded-xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 px-3 py-2.5 text-xs">
-                <Check size={14} strokeWidth={1.5} className="shrink-0 text-[var(--accent-green)]" aria-hidden="true" />
-                <span className="text-[var(--accent-green)] font-medium">{copy.uploadComplete}</span>
+                <Check size={14} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-green)]" aria-hidden="true" />
+                <span className="text-[color:var(--accent-green)] font-medium">{copy.uploadComplete}</span>
               </div>
             ) : uploadProgress !== null ? (
               <div className="rounded-xl border border-border px-3 py-2.5">
@@ -913,7 +913,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
               <button
                 type="button"
                 onClick={handleSimulateUpload}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border px-3 py-5 text-xs text-muted-foreground hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/5 transition-colors cursor-pointer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border px-3 py-5 text-xs text-muted-foreground hover:border-[var(--accent-blue)]/30 hover:text-[color:var(--accent-blue)] hover:bg-[var(--accent-blue)]/5 transition-colors cursor-pointer"
               >
                 <Upload size={16} strokeWidth={1.5} aria-hidden="true" />
                 {copy.uploadDragDrop}
@@ -979,37 +979,32 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
       </Modal>
 
       {/* Delete Confirmation Dialog */}
-      {showDeleteConfirm && (
-        <div
-          onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 px-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-dialog-title"
-          tabIndex={-1}
-        >
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
-            <h3 id="delete-dialog-title" className="text-sm font-semibold text-foreground">{copy.deleteModelTitle}</h3>
-            <p className="mt-2 text-xs leading-6 text-muted-foreground">{copy.deleteModelConfirm}</p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(false)}
-                className="workspace-btn-secondary px-3 py-2 text-xs"
-              >
-                {copy.cancel}
-              </button>
-              <button
-                type="button"
-                onClick={handleDeleteConfirm}
-                className="rounded-lg bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
-              >
-                {copy.deleteModelAction}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title={copy.deleteModelTitle}
+        closeLabel={copy.cancel}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(false)}
+              className="workspace-btn-secondary px-3 py-2 text-xs"
+            >
+              {copy.cancel}
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteConfirm}
+              className="rounded-lg bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+            >
+              {copy.deleteModelAction}
+            </button>
+          </>
+        }
+      >
+        <p className="text-xs leading-6 text-muted-foreground">{copy.deleteModelConfirm}</p>
+      </Modal>
 
     </div>
   );

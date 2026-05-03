@@ -715,7 +715,9 @@ export function RiskFindingsClient({ rows, locale }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-border px-5 py-3">
             <span className="text-[11px] text-muted-foreground">
-              {nf.format(sorted.length)} {copy.totalFindings.toLowerCase()}
+              {sorted.length < totalFindings
+                ? `${nf.format(sorted.length)} / ${nf.format(totalFindings)} ${copy.totalFindings.toLowerCase()}`
+                : `${nf.format(sorted.length)} ${copy.totalFindings.toLowerCase()}`}
             </span>
             <div className="flex items-center gap-1.5">
               <button
