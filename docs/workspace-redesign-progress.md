@@ -633,3 +633,15 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 48 rounds total, 46 commits to main. 136/136 tests.
+
+### Phase 49: AUC/ASR Color Coding, Medium-Risk Banner, Settings Tip (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Risk Findings: AUC/ASR cells color-coded (red >0.85, amber >0.7, gray default)
+2. ✅ Dashboard: health banner accounts for medium-risk findings (was ignoring them)
+3. ✅ Settings: contextual tip about template saving
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+49 rounds total, 47 commits to main. 136/136 tests.
