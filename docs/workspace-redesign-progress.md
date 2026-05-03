@@ -619,3 +619,17 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 47 rounds total, 45 commits to main. 136/136 tests.
+
+### Phase 48: API Keys Contextual Tip & Panel Polish (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Innovation:**
+1. ✅ API Keys: contextual tip about key security (shown only once at creation)
+
+**Design findings fixed:**
+2. ✅ FindingDetailPanel: close button rounded-lg → rounded-xl
+3. ✅ FindingDetailPanel: body padding py-5 → py-4 (matches header/footer)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+48 rounds total, 46 commits to main. 136/136 tests.
