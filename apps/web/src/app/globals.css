@@ -1479,6 +1479,7 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   border-left-color: var(--accent-blue);
   color: var(--accent-blue);
   font-weight: 600;
+  box-shadow: inset 0 0 12px rgba(47, 109, 246, 0.06);
 }
 
 .workspace-sidebar-link.is-active svg {

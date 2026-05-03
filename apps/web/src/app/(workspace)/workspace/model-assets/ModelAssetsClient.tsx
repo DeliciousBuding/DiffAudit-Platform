@@ -790,7 +790,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                   <>
                     <div
                       ref={evidenceScrollRef}
-                      className="workspace-table-scroll rounded-lg border border-border/60"
+                      className="workspace-table-scroll rounded-2xl border border-border/60"
                       role="region"
                       aria-label={copy.tabEvidence}
                     >
