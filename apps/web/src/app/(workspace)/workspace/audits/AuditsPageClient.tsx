@@ -26,9 +26,14 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
   const [allJobs, setAllJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const [filter, setFilter] = useState(() => searchParams.get("filter") ?? "all");
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
+
+  // Adaptive polling: fast when active jobs, slow when idle
+  const hasActiveJobs = allJobs.some((j) => j.status === "running" || j.status === "queued");
+  const pollInterval = hasActiveJobs ? 5000 : 30000;
 
   /* -- table density ------------------------------------------------ */
   const DENSITY_KEY = "diffaudit-audits-density";
@@ -52,6 +57,7 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
         if (jobs) {
           setAllJobs(jobs);
           setLoadError(false);
+          setLastRefreshed(new Date());
         }
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
@@ -63,12 +69,12 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
     }
 
     void fetchAllJobs();
-    const interval = setInterval(fetchAllJobs, 5000);
+    const interval = setInterval(fetchAllJobs, pollInterval);
     return () => {
       controller.abort();
       clearInterval(interval);
     };
-  }, [refreshToken]);
+  }, [refreshToken, pollInterval]);
 
   /* ── Sync state -> URL ─────────────────────────────────────────────────── */
   useEffect(() => {
@@ -163,6 +169,22 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
           value={trackCount}
           note={copy.kpiTracksNote}
         />
+      </div>
+
+      {/* Polling status indicator */}
+      <div className="flex items-center justify-end gap-2 text-[11px] text-muted-foreground">
+        {hasActiveJobs && (
+          <span className="inline-flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-blue)] animate-pulse" aria-hidden="true" />
+            {locale === "zh-CN" ? "自动刷新中" : "Auto-refreshing"}
+          </span>
+        )}
+        {lastRefreshed && (
+          <span>
+            {locale === "zh-CN" ? "更新于 " : "Updated "}
+            {lastRefreshed.toLocaleTimeString(locale === "zh-CN" ? "zh-CN" : "en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+          </span>
+        )}
       </div>
 
       <ContextualTip id="audits-ctrl-n" locale={locale}>
