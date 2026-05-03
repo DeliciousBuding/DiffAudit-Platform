@@ -2737,6 +2737,19 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   box-shadow: inset 2px 0 0 var(--accent-blue);
 }
 
+/* Focus styles for clickable table rows */
+tbody tr[role="button"]:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: -2px;
+  border-radius: 4px;
+  background: rgba(47, 109, 246, 0.04);
+}
+
+html[data-theme="dark"] tbody tr[role="button"]:focus-visible,
+html.dark tbody tr[role="button"]:focus-visible {
+  background: rgba(91, 142, 249, 0.06);
+}
+
 /* ===== Scrollable table container ===== */
 .workspace-table-scroll {
   overflow-x: auto;
