@@ -981,3 +981,18 @@ Innovation round. Implements high-value UX feedback for long-running operations.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 69 rounds total, 67 commits to main. 136/136 tests.
+
+### Phase 70: J/K Vim-Style Keyboard Navigation for Tables (COMPLETED)
+Innovation round. Implements power-user keyboard navigation.
+
+**New features:**
+1. ✅ New hook: `useTableKeyboardNav<T>()` — vim-style J/K row navigation
+2. ✅ RiskFindings: J/K keys navigate rows, Enter opens detail, Escape deselects
+3. ✅ Visual ring highlight on keyboard-selected row
+4. ✅ Keyboard shortcuts modal: new "Table" section with J/K/Enter
+5. ✅ Disabled when detail panel is open (Escape closes panel first)
+   - Innovation score: User value 4 + Cost 2 + Design 4 + Innovation 4 = 14/20
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+70 rounds total, 68 commits to main. 136/136 tests.
