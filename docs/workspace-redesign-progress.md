@@ -608,3 +608,14 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 46 rounds total, 44 commits to main. 136/136 tests.
+
+### Phase 47: FindingDetailPanel & Account Button Fixes (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Design findings fixed:**
+1. ✅ FindingDetailPanel: bg-[var(--color-bg-primary)] → bg-card
+2. ✅ Account page: action buttons rounded-lg → rounded-xl, text-xs → text-[11px]
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+47 rounds total, 45 commits to main. 136/136 tests.
