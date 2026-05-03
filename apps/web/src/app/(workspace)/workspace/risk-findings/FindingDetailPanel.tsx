@@ -248,7 +248,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+            className="rounded-xl p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
             aria-label={copy.close}
           >
             <X size={16} strokeWidth={1.5} />
@@ -256,7 +256,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-5">
+        <div className="flex-1 overflow-y-auto px-5 py-4">
           <dl className="space-y-5">
             {/* Risk Description */}
             <DetailRow label={copy.riskDescription}>

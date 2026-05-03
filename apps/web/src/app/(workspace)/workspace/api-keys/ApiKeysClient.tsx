@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Info, Key, Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { ContextualTip } from "@/components/contextual-tip";
 import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
@@ -344,6 +345,9 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         />
       ) : (
       <>
+      <ContextualTip id="api-keys-security" locale={locale}>
+        {locale === "zh-CN" ? "API 密钥创建后仅显示一次，请立即复制保存。已停用的密钥无法恢复。" : "API keys are shown only once at creation — copy and save immediately. Revoked keys cannot be recovered."}
+      </ContextualTip>
       <h3 className="mb-3 text-sm font-semibold text-foreground">{copy.activeKeys}</h3>
       <div
         ref={tableScrollRef}
