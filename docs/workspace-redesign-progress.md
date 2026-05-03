@@ -668,3 +668,16 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 51 rounds total, 49 commits to main. 136/136 tests.
+
+### Phase 52: ASR Thresholds, Health Banner, Preset Rename (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product findings fixed:**
+1. ✅ Risk Findings: contextual tip ASR thresholds corrected (red >0.5, amber >0.3)
+2. ✅ Risk Findings: "High AUC" preset renamed to "High Severity" (was misleading)
+3. ✅ Dashboard: health banner now shows defense rate in all non-empty states
+4. ✅ Sidebar: keyboard shortcut hint on CTA button (Ctrl+N)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+52 rounds total, 50 commits to main. 136/136 tests.
