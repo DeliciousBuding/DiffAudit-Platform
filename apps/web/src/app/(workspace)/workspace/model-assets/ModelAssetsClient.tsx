@@ -526,7 +526,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={copy.searchModels}
                 aria-label={copy.searchModels}
-                className="w-full rounded-[10px] border border-border bg-background py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
+                className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
               />
               {/* [issue 8] Search clear button */}
               {searchQuery && (
@@ -568,10 +568,10 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                     {/* Track header */}
                     <div className="flex items-center gap-2 px-2.5 py-1.5">
                       <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} aria-hidden="true" />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {TRACK_DISPLAY[track.track] ?? track.track}
                       </span>
-                      <span className="ml-auto text-[10px] text-muted-foreground">{entries.length}</span>
+                      <span className="ml-auto text-[11px] text-muted-foreground">{entries.length}</span>
                     </div>
                     {/* Entries */}
                     {entries.map((entry) => {
@@ -595,7 +595,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="text-xs font-medium text-foreground truncate">{entry.label}</div>
-                            <div className="text-[10px] text-muted-foreground truncate">{entry.capabilityLabel}</div>
+                            <div className="text-[11px] text-muted-foreground truncate">{entry.capabilityLabel}</div>
                           </div>
                           <StatusBadge tone={availabilityTone(entry.availability)} compact>{copy.availabilityLabels[entry.availability] ?? entry.availability}</StatusBadge>
                         </button>
@@ -753,32 +753,32 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                               <StatusBadge tone={availabilityTone(entry.availability)} compact>{copy.availabilityLabels[entry.availability] ?? entry.availability}</StatusBadge>
                             </div>
                             <div className="flex items-center gap-1 mb-2">
-                              <span className="mono text-[10px] text-muted-foreground truncate">{entry.contractKey}</span>
+                              <span className="mono text-[11px] text-muted-foreground truncate">{entry.contractKey}</span>
                               <CopyButton text={entry.contractKey} label="contract key" />
                             </div>
                             <div className="grid grid-cols-3 gap-4 mt-2">
                               {/* [issue 6] Only render fields with real values */}
                               {entry.runtimeLabel && (
                                 <div>
-                                  <div className="text-[10px] text-muted-foreground">{copy.runtime}</div>
+                                  <div className="text-[11px] text-muted-foreground">{copy.runtime}</div>
                                   <div className="text-[11px] font-medium text-foreground">{entry.runtimeLabel}</div>
                                 </div>
                               )}
                               {entry.evidenceLevel && (
                                 <div>
-                                  <div className="text-[10px] text-muted-foreground">{copy.evidenceLevel}</div>
+                                  <div className="text-[11px] text-muted-foreground">{copy.evidenceLevel}</div>
                                   <div className="text-[11px] font-medium text-foreground">{copy.evidenceLevelLabels[entry.evidenceLevel] ?? entry.evidenceLevel}</div>
                                 </div>
                               )}
                               {entry.bestWorkspace && (
                                 <div>
-                                  <div className="text-[10px] text-muted-foreground">{copy.workspace}</div>
+                                  <div className="text-[11px] text-muted-foreground">{copy.workspace}</div>
                                   <div className="text-[11px] font-medium text-foreground truncate">{entry.bestWorkspace}</div>
                                 </div>
                               )}
                             </div>
                             {entry.systemGap && (
-                              <p className="mt-2 text-[10px] text-muted-foreground border-t border-border/40 pt-2">{entry.systemGap}</p>
+                              <p className="mt-2 text-[11px] text-muted-foreground border-t border-border/40 pt-2">{entry.systemGap}</p>
                             )}
                           </div>
                         </div>
@@ -892,12 +892,12 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
           <div>
             <label className="block text-xs font-medium text-foreground mb-1.5">{copy.uploadFile}</label>
             {uploadComplete ? (
-              <div className="flex items-center gap-2 rounded-[10px] border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 px-3 py-2.5 text-xs">
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--accent-green)]/30 bg-[var(--accent-green)]/5 px-3 py-2.5 text-xs">
                 <Check size={14} strokeWidth={1.5} className="shrink-0 text-[var(--accent-green)]" aria-hidden="true" />
                 <span className="text-[var(--accent-green)] font-medium">{copy.uploadComplete}</span>
               </div>
             ) : uploadProgress !== null ? (
-              <div className="rounded-[10px] border border-border px-3 py-2.5">
+              <div className="rounded-xl border border-border px-3 py-2.5">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] text-muted-foreground">{copy.uploadProgress}</span>
                   <span className="text-[11px] font-medium text-foreground">{uploadProgress}%</span>
@@ -913,7 +913,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
               <button
                 type="button"
                 onClick={handleSimulateUpload}
-                className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-dashed border-border px-3 py-5 text-xs text-muted-foreground hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/5 transition-colors cursor-pointer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border px-3 py-5 text-xs text-muted-foreground hover:border-[var(--accent-blue)]/30 hover:text-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/5 transition-colors cursor-pointer"
               >
                 <Upload size={16} strokeWidth={1.5} aria-hidden="true" />
                 {copy.uploadDragDrop}

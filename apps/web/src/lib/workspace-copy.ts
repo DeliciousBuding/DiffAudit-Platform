@@ -30,6 +30,8 @@ export const WORKSPACE_COPY: Record<
       searchPlaceholder: string;
       searchShortcut: string;
       notificationTitle: string;
+      collapseSidebar: string;
+      expandSidebar: string;
     };
     commandPalette: {
       placeholder: string;
@@ -600,6 +602,8 @@ export const WORKSPACE_COPY: Record<
       searchPlaceholder: "Search models, tasks, reports...",
       searchShortcut: "⌘ K",
       notificationTitle: "Notifications",
+      collapseSidebar: "Collapse sidebar",
+      expandSidebar: "Expand sidebar",
     },
     commandPalette: {
       placeholder: "Type a command...",
@@ -656,7 +660,7 @@ export const WORKSPACE_COPY: Record<
         defenseEvaluatedNote: "Total audit result rows evaluated.",
       },
       sections: {
-        tasks: "Active tasks",
+        tasks: "Suggested actions",
         recentResults: "Recent results",
         riskOverview: "Risk distribution",
         tableHeaders: {
@@ -1441,6 +1445,8 @@ export const WORKSPACE_COPY: Record<
       searchPlaceholder: "搜索模型、任务、报告...",
       searchShortcut: "⌘ K",
       notificationTitle: "通知",
+      collapseSidebar: "收起侧边栏",
+      expandSidebar: "展开侧边栏",
     },
     commandPalette: {
       placeholder: "输入命令...",
@@ -1497,7 +1503,7 @@ export const WORKSPACE_COPY: Record<
         defenseEvaluatedNote: "已完成审计的结果总行数。",
       },
       sections: {
-        tasks: "当前任务",
+        tasks: "建议操作",
         recentResults: "最近结果",
         riskOverview: "风险分布",
         tableHeaders: {

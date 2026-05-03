@@ -31,7 +31,7 @@ describe("WorkspaceHomePage", () => {
     const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("当前任务");
+    expect(markup).toContain("建议操作");
     expect(markup).toContain("最近结果");
     expect(markup).toContain("PIA");
     expect(markup).toContain("stable-diffusion-v1-4");
@@ -44,7 +44,7 @@ describe("WorkspaceHomePage", () => {
     const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("Active tasks");
+    expect(markup).toContain("Suggested actions");
     expect(markup).toContain("Recent results");
     expect(markup).toContain("stable-diffusion-v1-4");
     expect(markup).toContain("Auditable contracts");

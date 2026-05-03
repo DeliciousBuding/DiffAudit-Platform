@@ -228,7 +228,7 @@ function getPaginationWindow(current: number, total: number, maxVisible: number)
 
 function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value: string | number; accent: string; icon: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5">
+    <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
         style={{ background: `color-mix(in srgb, ${accent} 10%, transparent)`, color: accent }}
@@ -473,7 +473,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
 
   /* -- render ------------------------------------------------------ */
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
@@ -697,7 +697,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
         ) : (
           hasActiveFilters ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.2} aria-hidden="true" />
+              <FileText className="mb-3 text-muted-foreground/30" size={40} strokeWidth={1.5} aria-hidden="true" />
               <p className="text-sm text-muted-foreground">{copy.emptyNoResults}</p>
             </div>
           ) : (

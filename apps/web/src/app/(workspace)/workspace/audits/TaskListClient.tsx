@@ -77,7 +77,7 @@ function ProgressStrip({ value }: { value: number }) {
           style={{ width: `${Math.max(6, Math.min(100, value))}%` }}
         />
       </div>
-      <div className="mt-1 text-[10px] text-muted-foreground">{value}%</div>
+      <div className="mt-1 text-[11px] text-muted-foreground">{value}%</div>
     </div>
   );
 }
@@ -227,12 +227,12 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
               <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
             </div>
-            <div className="mono text-[10px] text-muted-foreground mb-1 truncate">
+            <div className="mono text-[11px] text-muted-foreground mb-1 truncate">
               {job.contract_key}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="truncate">{job.workspace_name}</span>
-              <span className="text-[10px] whitespace-nowrap ml-2">
+              <span className="text-[11px] whitespace-nowrap ml-2">
                 {formatDuration(job.created_at, job.updated_at, locale)}
               </span>
             </div>
@@ -255,7 +255,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
               </div>
             )}
             {job.error && (
-              <div className="mono mt-1.5 text-[10px] text-[color:var(--warning)] truncate">
+              <div className="mono mt-1.5 text-[11px] text-[color:var(--warning)] truncate">
                 {sanitizeRuntimeText(job.error)}
               </div>
             )}
@@ -314,7 +314,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                       <span className="font-medium text-xs whitespace-nowrap">{job.job_id}</span>
                       <CopyButton text={job.job_id} label="job ID" />
                     </div>
-                    <div className="mono text-[10px] text-muted-foreground mt-0.5 whitespace-nowrap">{job.contract_key}</div>
+                    <div className="mono text-[11px] text-muted-foreground mt-0.5 whitespace-nowrap">{job.contract_key}</div>
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-xs text-muted-foreground">{job.job_type}</span>
@@ -322,7 +322,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                   <td className="px-4 py-3">
                     <span className="mono text-xs whitespace-nowrap">{job.target_model ?? "--"}</span>
                     {job.summary_note && (
-                      <div className="mt-1 text-[10px] leading-4 text-muted-foreground max-w-[18rem]">
+                      <div className="mt-1 text-[11px] leading-4 text-muted-foreground max-w-[18rem]">
                         {job.summary_note}
                       </div>
                     )}
@@ -341,7 +341,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                   <td className="mono px-4 py-3 text-right text-xs">
                     {formatDuration(job.created_at, job.updated_at, locale)}
                     {job.metrics && (
-                      <div className="mt-1 text-[10px] leading-4 text-muted-foreground">
+                      <div className="mt-1 text-[11px] leading-4 text-muted-foreground">
                         {index === 0 ? (
                           <InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>{tableCopy.auc}</InfoTooltip>
                         ) : tableCopy.auc} {formatMetricValue(job.metrics.auc)}

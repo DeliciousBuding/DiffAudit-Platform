@@ -45,7 +45,7 @@ function KpiCardWithTrend({ label, value, note, trend, trendValue, alert, href, 
   const alertBg = alert === "danger" ? "bg-[color:var(--risk-high)]/[0.03]" : alert === "warning" ? "bg-[color:var(--warning)]/[0.03]" : "";
   const content = (
     <>
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 flex items-baseline gap-2">
         <AnimatedValue value={value} className={`text-2xl font-bold leading-none ${alert === "danger" ? "text-[color:var(--risk-high)]" : ""}`} />
         {trendIcon ? (
@@ -282,9 +282,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <Link href="/workspace/audits/new?track=black-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
             {trackCounts["black-box"] > 0 && (
-              <span className="ml-auto text-[10px] text-muted-foreground">{trackCounts["black-box"]}{tcs}</span>
+              <span className="ml-auto text-[11px] text-muted-foreground">{trackCounts["black-box"]}{tcs}</span>
             )}
             <span className={`rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]${trackCounts["black-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.high}</span>
           </div>
@@ -299,9 +299,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <Link href="/workspace/audits/new?track=gray-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
             {trackCounts["gray-box"] > 0 && (
-              <span className="ml-auto text-[10px] text-muted-foreground">{trackCounts["gray-box"]}{tcs}</span>
+              <span className="ml-auto text-[11px] text-muted-foreground">{trackCounts["gray-box"]}{tcs}</span>
             )}
             <span className={`rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]${trackCounts["gray-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.high}</span>
           </div>
@@ -316,9 +316,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <Link href="/workspace/audits/new?track=white-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
             {trackCounts["white-box"] > 0 && (
-              <span className="ml-auto text-[10px] text-muted-foreground">{trackCounts["white-box"]}{tcs}</span>
+              <span className="ml-auto text-[11px] text-muted-foreground">{trackCounts["white-box"]}{tcs}</span>
             )}
             <span className={`rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]${trackCounts["white-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.critical}</span>
           </div>
@@ -386,7 +386,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               {/* CTA */}
               <Link
                 href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-[10px] border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
                 <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />
@@ -423,7 +423,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="grid gap-4 grid-cols-3">
             <div className="rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.high}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
@@ -432,7 +432,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.medium}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
@@ -441,7 +441,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.low}
               </div>
               <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
@@ -567,7 +567,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           <div className="p-4">
             {copy.todoItems.map((item, index) => (
               <div key={item} className="flex items-start gap-2 border-b border-border py-2 last:border-0">
-                <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[9px] font-semibold rounded-sm">
+                <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[10px] font-semibold rounded-full">
                   {index + 1}
                 </span>
                 <p className="text-sm leading-relaxed text-muted-foreground">{item}</p>

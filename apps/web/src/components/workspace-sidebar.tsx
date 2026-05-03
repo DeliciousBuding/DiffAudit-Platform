@@ -93,7 +93,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
     <div className="flex flex-col h-full">
       <Link
         href="/workspace/audits/new"
-        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-[10px] bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-white transition-opacity hover:opacity-90"
       >
         <Plus size={14} strokeWidth={2} aria-hidden="true" />
         <span className="workspace-sidebar-label">{createLabel}</span>
@@ -139,8 +139,8 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
           type="button"
           onClick={toggleCollapse}
           className="sidebar-collapse-btn"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? WORKSPACE_COPY[locale].shell.expandSidebar : WORKSPACE_COPY[locale].shell.collapseSidebar}
+          title={collapsed ? WORKSPACE_COPY[locale].shell.expandSidebar : WORKSPACE_COPY[locale].shell.collapseSidebar}
         >
           <ChevronLeft size={16} strokeWidth={1.5} aria-hidden="true" />
         </button>

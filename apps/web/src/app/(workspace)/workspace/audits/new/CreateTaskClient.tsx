@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
@@ -72,6 +72,13 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   });
 
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Filter models by selected attack type track
@@ -167,7 +174,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setSubmitState("success");
 
       // Redirect after a short delay
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         router.push(createdJobId ? `/workspace/audits/${createdJobId}` : "/workspace/audits");
       }, 3000);
     } catch (err) {
@@ -545,10 +552,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       className="shrink-0 rounded p-0.5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 transition-colors"
                       aria-label={labels.dismissError}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
+                      <X size={14} strokeWidth={1.5} aria-hidden="true" />
                     </button>
                   </div>
                 </div>
