@@ -915,3 +915,29 @@ Innovation round. Implements remaining high-value proposals from R63.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 65 rounds total, 63 commits to main. 136/136 tests.
+
+### Phase 66: i18n Fixes, Design Parity, Risk Card Drill-Down, Radar Guard (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product:**
+1. ✅ FindingDetailPanel: "Source" label localized (was hardcoded English)
+2. ✅ FindingDetailPanel: "View Report" links to specific track report
+3. ✅ Risk cards: clickable links to /workspace/risk-findings?severity=X
+4. ✅ Risk radar: hidden when no real data (was showing synthetic placeholders)
+5. ✅ Double progress % removed from "Sampling..." text
+
+**Design:**
+6. ✅ SettingsClient: text-[10px] → text-[11px] on build hash
+7. ✅ SettingsClient: 4x rounded-lg/md → rounded-xl on notices
+8. ✅ JobDetailClient: text-[10px] → text-[11px] on log/error blocks
+9. ✅ RiskFindings: text-[12px] → text-[13px] on AUC/ASR/Priority/Model cells
+10. ✅ ModelAssets: evidence table text-[12px] → text-[13px]
+11. ✅ Dashboard risk cards: mobile responsive grid
+
+**Engineering:**
+12. ✅ ModelAssetsClient: removed unstable `copy` from useMemo deps
+13. ✅ Priority column: InfoTooltip explaining composite score formula
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+66 rounds total, 64 commits to main. 136/136 tests.
