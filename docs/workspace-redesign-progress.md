@@ -681,3 +681,14 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 52 rounds total, 50 commits to main. 136/136 tests.
+
+### Phase 53: Sidebar Active Glow & Evidence Table Rounding (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Innovation:**
+1. ✅ Sidebar: active item now has subtle inset glow (box-shadow)
+2. ✅ Model Assets: evidence table rounded-lg → rounded-2xl
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+53 rounds total, 51 commits to main. 136/136 tests.
