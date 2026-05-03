@@ -6,6 +6,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { ContextualTip } from "@/components/contextual-tip";
+import { useToast } from "@/components/toast-provider";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { inferReportTrack } from "@/lib/audit-flow";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -22,6 +23,8 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
   const router = useRouter();
   const pathname = usePathname();
   const urlSyncSource = useRef<"state" | "url">("state");
+  const { toast } = useToast();
+  const prevJobStatuses = useRef<Map<string, string>>(new Map());
 
   const [allJobs, setAllJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +58,18 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
         const data = await res.json();
         const jobs = normalizeAuditJobList<JobRecord>(data);
         if (jobs) {
+          // Detect job status transitions and notify
+          for (const job of jobs) {
+            const prevStatus = prevJobStatuses.current.get(job.job_id);
+            if (prevStatus && (prevStatus === "running" || prevStatus === "queued")) {
+              if (job.status === "completed") {
+                toast({ type: "success", title: locale === "zh-CN" ? `任务完成: ${job.job_id}` : `Task completed: ${job.job_id}` });
+              } else if (job.status === "failed") {
+                toast({ type: "error", title: locale === "zh-CN" ? `任务失败: ${job.job_id}` : `Task failed: ${job.job_id}` });
+              }
+            }
+            prevJobStatuses.current.set(job.job_id, job.status);
+          }
           setAllJobs(jobs);
           setLoadError(false);
           setLastRefreshed(new Date());
