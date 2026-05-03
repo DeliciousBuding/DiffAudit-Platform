@@ -1,8 +1,8 @@
 "use client";
 
-import { X, Shield, ShieldCheck, ExternalLink } from "lucide-react";
+import { X, Shield, ShieldCheck, ExternalLink, Link2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { StatusBadge } from "@/components/status-badge";
@@ -66,6 +66,8 @@ const DETAIL_COPY: Record<
     noDefense: "None",
     relatedAudit: "Related Audit",
     viewReport: "View Report",
+    copyLink: "Copy Link",
+    linkCopied: "Copied!",
   },
   "zh-CN": {
     findingDetail: "发现详情",
@@ -92,6 +94,8 @@ const DETAIL_COPY: Record<
     noDefense: "无",
     relatedAudit: "相关审计",
     viewReport: "查看报告",
+    copyLink: "复制链接",
+    linkCopied: "已复制！",
   },
 };
 
@@ -192,6 +196,17 @@ type Props = {
 export function FindingDetailPanel({ finding, locale, onClose }: Props) {
   const copy = DETAIL_COPY[locale] ?? DETAIL_COPY["en-US"];
   const panelRef = useRef<HTMLDivElement>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const handleCopyLink = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("model", finding.model);
+    url.searchParams.set("severity", finding.riskLevel);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    });
+  }, [finding]);
 
   /* Close on Escape */
   useEffect(() => {
@@ -391,14 +406,22 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-5 py-4">
           <Link
             href="/workspace/reports"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--accent-blue)] transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
           >
             {copy.viewReport}
             <ExternalLink size={12} strokeWidth={1.5} />
           </Link>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
+          >
+            <Link2 size={13} strokeWidth={1.5} />
+            {linkCopied ? copy.linkCopied : copy.copyLink}
+          </button>
         </div>
       </div>
     </>

@@ -230,6 +230,16 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const defensePct = Math.round(defenseRate * 100);
   const defenseSuffix = locale === "zh-CN" ? ` · 防御率 ${defensePct}%` : ` · ${defensePct}% defended`;
 
+  // Composite Privacy Health Score (0-100)
+  const healthAucNum = aucValues.length > 0 ? parseFloat(avgAuc) : 0;
+  const aucPenalty = healthAucNum > 0.5 ? (healthAucNum - 0.5) * 40 : 0;
+  const highRiskPenalty = totalRisk > 0 ? (riskCounts.high / totalRisk) * 25 : 0;
+  const defenseBonus = defenseRate * 15;
+  const rawScore = totalRows > 0 ? Math.max(0, Math.min(100, Math.round(100 - aucPenalty - highRiskPenalty + defenseBonus))) : -1;
+  const healthScoreLabel = locale === "zh-CN" ? "隐私健康指数" : "Privacy Health Score";
+  const healthScoreColor = rawScore >= 80 ? "var(--success)" : rawScore >= 60 ? "var(--warning)" : rawScore >= 0 ? "var(--risk-high)" : "var(--muted-foreground)";
+  const healthScoreText = rawScore >= 80 ? (locale === "zh-CN" ? "良好" : "Good") : rawScore >= 60 ? (locale === "zh-CN" ? "需关注" : "Needs attention") : rawScore >= 0 ? (locale === "zh-CN" ? "高风险" : "At risk") : (locale === "zh-CN" ? "暂无数据" : "No data");
+
   // System health summary
   const healthStatus = riskCounts.high > 0
     ? { tone: "warning" as const, icon: <AlertTriangle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注${defenseSuffix}` : `${riskCounts.high} high-risk findings need attention${defenseSuffix}` }
@@ -241,6 +251,28 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
+      {/* Privacy Health Score — single-glance status */}
+      {totalRows > 0 && (
+        <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 card-animate">
+          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
+            <svg className="h-14 w-14 -rotate-90" viewBox="0 0 56 56" aria-hidden="true">
+              <circle cx="28" cy="28" r="24" fill="none" stroke="var(--muted)" strokeWidth="4" opacity="0.3" />
+              <circle cx="28" cy="28" r="24" fill="none" stroke={healthScoreColor} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${(rawScore / 100) * 150.8} 150.8`} className="transition-all duration-1000" />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-lg font-bold" style={{ color: healthScoreColor }}>{rawScore >= 0 ? rawScore : "--"}</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{healthScoreLabel}</div>
+            <div className="mt-0.5 text-sm font-medium" style={{ color: healthScoreColor }}>{healthScoreText}</div>
+            <p className="mt-0.5 text-[11px] text-muted-foreground leading-4">
+              {locale === "zh-CN"
+                ? `基于 ${totalRows} 项评估，平均 AUC ${avgAuc}，${defensePct}% 已防御`
+                : `Based on ${totalRows} evaluations, avg AUC ${avgAuc}, ${defensePct}% defended`}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* KPI row — with trend indicators 2.4.1, clickable drill-down */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" href="/workspace/audits" ariaLabel={`${copy.kpis.liveContractsLabel} — ${copy.kpis.liveContractsNote}`} />
