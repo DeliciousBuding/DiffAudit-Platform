@@ -44,6 +44,31 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - Legacy redirect routes must not gain new product logic. Before deleting them, scan internal links and tests; after deletion, route recovery should point users to current routes.
 - Do not add new broad global CSS selectors such as `button:not(...)` for product interaction behavior. Prefer explicit primitives or scoped classes.
 
+## UI and Design Rules
+
+- All card containers use `rounded-2xl`. Inner elements (inputs, nested cards) use `rounded-xl`.
+- Typography: `text-[13px]` body, `text-[11px]` secondary/captions, `text-[10px]` badges only.
+- All Lucide icons use `strokeWidth={1.5}`.
+- CSS custom property colors must use `[color:var(...)]` syntax for Tailwind text colors: `text-[color:var(--accent-blue)]`.
+- Button text on colored backgrounds uses `text-white` (not `text-background`).
+- Dark mode: all colors must use CSS custom properties; no hardcoded hex/rgba in JSX.
+- Shared hooks live in `apps/web/src/hooks/`. Reusable patterns across 2+ pages should be extracted into hooks.
+- Server components cannot use event handlers (onClick, onKeyDown). Extract interactive elements into `"use client"` components.
+
+## Workspace Page Inventory
+
+| Route | Component | Description |
+| --- | --- | --- |
+| `/workspace/start` | `start/page.tsx` | Dashboard with Health Score, KPIs, charts, risk cards, recent results |
+| `/workspace/audits` | `audits/page.tsx` + `AuditsPageClient.tsx` | Task list with adaptive polling, progress shimmer, ETA |
+| `/workspace/audits/new` | `audits/new/CreateTaskClient.tsx` | 4-step task creation wizard |
+| `/workspace/audits/[jobId]` | `audits/[jobId]/JobDetailClient.tsx` | Job detail with AbortController polling |
+| `/workspace/model-assets` | `model-assets/ModelAssetsClient.tsx` | Model CRUD, evidence table with risk coloring |
+| `/workspace/risk-findings` | `risk-findings/RiskFindingsClient.tsx` | Findings table with Priority Sort, J/K nav, share links |
+| `/workspace/reports` | `reports/page.tsx` | Report center with track-based generation |
+| `/workspace/settings` | `settings/SettingsClient.tsx` | System config, templates, runtime status |
+| `/workspace/account` | `account/page.tsx` | User profile, providers, security |
+
 ## Knowledge Hygiene
 
 - Treat README, docs, and AGENTS as edited contracts, not append-only logs.

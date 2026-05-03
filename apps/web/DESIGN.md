@@ -643,14 +643,17 @@ Font stack:
 | Level | Size | Weight | Line-height | Usage |
 |-------|------|--------|-------------|-------|
 | Page title | `18px` | 600 | 1.3 | `h1` in workspace pages |
-| Section heading | `10px uppercase` | 600 | 1.3 | Section headers, eyebrow |
+| Section heading | `11px uppercase` | 600 | 1.3 | Section headers, eyebrow |
 | Table header | `11px uppercase` | 500 | 1.3 | `thead th` |
-| Body / table cell | `12-13px` | 400/500 | 1.4 | `td`, labels, descriptions |
+| Body / table cell | `13px` | 400/500 | 1.4 | `td`, labels, descriptions |
+| Secondary text | `11px` | 400/500 | 1.4 | Captions, notes, metadata |
+| Badge text | `10px` | 600 | 1 | Badges, pills, numbered indicators only |
 | KPI value | `24px` | 600 | 1 | Large numbers in KPI cards |
 | Mono data | `13px` | 400 | 1.4 | AUC, ASR, TPR, ids |
-| Caption | `10px` | 400 | 1.5 | Notes, hints, descriptions |
 
 Typography should stay compact. New sizes should be avoided unless a new page type truly requires them.
+
+**Rule:** `text-[10px]` is reserved for badge/pill elements only. All other secondary text uses `text-[11px]`.
 
 ## 10.3 Layout Grid
 
@@ -704,10 +707,10 @@ Cards are structural, not decorative. Their job is to group data and keep rhythm
 ### 11.2 KPI Cards
 
 ```text
-border border-border bg-card p-3
-  Label: text-[10px] uppercase
-  Value: text-2xl font-semibold
-  Note: text-[10px] muted
+border border-border bg-card p-4
+  Label: text-[11px] uppercase tracking-wider muted
+  Value: text-2xl font-bold
+  Note: text-[11px] muted
 ```
 
 KPI cards should not contain long explanations. They summarize, then hand off to larger panels.
@@ -715,7 +718,7 @@ KPI cards should not contain long explanations. They summarize, then hand off to
 ### 11.3 Tables
 
 ```text
-table.w-full.border-collapse.text-xs
+table.w-full.border-collapse.text-[13px]
   thead.sticky.top-0.bg-muted/30
   tbody with alternating row tint
   row hover with blue accent bar

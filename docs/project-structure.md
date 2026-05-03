@@ -25,6 +25,16 @@ This document defines the stable engineering boundaries for the Platform reposit
 
 `apps/web/src/components` is shared UI. Components here must be reusable and product-generic inside Platform. Page-specific composition should stay near the page unless it is reused.
 
+`apps/web/src/hooks` is shared React hooks. Hooks here must be reusable across multiple pages:
+
+| Hook | Purpose | Consumers |
+| --- | --- | --- |
+| `use-sort.ts` | Table column sorting with memoized results | TaskListClient, RiskFindingsClient |
+| `use-scroll-fade.ts` | ResizeObserver-based horizontal overflow detection (toggles `is-scrollable` class) | TaskListClient, RiskFindingsClient |
+| `use-table-keyboard-nav.ts` | Vim-style J/K row navigation with Enter/Escape | RiskFindingsClient |
+| `use-count-up.ts` | Animated number count-up effect | KpiCardWithTrend (dashboard) |
+| `use-theme.ts` | Theme mode state management | SettingsClient, sidebar |
+
 `apps/web/src/lib` is data, contracts, and adapters. Pages should not duplicate source selection logic that already belongs in `lib`.
 
 ## Source Of Truth Rules
