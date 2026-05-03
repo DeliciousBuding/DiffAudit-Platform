@@ -63,6 +63,7 @@ const COPY: Record<string, {
   presetHighUnmitigated: string;
   presetMitigated: string;
   presetHighSeverity: string;
+  priority: string;
 }> = {
   "en-US": {
     totalFindings: "Total Findings",
@@ -105,6 +106,7 @@ const COPY: Record<string, {
     presetHighUnmitigated: "High Risk Unmitigated",
     presetMitigated: "Mitigated",
     presetHighSeverity: "High Severity",
+    priority: "Priority",
   },
   "zh-CN": {
     totalFindings: "发现总数",
@@ -147,6 +149,7 @@ const COPY: Record<string, {
     presetHighUnmitigated: "高危未防御",
     presetMitigated: "已有防御",
     presetHighSeverity: "高严重度",
+    priority: "优先级",
   },
 };
 
@@ -170,6 +173,8 @@ function getStatus(defense: string, riskLevel: string): string {
   if (riskLevel === "high") return "investigating";
   return "monitoring";
 }
+
+const SEVERITY_SCORE: Record<string, number> = { high: 3, medium: 2, low: 1 };
 
 /* ------------------------------------------------------------------ */
 /*  Localized risk description map                                     */
@@ -379,14 +384,19 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   );
 
   /* -- enriched rows with sortable computed fields ----------------- */
-  const SEVERITY_SCORE: Record<string, number> = { high: 3, medium: 2, low: 1 };
   const enrichedRows = useMemo(
     () =>
-      filtered.map((r) => ({
-        ...r,
-        severityScore: SEVERITY_SCORE[r.riskLevel] ?? 0,
-        statusKey: getStatus(r.defense, r.riskLevel),
-      })),
+      filtered.map((r) => {
+        const auc = parseFloat(r.aucLabel) || 0;
+        const asr = parseFloat(r.asrLabel) || 0;
+        const hasDefense = r.defense !== "none";
+        return {
+          ...r,
+          severityScore: SEVERITY_SCORE[r.riskLevel] ?? 0,
+          statusKey: getStatus(r.defense, r.riskLevel),
+          priorityScore: auc * 0.4 + asr * 0.3 + (hasDefense ? 0 : 0.3),
+        };
+      }),
     [filtered],
   );
 
@@ -654,6 +664,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 <tr className="border-b border-border">
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-[220px]">{copy.riskDescription}</th>
                   <SortableHeader label={copy.severity} sortKey="severityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={copy.priority} sortKey="priorityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>AUC</InfoTooltip>} sortKey="aucLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.asr}>ASR</InfoTooltip>} sortKey="asrLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.category} sortKey="track" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
@@ -696,6 +707,11 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                         <StatusBadge tone={row.riskLevel === "high" ? "warning" : row.riskLevel === "medium" ? "info" : "success"}>
                           {row.riskLevel === "high" ? copy.high : row.riskLevel === "medium" ? copy.medium : copy.low}
                         </StatusBadge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`mono text-[12px] ${row.priorityScore > 0.7 ? "text-[color:var(--risk-high)] font-medium" : row.priorityScore > 0.4 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>
+                          {row.priorityScore.toFixed(2)}
+                        </span>
                       </td>
                       <td className={`mono px-4 py-3 text-[12px] ${parseFloat(row.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.aucLabel || "--"}</td>
                       <td className={`mono px-4 py-3 text-[12px] ${parseFloat(row.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.asrLabel || "--"}</td>
