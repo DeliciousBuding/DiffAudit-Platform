@@ -1367,6 +1367,7 @@ html.dark .header-pill-primary:hover {
 
 .workspace-layout {
   display: flex;
+  align-items: flex-start;
   min-height: 100vh;
   background:
     radial-gradient(circle at 52% 0%, rgba(47, 109, 246, 0.06), transparent 32%),
@@ -1374,9 +1375,11 @@ html.dark .header-pill-primary:hover {
 }
 
 .workspace-sidebar {
-  position: relative;
+  position: sticky;
+  top: 0;
   flex-shrink: 0;
   width: 226px;
+  height: 100vh;
   z-index: 40;
   display: flex;
   flex-direction: column;
@@ -1388,31 +1391,60 @@ html.dark .header-pill-primary:hover {
 
 .workspace-sidebar-header {
   flex-shrink: 0;
-  padding: 18px 20px 16px;
+  padding: 10px 24px;
   border-bottom: 1px solid rgba(226, 232, 240, 0.75);
-  min-height: 72px;
+  min-height: 56px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   background: transparent;
 }
 
 .workspace-sidebar-body {
   flex: 1;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
   padding: 16px 16px 10px;
   scrollbar-width: thin;
   scrollbar-color: rgba(33, 34, 38, 0.18) transparent;
 }
 
-.workspace-sidebar-body::-webkit-scrollbar {
+.workspace-sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.workspace-sidebar-nav {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(33, 34, 38, 0.18) transparent;
+}
+
+.workspace-sidebar-footer {
+  flex-shrink: 0;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(226, 232, 240, 0.72);
+  background: var(--card);
+}
+
+.workspace-sidebar-nav::-webkit-scrollbar {
   width: 4px;
 }
 
-.workspace-sidebar-body::-webkit-scrollbar-track {
+.workspace-sidebar-nav::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.workspace-sidebar-body::-webkit-scrollbar-thumb {
+.workspace-sidebar-nav::-webkit-scrollbar-thumb {
   background: rgba(33, 34, 38, 0.18);
   border-radius: 4px;
 }
@@ -1462,21 +1494,26 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   min-height: 40px;
   padding: 8px 12px;
   border-radius: 12px;
-  border-left: 3px solid transparent;
+  border: 1px solid transparent;
   color: var(--muted-foreground);
-  transition: background-color var(--transition-base) ease, color var(--transition-base) ease, transform var(--transition-base) ease;
+  transition:
+    background-color var(--transition-base) ease,
+    border-color var(--transition-base) ease,
+    color var(--transition-base) ease,
+    transform var(--transition-base) ease,
+    box-shadow var(--transition-base) ease;
 }
 
 .workspace-sidebar-link:hover {
   background: rgba(47, 109, 246, 0.055);
   color: var(--foreground);
-  border-left-color: rgba(47, 109, 246, 0.25);
-  transform: translateX(2px);
+  border-color: rgba(47, 109, 246, 0.12);
+  transform: translateX(1px);
 }
 
 .workspace-sidebar-link.is-active {
   background: rgba(47, 109, 246, 0.1);
-  border-left-color: var(--accent-blue);
+  border-color: rgba(47, 109, 246, 0.16);
   color: var(--accent-blue);
   font-weight: 600;
   box-shadow: inset 0 0 12px rgba(47, 109, 246, 0.06);
@@ -1497,12 +1534,16 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
 }
 
 .workspace-sidebar.is-collapsed .workspace-sidebar-header {
-  padding: 18px 12px 16px;
+  padding: 10px 12px;
   justify-content: center;
 }
 
 .workspace-sidebar.is-collapsed .workspace-sidebar-body {
   padding: 16px 8px 10px;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-nav {
+  padding-right: 0;
 }
 
 .workspace-sidebar.is-collapsed .workspace-sidebar-label,
@@ -1552,6 +1593,7 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-width: 0;
 }
 
 .workspace-topbar {
@@ -1562,8 +1604,8 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   grid-template-columns: minmax(190px, 1fr) minmax(280px, 420px) minmax(300px, 1fr);
   align-items: center;
   gap: 16px;
-  min-height: 72px;
-  padding: 12px 24px;
+  min-height: 56px;
+  padding: 8px 24px;
   border-bottom: 1px solid rgba(226, 232, 240, 0.82);
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(20px);
@@ -1909,8 +1951,8 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
 
 .workspace-audit-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
 }
 
@@ -2259,6 +2301,14 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
 
 .workspace-account-detail-row:hover {
   border-color: rgba(47, 109, 246, 0.14);
+}
+
+.workspace-account-detail-row-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
 }
 
 .workspace-account-detail-icon {
@@ -2648,7 +2698,7 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
 
 .workspace-kpi-card-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   min-width: 0;
 }
@@ -2693,7 +2743,8 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
 }
 
 .workspace-kpi-card-value {
-  margin-top: 8px;
+  margin-top: 10px;
+  padding-left: 42px;
   color: var(--foreground);
   font-size: 28px;
   font-weight: 760;
@@ -3346,6 +3397,42 @@ html.dark pre:not(.api-code-block pre) {
   color: var(--foreground);
 }
 
+.workspace-report-center {
+  display: grid;
+  gap: 16px;
+}
+
+.workspace-report-split {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.workspace-report-split-grid {
+  display: grid;
+}
+
+.workspace-report-split-panel {
+  padding: 16px;
+}
+
+.workspace-report-split-panel + .workspace-report-split-panel {
+  border-top: 1px solid var(--border);
+}
+
+.workspace-report-list {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .workspace-report-split-panel + .workspace-report-split-panel {
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+}
+
 html[data-theme="dark"] .api-code-block,
 html.dark .api-code-block {
   background: #1a1b1f;
@@ -3399,7 +3486,7 @@ html.dark .brand-logo-dark {
 }
 
 .brand-mark-symbol {
-  height: 20px;
+  height: 25px;
   aspect-ratio: 1.741431;
 }
 
@@ -3462,16 +3549,8 @@ html.dark .brand-logo-dark {
   }
 }
 
-/* Table row hover: accent blue left border bar */
 .table-row-hover {
-  border-left: 2px solid transparent;
-  transition:
-    border-left-color 140ms ease,
-    background-color 140ms ease;
-}
-
-.table-row-hover:hover {
-  border-left-color: var(--accent-blue);
+  transition: background-color 140ms ease;
 }
 
 /* ===== Staggered card entrance animation ===== */
@@ -3655,13 +3734,13 @@ html.dark .workspace-search-empty {
 html[data-theme="dark"] .workspace-sidebar-link:hover,
 html.dark .workspace-sidebar-link:hover {
   background: rgba(91, 142, 249, 0.09);
-  border-left-color: rgba(91, 142, 249, 0.3);
+  border-color: rgba(91, 142, 249, 0.16);
 }
 
 html[data-theme="dark"] .workspace-sidebar-link.is-active,
 html.dark .workspace-sidebar-link.is-active {
   background: rgba(91, 142, 249, 0.14);
-  border-left-color: #8db0ff;
+  border-color: #8db0ff;
   color: #8db0ff;
 }
 
@@ -4731,16 +4810,103 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
 }
 
 /* ── Workspace Overview: Section Grid ── */
+.workspace-overview-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.85fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.workspace-overview-summary {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.workspace-health-card {
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  padding: 12px 14px;
+}
+
+.workspace-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.workspace-overview-radar {
+  min-height: 204px;
+}
+
+.workspace-overview-radar .workspace-section-card-header {
+  min-height: 42px;
+  padding-block: 10px;
+}
+
+.workspace-risk-coverage-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.85fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.workspace-risk-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.workspace-risk-strip > a,
+.workspace-coverage-compact {
+  min-height: 118px;
+}
+
+.workspace-coverage-compact {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  padding: 14px;
+}
+
 .workspace-overview-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
+@media (max-width: 1280px) {
+  .workspace-overview-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workspace-risk-coverage-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1024px) {
   .workspace-overview-grid {
     grid-template-columns: 1fr;
   }
+
+  .workspace-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-risk-strip {
+    grid-template-columns: 1fr;
+  }
+
   .workspace-coverage-layout {
     grid-template-columns: 1fr;
     justify-items: center;

@@ -45,7 +45,7 @@ export function NavigationProgress() {
       aria-label="Page loading"
     >
       <div
-        className="h-full bg-gradient-to-r from-[var(--accent-blue)] to-[color:var(--success)] transition-all ease-out"
+        className="h-full bg-gradient-to-r from-[var(--accent-blue)] to-[var(--success)] transition-all ease-out"
         style={{
           width: `${progress}%`,
           transitionDuration: progress < 100 ? "200ms" : "150ms",

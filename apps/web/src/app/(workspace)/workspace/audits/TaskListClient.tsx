@@ -214,7 +214,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
     return (
       <div className="divide-y divide-border/30">
         {displayed.map((job) => (
-          <div key={job.job_id} className="px-4 py-3 transition-colors hover:bg-[color:var(--accent-blue)]/5">
+          <div key={job.job_id} className="px-4 py-3 transition-colors hover:bg-[var(--accent-blue)]/5">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="mono text-xs font-medium truncate">{job.job_id}</span>
               <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
@@ -222,49 +222,17 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
             <div className="mono text-[11px] text-muted-foreground mb-1 truncate">
               {job.contract_key}
             </div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span className="truncate">{job.workspace_name}</span>
-              <span className="text-[11px] whitespace-nowrap ml-2">
-                {formatDuration(job.created_at, job.updated_at, locale)}
-              </span>
-            </div>
             {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
               <ProgressStrip value={job.progress_pct} isActive={job.status === "running"} />
             )}
-            {job.status === "running" && typeof job.progress_pct === "number" && (
-              <div className="mt-1 flex items-center gap-2 text-[11px]">
-                <span className="text-[color:var(--accent-blue)]">
-                  {locale === "zh-CN" ? "采样中..." : "Sampling..."}
-                </span>
-                {job.progress_pct > 5 && (() => {
-                  const elapsed = new Date(job.updated_at).getTime() - new Date(job.created_at).getTime();
-                  const remaining = (elapsed / job.progress_pct) * (100 - job.progress_pct);
-                  const remainingMin = Math.round(remaining / 60000);
-                  if (remainingMin > 0) {
-                    return <span className="text-muted-foreground">~{remainingMin}{locale === "zh-CN" ? " 分钟剩余" : " min remaining"}</span>;
-                  }
-                  return null;
-                })()}
-              </div>
-            )}
-            {job.status === "queued" && (
-              <div className="mt-1 text-[11px] text-muted-foreground">
-                {locale === "zh-CN" ? "等待分配..." : "Waiting for allocation..."}
-              </div>
-            )}
-            {job.summary_note && (
-              <div className="mt-1.5 text-[11px] leading-5 text-muted-foreground">
-                {job.summary_note}
-              </div>
-            )}
             {job.error && (
-              <div className="mono mt-1.5 text-[11px] text-[color:var(--warning)] truncate">
+              <div className="mono mt-1.5 text-[11px] text-[var(--warning)] truncate">
                 {sanitizeRuntimeText(job.error)}
               </div>
             )}
             <Link
               href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-              className="mt-2 inline-flex text-[11px] font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
+              className="mt-2 inline-flex text-[11px] font-medium text-[var(--accent-blue)] transition-colors hover:text-foreground"
             >
               {copy.viewDetails}
             </Link>
@@ -355,14 +323,14 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-                        className="text-xs text-[color:var(--accent-blue)] transition-colors hover:underline"
+                        className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
                       >
                         {copy.viewDetails}
                       </Link>
                       {reportHref ? (
                         <Link
                           href={reportHref}
-                          className="text-xs text-[color:var(--accent-blue)] transition-colors hover:underline"
+                          className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
                         >
                           {copy.viewReport}
                         </Link>
@@ -372,13 +340,13 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                           <button
                             onClick={() => handleRetry(job)}
                             disabled={retryingJobId === job.job_id}
-                            className="text-xs text-[color:var(--warning)] hover:underline disabled:opacity-50"
+                            className="text-xs text-[var(--warning)] hover:underline disabled:opacity-50"
                             title={copy.retryTitle}
                           >
                             {retryingJobId === job.job_id ? copy.retrying : copy.retry}
                           </button>
                           {retryErrors.has(job.job_id) && retryingJobId !== job.job_id && (
-                            <span className="text-[11px] text-[color:var(--risk-high)]">{retryErrors.get(job.job_id)}</span>
+                            <span className="text-[11px] text-[var(--risk-high)]">{retryErrors.get(job.job_id)}</span>
                           )}
                         </>
                       )}

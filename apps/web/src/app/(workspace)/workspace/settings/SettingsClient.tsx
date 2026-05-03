@@ -212,6 +212,7 @@ export function SettingsClient({
   const [providerLinkNotice, setProviderLinkNotice] = useState<EmailVerificationNotice | null>(
     getProviderLinkNotice(initialProviderLinkStatus, copy.account),
   );
+  const [themeMounted, setThemeMounted] = useState(false);
 
   // Runtime config
   const [runtimeHost, setRuntimeHost] = useState("http://127.0.0.1");
@@ -321,6 +322,10 @@ export function SettingsClient({
       window.clearTimeout(timeoutId);
       controller.abort();
     };
+  }, []);
+
+  useEffect(() => {
+    setThemeMounted(true);
   }, []);
 
   // Clean up saved indicator timer on unmount
@@ -632,7 +637,7 @@ export function SettingsClient({
 
             <div>
               <h3 className="mb-1.5 text-xs font-medium">{copy.aboutSystem.systemBoundary}</h3>
-              <p className="border-l-2 border-[var(--accent-blue)] pl-2 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="rounded-xl bg-muted/20 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
                 {copy.aboutSystem.boundaryNote}
               </p>
             </div>
@@ -690,28 +695,28 @@ export function SettingsClient({
               </div>
             </div>
             {gatewayHealthError ? (
-              <div className="rounded-2xl border border-[color:var(--warning)]/30 bg-[color:var(--warning)]/10 px-3 py-2 text-[11px] leading-5 text-[color:var(--warning)]">
+              <div className="rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--warning)]">
                 {copy.systemStatus.gatewayError}
               </div>
             ) : null}
 
             <div className="rounded-2xl border border-border bg-muted/10 p-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3">
-                <span className={`mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full ${
-                  demoMode
-                    ? "bg-[color:var(--accent-blue)]/14 text-[color:var(--accent-blue)]"
-                    : "bg-muted/20 text-muted-foreground"
-                }`}>
-                  <Calendar size={16} strokeWidth={1.5} aria-hidden="true" />
-                </span>
-                <div>
-                  <div className="text-xs font-medium text-foreground">{copy.systemStatus.demoMode}</div>
-                  <div className="mt-1 text-[11px] leading-5 text-muted-foreground">
-                    {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                    demoMode
+                      ? "bg-[var(--accent-blue)]/14 text-[var(--accent-blue)]"
+                      : "bg-muted/20 text-muted-foreground"
+                  }`}>
+                    <Calendar size={16} strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-xs font-medium text-foreground">{copy.systemStatus.demoMode}</div>
+                    <div className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                      {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
+                    </div>
                   </div>
                 </div>
-              </div>
                 <StatusBadge tone={demoMode ? "info" : "neutral"} compact>
                   {demoMode ? copy.systemStatus.demoOn : copy.systemStatus.demoOff}
                 </StatusBadge>
@@ -843,14 +848,14 @@ export function SettingsClient({
                 )}
               </button>
               {runtimeConnected === true && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--success)]">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--success)]" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--success)]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
                   {copy.runtimeConfig.connected}
                 </span>
               )}
               {runtimeConnected === false && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--warning)]">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--warning)]" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--warning)]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--warning)]" aria-hidden="true" />
                   {copy.runtimeConfig.disconnected}
                 </span>
               )}
@@ -897,14 +902,14 @@ export function SettingsClient({
                       <button
                         type="button"
                         onClick={() => handleLoadTemplate(t)}
-                        className="rounded px-2 py-0.5 text-[11px] font-medium text-[color:var(--accent-blue)] hover:bg-[color:var(--accent-blue)]/10"
+                        className="rounded px-2 py-0.5 text-[11px] font-medium text-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/10"
                       >
                         {copy.auditTemplates.loadTemplate}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteTemplate(t.id)}
-                        className="rounded px-2 py-0.5 text-[11px] font-medium text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10"
+                        className="rounded px-2 py-0.5 text-[11px] font-medium text-[var(--warning)] hover:bg-[var(--warning)]/10"
                       >
                         {copy.auditTemplates.deleteTemplate}
                       </button>
@@ -939,8 +944,8 @@ export function SettingsClient({
                     key={mode}
                     type="button"
                     onClick={() => setTheme(mode)}
-                    aria-pressed={theme === mode}
-                    className={`settings-toggle-btn ${theme === mode ? "is-active" : ""}`}
+                    aria-pressed={themeMounted && theme === mode}
+                    className={`settings-toggle-btn ${themeMounted && theme === mode ? "is-active" : ""}`}
                   >
                     {mode === "light"
                       ? copy.preferences.themeLight
@@ -983,7 +988,7 @@ export function SettingsClient({
                   <div className="settings-section-card p-6">
                     <div className="flex items-center gap-4">
                     <div
-                      className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-border bg-[color:var(--primary)]/15 text-xl font-semibold text-foreground shadow-inner"
+                      className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-border bg-[var(--primary)]/15 text-xl font-semibold text-foreground shadow-inner"
                       style={
                         profile.avatarUrl
                           ? {
@@ -998,7 +1003,7 @@ export function SettingsClient({
                       {profile.avatarUrl ? null : profile.displayName[0]?.toUpperCase() ?? "?"}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-blue)]/80">{copy.account.username}</div>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-blue)]/80">{copy.account.username}</div>
                       <div className="mt-1 truncate text-2xl font-semibold tracking-[-0.03em] text-foreground">{profile.displayName}</div>
                       <div className="mt-1 truncate text-sm text-muted-foreground">@{profile.username}</div>
                     </div>
@@ -1049,7 +1054,7 @@ export function SettingsClient({
                         />
                       </div>
                       {emailError ? (
-                        <p className="text-[11px] text-[color:var(--error)]">{emailError}</p>
+                        <p className="text-[11px] text-[var(--error)]">{emailError}</p>
                       ) : null}
                       <div className="flex gap-2">
                         <button
@@ -1121,7 +1126,7 @@ export function SettingsClient({
                           href={verificationUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center justify-center rounded-xl bg-[color:var(--accent-blue)]/10 px-3 py-2 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/15"
+                          className="inline-flex items-center justify-center rounded-xl bg-[var(--accent-blue)]/10 px-3 py-2 text-xs font-medium text-[var(--accent-blue)] transition-colors hover:bg-[var(--accent-blue)]/15"
                         >
                           {copy.account.openVerificationLink}
                         </a>
@@ -1146,8 +1151,8 @@ export function SettingsClient({
                     <div
                       className={`rounded-xl border px-3 py-2 text-[11px] leading-5 ${
                         emailVerificationNotice.tone === "success"
-                          ? "border-[color:var(--success)]/30 bg-[color:var(--success)]/10 text-[color:var(--success)]"
-                          : "border-[color:var(--error)]/20 bg-[color:var(--error)]/8 text-[color:var(--error)]"
+                          ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]"
+                          : "border-[var(--error)]/20 bg-[var(--error)]/8 text-[var(--error)]"
                       }`}
                     >
                       {emailVerificationNotice.message}
@@ -1157,8 +1162,8 @@ export function SettingsClient({
                     <div
                       className={`rounded-xl border px-3 py-2 text-[11px] leading-5 ${
                         providerLinkNotice.tone === "success"
-                          ? "border-[color:var(--success)]/30 bg-[color:var(--success)]/10 text-[color:var(--success)]"
-                          : "border-[color:var(--error)]/20 bg-[color:var(--error)]/8 text-[color:var(--error)]"
+                          ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]"
+                          : "border-[var(--error)]/20 bg-[var(--error)]/8 text-[var(--error)]"
                       }`}
                     >
                       {providerLinkNotice.message}
@@ -1173,8 +1178,8 @@ export function SettingsClient({
                 </>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--border)]">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-[color:var(--muted-foreground)]" />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--border)]">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-[var(--muted-foreground)]" />
                   </div>
                   <span className="text-sm text-muted-foreground">—</span>
                 </div>
@@ -1320,7 +1325,7 @@ export function SettingsClient({
                     </div>
 
                     {passwordError ? (
-                      <p className="text-[11px] text-[color:var(--error)]">{passwordError}</p>
+                      <p className="text-[11px] text-[var(--error)]">{passwordError}</p>
                     ) : null}
 
                     <div className="flex gap-2">
@@ -1351,7 +1356,7 @@ export function SettingsClient({
               </div>
 
               {passwordSaveNotice ? (
-                <div className="rounded-xl border border-[color:var(--success)]/30 bg-[color:var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[color:var(--success)]">
+                <div className="rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--success)]">
                   {passwordSaveNotice}
                 </div>
               ) : null}

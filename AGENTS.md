@@ -49,7 +49,7 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - All card containers use `rounded-2xl`. Inner elements (inputs, nested cards) use `rounded-xl`.
 - Typography: `text-[13px]` body, `text-[11px]` secondary/captions, `text-[10px]` badges only.
 - All Lucide icons use `strokeWidth={1.5}`.
-- CSS custom property colors must use `[color:var(...)]` syntax for Tailwind text colors: `text-[color:var(--accent-blue)]`.
+- CSS custom property colors must use `[var(...)]` syntax for Tailwind text colors: `text-[var(--accent-blue)]`.
 - Button text on colored backgrounds uses `text-white` (not `text-background`).
 - Dark mode: all colors must use CSS custom properties; no hardcoded hex/rgba in JSX.
 - Shared hooks live in `apps/web/src/hooks/`. Reusable patterns across 2+ pages should be extracted into hooks.

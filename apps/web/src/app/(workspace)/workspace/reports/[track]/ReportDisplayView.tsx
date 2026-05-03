@@ -160,7 +160,7 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
             <h2 className="text-[13px] font-bold text-foreground">
               {copy.sections.coverageGaps}
             </h2>
-            <span className="text-[13px] text-[color:var(--warning)]">
+            <span className="text-[13px] text-[var(--warning)]">
               {gapData.length} {copy.sections.highRiskGaps}
             </span>
           </div>

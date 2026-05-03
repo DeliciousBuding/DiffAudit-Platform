@@ -41,7 +41,7 @@ export function LoadingState({ message, type = "default", className }: LoadingSt
       {type === "kpi" && <KpiRowSkeleton />}
       {(type === "chart" || type === "default") && (
         <div className="flex items-center justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[color:var(--accent-blue)] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--accent-blue)] border-t-transparent" />
         </div>
       )}
     </div>
@@ -61,7 +61,7 @@ export function InlineLoader({ message, size = "sm" }: { message?: string; size?
   return (
     <div className="flex items-center gap-2 text-muted-foreground">
       <div
-        className={`${sizeClasses[size]} animate-spin rounded-full border-2 border-[color:var(--accent-blue)] border-t-transparent`}
+        className={`${sizeClasses[size]} animate-spin rounded-full border-2 border-[var(--accent-blue)] border-t-transparent`}
         aria-hidden="true"
       />
       {message && <span className="text-sm">{message}</span>}

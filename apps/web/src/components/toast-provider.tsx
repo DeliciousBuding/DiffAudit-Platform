@@ -66,7 +66,7 @@ export function useToast(): ToastContextValue {
   const ctx = useContext(ToastContext);
   if (!ctx) {
     // Return a no-op toast when used outside ToastProvider (e.g., in tests)
-    return { toasts: [], toast: () => {}, dismiss: () => {} } satisfies ToastContextValue;
+    return { toasts: [], toast: () => "noop-toast", dismiss: () => {} } satisfies ToastContextValue;
   }
   return ctx;
 }

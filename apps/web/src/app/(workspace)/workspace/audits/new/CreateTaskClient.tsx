@@ -25,8 +25,8 @@ type CreateTaskClientProps = {
 
 type FormState = {
   step: number;
-  attackType: AttackType | null;
-  selectedContractKey: string | null;
+  selectedModelLabel: string | null;
+  selectedAttackTypes: AttackType[];
   rounds: number;
   batchSize: number;
   adaptiveSampling: boolean;
@@ -49,11 +49,19 @@ const ATTACK_TYPE_MAP: Record<AttackType, string> = {
   "white-box": "gsa_runtime_mainline",
 };
 
-const TRACK_FILTER_MAP: Record<AttackType, string> = {
-  "black-box": "black-box",
-  "gray-box": "gray-box",
-  "white-box": "white-box",
-};
+const ATTACK_TYPES: AttackType[] = ["black-box", "gray-box", "white-box"];
+
+function attackTypeFromTrack(track: string): AttackType | null {
+  if (track === "black-box" || track === "gray-box" || track === "white-box") return track;
+  return null;
+}
+
+function trackLabel(track: string, locale: Locale) {
+  if (track === "black-box") return locale === "zh-CN" ? "Recon / 黑盒" : "Recon / Black-box";
+  if (track === "gray-box") return locale === "zh-CN" ? "PIA / 灰盒" : "PIA / Gray-box";
+  if (track === "white-box") return locale === "zh-CN" ? "GSA / 白盒" : "GSA / White-box";
+  return track;
+}
 
 export function CreateTaskClient({ locale, availableModels }: CreateTaskClientProps) {
   const copy = WORKSPACE_COPY[locale].createTask;
@@ -64,8 +72,8 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
   const [form, setForm] = useState<FormState>({
     step: 1,
-    attackType: null,
-    selectedContractKey: null,
+    selectedModelLabel: null,
+    selectedAttackTypes: [],
     rounds: 10,
     batchSize: 32,
     adaptiveSampling: true,
@@ -81,95 +89,130 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
   }, []);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Filter models by selected attack type track
-  const filteredModels = useMemo(() => {
-    if (!form.attackType) return [];
-    const trackFilter = TRACK_FILTER_MAP[form.attackType];
-    return availableModels.filter((m) => m.track === trackFilter);
-  }, [form.attackType, availableModels]);
+  const modelGroups = useMemo(() => {
+    const groups = new Map<string, ModelOption[]>();
+    for (const model of availableModels) {
+      const list = groups.get(model.label) ?? [];
+      list.push(model);
+      groups.set(model.label, list);
+    }
+    return Array.from(groups.entries()).map(([label, models]) => ({ label, models }));
+  }, [availableModels]);
 
-  const selectedModel = useMemo(() => {
-    if (!form.selectedContractKey) return null;
-    return availableModels.find((m) => m.contractKey === form.selectedContractKey) ?? null;
-  }, [form.selectedContractKey, availableModels]);
+  const selectedModelGroup = useMemo(() => {
+    if (!form.selectedModelLabel) return null;
+    return modelGroups.find((group) => group.label === form.selectedModelLabel) ?? null;
+  }, [form.selectedModelLabel, modelGroups]);
+
+  const selectedContracts = useMemo(() => {
+    const entries = new Map<AttackType, ModelOption>();
+    for (const model of selectedModelGroup?.models ?? []) {
+      const type = attackTypeFromTrack(model.track);
+      if (type) entries.set(type, model);
+    }
+    return entries;
+  }, [selectedModelGroup]);
 
   const setStep = useCallback((step: number) => {
     setForm((prev) => ({ ...prev, step }));
   }, []);
 
-  const selectAttackType = useCallback((type: AttackType) => {
+  const selectModel = useCallback((label: string) => {
     setForm((prev) => ({
       ...prev,
-      attackType: type,
-      selectedContractKey: null, // Reset model when attack type changes
+      selectedModelLabel: label,
+      selectedAttackTypes: [],
       step: 2,
     }));
   }, []);
 
-  const selectModel = useCallback((contractKey: string) => {
-    setForm((prev) => ({ ...prev, selectedContractKey: contractKey, step: 3 }));
-  }, []);
+  const toggleAttackType = useCallback((type: AttackType) => {
+    if (!selectedContracts.has(type)) return;
+    setForm((prev) => {
+      const selected = prev.selectedAttackTypes.includes(type)
+        ? prev.selectedAttackTypes.filter((item) => item !== type)
+        : [...prev.selectedAttackTypes, type];
+      return { ...prev, selectedAttackTypes: selected };
+    });
+  }, [selectedContracts]);
 
-  const handleSubmit = useCallback(async () => {
-    if (!form.attackType || !form.selectedContractKey) return;
+  const selectedModel = useMemo(() => {
+    const firstType = form.selectedAttackTypes[0];
+    return firstType ? selectedContracts.get(firstType) ?? null : selectedModelGroup?.models[0] ?? null;
+  }, [form.selectedAttackTypes, selectedContracts, selectedModelGroup]);
 
-    setSubmitState("submitting");
-    setErrorMessage(null);
+  const canReview = Boolean(form.selectedModelLabel && form.selectedAttackTypes.length > 0);
 
-    try {
-      // Fetch job template from API
-      const templateUrl = `/api/v1/audit/job-template?contract_key=${encodeURIComponent(form.selectedContractKey)}`;
-      const templateResponse = await fetch(templateUrl, { cache: "no-store" });
+  const createOneJob = useCallback(async (attackType: AttackType, contractKey: string) => {
+    const templateUrl = `/api/v1/audit/job-template?contract_key=${encodeURIComponent(contractKey)}`;
+    const templateResponse = await fetch(templateUrl, { cache: "no-store" });
 
-      let templatePayload: Record<string, unknown>;
-      if (templateResponse.ok) {
-        templatePayload = (await templateResponse.json()) as Record<string, unknown>;
-      } else {
-        // Fallback: construct minimal payload
-        templatePayload = {
-          job_type: ATTACK_TYPE_MAP[form.attackType],
-          contract_key: form.selectedContractKey,
-          workspace_name: "default",
-          runtime_profile: "local",
-          assets: {},
-          job_inputs: {
-            rounds: form.rounds,
-            batch_size: form.batchSize,
-            adaptive_sampling: form.adaptiveSampling,
-          },
-        };
-      }
-
-      // Merge user parameters into template
-      const payload = {
-        ...templatePayload,
+    let templatePayload: Record<string, unknown>;
+    if (templateResponse.ok) {
+      templatePayload = (await templateResponse.json()) as Record<string, unknown>;
+    } else {
+      templatePayload = {
+        job_type: ATTACK_TYPE_MAP[attackType],
+        contract_key: contractKey,
+        workspace_name: "default",
+        runtime_profile: "local",
+        assets: {},
         job_inputs: {
-          ...(typeof templatePayload.job_inputs === "object" && templatePayload.job_inputs !== null
-            ? templatePayload.job_inputs as Record<string, unknown>
-            : {}),
           rounds: form.rounds,
           batch_size: form.batchSize,
           adaptive_sampling: form.adaptiveSampling,
         },
       };
+    }
 
-      const createResponse = await fetch("/api/v1/audit/jobs", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-        cache: "no-store",
-      });
+    const payload = {
+      ...templatePayload,
+      job_type: ATTACK_TYPE_MAP[attackType],
+      contract_key: contractKey,
+      job_inputs: {
+        ...(typeof templatePayload.job_inputs === "object" && templatePayload.job_inputs !== null
+          ? templatePayload.job_inputs as Record<string, unknown>
+          : {}),
+        rounds: form.rounds,
+        batch_size: form.batchSize,
+        adaptive_sampling: form.adaptiveSampling,
+      },
+    };
 
-      if (!createResponse.ok) {
-        let detail = `Request failed: ${createResponse.status}`;
-        try {
-          const body = (await createResponse.json()) as Record<string, unknown>;
-          if (typeof body.detail === "string") detail = body.detail;
-        } catch { /* fall through */ }
-        throw new Error(detail);
+    const createResponse = await fetch("/api/v1/audit/jobs", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
+
+    if (!createResponse.ok) {
+      let detail = `Request failed: ${createResponse.status}`;
+      try {
+        const body = (await createResponse.json()) as Record<string, unknown>;
+        if (typeof body.detail === "string") detail = body.detail;
+      } catch { /* fall through */ }
+      throw new Error(detail);
+    }
+
+    return (await createResponse.json().catch(() => null)) as JobCreationResponse | null;
+  }, [form.adaptiveSampling, form.batchSize, form.rounds]);
+
+  const handleSubmit = useCallback(async () => {
+    if (!canReview) return;
+
+    setSubmitState("submitting");
+    setErrorMessage(null);
+
+    try {
+      const createdJobs: JobCreationResponse[] = [];
+      for (const attackType of form.selectedAttackTypes) {
+        const model = selectedContracts.get(attackType);
+        if (!model) continue;
+        const created = await createOneJob(attackType, model.contractKey);
+        if (created) createdJobs.push(created);
       }
-
-      const created = (await createResponse.json().catch(() => null)) as JobCreationResponse | null;
+      const created = createdJobs[0] ?? null;
       const createdJobId = created?.job?.job_id ?? created?.job_id ?? null;
       setSubmitState("success");
 
@@ -181,7 +224,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
       setSubmitState("error");
       setErrorMessage(err instanceof Error ? err.message : labels.submissionFailed);
     }
-  }, [form.attackType, form.selectedContractKey, form.rounds, form.batchSize, form.adaptiveSampling, labels.submissionFailed, router]);
+  }, [canReview, createOneJob, form.selectedAttackTypes, labels.submissionFailed, router, selectedContracts]);
 
   // Step indicator
   const steps = [
@@ -221,9 +264,9 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   <span
                     className={`inline-flex items-center justify-center h-6 w-6 rounded-full text-xs font-semibold ${
                       isCompleted
-                        ? "bg-[color:var(--info-soft)] text-[color:var(--info)] border border-[color:var(--accent-blue)]/20"
+                        ? "bg-[var(--info-soft)] text-[var(--info)] border border-[var(--accent-blue)]/20"
                         : isActive
-                          ? "bg-[color:var(--accent-blue)] text-background"
+                          ? "bg-[var(--accent-blue)] text-background"
                           : "bg-muted/40 text-muted-foreground border border-border"
                     }`}
                   >
@@ -238,49 +281,42 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
 
         {/* Step content */}
         <div className="p-4">
-          {/* Step 1: Attack type selection */}
+          {/* Step 1: Target model selection */}
           {form.step === 1 && (
             <div className="space-y-3">
-              <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step1Desc}</div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
-                {(
-                  [
-                    {
-                      type: "black-box" as AttackType,
-                      title: copy.attackTypes.blackBoxTitle,
-                      desc: copy.attackTypes.blackBoxDesc,
-                      note: copy.attackTypes.blackBoxNote,
-                    },
-                    {
-                      type: "gray-box" as AttackType,
-                      title: copy.attackTypes.grayBoxTitle,
-                      desc: copy.attackTypes.grayBoxDesc,
-                      note: copy.attackTypes.grayBoxNote,
-                    },
-                    {
-                      type: "white-box" as AttackType,
-                      title: copy.attackTypes.whiteBoxTitle,
-                      desc: copy.attackTypes.whiteBoxDesc,
-                      note: copy.attackTypes.whiteBoxNote,
-                    },
-                  ] as const
-                ).map((card) => {
-                  const isSelected = form.attackType === card.type;
+              <div className="text-[13px] text-muted-foreground mb-3">
+                {locale === "zh-CN" ? "先选择目标模型；下一步可为同一个模型勾选多条审计路线。" : "Select a target model first. You can choose multiple audit routes for the same model next."}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {modelGroups.map((group) => {
+                  const isSelected = form.selectedModelLabel === group.label;
+                  const routeCount = group.models.length;
                   return (
                     <button
-                      key={card.type}
+                      key={group.label}
                       type="button"
-                      onClick={() => selectAttackType(card.type)}
+                      onClick={() => selectModel(group.label)}
                       aria-pressed={isSelected}
-                      className={`text-left rounded-2xl border p-4 flex flex-col transition-all ${
+                      className={`text-left rounded-2xl border p-4 transition-all ${
                         isSelected
-                          ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[color:var(--accent-blue)]/12"
-                          : "border-border bg-background hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
+                          ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[var(--accent-blue)]/12"
+                          : "border-border bg-background hover:border-[var(--accent-blue)]/30 hover:bg-muted/20"
                       }`}
                     >
-                      <div className="text-[13px] font-bold mb-1.5">{card.title}</div>
-                      <div className="text-[13px] text-muted-foreground mb-2 leading-relaxed flex-1">{card.desc}</div>
-                      <div className="text-[13px] text-muted-foreground italic pt-2 border-t border-border/40">{card.note}</div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[13px] font-bold">{group.label}</span>
+                        <StatusBadge tone="info" compact>
+                          {routeCount} {locale === "zh-CN" ? "条路线" : "routes"}
+                        </StatusBadge>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {group.models.map((model) => (
+                          <span key={model.contractKey} className="rounded-full border border-border bg-muted/20 px-2 py-0.5 text-[10px] text-muted-foreground">
+                            {trackLabel(model.track, locale)}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-2 text-[13px] text-muted-foreground">{group.models[0]?.capabilityLabel}</div>
                     </button>
                   );
                 })}
@@ -288,75 +324,76 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
             </div>
           )}
 
-          {/* Step 2: Target model selection */}
+          {/* Step 2: Audit route selection */}
           {form.step === 2 && (
             <div className="space-y-3">
               {/* Recommended configuration — 7.2.1 */}
-              {form.attackType && (
-                <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
+              {form.selectedAttackTypes.length > 0 && (
+                <div className="border border-[var(--accent-blue)]/30 bg-[var(--accent-blue)]/5 rounded-2xl p-4">
                   <div className="flex items-start gap-2">
-                    <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
+                    <Info size={16} strokeWidth={1.5} className="shrink-0 text-[var(--accent-blue)] mt-0.5" />
                     <div className="space-y-1">
-                      <div className="text-[13px] font-bold text-[color:var(--accent-blue)]">
-                        {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxTitle : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxTitle : copy.recommendedConfig.whiteBoxTitle}
+                      <div className="text-[13px] font-bold text-[var(--accent-blue)]">
+                        {locale === "zh-CN" ? "已选择审计路线" : "Selected audit routes"}
                       </div>
-                      <ul className="space-y-0.5">
-                        <li className="text-[13px] text-muted-foreground">
-                          {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxRounds : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxRounds : copy.recommendedConfig.whiteBoxRounds}
-                        </li>
-                        <li className="text-[13px] text-muted-foreground">
-                          {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxBatch : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxBatch : copy.recommendedConfig.whiteBoxBatch}
-                        </li>
-                        <li className="text-[13px] text-muted-foreground">
-                          {form.attackType === "black-box" ? copy.recommendedConfig.blackBoxAdaptive : form.attackType === "gray-box" ? copy.recommendedConfig.grayBoxAdaptive : copy.recommendedConfig.whiteBoxAdaptive}
-                        </li>
-                      </ul>
+                      <div className="flex flex-wrap gap-1.5">
+                        {form.selectedAttackTypes.map((type) => (
+                          <StatusBadge key={type} tone={type === "white-box" ? "warning" : type === "gray-box" ? "info" : "neutral"} compact>
+                            {trackLabel(type, locale)}
+                          </StatusBadge>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
-              <div className="text-[13px] text-muted-foreground mb-3">{copy.steps.step2Desc}</div>
-              {filteredModels.length === 0 ? (
+              <div className="text-[13px] text-muted-foreground mb-3">
+                {locale === "zh-CN" ? "为该模型选择要同时创建的审计路线。每条路线会生成一个独立任务，报告中心会按任务逐行展示。" : "Choose the audit routes to create for this model. Each route creates one task and one report row."}
+              </div>
+              {!selectedModelGroup ? (
                 <div className="text-[13px] text-muted-foreground text-center py-6 border border-dashed border-border rounded-2xl">
                   {labels.disabled}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {filteredModels.map((model) => {
-                    const isSelected = form.selectedContractKey === model.contractKey;
-                    const isDisabled = model.availability === "disabled";
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+                  {ATTACK_TYPES.map((type) => {
+                    const model = selectedContracts.get(type);
+                    const isSelected = form.selectedAttackTypes.includes(type);
+                    const isDisabled = !model || model.availability === "disabled";
+                    const title = type === "black-box" ? copy.attackTypes.blackBoxTitle : type === "gray-box" ? copy.attackTypes.grayBoxTitle : copy.attackTypes.whiteBoxTitle;
+                    const desc = type === "black-box" ? copy.attackTypes.blackBoxDesc : type === "gray-box" ? copy.attackTypes.grayBoxDesc : copy.attackTypes.whiteBoxDesc;
                     return (
                       <button
-                        key={model.contractKey}
+                        key={type}
                         type="button"
-                        onClick={() => {
-                          if (!isDisabled) selectModel(model.contractKey);
-                        }}
+                        onClick={() => toggleAttackType(type)}
                         aria-pressed={isSelected}
                         disabled={isDisabled}
-                        className={`text-left rounded-2xl border p-4 transition-all ${
+                        className={`text-left rounded-2xl border p-4 flex flex-col transition-all ${
                           isSelected
-                            ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[color:var(--accent-blue)]/12"
+                            ? "border-[var(--accent-blue)] bg-[var(--info-soft)] ring-1 ring-[var(--accent-blue)]/12"
                             : isDisabled
                               ? "border-border bg-muted/10 opacity-55 cursor-not-allowed"
-                              : "border-border bg-background hover:border-[color:var(--accent-blue)]/30 hover:bg-muted/20"
+                              : "border-border bg-background hover:border-[var(--accent-blue)]/30 hover:bg-muted/20"
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-[13px] font-bold">{model.label}</span>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="text-[13px] font-bold">{title}</span>
                           <StatusBadge
-                            tone={model.availability === "ready" ? "success" : model.availability === "partial" ? "warning" : "neutral"}
+                            tone={model?.availability === "ready" ? "success" : model?.availability === "partial" ? "warning" : "neutral"}
                             compact
                           >
-                            {model.availability === "ready"
+                            {!model
+                              ? labels.availabilityDisabled
+                              : model.availability === "ready"
                               ? labels.availabilityReady
                               : model.availability === "partial"
                                 ? labels.availabilityPartial
                                 : labels.availabilityDisabled}
                           </StatusBadge>
                         </div>
-                        <div className="mono text-[13px] text-muted-foreground">{model.contractKey}</div>
-                        <div className="text-[13px] text-muted-foreground mt-1">{model.capabilityLabel}</div>
+                        <div className="text-[13px] text-muted-foreground mb-2 leading-relaxed flex-1">{desc}</div>
+                        <div className="mono text-[12px] text-muted-foreground">{model?.contractKey ?? "--"}</div>
                       </button>
                     );
                   })}
@@ -458,6 +495,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 <button
                   type="button"
                   onClick={() => setStep(4)}
+                  disabled={!canReview}
                   className="workspace-btn-primary px-3 py-1.5 text-[13px] font-medium"
                 >
                   {copy.steps.step4Title} &rarr;
@@ -478,11 +516,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     {labels.reviewAttackType}
                   </span>
                   <span className="text-[13px] font-medium">
-                    {form.attackType === "black-box"
-                      ? copy.attackTypes.blackBoxTitle
-                      : form.attackType === "gray-box"
-                        ? copy.attackTypes.grayBoxTitle
-                        : copy.attackTypes.whiteBoxTitle}
+                    {form.selectedAttackTypes.map((type) => trackLabel(type, locale)).join(", ")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -490,7 +524,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     {labels.reviewModel}
                   </span>
                   <span className="text-[13px] font-medium mono">
-                    {selectedModel?.label ?? form.selectedContractKey ?? "--"}
+                    {selectedModel?.label ?? form.selectedModelLabel ?? "--"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -526,7 +560,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
               {/* Success state */}
               {submitState === "success" && (
                 <div className="border border-[var(--success-soft)] rounded-2xl bg-[var(--success-soft)] p-4">
-                  <div className="text-[13px] font-bold text-[color:var(--success)]">{labels.successTitle}</div>
+                  <div className="text-[13px] font-bold text-[var(--success)]">{labels.successTitle}</div>
                   <div className="text-[13px] text-muted-foreground mt-1">{labels.successBody}</div>
                   <button
                     type="button"
@@ -542,14 +576,14 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
               {submitState === "error" && errorMessage && (
                 <div className="border border-[var(--warning-soft)] rounded-2xl bg-[var(--warning-soft)] p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="text-[13px] text-[color:var(--warning)]">{errorMessage}</div>
+                    <div className="text-[13px] text-[var(--warning)]">{errorMessage}</div>
                     <button
                       type="button"
                       onClick={() => {
                         setSubmitState("idle");
                         setErrorMessage(null);
                       }}
-                      className="shrink-0 rounded p-0.5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 transition-colors"
+                      className="shrink-0 rounded p-0.5 text-[var(--warning)] hover:bg-[var(--warning)]/10 transition-colors"
                       aria-label={labels.dismissError}
                     >
                       <X size={14} strokeWidth={1.5} aria-hidden="true" />

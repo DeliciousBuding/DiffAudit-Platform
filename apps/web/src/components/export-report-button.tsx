@@ -306,7 +306,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
         </div>
       ) : null}
       {exportError ? (
-        <p className="absolute right-0 top-full mt-1 text-[10px] text-[color:var(--warning)] whitespace-nowrap" role="alert">
+        <p className="absolute right-0 top-full mt-1 text-[10px] text-[var(--warning)] whitespace-nowrap" role="alert">
           {exportError}
         </p>
       ) : null}

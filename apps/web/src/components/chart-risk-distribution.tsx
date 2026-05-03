@@ -57,7 +57,7 @@ export function ChartRiskDistribution({ data, onClick }: RiskDistributionProps) 
           radius={[4, 4, 0, 0]}
           maxBarSize={60}
           isAnimationActive={false}
-          onClick={onClick ? (entry) => onClick(entry as { key: string; label: string; count: number }) : undefined}
+          onClick={onClick ? (entry) => onClick(entry as unknown as { key: string; label: string; count: number }) : undefined}
           style={onClick ? { cursor: "pointer" } : undefined}
         >
           {data.map((entry, index) => (

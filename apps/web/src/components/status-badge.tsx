@@ -6,10 +6,10 @@ type StatusBadgeProps = {
 
 const toneClasses: Record<NonNullable<StatusBadgeProps["tone"]>, string> = {
   primary: "border-primary/30 bg-primary/20 text-primary",
-  success: "border-[color:var(--success)]/25 bg-[color:var(--success-soft-strong)] text-[color:var(--success)]",
-  warning: "border-[color:var(--warning)]/25 bg-[color:var(--warning-soft-strong)] text-[color:var(--warning)]",
-  danger: "border-[color:var(--risk-high)]/25 bg-[color:var(--risk-high)]/10 text-[color:var(--risk-high)]",
-  info: "border-[color:var(--info)]/25 bg-[color:var(--info-soft-strong)] text-[color:var(--info)]",
+  success: "border-[var(--success)]/25 bg-[var(--success-soft-strong)] text-[var(--success)]",
+  warning: "border-[var(--warning)]/25 bg-[var(--warning-soft-strong)] text-[var(--warning)]",
+  danger: "border-[var(--risk-high)]/25 bg-[var(--risk-high)]/10 text-[var(--risk-high)]",
+  info: "border-[var(--info)]/25 bg-[var(--info-soft-strong)] text-[var(--info)]",
   neutral: "border-border bg-muted/50 text-muted-foreground",
 };
 

@@ -57,12 +57,10 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
     }));
     const extras = locale === "zh-CN"
       ? [
-        { href: "/workspace/audits/new", title: "新建审计任务", subtitle: "创建任务", keywords: "新建 审计 任务 create audit" },
         { href: "/workspace/api-keys", title: "API 密钥", subtitle: "访问凭证", keywords: "api key 密钥 凭证 developer" },
         { href: "/docs", title: "Docs", subtitle: "产品文档", keywords: "docs 文档 指南" },
       ]
       : [
-        { href: "/workspace/audits/new", title: "New audit task", subtitle: "Create a job", keywords: "new create audit task" },
         { href: "/workspace/api-keys", title: "API Keys", subtitle: "Access credentials", keywords: "api key credential developer" },
         { href: "/docs", title: "Docs", subtitle: "Product documentation", keywords: "docs documentation guide" },
       ];

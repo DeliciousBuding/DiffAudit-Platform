@@ -131,18 +131,10 @@ export function ReportExportButtons({ rows, locale, contracts }: ReportExportBut
       <button
         type="button"
         disabled
-        title={copy.docxComingSoon}
+        title={`${copy.docxComingSoon} / ${copy.pptxComingSoon}`}
         className={`${btnBase} border border-border text-muted-foreground/60 cursor-not-allowed`}
       >
-        DOCX
-      </button>
-      <button
-        type="button"
-        disabled
-        title={copy.pptxComingSoon}
-        className={`${btnBase} border border-border text-muted-foreground/60 cursor-not-allowed`}
-      >
-        PPTX
+        DOCX / PPTX
       </button>
       <button
         type="button"
@@ -153,7 +145,7 @@ export function ReportExportButtons({ rows, locale, contracts }: ReportExportBut
         {exporting === "csv" ? "..." : "CSV"}
       </button>
       {exportError ? (
-        <p className="mt-1 w-full text-[10px] text-[color:var(--warning)]" role="alert">
+        <p className="mt-1 w-full text-[10px] text-[var(--warning)]" role="alert">
           {exportError}
         </p>
       ) : null}

@@ -10,18 +10,18 @@ type BadgeProps = {
 
 const variantDotColors: Record<BadgeVariant, string> = {
   default: "bg-muted-foreground",
-  success: "bg-[color:var(--success)]",
-  warning: "bg-[color:var(--warning)]",
-  error: "bg-[color:var(--risk-high)]",
-  info: "bg-[color:var(--info)]",
+  success: "bg-[var(--success)]",
+  warning: "bg-[var(--warning)]",
+  error: "bg-[var(--risk-high)]",
+  info: "bg-[var(--info)]",
 };
 
 const variantBadgeClasses: Record<BadgeVariant, string> = {
   default: "border-border bg-muted/30 text-muted-foreground",
-  success: "border-[color:var(--success-soft)] bg-[color:var(--success-soft)] text-[color:var(--success)]",
-  warning: "border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)] text-[color:var(--warning)]",
-  error: "border-[color:var(--risk-high-bg)] bg-[color:var(--risk-high-bg)] text-[var(--risk-high)]",
-  info: "border-[color:var(--info-soft)] bg-[color:var(--info-soft)] text-[var(--info)]",
+  success: "border-[var(--success-soft)] bg-[var(--success-soft)] text-[var(--success)]",
+  warning: "border-[var(--warning-soft)] bg-[var(--warning-soft)] text-[var(--warning)]",
+  error: "border-[var(--risk-high-bg)] bg-[var(--risk-high-bg)] text-[var(--risk-high)]",
+  info: "border-[var(--info-soft)] bg-[var(--info-soft)] text-[var(--info)]",
 };
 
 /**

@@ -128,7 +128,7 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
                 }}
                 className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors ${
                   selected
-                    ? "bg-[color:var(--accent-blue)]/10 text-foreground"
+                    ? "bg-[var(--accent-blue)]/10 text-foreground"
                     : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
                 }`}
               >
@@ -136,7 +136,7 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
                   <span className="shrink-0">{option.icon}</span>
                   <span>{option.label}</span>
                 </span>
-                {selected ? <span className="text-xs font-semibold text-[color:var(--accent-blue)]">{mergedLabels.active}</span> : null}
+                {selected ? <span className="text-xs font-semibold text-[var(--accent-blue)]">{mergedLabels.active}</span> : null}
               </button>
             );
           })}

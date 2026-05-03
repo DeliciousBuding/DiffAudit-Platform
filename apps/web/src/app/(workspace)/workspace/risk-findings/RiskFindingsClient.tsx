@@ -233,9 +233,9 @@ function getPaginationWindow(current: number, total: number, maxVisible: number)
 /*  KPI Card                                                           */
 /* ------------------------------------------------------------------ */
 
-function KpiCard({ label, value, accent, icon, accentBar }: { label: React.ReactNode; value: string | number; accent: string; icon: React.ReactNode; accentBar?: string }) {
+function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value: string | number; accent: string; icon: React.ReactNode }) {
   return (
-    <div className={`flex items-center gap-4 rounded-2xl border border-border bg-card p-4 card-animate${accentBar ? " border-l-[3px]" : ""}`} style={accentBar ? { borderLeftColor: accentBar } : undefined}>
+    <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 card-animate">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
         style={{ background: `color-mix(in srgb, ${accent} 10%, transparent)`, color: accent }}
@@ -500,28 +500,24 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           value={nf.format(totalFindings)}
           accent="var(--info)"
           icon={<FileText size={16} strokeWidth={1.5} aria-hidden="true" />}
-          accentBar="var(--info)"
         />
         <KpiCard
           label={copy.highRisk}
           value={nf.format(criticalHigh)}
           accent="var(--warning)"
           icon={<AlertTriangle size={16} strokeWidth={1.5} aria-hidden="true" />}
-          accentBar="var(--risk-high)"
         />
         <KpiCard
           label={copy.hasDefense}
           value={nf.format(resolvedCount)}
           accent="var(--success)"
           icon={<Shield size={16} strokeWidth={1.5} aria-hidden="true" />}
-          accentBar="var(--success)"
         />
         <KpiCard
           label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.defenseRate}>{copy.defenseRate}</InfoTooltip>}
           value={defenseRate !== null ? `${defenseRate}%` : copy.na}
           accent="var(--accent-blue)"
           icon={<BarChart3 size={16} strokeWidth={1.5} aria-hidden="true" />}
-          accentBar="var(--accent-blue)"
         />
       </div>
 
@@ -669,11 +665,6 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <tbody key={filterVersion}>
                 {paginatedRows.map((row, rowIndex) => {
                   const status = getStatus(row.defense, row.riskLevel);
-                  const severityBorder = row.riskLevel === "high"
-                    ? "border-l-[var(--risk-high)]"
-                    : row.riskLevel === "medium"
-                      ? "border-l-[var(--warning)]"
-                      : "border-l-[var(--success)]";
                   const severityBg = row.riskLevel === "high"
                     ? "bg-[var(--risk-high)]/[0.02]"
                     : row.riskLevel === "medium"
@@ -691,7 +682,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                           setSelectedFinding(row);
                         }
                       }}
-                      className={`table-row-enter cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""} ${kbActiveIndex === rowIndex ? "ring-1 ring-inset ring-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/[0.03]" : ""}`}
+                      className={`table-row-enter cursor-pointer border-b border-border/40 transition-colors hover:bg-muted/20 ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""} ${kbActiveIndex === rowIndex ? "ring-1 ring-inset ring-[var(--accent-blue)]/30 bg-[var(--accent-blue)]/[0.03]" : ""}`}
                       style={{ animationDelay: `${rowIndex * 30}ms` }}
                     >
                       <td className="max-w-[280px] px-4 py-3">
@@ -703,12 +694,12 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                         </StatusBadge>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`mono text-[13px] ${row.priorityScore > 0.7 ? "text-[color:var(--risk-high)] font-medium" : row.priorityScore > 0.4 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>
+                        <span className={`mono text-[13px] ${row.priorityScore > 0.7 ? "text-[var(--risk-high)] font-medium" : row.priorityScore > 0.4 ? "text-[var(--warning)]" : "text-muted-foreground"}`}>
                           {row.priorityScore.toFixed(2)}
                         </span>
                       </td>
-                      <td className={`mono px-4 py-3 text-[13px] ${parseFloat(row.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.aucLabel || "--"}</td>
-                      <td className={`mono px-4 py-3 text-[13px] ${parseFloat(row.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.asrLabel || "--"}</td>
+                      <td className={`mono px-4 py-3 text-[13px] ${parseFloat(row.aucLabel) > 0.85 ? "text-[var(--risk-high)] font-medium" : parseFloat(row.aucLabel) > 0.7 ? "text-[var(--warning)]" : "text-muted-foreground"}`}>{row.aucLabel || "--"}</td>
+                      <td className={`mono px-4 py-3 text-[13px] ${parseFloat(row.asrLabel) > 0.5 ? "text-[var(--risk-high)] font-medium" : parseFloat(row.asrLabel) > 0.3 ? "text-[var(--warning)]" : "text-muted-foreground"}`}>{row.asrLabel || "--"}</td>
                       <td className="px-4 py-3 text-muted-foreground">{getCategory(row.track, copy)}</td>
                       <td className="mono px-4 py-3 text-[13px]">{row.model}</td>
                       <td className="px-4 py-3">

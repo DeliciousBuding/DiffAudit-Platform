@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 import {
   DEFAULT_THEME,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/theme";
 
 const SHARED_THEME_STORAGE_KEYS = [THEME_STORAGE_KEY, "platform-theme-v1"] as const;
+const THEME_CHANGE_EVENT = "diffaudit-theme-change";
 
 function getSystemTheme(): "light" | "dark" {
   if (typeof window === "undefined") {
@@ -50,8 +51,47 @@ function subscribeToSystemTheme(onStoreChange: () => void) {
   return () => mediaQuery.removeListener(handler);
 }
 
+function subscribeToStoredTheme(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  function handleStorage(event: StorageEvent) {
+    if (
+      event.key
+      && !SHARED_THEME_STORAGE_KEYS.includes(event.key as (typeof SHARED_THEME_STORAGE_KEYS)[number])
+    ) {
+      return;
+    }
+
+    onStoreChange();
+  }
+
+  window.addEventListener("storage", handleStorage);
+  window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", handleStorage);
+    window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  };
+}
+
+function getServerThemeSnapshot(): ThemeMode {
+  return DEFAULT_THEME;
+}
+
+function writeTheme(nextTheme: ThemeMode) {
+  for (const key of SHARED_THEME_STORAGE_KEYS) {
+    window.localStorage.setItem(key, nextTheme);
+  }
+  window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+}
+
 export function useTheme() {
-  const [theme, setThemeState] = useState<ThemeMode>(getInitialTheme);
+  const theme = useSyncExternalStore(
+    subscribeToStoredTheme,
+    getInitialTheme,
+    getServerThemeSnapshot,
+  );
   const systemTheme = useSyncExternalStore(
     subscribeToSystemTheme,
     getSystemTheme,
@@ -60,41 +100,21 @@ export function useTheme() {
   const resolvedTheme = theme === "system" ? systemTheme : theme;
 
   useEffect(() => {
-    function handleStorage(event: StorageEvent) {
-      if (
-        event.key
-        && !SHARED_THEME_STORAGE_KEYS.includes(event.key as (typeof SHARED_THEME_STORAGE_KEYS)[number])
-      ) {
-        return;
-      }
-
-      const nextTheme = getInitialTheme();
-      setThemeState((currentTheme) => (currentTheme === nextTheme ? currentTheme : nextTheme));
-    }
-
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
-
-  useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = resolvedTheme;
     root.dataset.themeMode = theme;
     root.style.colorScheme = resolvedTheme;
     root.classList.toggle("dark", resolvedTheme === "dark");
-    for (const key of SHARED_THEME_STORAGE_KEYS) {
-      window.localStorage.setItem(key, theme);
-    }
   }, [theme, resolvedTheme]);
 
   const toggle = useCallback(() => {
     const currentResolvedTheme = theme === "system" ? systemTheme : theme;
     const nextTheme: ThemeMode = resolveThemeMode(currentResolvedTheme === "dark" ? "light" : "dark");
-    setThemeState(nextTheme);
+    writeTheme(nextTheme);
   }, [systemTheme, theme]);
 
   const setTheme = useCallback((nextTheme: ThemeMode) => {
-    setThemeState(nextTheme);
+    writeTheme(nextTheme);
   }, []);
 
   return { theme, resolvedTheme, setTheme, toggle };

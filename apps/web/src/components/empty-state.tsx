@@ -15,8 +15,8 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl mb-4">
-        <div className="absolute inset-0 rounded-2xl bg-[color:var(--accent-blue)]/[0.06]" style={{ animation: "empty-float 3s ease-in-out infinite" }} />
-        <Icon size={28} strokeWidth={1.5} className="relative text-[color:var(--accent-blue)]/60" aria-hidden="true" />
+        <div className="absolute inset-0 rounded-2xl bg-[var(--accent-blue)]/[0.06]" style={{ animation: "empty-float 3s ease-in-out infinite" }} />
+        <Icon size={28} strokeWidth={1.5} className="relative text-[var(--accent-blue)]/60" aria-hidden="true" />
       </div>
       <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
       <p className="text-sm text-muted-foreground max-w-sm mb-4">{description}</p>

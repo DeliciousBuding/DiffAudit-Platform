@@ -26,10 +26,10 @@ const iconMap: Record<ToastItem["type"], React.ReactNode> = {
 };
 
 const variantClasses: Record<ToastItem["type"], string> = {
-  success: "border-[color:var(--color-accent-green)]/30 bg-[color:var(--color-accent-green)]/10 text-[color:var(--color-accent-green)]",
-  error: "border-[color:var(--color-accent-coral)]/30 bg-[color:var(--color-accent-coral)]/10 text-[color:var(--color-accent-coral)]",
-  warning: "border-[color:var(--color-accent-amber)]/30 bg-[color:var(--color-accent-amber)]/10 text-[color:var(--color-accent-amber)]",
-  info: "border-[color:var(--color-accent-blue)]/30 bg-[color:var(--color-accent-blue)]/10 text-[color:var(--color-accent-blue)]",
+  success: "border-[var(--color-accent-green)]/30 bg-[var(--color-accent-green)]/10 text-[var(--color-accent-green)]",
+  error: "border-[var(--color-accent-coral)]/30 bg-[var(--color-accent-coral)]/10 text-[var(--color-accent-coral)]",
+  warning: "border-[var(--color-accent-amber)]/30 bg-[var(--color-accent-amber)]/10 text-[var(--color-accent-amber)]",
+  info: "border-[var(--color-accent-blue)]/30 bg-[var(--color-accent-blue)]/10 text-[var(--color-accent-blue)]",
 };
 
 function ToastCard({ toast, onDismiss }: { toast: ToastItem; onDismiss: () => void }) {

@@ -5,18 +5,15 @@ import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { UserAvatar } from "@/components/user-avatar";
 import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
-import { StatusBadge } from "@/components/status-badge";
 import { PlatformNavMobile } from "@/components/platform-nav.client";
 import { WorkspaceTopbarTitle } from "@/components/workspace-topbar-title";
 import { WorkspaceGlobalSearch } from "@/components/workspace-global-search";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
-import { getWorkspaceDataMode } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export async function PlatformShell({ children }: { children: React.ReactNode }) {
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
-  const dataMode = await getWorkspaceDataMode();
 
   return (
     <div className="workspace-layout">
@@ -33,11 +30,6 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
         <header className="workspace-topbar">
           <div className="workspace-topbar-left">
             <WorkspaceTopbarTitle locale={locale} />
-            {dataMode !== "demo" ? (
-              <StatusBadge tone="success">{copy.shell.liveMode}</StatusBadge>
-            ) : (
-              <StatusBadge tone="warning">{copy.shell.demoMode}</StatusBadge>
-            )}
           </div>
           <WorkspaceGlobalSearch locale={locale} />
           <div className="workspace-topbar-actions">

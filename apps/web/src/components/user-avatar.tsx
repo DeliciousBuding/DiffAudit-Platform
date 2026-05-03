@@ -114,7 +114,7 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
             onError={() => setAvatarError(true)}
           />
         ) : (
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[11px] font-semibold text-[color:var(--accent-blue)]">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-[11px] font-semibold text-[var(--accent-blue)]">
             {initial}
           </div>
         )}
@@ -137,7 +137,7 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-sm font-semibold text-[color:var(--accent-blue)]">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-sm font-semibold text-[var(--accent-blue)]">
                   {initial}
                 </div>
               )}

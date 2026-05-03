@@ -43,6 +43,7 @@ const DETAIL_COPY: Record<
     copyLink: string;
     linkCopied: string;
     sourcePath: string;
+    reAudit: string;
   }
 > = {
   "en-US": {
@@ -350,7 +351,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
               <div className="flex items-center gap-2">
                 {finding.defense !== "none" ? (
                   <>
-                    <ShieldCheck size={14} strokeWidth={1.5} className="text-[color:var(--success)]" />
+                    <ShieldCheck size={14} strokeWidth={1.5} className="text-[var(--success)]" />
                     <span className="mono text-[12px]">{finding.defense}</span>
                     <CopyButton text={finding.defense} label="defense" />
                   </>
@@ -368,13 +369,13 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
             {/* Metrics */}
             {finding.aucLabel && finding.aucLabel !== "n/a" && (
               <DetailRow label={copy.auc}>
-                <span className={`mono text-[12px] ${parseFloat(finding.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(finding.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : ""}`}>{finding.aucLabel}</span>
+                <span className={`mono text-[12px] ${parseFloat(finding.aucLabel) > 0.85 ? "text-[var(--risk-high)] font-medium" : parseFloat(finding.aucLabel) > 0.7 ? "text-[var(--warning)]" : ""}`}>{finding.aucLabel}</span>
               </DetailRow>
             )}
 
             {finding.asrLabel && finding.asrLabel !== "n/a" && (
               <DetailRow label={copy.asr}>
-                <span className={`mono text-[12px] ${parseFloat(finding.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(finding.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : ""}`}>{finding.asrLabel}</span>
+                <span className={`mono text-[12px] ${parseFloat(finding.asrLabel) > 0.5 ? "text-[var(--risk-high)] font-medium" : parseFloat(finding.asrLabel) > 0.3 ? "text-[var(--warning)]" : ""}`}>{finding.asrLabel}</span>
               </DetailRow>
             )}
 
@@ -421,7 +422,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
           <div className="flex items-center gap-3">
             <Link
               href={buildReportHref(finding.track as "black-box" | "gray-box" | "white-box", "audit")}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--accent-blue)] transition-colors hover:text-foreground"
             >
               {copy.viewReport}
               <ExternalLink size={12} strokeWidth={1.5} />

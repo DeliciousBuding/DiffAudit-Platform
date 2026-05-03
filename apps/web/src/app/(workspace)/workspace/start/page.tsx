@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, CheckCircle, ChevronRight, Info } from "lucide-react";
+import { ArrowRight, ChevronRight, Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { ClickableRow } from "@/components/clickable-row";
@@ -13,8 +13,6 @@ import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
 import { classifyRisk } from "@/lib/risk-report";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
-import { InteractiveRiskDistribution } from "@/components/chart-risk-distribution";
-import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { ChartRiskRadar } from "@/components/chart-risk-radar";
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
 import { MetricTooltip } from "@/components/metric-tooltip";
@@ -40,24 +38,23 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 /** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1, clickable drill-down */
 function KpiCardWithTrend({ label, value, note, trend, trendValue, alert, href, ariaLabel }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; trendValue?: string; alert?: "danger" | "warning" | "info" | null; href?: string; ariaLabel?: string }) {
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
-  const trendColor = trend === "up" ? "text-[color:var(--warning)]" : trend === "down" ? "text-[color:var(--success)]" : "text-muted-foreground";
+  const trendColor = trend === "up" ? "text-[var(--warning)]" : trend === "down" ? "text-[var(--success)]" : "text-muted-foreground";
   const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
-  const alertBorder = alert === "danger" ? "border-l-2 border-l-[var(--risk-high)]" : alert === "warning" ? "border-l-2 border-l-[var(--warning)]" : alert === "info" ? "border-l-2 border-l-[var(--accent-blue)]" : "";
-  const alertBg = alert === "danger" ? "bg-[color:var(--risk-high)]/[0.03]" : alert === "warning" ? "bg-[color:var(--warning)]/[0.03]" : "";
+  const alertBg = alert === "danger" ? "bg-[var(--risk-high)]/[0.03]" : alert === "warning" ? "bg-[var(--warning)]/[0.03]" : "";
   const content = (
     <>
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <AnimatedValue value={value} className={`text-2xl font-bold leading-none ${alert === "danger" ? "text-[color:var(--risk-high)]" : ""}`} />
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="mt-1.5 flex items-baseline gap-2">
+        <AnimatedValue value={value} className={`text-xl font-bold leading-none ${alert === "danger" ? "text-[var(--risk-high)]" : ""}`} />
         {trendIcon ? (
           <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${trendColor}`} aria-label={trendLabel} role="img">
             {trendIcon}
             {trendValue && <span>{trendValue}</span>}
           </span>
         ) : null}
-        {alert === "danger" && <span className="text-base text-[color:var(--risk-high)]" role="img" aria-label="needs attention">!</span>}
+        {alert === "danger" && <span className="text-base text-[var(--risk-high)]" role="img" aria-label="needs attention">!</span>}
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground leading-tight">{note}</p>
+      <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{note}</p>
       {href && (
         <ChevronRight
           size={14}
@@ -75,7 +72,7 @@ function KpiCardWithTrend({ label, value, note, trend, trendValue, alert, href, 
         href={href}
         role="link"
         aria-label={ariaLabel}
-        className={`group relative rounded-2xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:border-[color:var(--accent-blue)]/30 hover:-translate-y-px cursor-pointer ${alertBorder} ${alertBg}`}
+        className={`group relative rounded-2xl border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[var(--accent-blue)]/30 hover:-translate-y-px cursor-pointer ${alertBg}`}
       >
         {content}
       </Link>
@@ -83,7 +80,7 @@ function KpiCardWithTrend({ label, value, note, trend, trendValue, alert, href, 
   }
 
   return (
-    <div className={`rounded-2xl border border-border bg-card p-4 ${alertBorder} ${alertBg}`}>
+    <div className={`rounded-2xl border border-border bg-card p-3 ${alertBg}`}>
       {content}
     </div>
   );
@@ -97,7 +94,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     getWorkspaceCatalogData(),
     getWorkspaceAttackDefenseData(),
   ]);
-  const dataFetchedAt = new Date();
 
   const activeContracts = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
@@ -154,39 +150,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     ? generateRocData(avgAuc !== "n/a" ? parseFloat(avgAuc) : 0.85)
     : generateRocData(0.85);
 
-  const riskDistData = [
-    { key: "high", label: copy.sections.riskLabels.high, count: riskCounts.high },
-    { key: "medium", label: copy.sections.riskLabels.medium, count: riskCounts.medium },
-    { key: "low", label: copy.sections.riskLabels.low, count: riskCounts.low },
-  ];
-
-  // Compute attack comparison from real data — group by attack family
-  const attackFamilyMap: Record<string, { aucSum: number; count: number }> = {};
-  for (const row of table?.rows ?? []) {
-    const auc = parseFloat(row.aucLabel);
-    if (isNaN(auc)) continue;
-    const family = row.attack.toLowerCase();
-    if (!attackFamilyMap[family]) {
-      attackFamilyMap[family] = { aucSum: 0, count: 0 };
-    }
-    attackFamilyMap[family].aucSum += auc;
-    attackFamilyMap[family].count++;
-  }
-  const hasAttackData = Object.keys(attackFamilyMap).length > 0;
-  const attackComparisonData = hasAttackData
-    ? [
-        {
-          dimension: "AUC",
-          ...Object.fromEntries(
-            Object.entries(attackFamilyMap).map(([family, { aucSum, count }]) => [
-              family.charAt(0).toUpperCase() + family.slice(1),
-              count > 0 ? parseFloat((aucSum / count).toFixed(3)) : 0,
-            ]),
-          ),
-        },
-      ]
-    : [];
-
   // Risk radar data — 7.1
   const avgAucNum = avgAuc !== "n/a" ? parseFloat(avgAuc) : 0.85;
   const avgAsr = (table?.rows ?? [])
@@ -208,28 +171,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     { dimension: "defense", label: copy.sections.radarLabels.defense, value: defenseEffectiveness },
   ];
 
-  // Suggested next step — 2.4.5
-  const suggestions: Array<{ text: string; href: string }> = [];
-  if (riskCounts.high > 0) suggestions.push({ text: copy.suggestions.highRisk(riskCounts.high), href: "/workspace/risk-findings" });
-  if (defendedRows === 0 && totalRows > 0) suggestions.push({ text: copy.suggestions.noDefense, href: "/workspace/audits/new" });
-  if (riskCounts.medium > 2) suggestions.push({ text: copy.suggestions.mediumRisk(riskCounts.medium), href: "/workspace/risk-findings" });
-
   const isEmpty = totalRows === 0;
 
   const defenseRate = totalRows > 0 ? defendedRows / totalRows : 1;
   const avgAucAlert = avgAuc !== "n/a" && parseFloat(avgAuc) > 0.85;
 
-  // Per-track evaluation counts
-  const allRows = table?.rows ?? [];
-  const trackCounts = {
-    "black-box": allRows.filter((r) => r.track === "black-box").length,
-    "gray-box": allRows.filter((r) => r.track === "gray-box").length,
-    "white-box": allRows.filter((r) => r.track === "white-box").length,
-  };
-  const tcs = locale === "zh-CN" ? " 项评估" : " evals";
-
   const defensePct = Math.round(defenseRate * 100);
-  const defenseSuffix = locale === "zh-CN" ? ` · 防御率 ${defensePct}%` : ` · ${defensePct}% defended`;
 
   // Composite Privacy Health Score (0-100)
   const healthAucNum = aucValues.length > 0 ? parseFloat(avgAuc) : 0;
@@ -241,163 +188,56 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const healthScoreColor = rawScore >= 80 ? "var(--success)" : rawScore >= 60 ? "var(--warning)" : rawScore >= 0 ? "var(--risk-high)" : "var(--muted-foreground)";
   const healthScoreText = rawScore >= 80 ? (locale === "zh-CN" ? "良好" : "Good") : rawScore >= 60 ? (locale === "zh-CN" ? "需关注" : "Needs attention") : rawScore >= 0 ? (locale === "zh-CN" ? "高风险" : "At risk") : (locale === "zh-CN" ? "暂无数据" : "No data");
 
-  // System health summary
-  const healthStatus = riskCounts.high > 0
-    ? { tone: "warning" as const, icon: <AlertTriangle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `${riskCounts.high} 项高危发现需要关注${defenseSuffix}` : `${riskCounts.high} high-risk findings need attention${defenseSuffix}` }
-    : riskCounts.medium > 0
-      ? { tone: "warning" as const, icon: <AlertTriangle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `${riskCounts.medium} 项中危发现待处理${defenseSuffix}` : `${riskCounts.medium} medium-risk findings${defenseSuffix}` }
-      : totalRows > 0
-        ? { tone: "success" as const, icon: <CheckCircle size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? `系统健康 · ${totalRows} 项评估完成${defenseSuffix}` : `Systems healthy · ${totalRows} evaluations${defenseSuffix}` }
-        : { tone: "info" as const, icon: <Info size={14} strokeWidth={1.5} aria-hidden="true" />, text: locale === "zh-CN" ? "暂无评估数据 — 创建你的第一个审计任务" : "No evaluations yet — create your first audit task" };
-
   return (
     <>
-      {/* Privacy Health Score — single-glance status */}
-      {totalRows > 0 && (
-        <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 card-animate">
-          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-            <svg className="h-14 w-14 -rotate-90" viewBox="0 0 56 56" aria-hidden="true">
-              <circle cx="28" cy="28" r="24" fill="none" stroke="var(--muted)" strokeWidth="4" opacity="0.3" />
-              <circle cx="28" cy="28" r="24" fill="none" stroke={healthScoreColor} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${(rawScore / 100) * 150.8} 150.8`} className="transition-all duration-1000" />
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-lg font-bold" style={{ color: healthScoreColor }}>{rawScore >= 0 ? rawScore : "--"}</span>
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{healthScoreLabel}</div>
-            <div className="mt-0.5 text-sm font-medium" style={{ color: healthScoreColor }}>{healthScoreText}</div>
-            <p className="mt-0.5 text-[11px] text-muted-foreground leading-4">
-              {locale === "zh-CN"
-                ? `基于 ${totalRows} 项评估，平均 AUC ${avgAuc}，${defensePct}% 已防御`
-                : `Based on ${totalRows} evaluations, avg AUC ${avgAuc}, ${defensePct}% defended`}
-            </p>
+      <div className="workspace-overview-hero">
+        <div className="workspace-overview-summary">
+          {totalRows > 0 && (
+            <div className="workspace-health-card card-animate">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+                <svg className="h-12 w-12 -rotate-90" viewBox="0 0 56 56" aria-hidden="true">
+                  <circle cx="28" cy="28" r="24" fill="none" stroke="var(--muted)" strokeWidth="4" opacity="0.3" />
+                  <circle cx="28" cy="28" r="24" fill="none" stroke={healthScoreColor} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${(rawScore / 100) * 150.8} 150.8`} className="transition-all duration-1000" />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-base font-bold" style={{ color: healthScoreColor }}>{rawScore >= 0 ? rawScore : "--"}</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{healthScoreLabel}</div>
+                <div className="mt-0.5 text-sm font-medium" style={{ color: healthScoreColor }}>{healthScoreText}</div>
+                <p className="mt-0.5 text-[11px] text-muted-foreground leading-4">
+                  {locale === "zh-CN"
+                    ? `${totalRows} 项评估 · 平均 AUC ${avgAuc} · ${defensePct}% 已防御`
+                    : `${totalRows} evaluations · avg AUC ${avgAuc} · ${defensePct}% defended`}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="workspace-kpi-grid">
+            <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" href="/workspace/audits" ariaLabel={`${copy.kpis.liveContractsLabel} — ${copy.kpis.liveContractsNote}`} />
+            <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.defendedRowsLabel} — ${copy.kpis.defendedRowsNote}`} />
+            <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} trendValue={aucTrendValue} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
+            <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
           </div>
         </div>
-      )}
-
-      {/* KPI row — with trend indicators 2.4.1, clickable drill-down */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" href="/workspace/audits" ariaLabel={`${copy.kpis.liveContractsLabel} — ${copy.kpis.liveContractsNote}`} />
-        <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.defendedRowsLabel} — ${copy.kpis.defendedRowsNote}`} />
-        <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} trendValue={aucTrendValue} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
-        <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
-      </div>
-      <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <span className="text-muted-foreground/60">{locale === "zh-CN" ? "数据更新于" : "Updated"}</span>
-          <span className="font-medium">{dataFetchedAt.toLocaleString(locale === "zh-CN" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-        </span>
-      </div>
-
-      {/* System health summary */}
-      {healthStatus && (
-        healthStatus.tone === "warning" ? (
-          <Link
-            href="/workspace/risk-findings"
-            className="flex items-center gap-2 rounded-2xl border border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 px-4 py-2.5 text-[13px] text-[color:var(--warning)] transition-colors hover:bg-[color:var(--warning)]/10 cursor-pointer"
+        {totalRows > 0 && (
+          <WorkspaceSectionCard
+            title={copy.sections.chartTitles.riskRadar}
+            actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
+            className="workspace-overview-radar chart-animate"
           >
-            <span className="shrink-0">{healthStatus.icon}</span>
-            <span className="font-medium">{healthStatus.text}</span>
-          </Link>
-        ) : (
-          <div className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] ${
-            healthStatus.tone === "info"
-              ? "border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 text-[color:var(--accent-blue)]"
-              : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
-          }`}>
-            <span className="shrink-0">{healthStatus.icon}</span>
-            <span className="font-medium">{healthStatus.text}</span>
-          </div>
-        )
-      )}
-
-      {/* Audit track quick-access cards — Platform Boost */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Link href="/workspace/audits/new?track=black-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/10 text-[10px] font-bold text-[color:var(--accent-blue)]">1</span>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.blackBoxLabel}</span>
-            {trackCounts["black-box"] > 0 && (
-              <span className="ml-auto text-[11px] text-muted-foreground">{trackCounts["black-box"]}{tcs}</span>
-            )}
-            <span className={`rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]${trackCounts["black-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.high}</span>
-          </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--accent-blue)] transition-colors">{copy.auditTracks.blackBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.blackBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            {copy.auditTracks.createAudit}
-            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-          </div>
-        </Link>
-
-        <Link href="/workspace/audits/new?track=gray-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--warning)]/10 text-[10px] font-bold text-[color:var(--warning)]">2</span>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.grayBoxLabel}</span>
-            {trackCounts["gray-box"] > 0 && (
-              <span className="ml-auto text-[11px] text-muted-foreground">{trackCounts["gray-box"]}{tcs}</span>
-            )}
-            <span className={`rounded-full bg-[color:var(--warning)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--warning)]${trackCounts["gray-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.high}</span>
-          </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--warning)] transition-colors">{copy.auditTracks.grayBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.grayBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            {copy.auditTracks.createAudit}
-            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-          </div>
-        </Link>
-
-        <Link href="/workspace/audits/new?track=white-box" className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-[color:var(--accent-blue)]/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--success)]/10 text-[10px] font-bold text-[color:var(--success)]">3</span>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.auditTracks.whiteBoxLabel}</span>
-            {trackCounts["white-box"] > 0 && (
-              <span className="ml-auto text-[11px] text-muted-foreground">{trackCounts["white-box"]}{tcs}</span>
-            )}
-            <span className={`rounded-full bg-[color:var(--risk-high)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--risk-high)]${trackCounts["white-box"] > 0 ? "" : " ml-auto"}`}>{copy.riskBadgeLabels.critical}</span>
-          </div>
-          <h3 className="text-base font-semibold mb-1.5 group-hover:text-[color:var(--success)] transition-colors">{copy.auditTracks.whiteBoxTitle}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{copy.auditTracks.whiteBoxDesc}</p>
-          <div className="mt-3 flex items-center gap-1 text-xs text-[color:var(--accent-blue)] font-medium">
-            {copy.auditTracks.createAudit}
-            <ArrowRight size={12} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-          </div>
-        </Link>
+            <div className="px-4 py-2">
+              <ChartRiskRadar data={radarData} height={184} />
+            </div>
+          </WorkspaceSectionCard>
+        )}
       </div>
-
-      {/* System progress bar — audit coverage overview */}
-      {totalRows > 0 && (
-        <WorkspaceSectionCard title={copy.coverageBar.title}>
-          <div className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</span>
-          </div>
-          <div className="h-2 bg-muted/30 rounded-full overflow-hidden" role="progressbar" aria-valuenow={totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0} aria-valuemin={0} aria-valuemax={100} aria-label={copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}>
-            <div className="h-full bg-gradient-to-r from-[color:var(--accent-blue)] to-[color:var(--success)] rounded-full transition-all" style={{ width: `${totalRows > 0 ? Math.round((defendedRows / totalRows) * 100) : 0}%` }} />
-          </div>
-          <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--track-black)]" aria-hidden="true" />
-              <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--track-gray)]" aria-hidden="true" />
-              <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--track-white)]" aria-hidden="true" />
-              <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}{copy.coverageBar.trackCountSuffix}</span></span>
-            </div>
-          </div>
-          </div>
-        </WorkspaceSectionCard>
-      )}
 
       {/* Empty workspace guidance — 7.2.3 */}
       {isEmpty ? (
-        <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
+        <section className="border border-[var(--accent-blue)]/30 bg-[var(--accent-blue)]/5 rounded-2xl p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20">
-              <Info size={16} strokeWidth={1.5} className="text-[color:var(--accent-blue)]" aria-hidden="true" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/20">
+              <Info size={16} strokeWidth={1.5} className="text-[var(--accent-blue)]" aria-hidden="true" />
             </div>
             <div className="flex-1">
               <h3 className="text-sm font-semibold mb-1">{localeData.emptyWorkspace.title}</h3>
@@ -406,7 +246,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
                 {localeData.emptyWorkspace.steps.map((step) => (
                   <div key={step.step} className="flex items-start gap-2">
-                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-blue)]/20 text-[10px] font-semibold text-[color:var(--accent-blue)]">
+                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/20 text-[10px] font-semibold text-[var(--accent-blue)]">
                       {step.step}
                     </span>
                     <div>
@@ -419,7 +259,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               {/* CTA */}
               <Link
                 href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)] bg-[color:var(--accent-blue)] px-4 py-2 text-xs font-medium text-background transition-colors hover:bg-[var(--accent-blue-hover)]"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-2 text-xs font-medium text-background transition-colors hover:bg-[var(--accent-blue-hover)]"
               >
                 {localeData.emptyWorkspace.cta}
                 <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />
@@ -427,35 +267,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </div>
           </div>
         </section>
-      ) : (
-        /* Suggested next step — 2.4.5 */
-        suggestions.length > 0 && (
-          <section className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
-            <div className="flex items-start gap-2">
-              <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" aria-hidden="true" />
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent-blue)] mb-1">
-                  {copy.sections.suggestedNextSteps}
-                </h3>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {suggestions.map((s, i) => (
-                    <Link key={i} href={s.href} className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/10 px-3 py-1.5 text-[11px] font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/20">
-                      {s.text}
-                      <ArrowRight size={10} strokeWidth={1.5} aria-hidden="true" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )
-      )}
+      ) : null}
 
-      {/* Risk distribution */}
-      {totalRisk > 0 && (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-            <Link href="/workspace/risk-findings?severity=high" className="group rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)] transition-colors hover:bg-muted/10">
+      {(totalRisk > 0 || totalRows > 0) && (
+        <div className="workspace-risk-coverage-row">
+          {totalRisk > 0 && (
+            <div className="workspace-risk-strip">
+            <Link href="/workspace/risk-findings?severity=high" className="group rounded-2xl border border-border bg-[var(--risk-high)]/[0.035] p-3 transition-colors hover:bg-[var(--risk-high)]/[0.055]">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.high}
               </div>
@@ -464,7 +282,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 {copy.riskInterpretations.high}
               </p>
             </Link>
-            <Link href="/workspace/risk-findings?severity=medium" className="group rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)] transition-colors hover:bg-muted/10">
+            <Link href="/workspace/risk-findings?severity=medium" className="group rounded-2xl border border-border bg-[var(--risk-medium)]/[0.035] p-3 transition-colors hover:bg-[var(--risk-medium)]/[0.055]">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.medium}
               </div>
@@ -473,7 +291,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 {copy.riskInterpretations.medium}
               </p>
             </Link>
-            <Link href="/workspace/risk-findings?severity=low" className="group rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)] transition-colors hover:bg-muted/10">
+            <Link href="/workspace/risk-findings?severity=low" className="group rounded-2xl border border-border bg-[var(--risk-low)]/[0.035] p-3 transition-colors hover:bg-[var(--risk-low)]/[0.055]">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.low}
               </div>
@@ -482,19 +300,36 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 {copy.riskInterpretations.low}
               </p>
             </Link>
-          </div>
-
-          {/* Risk Radar — 7.1 */}
-          {totalRows > 0 && (
-          <WorkspaceSectionCard
-            title={copy.sections.chartTitles.riskRadar}
-            actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
-            className="chart-animate"
-          >
-            <div className="p-4">
-              <ChartRiskRadar data={radarData} height={220} />
             </div>
-          </WorkspaceSectionCard>
+          )}
+
+          {totalRows > 0 && (
+            <section className="workspace-coverage-compact">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-[13px] font-bold">{copy.coverageBar.title}</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</p>
+                </div>
+                <div className="mono text-xl font-semibold">{defensePct}%</div>
+              </div>
+              <div className="mt-3 h-2 bg-muted/30 rounded-full overflow-hidden" role="progressbar" aria-valuenow={defensePct} aria-valuemin={0} aria-valuemax={100} aria-label={copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}>
+                <div className="h-full bg-gradient-to-r from-[var(--accent-blue)] to-[var(--success)] rounded-full transition-all" style={{ width: `${defensePct}%` }} />
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-[11px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[var(--track-black)]" aria-hidden="true" />
+                  <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}</span></span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[var(--track-gray)]" aria-hidden="true" />
+                  <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}</span></span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[var(--track-white)]" aria-hidden="true" />
+                  <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}</span></span>
+                </div>
+              </div>
+            </section>
           )}
         </div>
       )}
@@ -525,31 +360,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </WorkspaceSectionCard>
 
-        {totalRisk > 0 && (
-          <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution} className="chart-animate">
-            <div className="p-4">
-              <InteractiveRiskDistribution data={riskDistData} />
-            </div>
-          </WorkspaceSectionCard>
-        )}
-
-        <WorkspaceSectionCard title={copy.sections.chartTitles.attackComparison} className="chart-animate">
-          <div className="p-4">
-            {attackComparisonData.length > 0 ? (
-              <ChartAttackComparison data={attackComparisonData} />
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
-                {copy.sections.chartTitles.noDataAvailable}
-              </div>
-            )}
-          </div>
-        </WorkspaceSectionCard>
       </div>
 
       {/* Main content grid */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4">
         {/* Recent results table */}
-        <WorkspaceSectionCard title={copy.sections.recentResults} className="lg:col-span-2">
+        <WorkspaceSectionCard title={copy.sections.recentResults}>
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
               <table className="w-full border-collapse text-[13px]">
@@ -567,18 +383,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <tbody>
                   {recentRows.map((row, index) => {
                     const auc = parseFloat(row.aucLabel);
-                    const rowBorder = !isNaN(auc)
-                      ? auc > 0.85
-                        ? "border-l-2 border-l-[var(--risk-high)]"
-                        : auc >= 0.7
-                          ? "border-l-2 border-l-[var(--warning)]"
-                          : "border-l-2 border-l-[var(--success)]"
-                      : "";
                     return (
                     <ClickableRow
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
                       href={`/workspace/risk-findings?model=${encodeURIComponent(row.model)}`}
-                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 ${rowBorder}`}
+                      className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
                     >
                       <td className="px-4 py-3">
                         {!isNaN(auc) ? <RiskBadge auc={auc} compact /> : "—"}
@@ -601,20 +410,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 {copy.emptyResults}
               </div>
             )}
-          </div>
-        </WorkspaceSectionCard>
-
-        {/* Tasks panel */}
-        <WorkspaceSectionCard title={copy.sections.tasks}>
-          <div className="p-4">
-            {copy.todoItems.map((item, index) => (
-              <div key={item} className="flex items-start gap-2 border-b border-border py-2 last:border-0">
-                <span className="mono inline-flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[10px] font-semibold rounded-full">
-                  {index + 1}
-                </span>
-                <p className="text-sm leading-relaxed text-muted-foreground">{item}</p>
-              </div>
-            ))}
           </div>
         </WorkspaceSectionCard>
       </div>

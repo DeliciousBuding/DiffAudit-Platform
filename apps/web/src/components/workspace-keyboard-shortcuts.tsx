@@ -56,7 +56,7 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
       // Ctrl+B: Toggle sidebar collapse
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
         event.preventDefault();
-        const toggleFn = (window as Record<string, unknown>).__toggleSidebar;
+        const toggleFn = (window as unknown as Record<string, unknown>).__toggleSidebar;
         if (typeof toggleFn === "function") {
           toggleFn();
         }

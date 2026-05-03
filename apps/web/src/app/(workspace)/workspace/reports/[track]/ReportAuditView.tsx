@@ -98,7 +98,7 @@ export function ReportAuditView({
   return (
     <div className="space-y-4">
       {jobContext ? (
-        <section className="rounded-2xl border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3">
+        <section className="rounded-2xl border border-[var(--accent-blue)]/25 bg-[var(--accent-blue)]/5 px-4 py-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-sm font-semibold text-foreground">{copy.jobContext.title}</div>
@@ -282,13 +282,13 @@ export function ReportAuditView({
                       key={`${key}::${index}`}
                       className={`border-b border-border transition-colors hover:bg-muted/20 ${
                         isHighlighted
-                          ? "border-l-2 border-l-[var(--accent-blue)] bg-[color:var(--accent-blue)]/5"
+                          ? "border-l-2 border-l-[var(--accent-blue)] bg-[var(--accent-blue)]/5"
                           : index % 2 === 0 ? "bg-background" : "bg-muted/10"
                       }`}
                     >
                     <td className="px-3 py-3 font-medium">
                       {isHighlighted ? (
-                        <span className="mb-1 inline-flex rounded-full border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-blue)]">
+                        <span className="mb-1 inline-flex rounded-full border border-[var(--accent-blue)]/25 bg-[var(--accent-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-blue)]">
                           {copy.jobContext.matchedRow}
                         </span>
                       ) : null}

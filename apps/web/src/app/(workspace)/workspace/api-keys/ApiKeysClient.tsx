@@ -220,10 +220,10 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       title={copy.title}
       titleClassName="text-xl"
     >
-    <div className="workspace-page-container" style={{ maxWidth: 1180 }}>
+    <div className="workspace-page-container">
       {/* Info banner + create button row */}
-      <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
-        <div className="flex items-start gap-3 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.06] px-5 py-3.5 text-sm shadow-sm dark:border-[var(--accent-blue)]/15 dark:bg-[var(--accent-blue)]/[0.08]">
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-stretch">
+        <div className="flex flex-1 items-center gap-3 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.06] px-5 py-3.5 text-sm shadow-sm dark:border-[var(--accent-blue)]/15 dark:bg-[var(--accent-blue)]/[0.08]">
           <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]">
             <Info size={14} strokeWidth={1.5} aria-hidden="true" />
           </span>
@@ -235,7 +235,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         {!showCreate && !createdKey ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="workspace-btn-primary self-center px-5 py-2.5 text-sm font-semibold shadow-[0_12px_32px_rgba(47,109,246,0.16)] hover:opacity-95"
+            className="workspace-btn-primary self-stretch px-5 py-2.5 text-sm font-semibold shadow-[0_12px_32px_rgba(47,109,246,0.16)] hover:opacity-95 lg:min-w-[140px]"
           >
             <Plus size={14} strokeWidth={1.5} aria-hidden="true" />
             {copy.create}
@@ -276,12 +276,12 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
                 <p className="mt-2 text-[11px] text-[var(--accent-coral)]">{copy.noScopeError}</p>
               ) : null}
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCreate}
-                disabled={!canGenerate}
-                className="workspace-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
-              >
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCreate}
+                  disabled={!canGenerate}
+                  className="workspace-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
+                >
                 {copy.generate}
               </button>
               <button
@@ -345,7 +345,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         />
       ) : (
       <>
-      <ContextualTip id="api-keys-security" locale={locale}>
+      <ContextualTip id="api-keys-security" locale={locale} className="mb-3 w-full">
         {locale === "zh-CN" ? "API 密钥创建后仅显示一次，请立即复制保存。已停用的密钥无法恢复。" : "API keys are shown only once at creation — copy and save immediately. Revoked keys cannot be recovered."}
       </ContextualTip>
       <h3 className="mb-3 text-sm font-semibold text-foreground">{copy.activeKeys}</h3>
@@ -357,7 +357,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       >
       <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm dark:border-border/50 dark:shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
         {/* Table header */}
-        <div className="hidden border-b border-border/70 bg-muted/40 px-6 py-3 dark:bg-muted/20 md:grid md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:gap-4">
+        <div className="hidden border-b border-border/70 bg-muted/40 px-6 py-3 dark:bg-muted/20 md:grid md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:gap-4 md:items-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.keyName}</span>
           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.prefix}</span>
           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.permissions}</span>
@@ -372,10 +372,10 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               className={`group grid gap-4 px-6 py-4 transition-colors hover:bg-muted/20 dark:hover:bg-muted/20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:items-center md:gap-4 ${key.status === "revoked" ? "opacity-50" : ""}`}
             >
               {/* Key name + metadata */}
-              <div className="min-w-0">
-                <span className="truncate text-sm font-medium text-foreground">{key.name}</span>
-                <div className="mt-1 flex flex-wrap items-center gap-x-2.5 text-[11px] text-muted-foreground">
-                  <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px] dark:bg-muted/25">{copy.demoKeyPrefix}</span>
+                <div className="min-w-0">
+                  <span className="truncate text-sm font-medium text-foreground">{key.name}</span>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2.5 text-[11px] text-muted-foreground">
+                    <span className="rounded bg-muted/40 px-1.5 py-0.5 text-[10px] dark:bg-muted/25">{copy.demoKeyPrefix}</span>
                   <span>{copy.createdAt} {formatDateOnly(key.created, locale)}</span>
                   {key.lastUsed ? <span>{copy.lastUsed} {formatDateOnly(key.lastUsed, locale)}</span> : null}
                 </div>
@@ -411,7 +411,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end">
                 {key.status === "active" ? (
                   <button
                     onClick={() => setPendingRevokeId(key.id)}

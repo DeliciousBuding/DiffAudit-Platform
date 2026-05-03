@@ -53,7 +53,7 @@ app/
 - **Server/Client split**: Pages like `start/page.tsx` are async server components. Interactive components (TaskListClient, RiskFindingsClient) are `"use client"`.
 - **Data facade**: `lib/workspace-source.ts` provides view models. Pages don't import raw data adapters directly.
 - **i18n**: All user-facing copy lives in `lib/workspace-copy.ts` (en-US + zh-CN). No inline locale ternaries.
-- **Design tokens**: CSS custom properties in `globals.css`. JSX uses `[color:var(...)]` syntax for Tailwind colors.
+- **Design tokens**: CSS custom properties in `globals.css`. JSX uses `[var(...)]` syntax for Tailwind colors.
 
 ### Shared Hooks (`src/hooks/`)
 

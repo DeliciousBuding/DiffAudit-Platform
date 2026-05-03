@@ -250,7 +250,7 @@ export function JobDetailClient({
           </button>
           <Link
             href="/workspace/audits"
-            className="inline-flex text-[13px] text-[color:var(--accent-blue)] hover:underline"
+            className="inline-flex text-[13px] text-[var(--accent-blue)] hover:underline"
           >
             {WORKSPACE_COPY[locale].jobDetail.backToAudits}
           </Link>
@@ -282,13 +282,13 @@ export function JobDetailClient({
       </div>
 
       {job.summary_note && (
-        <div className="rounded-2xl border border-[color:var(--accent-blue)]/25 bg-[color:var(--accent-blue)]/5 px-4 py-3 text-[13px] leading-6 text-foreground">
+        <div className="rounded-2xl border border-[var(--accent-blue)]/25 bg-[var(--accent-blue)]/5 px-4 py-3 text-[13px] leading-6 text-foreground">
           {job.summary_note}
         </div>
       )}
 
       {reportHref ? (
-        <div className="rounded-2xl border border-[color:var(--success)]/25 bg-[color:var(--success)]/10 px-4 py-3">
+        <div className="rounded-2xl border border-[var(--success)]/25 bg-[var(--success)]/10 px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="text-[13px] font-bold text-foreground">{copy.jobDetail.reportReadyTitle}</div>
@@ -370,11 +370,11 @@ export function JobDetailClient({
 
       {/* Suggested next steps — moved above logs for visibility */}
       {suggestions.length > 0 && (
-        <div className="border border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 rounded-2xl p-4">
+        <div className="border border-[var(--accent-blue)]/30 bg-[var(--accent-blue)]/5 rounded-2xl p-4">
           <div className="flex items-start gap-2">
-            <Info size={16} strokeWidth={1.5} className="shrink-0 text-[color:var(--accent-blue)] mt-0.5" />
+            <Info size={16} strokeWidth={1.5} className="shrink-0 text-[var(--accent-blue)] mt-0.5" />
             <div>
-              <h3 className="text-[13px] font-bold text-[color:var(--accent-blue)] mb-1">
+              <h3 className="text-[13px] font-bold text-[var(--accent-blue)] mb-1">
                 {copy.jobDetail.nextStepsTitle}
               </h3>
               <ul className="space-y-1">
@@ -389,7 +389,7 @@ export function JobDetailClient({
 
       {/* Error message */}
       {job.status === "failed" && job.error && (
-        <div className="border border-[color:var(--warning-soft)] bg-[color:var(--warning-soft)]/20 rounded-2xl p-4">
+        <div className="border border-[var(--warning-soft)] bg-[var(--warning-soft)]/20 rounded-2xl p-4">
           <div className="text-[13px] font-bold text-warning mb-1">
             {copy.jobDetail.labels.error}
           </div>

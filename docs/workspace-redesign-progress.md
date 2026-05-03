@@ -795,8 +795,8 @@ Late design audit findings from R35:
 2. ✅ RiskFindings pagination: show "3 / 15 findings" when filters active (was showing only filtered count)
 
 **Design:**
-3. ✅ ModelAssets: standardize text-[var(--...)] → text-[color:var(--...)] (11 instances)
-4. ✅ Account: standardize text-[var(--...)] → text-[color:var(--...)] (9 instances)
+3. ✅ ModelAssets: standardize text-[var(--...)] → text-[var(--...)] (11 instances)
+4. ✅ Account: standardize text-[var(--...)] → text-[var(--...)] (9 instances)
 
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
@@ -842,7 +842,7 @@ Final quality audit before merge. All remaining inconsistencies fixed.
 3. ✅ Add explicit strokeWidth={1.5} to CommandPalette Search and item icons
 
 **Color syntax:**
-4. ✅ text-[var(--...)] → text-[color:var(--...)] in TaskListClient (3), reports (3), JobDetail (1)
+4. ✅ text-[var(--...)] → text-[var(--...)] in TaskListClient (3), reports (3), JobDetail (1)
 
 **Typography:**
 5. ✅ text-[10px] → text-[11px] on retry error, disclaimer, template buttons (4 instances)
@@ -1009,7 +1009,7 @@ Innovation round. Implements power-user keyboard navigation.
 
 **Design:**
 4. ✅ CreateTaskClient: text-white → text-background, bg-white → bg-background
-5. ✅ CreateTaskClient: text-[var(--info)] → text-[color:var(--info)]
+5. ✅ CreateTaskClient: text-[var(--info)] → text-[var(--info)]
 
 **Accessibility:**
 6. ✅ FindingDetailPanel: null guard on handleCopyLink
@@ -1068,7 +1068,7 @@ The workspace UI has been redesigned through 72 iterative rounds (R1-R72) coveri
 - Cards: `rounded-2xl`, inner elements: `rounded-xl`
 - Typography: `text-[13px]` body, `text-[11px]` secondary, `text-[10px]` badges only
 - Icons: Lucide React, `strokeWidth={1.5}`
-- Colors: CSS custom properties with `[color:var(...)]` syntax
+- Colors: CSS custom properties with `[var(...)]` syntax
 - Dark mode: full parity via CSS variables
 
 ### Custom Hooks
