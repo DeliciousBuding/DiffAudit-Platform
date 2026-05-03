@@ -441,6 +441,8 @@ export function SettingsClient({
   }
 
   function handleDeleteTemplate(id: string) {
+    const confirmed = window.confirm(locale === "zh-CN" ? "确定要删除此模板吗？" : "Are you sure you want to delete this template?");
+    if (!confirmed) return;
     persistTemplates(templates.filter((t) => t.id !== id));
   }
 

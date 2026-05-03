@@ -87,6 +87,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
   const tableCopy = copy.taskTable;
 
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
+  const [retryError, setRetryError] = useState<string | null>(null);
 
   // Filter by mode (active = running/queued, history = completed/failed/cancelled)
   const modeFiltered =
@@ -139,6 +140,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
+    setRetryError(null);
     try {
       const res = await fetch("/api/v1/audit/jobs", {
         method: "POST",
@@ -151,9 +153,11 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
       });
       if (res.ok) {
         onRefresh();
+      } else {
+        setRetryError(`Retry failed (HTTP ${res.status})`);
       }
     } catch {
-      // Ignore — user can try again
+      setRetryError(locale === "zh-CN" ? "无法连接到服务器" : "Could not reach the server");
     } finally {
       setRetryingJobId(null);
     }
@@ -365,14 +369,19 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                         </Link>
                       ) : null}
                       {job.status === "failed" && (
-                        <button
-                          onClick={() => handleRetry(job)}
-                          disabled={retryingJobId === job.job_id}
-                          className="text-xs text-[color:var(--warning)] hover:underline disabled:opacity-50"
-                          title={copy.retryTitle}
-                        >
-                          {retryingJobId === job.job_id ? copy.retrying : copy.retry}
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleRetry(job)}
+                            disabled={retryingJobId === job.job_id}
+                            className="text-xs text-[color:var(--warning)] hover:underline disabled:opacity-50"
+                            title={copy.retryTitle}
+                          >
+                            {retryingJobId === job.job_id ? copy.retrying : copy.retry}
+                          </button>
+                          {retryError && retryingJobId === null && (
+                            <span className="text-[10px] text-[color:var(--risk-high)]">{retryError}</span>
+                          )}
+                        </>
                       )}
                     </div>
                   </td>
