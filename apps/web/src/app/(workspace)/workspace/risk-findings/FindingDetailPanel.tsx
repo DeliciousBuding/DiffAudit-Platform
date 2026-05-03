@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Shield, ShieldCheck, ExternalLink, Link2 } from "lucide-react";
+import { X, Shield, ShieldCheck, ExternalLink, Link2, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -73,6 +73,7 @@ const DETAIL_COPY: Record<
     copyLink: "Copy Link",
     linkCopied: "Copied!",
     sourcePath: "Source Path",
+    reAudit: "Re-audit",
   },
   "zh-CN": {
     findingDetail: "发现详情",
@@ -102,6 +103,7 @@ const DETAIL_COPY: Record<
     copyLink: "复制链接",
     linkCopied: "已复制！",
     sourcePath: "来源路径",
+    reAudit: "重新审计",
   },
 };
 
@@ -366,13 +368,13 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
             {/* Metrics */}
             {finding.aucLabel && finding.aucLabel !== "n/a" && (
               <DetailRow label={copy.auc}>
-                <span className="mono text-[12px]">{finding.aucLabel}</span>
+                <span className={`mono text-[12px] ${parseFloat(finding.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(finding.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : ""}`}>{finding.aucLabel}</span>
               </DetailRow>
             )}
 
             {finding.asrLabel && finding.asrLabel !== "n/a" && (
               <DetailRow label={copy.asr}>
-                <span className="mono text-[12px]">{finding.asrLabel}</span>
+                <span className={`mono text-[12px] ${parseFloat(finding.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(finding.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : ""}`}>{finding.asrLabel}</span>
               </DetailRow>
             )}
 
@@ -416,13 +418,22 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-border px-5 py-4">
-          <Link
-            href={buildReportHref(finding.track as "black-box" | "gray-box" | "white-box", "audit")}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
-          >
-            {copy.viewReport}
-            <ExternalLink size={12} strokeWidth={1.5} />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={buildReportHref(finding.track as "black-box" | "gray-box" | "white-box", "audit")}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
+            >
+              {copy.viewReport}
+              <ExternalLink size={12} strokeWidth={1.5} />
+            </Link>
+            <Link
+              href={`/workspace/audits/new?track=${encodeURIComponent(finding.track)}&model=${encodeURIComponent(finding.model)}`}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <RotateCcw size={12} strokeWidth={1.5} />
+              {copy.reAudit}
+            </Link>
+          </div>
           <button
             type="button"
             onClick={handleCopyLink}

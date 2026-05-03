@@ -576,7 +576,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                     return (
                     <tr
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
-                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 ${rowBorder}`}
+                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 cursor-pointer ${rowBorder}`}
+                      role="link"
+                      tabIndex={0}
+                      onClick={() => { window.location.href = `/workspace/risk-findings?model=${encodeURIComponent(row.model)}`; }}
+                      onKeyDown={(e) => { if (e.key === "Enter") { window.location.href = `/workspace/risk-findings?model=${encodeURIComponent(row.model)}`; } }}
                     >
                       <td className="px-4 py-3">
                         {!isNaN(auc) ? <RiskBadge auc={auc} compact /> : "—"}

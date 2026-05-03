@@ -814,8 +814,8 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                             <tr key={`${row.attack}-${row.defense}-${index}`} className="border-b border-border/30 transition-colors hover:bg-muted/20">
                               <td className="px-4 py-3 font-medium text-foreground">{row.attack}</td>
                               <td className="px-4 py-3 text-muted-foreground">{row.defense}</td>
-                              <td className="mono px-4 py-3 text-right text-foreground">{row.aucLabel}</td>
-                              <td className="mono px-4 py-3 text-right text-foreground">{row.asrLabel}</td>
+                              <td className={`mono px-4 py-3 text-right ${parseFloat(row.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : "text-foreground"}`}>{row.aucLabel}</td>
+                              <td className={`mono px-4 py-3 text-right ${parseFloat(row.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : "text-foreground"}`}>{row.asrLabel}</td>
                               <td className="mono px-4 py-3 text-right text-foreground">{row.tprLabel}</td>
                               <td className="px-4 py-3 text-muted-foreground truncate max-w-[120px]">{row.sourcePath ?? "-"}</td>
                             </tr>

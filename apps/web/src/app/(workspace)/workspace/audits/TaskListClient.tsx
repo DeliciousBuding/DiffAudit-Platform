@@ -232,8 +232,19 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
               <ProgressStrip value={job.progress_pct} isActive={job.status === "running"} />
             )}
             {job.status === "running" && typeof job.progress_pct === "number" && (
-              <div className="mt-1 text-[11px] text-[color:var(--accent-blue)]">
-                {locale === "zh-CN" ? "采样中..." : "Sampling..."}
+              <div className="mt-1 flex items-center gap-2 text-[11px]">
+                <span className="text-[color:var(--accent-blue)]">
+                  {locale === "zh-CN" ? "采样中..." : "Sampling..."}
+                </span>
+                {job.progress_pct > 5 && (() => {
+                  const elapsed = new Date(job.updated_at).getTime() - new Date(job.created_at).getTime();
+                  const remaining = (elapsed / job.progress_pct) * (100 - job.progress_pct);
+                  const remainingMin = Math.round(remaining / 60000);
+                  if (remainingMin > 0) {
+                    return <span className="text-muted-foreground">~{remainingMin}{locale === "zh-CN" ? " 分钟剩余" : " min remaining"}</span>;
+                  }
+                  return null;
+                })()}
               </div>
             )}
             {job.status === "queued" && (
