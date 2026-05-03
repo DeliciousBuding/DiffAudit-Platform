@@ -3582,9 +3582,9 @@ html.dark {
 html[data-theme="dark"] body,
 html.dark body {
   background:
-    radial-gradient(circle at top left, rgba(91, 142, 249, 0.08), transparent 28%),
-    radial-gradient(circle at 86% 12%, rgba(255, 122, 100, 0.05), transparent 22%),
-    linear-gradient(180deg, #1e1e20 0%, #18181a 100%);
+    radial-gradient(circle at top left, rgba(91, 142, 249, 0.10), transparent 28%),
+    radial-gradient(circle at 86% 12%, rgba(255, 122, 100, 0.06), transparent 22%),
+    linear-gradient(180deg, var(--palette-grey-0) 0%, var(--palette-grey-10) 100%);
 }
 
 html[data-theme="dark"] .workspace-layout,

@@ -537,6 +537,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setActivePreset(null); setCurrentPage(1); }}
               placeholder={copy.searchPlaceholder}
+              aria-label={copy.searchPlaceholder}
               className="w-full rounded-xl border border-border bg-background py-2 pl-9 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
             />
             {searchQuery && (

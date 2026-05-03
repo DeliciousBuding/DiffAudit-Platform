@@ -63,9 +63,9 @@ function JobMetricCard({
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
-      <div className="text-[13px] font-bold text-muted-foreground mb-1">{label}</div>
-      <div className="mono text-lg font-semibold">{value}</div>
-      <div className="mt-1 text-[13px] leading-4 text-muted-foreground">{note}</div>
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">{label}</div>
+      <div className="mono text-2xl font-bold leading-tight">{value}</div>
+      <div className="mt-1 text-[11px] leading-4 text-muted-foreground">{note}</div>
     </div>
   );
 }
@@ -151,23 +151,26 @@ export function JobDetailClient({
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
-  const fetchJob = useCallback(async () => {
+  const fetchJob = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch(`/api/v1/audit/jobs/${jobId}`);
+      const res = await fetch(`/api/v1/audit/jobs/${jobId}`, { signal });
       if (!res.ok) {
+        if (signal?.aborted) return null;
         setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed} (HTTP ${res.status})`);
         return null;
       }
       const data = await res.json();
+      if (signal?.aborted) return null;
       const jobData: JobDetail = data.job ?? data;
       setJob(jobData);
       setFetchError(null);
       return jobData;
     } catch {
+      if (signal?.aborted) return null;
       setFetchError(WORKSPACE_COPY[locale].jobDetail.labels.apiUnreachable);
       return null;
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   }, [jobId, locale]);
 
@@ -189,12 +192,12 @@ export function JobDetailClient({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loop() {
-      if (cancelled) return;
-      const current = await fetchJob();
-      if (cancelled) return;
+      if (controller.signal.aborted) return;
+      const current = await fetchJob(controller.signal);
+      if (controller.signal.aborted) return;
       if (current && (current.status === "queued" || current.status === "running")) {
         timerRef.current = setTimeout(loop, 3000);
       }
@@ -203,7 +206,7 @@ export function JobDetailClient({
     void loop();
 
     return () => {
-      cancelled = true;
+      controller.abort();
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [fetchJob]);

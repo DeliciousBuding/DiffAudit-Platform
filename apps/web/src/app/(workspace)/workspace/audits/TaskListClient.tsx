@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, FileText, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
@@ -113,12 +113,12 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
     : statusFiltered;
 
   // Sorting for history table
-  const sortableDisplayed = displayed.map((j) => ({
+  const sortableDisplayed = useMemo(() => displayed.map((j) => ({
     ...j,
     name: j.job_id,
     model: j.target_model ?? "",
     durationMs: new Date(j.updated_at).getTime() - new Date(j.created_at).getTime(),
-  }));
+  })), [displayed]);
   const { sorted: sortedHistory, sortKey, sortDir, toggleSort } = useSort(sortableDisplayed);
 
   // Scroll container ref for fade gradient

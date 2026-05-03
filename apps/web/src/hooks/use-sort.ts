@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 type SortDirection = "asc" | "desc" | null;
 
@@ -18,7 +18,7 @@ export function useSort<T>(items: T[], defaultSort?: string) {
     }
   }, [sortKey, sortDir]);
 
-  const sorted = [...items].sort((a, b) => {
+  const sorted = useMemo(() => [...items].sort((a, b) => {
     if (!sortKey || !sortDir) return 0;
     const aVal = (a as Record<string, unknown>)[sortKey];
     const bVal = (b as Record<string, unknown>)[sortKey];
@@ -33,7 +33,7 @@ export function useSort<T>(items: T[], defaultSort?: string) {
       cmp = String(aVal).localeCompare(String(bVal));
     }
     return sortDir === "asc" ? cmp : -cmp;
-  });
+  }), [items, sortKey, sortDir]);
 
   return { sorted, sortKey, sortDir, toggleSort };
 }

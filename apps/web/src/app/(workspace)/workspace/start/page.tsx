@@ -478,9 +478,15 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
         </WorkspaceSectionCard>
 
-        <WorkspaceSectionCard title={`${copy.sections.chartTitles.rocCurve}${copy.sections.chartTitles.syntheticSuffix}`} className="chart-animate">
+        <WorkspaceSectionCard title={`${copy.sections.chartTitles.rocCurve}${aucValues.length > 0 ? copy.sections.chartTitles.syntheticSuffix : ""}`} className="chart-animate">
           <div className="p-4">
-            <ChartRocCurve data={rocData} />
+            {aucValues.length > 0 ? (
+              <ChartRocCurve data={rocData} />
+            ) : (
+              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
+                {copy.sections.noAucData}
+              </div>
+            )}
           </div>
         </WorkspaceSectionCard>
 
@@ -511,7 +517,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         <WorkspaceSectionCard title={copy.sections.recentResults} className="lg:col-span-2">
           <div className="overflow-auto max-h-[380px]">
             {recentRows.length > 0 ? (
-              <table className="w-full border-collapse text-xs">
+              <table className="w-full border-collapse text-[13px]">
                 <thead className="sticky top-0 bg-muted/30">
                   <tr className="border-b border-border">
                     <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
