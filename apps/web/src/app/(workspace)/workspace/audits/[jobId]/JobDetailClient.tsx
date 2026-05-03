@@ -40,9 +40,9 @@ interface JobDetail {
   }>;
 }
 
-function statusTone(status: string): "info" | "success" | "warning" | "primary" | "neutral" {
+function statusTone(status: string): "info" | "success" | "warning" | "danger" | "primary" | "neutral" {
   if (status === "completed") return "success";
-  if (status === "failed") return "warning";
+  if (status === "failed") return "danger";
   if (status === "running") return "info";
   if (status === "cancelled") return "neutral";
   return "primary";

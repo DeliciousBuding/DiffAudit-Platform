@@ -1,6 +1,6 @@
 type StatusBadgeProps = {
   children: React.ReactNode;
-  tone?: "primary" | "success" | "warning" | "info" | "neutral";
+  tone?: "primary" | "success" | "warning" | "danger" | "info" | "neutral";
   compact?: boolean;
 };
 
@@ -8,6 +8,7 @@ const toneClasses: Record<NonNullable<StatusBadgeProps["tone"]>, string> = {
   primary: "border-primary/30 bg-primary/20 text-primary",
   success: "border-[color:var(--success)]/25 bg-[color:var(--success-soft-strong)] text-[color:var(--success)]",
   warning: "border-[color:var(--warning)]/25 bg-[color:var(--warning-soft-strong)] text-[color:var(--warning)]",
+  danger: "border-[color:var(--risk-high)]/25 bg-[color:var(--risk-high)]/10 text-[color:var(--risk-high)]",
   info: "border-[color:var(--info)]/25 bg-[color:var(--info-soft-strong)] text-[color:var(--info)]",
   neutral: "border-border bg-muted/50 text-muted-foreground",
 };
