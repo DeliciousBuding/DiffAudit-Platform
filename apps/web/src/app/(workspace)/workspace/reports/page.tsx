@@ -276,6 +276,9 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
                 </div>
               ))}
             </div>
+            <p className="mt-3 text-[10px] leading-4 text-muted-foreground/60">
+              {locale === "zh-CN" ? "以上为行业通用建议，具体数值仅供参考。" : "Industry-standard guidance. Specific values are illustrative."}
+            </p>
           </div>
         </div>
       </section>

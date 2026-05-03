@@ -180,14 +180,16 @@ export function JobDetailClient({
       const res = await fetch(`/api/v1/audit/jobs/${jobId}`, { method: "DELETE" });
       if (res.ok) {
         setJob((prev) => (prev ? { ...prev, status: "cancelled" } : null));
+      } else {
+        setFetchError(`${WORKSPACE_COPY[locale].jobDetail.labels.loadFailed} (HTTP ${res.status})`);
       }
     } catch {
-      // Ignore — polling will reflect the real state eventually
+      setFetchError(WORKSPACE_COPY[locale].jobDetail.labels.apiUnreachable);
     } finally {
       setCancelling(false);
       setShowCancelModal(false);
     }
-  }, [jobId]);
+  }, [jobId, locale]);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

@@ -526,7 +526,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={copy.searchModels}
                 aria-label={copy.searchModels}
-                className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
+                className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-8 text-[13px] text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
               />
               {/* [issue 8] Search clear button */}
               {searchQuery && (
@@ -690,7 +690,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                 </div>
               </div>
               {/* Demo mode note */}
-              <p className="mt-2 text-[10px] text-muted-foreground/60">{copy.demoModeNote}</p>
+              <p className="mt-2 text-[11px] text-muted-foreground/70">{copy.demoModeNote}</p>
             </div>
 
             {/* Tabs */}
@@ -918,6 +918,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                 <Upload size={16} strokeWidth={1.5} aria-hidden="true" />
                 {copy.uploadDragDrop}
               </button>
+              <p className="mt-1.5 text-[11px] text-muted-foreground/70">{copy.demoModeNote}</p>
             )}
           </div>
           <div>
