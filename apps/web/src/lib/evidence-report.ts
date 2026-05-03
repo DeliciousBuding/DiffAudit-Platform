@@ -127,3 +127,32 @@ export async function fetchBestEvidenceSourceSnapshot(
   }
 }
 
+/**
+ * Fast-path one-call variant that uses the new /api/v1/experiments/best
+ * endpoint introduced in the Go backend. Falls back to the two-step path
+ * via fetchBestEvidenceSourceSnapshot if the endpoint is unavailable.
+ */
+export async function fetchBestEvidenceByContract(
+  contractKey: string,
+): Promise<EvidenceSourceSnapshot | null> {
+  try {
+    const response = await fetchWithTimeout(
+      new URL(
+        `/api/v1/experiments/best?contract_key=${encodeURIComponent(contractKey)}`,
+        backendBaseUrl(),
+      ),
+      { cache: "no-store" },
+      { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
+    );
+    if (response.ok) {
+      const summaryPayload = (await response.json()) as EvidenceSummaryPayload;
+      if (summaryPayload.workspace) {
+        return toSnapshot(summaryPayload);
+      }
+    }
+  } catch {
+    // Fall through
+  }
+  return fetchBestEvidenceSourceSnapshot({ preferredContractKey: contractKey });
+}
+
