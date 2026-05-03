@@ -252,18 +252,24 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
       {/* System health summary */}
       {healthStatus && (
-        <Link
-          href={healthStatus.tone === "warning" ? "/workspace/risk-findings" : "#"}
-          className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] transition-colors ${
-          healthStatus.tone === "warning"
-            ? "border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 text-[color:var(--warning)] hover:bg-[color:var(--warning)]/10 cursor-pointer"
-            : healthStatus.tone === "info"
+        healthStatus.tone === "warning" ? (
+          <Link
+            href="/workspace/risk-findings"
+            className="flex items-center gap-2 rounded-2xl border border-[color:var(--warning)]/30 bg-[color:var(--warning)]/5 px-4 py-2.5 text-[13px] text-[color:var(--warning)] transition-colors hover:bg-[color:var(--warning)]/10 cursor-pointer"
+          >
+            <span className="shrink-0">{healthStatus.icon}</span>
+            <span className="font-medium">{healthStatus.text}</span>
+          </Link>
+        ) : (
+          <div className={`flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[13px] ${
+            healthStatus.tone === "info"
               ? "border-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/5 text-[color:var(--accent-blue)]"
               : "border-[color:var(--success)]/30 bg-[color:var(--success)]/5 text-[color:var(--success)]"
-        }`}>
-          <span className="shrink-0">{healthStatus.icon}</span>
-          <span className="font-medium">{healthStatus.text}</span>
-        </Link>
+          }`}>
+            <span className="shrink-0">{healthStatus.icon}</span>
+            <span className="font-medium">{healthStatus.text}</span>
+          </div>
+        )
       )}
 
       {/* Audit track quick-access cards — Platform Boost */}
