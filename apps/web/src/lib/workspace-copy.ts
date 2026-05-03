@@ -565,6 +565,7 @@ export const WORKSPACE_COPY: Record<
       tpr: string;
       fpr: string;
       defenseRate: string;
+      priority: string;
     };
     emptyState: {
       selectModel: { title: string; description: string };
@@ -1409,6 +1410,7 @@ export const WORKSPACE_COPY: Record<
       tpr: "True Positive Rate at 1% FPR — how many real attacks are caught while keeping false alarms under 1%. Higher is better for defenders.",
       fpr: "False Positive Rate — proportion of non-member samples incorrectly flagged as members by the attacker's classifier.",
       defenseRate: "Proportion of audit results that have an active defense comparison. Higher coverage means more results are evaluated against defenses.",
+      priority: "Composite risk score: AUC × 0.4 + ASR × 0.3 + no-defense penalty × 0.3. Higher values indicate more urgent findings requiring immediate attention.",
     },
     emptyState: {
       selectModel: { title: "Select a model", description: "Select a model from the list to view details and audit evidence." },
@@ -2252,6 +2254,7 @@ export const WORKSPACE_COPY: Record<
       tpr: "1% 误报率下的真阳性率 — 在假阳性控制在 1% 以下时能捕获多少真实攻击。对防御方来说越高越好。",
       fpr: "假阳性率 — 攻击者分类器将非成员数据误判为成员数据的比例。",
       defenseRate: "已有防御对照的审计结果占全部结果的比例。覆盖率越高，说明越多结果经过了防御评估。",
+      priority: "综合风险评分：AUC × 0.4 + ASR × 0.3 + 无防御惩罚 × 0.3。数值越高表示发现越紧急，需要优先处理。",
     },
     emptyState: {
       selectModel: { title: "选择一个模型", description: "从左侧列表中选择一个模型查看详细信息和审计证据。" },

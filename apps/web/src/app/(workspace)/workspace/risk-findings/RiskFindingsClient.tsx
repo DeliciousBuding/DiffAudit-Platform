@@ -664,7 +664,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 <tr className="border-b border-border">
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-[220px]">{copy.riskDescription}</th>
                   <SortableHeader label={copy.severity} sortKey="severityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-                  <SortableHeader label={copy.priority} sortKey="priorityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
+                  <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.priority}>{copy.priority}</InfoTooltip>} sortKey="priorityScore" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>AUC</InfoTooltip>} sortKey="aucLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.asr}>ASR</InfoTooltip>} sortKey="asrLabel" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                   <SortableHeader label={copy.category} sortKey="track" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
@@ -709,14 +709,14 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                         </StatusBadge>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`mono text-[12px] ${row.priorityScore > 0.7 ? "text-[color:var(--risk-high)] font-medium" : row.priorityScore > 0.4 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>
+                        <span className={`mono text-[13px] ${row.priorityScore > 0.7 ? "text-[color:var(--risk-high)] font-medium" : row.priorityScore > 0.4 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>
                           {row.priorityScore.toFixed(2)}
                         </span>
                       </td>
-                      <td className={`mono px-4 py-3 text-[12px] ${parseFloat(row.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.aucLabel || "--"}</td>
-                      <td className={`mono px-4 py-3 text-[12px] ${parseFloat(row.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.asrLabel || "--"}</td>
+                      <td className={`mono px-4 py-3 text-[13px] ${parseFloat(row.aucLabel) > 0.85 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.aucLabel) > 0.7 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.aucLabel || "--"}</td>
+                      <td className={`mono px-4 py-3 text-[13px] ${parseFloat(row.asrLabel) > 0.5 ? "text-[color:var(--risk-high)] font-medium" : parseFloat(row.asrLabel) > 0.3 ? "text-[color:var(--warning)]" : "text-muted-foreground"}`}>{row.asrLabel || "--"}</td>
                       <td className="px-4 py-3 text-muted-foreground">{getCategory(row.track, copy)}</td>
-                      <td className="mono px-4 py-3 text-[12px]">{row.model}</td>
+                      <td className="mono px-4 py-3 text-[13px]">{row.model}</td>
                       <td className="px-4 py-3">
                         <StatusBadge tone={status === "has-defense" ? "success" : status === "monitoring" ? "info" : "warning"}>
                           {status === "has-defense" ? copy.hasDefenseStatus : status === "monitoring" ? copy.monitoring : copy.investigating}

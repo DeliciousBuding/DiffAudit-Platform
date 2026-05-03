@@ -689,7 +689,7 @@ export function SettingsClient({
               </div>
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span className="text-xs text-muted-foreground">{copy.systemStatus.build}</span>
-                <span className="max-w-[12rem] truncate font-mono text-[10px] text-muted-foreground" title={gatewayHealth?.build?.revision ?? copy.systemStatus.unknown}>
+                <span className="max-w-[12rem] truncate font-mono text-[11px] text-muted-foreground" title={gatewayHealth?.build?.revision ?? copy.systemStatus.unknown}>
                   {gatewayHealth?.build?.revision?.slice(0, 12) ?? copy.systemStatus.unknown}
                 </span>
               </div>
@@ -1126,7 +1126,7 @@ export function SettingsClient({
                           href={verificationUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center justify-center rounded-md bg-[color:var(--accent-blue)]/10 px-3 py-2 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/15"
+                          className="inline-flex items-center justify-center rounded-xl bg-[color:var(--accent-blue)]/10 px-3 py-2 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:bg-[color:var(--accent-blue)]/15"
                         >
                           {copy.account.openVerificationLink}
                         </a>
@@ -1140,7 +1140,7 @@ export function SettingsClient({
                           >
                             {copy.account.copyVerificationLink}
                           </button>
-                          <div className="rounded-lg border border-border bg-muted/10 px-3 py-2 font-mono text-[11px] text-muted-foreground break-all">
+                          <div className="rounded-xl border border-border bg-muted/10 px-3 py-2 font-mono text-[11px] text-muted-foreground break-all">
                             {verificationUrl}
                           </div>
                         </div>
@@ -1149,7 +1149,7 @@ export function SettingsClient({
                   ) : null}
                   {emailVerificationNotice ? (
                     <div
-                      className={`rounded-lg border px-3 py-2 text-[11px] leading-5 ${
+                      className={`rounded-xl border px-3 py-2 text-[11px] leading-5 ${
                         emailVerificationNotice.tone === "success"
                           ? "border-[color:var(--success)]/30 bg-[color:var(--success)]/10 text-[color:var(--success)]"
                           : "border-[color:var(--error)]/20 bg-[color:var(--error)]/8 text-[color:var(--error)]"
@@ -1160,7 +1160,7 @@ export function SettingsClient({
                   ) : null}
                   {providerLinkNotice ? (
                     <div
-                      className={`rounded-lg border px-3 py-2 text-[11px] leading-5 ${
+                      className={`rounded-xl border px-3 py-2 text-[11px] leading-5 ${
                         providerLinkNotice.tone === "success"
                           ? "border-[color:var(--success)]/30 bg-[color:var(--success)]/10 text-[color:var(--success)]"
                           : "border-[color:var(--error)]/20 bg-[color:var(--error)]/8 text-[color:var(--error)]"
@@ -1356,7 +1356,7 @@ export function SettingsClient({
               </div>
 
               {passwordSaveNotice ? (
-                <div className="rounded-lg border border-[color:var(--success)]/30 bg-[color:var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[color:var(--success)]">
+                <div className="rounded-xl border border-[color:var(--success)]/30 bg-[color:var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[color:var(--success)]">
                   {passwordSaveNotice}
                 </div>
               ) : null}

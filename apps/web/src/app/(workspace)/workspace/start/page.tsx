@@ -453,8 +453,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       {/* Risk distribution */}
       {totalRisk > 0 && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="grid gap-4 grid-cols-3">
-            <div className="rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)]">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+            <Link href="/workspace/risk-findings?severity=high" className="group rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-high)] transition-colors hover:bg-muted/10">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.high}
               </div>
@@ -462,8 +462,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <p className="mt-1 text-xs text-muted-foreground leading-tight">
                 {copy.riskInterpretations.high}
               </p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)]">
+            </Link>
+            <Link href="/workspace/risk-findings?severity=medium" className="group rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-medium)] transition-colors hover:bg-muted/10">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.medium}
               </div>
@@ -471,8 +471,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <p className="mt-1 text-xs text-muted-foreground leading-tight">
                 {copy.riskInterpretations.medium}
               </p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)]">
+            </Link>
+            <Link href="/workspace/risk-findings?severity=low" className="group rounded-2xl border border-border bg-card p-4 border-l-[3px] border-l-[var(--risk-low)] transition-colors hover:bg-muted/10">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {copy.sections.riskLabels.low}
               </div>
@@ -480,10 +480,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <p className="mt-1 text-xs text-muted-foreground leading-tight">
                 {copy.riskInterpretations.low}
               </p>
-            </div>
+            </Link>
           </div>
 
           {/* Risk Radar — 7.1 */}
+          {totalRows > 0 && (
           <WorkspaceSectionCard
             title={copy.sections.chartTitles.riskRadar}
             actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
@@ -493,6 +494,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <ChartRiskRadar data={radarData} height={220} />
             </div>
           </WorkspaceSectionCard>
+          )}
         </div>
       )}
 

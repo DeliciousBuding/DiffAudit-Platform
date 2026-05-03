@@ -450,7 +450,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
       e.track.toLowerCase().includes(q) ||
       (TRACK_DISPLAY[e.track] ?? "").toLowerCase().includes(q)
     );
-  }, [allEntries, searchQuery, copy]);
+  }, [allEntries, searchQuery]);
 
   // [issue 7] Reset selected entry when it is no longer in the filtered list
   useEffect(() => {
@@ -798,7 +798,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                       role="region"
                       aria-label={copy.tabEvidence}
                     >
-                      <table className="w-full text-[12px]">
+                      <table className="w-full text-[13px]">
                         <thead>
                           <tr className="border-b border-border/60 bg-muted/20 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                             <th scope="col" className="px-4 py-3 min-w-[140px]">{copy.attack}</th>

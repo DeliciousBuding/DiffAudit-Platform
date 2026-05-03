@@ -245,7 +245,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
             )}
             {job.status === "running" && typeof job.progress_pct === "number" && (
               <div className="mt-1 text-[11px] text-[color:var(--accent-blue)]">
-                {locale === "zh-CN" ? `采样中... ${job.progress_pct}%` : `Sampling... ${job.progress_pct}%`}
+                {locale === "zh-CN" ? "采样中..." : "Sampling..."}
               </div>
             )}
             {job.status === "queued" && (

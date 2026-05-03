@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { StatusBadge } from "@/components/status-badge";
+import { buildReportHref } from "@/lib/audit-flow";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 
 /* ------------------------------------------------------------------ */
@@ -39,6 +40,9 @@ const DETAIL_COPY: Record<
     noDefense: string;
     relatedAudit: string;
     viewReport: string;
+    copyLink: string;
+    linkCopied: string;
+    sourcePath: string;
   }
 > = {
   "en-US": {
@@ -68,6 +72,7 @@ const DETAIL_COPY: Record<
     viewReport: "View Report",
     copyLink: "Copy Link",
     linkCopied: "Copied!",
+    sourcePath: "Source Path",
   },
   "zh-CN": {
     findingDetail: "发现详情",
@@ -96,6 +101,7 @@ const DETAIL_COPY: Record<
     viewReport: "查看报告",
     copyLink: "复制链接",
     linkCopied: "已复制！",
+    sourcePath: "来源路径",
   },
 };
 
@@ -393,7 +399,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
 
             {/* Source path (if available) */}
             {finding.sourcePath && (
-              <DetailRow label="Source">
+              <DetailRow label={copy.sourcePath}>
                 <div className="flex items-center gap-2">
                   <span className="mono text-[12px] text-muted-foreground truncate max-w-[260px]">
                     {finding.sourcePath}
@@ -408,7 +414,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-border px-5 py-4">
           <Link
-            href="/workspace/reports"
+            href={buildReportHref(finding.track as "black-box" | "gray-box" | "white-box", "audit")}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-[color:var(--accent-blue)] transition-colors hover:text-foreground"
           >
             {copy.viewReport}
