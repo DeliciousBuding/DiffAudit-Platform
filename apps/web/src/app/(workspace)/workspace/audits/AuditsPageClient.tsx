@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
-import { ContextualTip } from "@/components/contextual-tip";
 import { useToast } from "@/components/toast-provider";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { inferReportTrack } from "@/lib/audit-flow";
@@ -201,10 +200,6 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
           </span>
         )}
       </div>
-
-      <ContextualTip id="audits-ctrl-n" locale={locale}>
-        {locale === "zh-CN" ? "按 Ctrl+N 快速创建新审计任务，或使用侧边栏顶部的蓝色按钮。" : "Press Ctrl+N to quickly create a new audit task, or use the blue button at the top of the sidebar."}
-      </ContextualTip>
 
       {/* Toolbar: filter tabs + search */}
       <div className="workspace-toolbar">

@@ -7,7 +7,6 @@ import { AnimatedValue } from "@/components/animated-value";
 import { useScrollFade } from "@/hooks/use-scroll-fade";
 import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 
-import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { SortableHeader } from "@/components/sortable-header";
@@ -646,9 +645,6 @@ export function RiskFindingsClient({ rows, locale }: Props) {
       </div>
 
       {/* Table */}
-      <ContextualTip id="risk-findings-row-click" locale={locale}>
-        {locale === "zh-CN" ? "点击表格行可查看完整风险详情。AUC 着色：红色 >0.85，橙色 >0.7。ASR 着色：红色 >0.5，橙色 >0.3。" : "Click any table row for full details. AUC: red >0.85, amber >0.7. ASR: red >0.5, amber >0.3."}
-      </ContextualTip>
       <WorkspaceSectionCard title={copy.findingsTable}>
         {filtered.length > 0 ? (
           <div

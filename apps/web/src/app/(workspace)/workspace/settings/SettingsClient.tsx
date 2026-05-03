@@ -12,7 +12,6 @@ import { LogoutButton } from "@/components/logout-button";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale, LanguagePicker, setStoredLocale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { ContextualTip } from "@/components/contextual-tip";
 import { useToast } from "@/components/toast-provider";
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
@@ -611,10 +610,6 @@ export function SettingsClient({
       <div className={`grid gap-4 ${isAccountMode ? "" : "lg:grid-cols-3"}`}>
         {!isAccountMode ? (
           <>
-        <ContextualTip id="settings-templates" locale={locale}>
-          {locale === "zh-CN" ? "保存常用配置为模板，下次创建任务时可快速加载。" : "Save frequently used configurations as templates for quick loading when creating new tasks."}
-        </ContextualTip>
-
         {/* About System */}
         <section className="order-1 settings-section-card lg:col-span-2">
           <div className="settings-section-card-header">

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { AlertTriangle, Box, Crosshair, FileBarChart, ShieldCheck, Target } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
-import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -92,10 +91,6 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
 
   const pageContent = rows.length > 0 ? (
     <>
-      <ContextualTip id="reports-chart-click" locale={locale}>
-        {locale === "zh-CN" ? "点击风险分布图表中的柱状条，可直接跳转到对应严重度的风险发现。" : "Click any bar in the risk distribution chart to jump directly to that severity level's findings."}
-      </ContextualTip>
-
       {/* ---- Report Generation: 2-column layout ---- */}
       <section className="workspace-section-card">
         <div className="workspace-section-card-header">
@@ -189,10 +184,6 @@ async function ReportCenterSection({ locale }: { locale: Locale }) {
           </div>
         </div>
       </section>
-
-      <ContextualTip id="reports-analysis" locale={locale}>
-        {locale === "zh-CN" ? "综合分析基于所有审计结果自动生成，帮助你快速了解整体安全态势和防御缺口。" : "Comprehensive analysis is auto-generated from all audit results, helping you quickly understand the overall security posture and defense gaps."}
-      </ContextualTip>
 
       {/* ---- Comprehensive Analysis ---- */}
       <section className="workspace-section-card bg-[color:var(--accent-blue)]/[0.02]">

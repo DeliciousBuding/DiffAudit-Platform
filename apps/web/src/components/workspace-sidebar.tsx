@@ -35,9 +35,6 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
     : WORKSPACE_COPY[locale].userMenu.themeLight;
   const isZh = locale === "zh-CN";
 
-  // Section dividers between nav groups
-  const sectionBreaks = new Set([1, 3, 5]);
-
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -93,20 +90,17 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
     <div className="flex flex-col h-full">
       <Link
         href="/workspace/audits/new"
-        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-background transition-all duration-200 hover:shadow-[0_4px_16px_rgba(47,109,246,0.25)] hover:scale-[1.02] active:scale-[0.98]"
+        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-white transition-all duration-200 hover:shadow-[0_4px_16px_rgba(47,109,246,0.25)] hover:scale-[1.02] active:scale-[0.98]"
       >
         <Plus size={14} strokeWidth={1.5} aria-hidden="true" />
         <span className="workspace-sidebar-label">{createLabel}</span>
         <kbd className="ml-auto hidden text-[10px] font-medium opacity-60 sidebar-kbd" aria-hidden="true">Ctrl+N</kbd>
       </Link>
       <nav ref={navRef} className="flex flex-col gap-0.5" aria-label={sidebarLabel} onKeyDown={onNavKeyDown}>
-        {items.map((item, index) => {
+        {items.map((item) => {
           const active = current.href === item.href;
           return (
             <div key={item.href}>
-              {sectionBreaks.has(index) && (
-                <div className="my-1.5 mx-2 border-t border-border/30" aria-hidden="true" />
-              )}
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}

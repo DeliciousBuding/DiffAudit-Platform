@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AlertTriangle, ArrowRight, CheckCircle, ChevronRight, Info } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
+import { ClickableRow } from "@/components/clickable-row";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { RiskBadge } from "@/components/risk-badge";
@@ -574,13 +575,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                           : "border-l-2 border-l-[var(--success)]"
                       : "";
                     return (
-                    <tr
+                    <ClickableRow
                       key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
-                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 cursor-pointer ${rowBorder}`}
-                      role="link"
-                      tabIndex={0}
-                      onClick={() => { window.location.href = `/workspace/risk-findings?model=${encodeURIComponent(row.model)}`; }}
-                      onKeyDown={(e) => { if (e.key === "Enter") { window.location.href = `/workspace/risk-findings?model=${encodeURIComponent(row.model)}`; } }}
+                      href={`/workspace/risk-findings?model=${encodeURIComponent(row.model)}`}
+                      className={`table-row-hover border-b border-border transition-colors hover:bg-muted/20 ${rowBorder}`}
                     >
                       <td className="px-4 py-3">
                         {!isNaN(auc) ? <RiskBadge auc={auc} compact /> : "—"}
@@ -593,7 +591,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                       <td className="mono px-4 py-3 text-right">{row.aucLabel}</td>
                       <td className="mono px-4 py-3 text-right">{row.asrLabel}</td>
                       <td className="mono px-4 py-3 text-right">{row.tprLabel}</td>
-                    </tr>
+                    </ClickableRow>
                     );
                   })}
                 </tbody>
