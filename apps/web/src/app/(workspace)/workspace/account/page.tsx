@@ -107,7 +107,7 @@ export default async function WorkspaceAccountPage() {
             <strong className={`text-sm ${profile?.hasPassword ? "text-[var(--success)]" : "text-muted-foreground"}`}>
               {profile?.hasPassword ? copy.configured : copy.notConfigured}
             </strong>
-            <Link href="/workspace/settings" className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted/20">
+            <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
               {profile?.hasPassword ? copy.changePassword : copy.setPassword}
             </Link>
           </div>
@@ -125,7 +125,7 @@ export default async function WorkspaceAccountPage() {
             <strong className={`text-sm ${profile?.providers.includes("google") ? "text-[var(--success)]" : "text-muted-foreground"}`}>
               {profile?.providers.includes("google") ? copy.configured : copy.notConfigured}
             </strong>
-            <Link href="/workspace/settings" className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted/20">
+            <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
               {profile?.providers.includes("google") ? copy.disconnect : copy.connect}
             </Link>
           </div>
@@ -143,7 +143,7 @@ export default async function WorkspaceAccountPage() {
             <strong className={`text-sm ${profile?.providers.includes("github") ? "text-[var(--success)]" : "text-muted-foreground"}`}>
               {profile?.providers.includes("github") ? copy.configured : copy.notConfigured}
             </strong>
-            <Link href="/workspace/settings" className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted/20">
+            <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
               {profile?.providers.includes("github") ? copy.disconnect : copy.connect}
             </Link>
           </div>
@@ -164,7 +164,7 @@ export default async function WorkspaceAccountPage() {
                 {profile?.emailVerified ? copy.verified : copy.unverified}
               </StatusBadge>
             </div>
-            <Link href="/workspace/settings" className="shrink-0 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted/20">
+            <Link href="/workspace/settings" className="shrink-0 rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
               {profile?.emailVerified ? copy.changeEmail : copy.verifyEmail}
             </Link>
           </div>
@@ -182,7 +182,7 @@ export default async function WorkspaceAccountPage() {
             <strong className={`text-sm ${profile?.twoFactorEnabled ? "text-[var(--success)]" : "text-muted-foreground"}`}>
               {profile?.twoFactorEnabled ? copy.configured : copy.notConfigured}
             </strong>
-            <Link href="/workspace/settings" className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted/20">
+            <Link href="/workspace/settings" className="rounded-xl border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted/20">
               {profile?.twoFactorEnabled ? copy.manage2fa : copy.setup2fa}
             </Link>
           </div>

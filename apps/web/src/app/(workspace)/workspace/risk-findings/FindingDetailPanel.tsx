@@ -237,7 +237,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-label={copy.findingDetail}
-        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-[var(--color-bg-primary)] shadow-xl"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-card shadow-xl"
         style={{ animation: "slide-over-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
       >
         {/* Header */}
