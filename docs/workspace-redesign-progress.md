@@ -1018,3 +1018,23 @@ Innovation round. Implements power-user keyboard navigation.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 71 rounds total, 69 commits to main. 136/136 tests.
+
+### Phase 72: Dashboard Drill-Down, Risk Coloring, Task ETA, Re-Audit Shortcut (COMPLETED)
+3 parallel agents audited. Design audit: ALL CLEAR (0 issues). Engineering: clean (136/136 tests).
+
+**New features:**
+1. ✅ Dashboard recent results rows: clickable → navigates to risk-findings filtered by model
+2. ✅ FindingDetailPanel: "Re-audit" button pre-fills track+model in /workspace/audits/new
+3. ✅ Active tasks: ETA displayed when progress > 5% ("~12 min remaining")
+4. ✅ FindingDetailPanel: AUC/ASR metrics color-coded (red >0.85, amber >0.7)
+5. ✅ ModelAssets evidence table: AUC/ASR color-coded (matching RiskFindings)
+
+**Innovation scores:**
+- Dashboard drill-down: User 5 + Cost 1 + Design 4 + Innovation 3 = 13/20
+- Task ETA: User 4 + Cost 1 + Design 4 + Innovation 4 = 13/20
+- Re-audit shortcut: User 4 + Cost 1 + Design 4 + Innovation 3 = 12/20
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+**Design audit:** All clear. No remaining inconsistencies.
+
+72 rounds total, 70 commits to main. 136/136 tests.
