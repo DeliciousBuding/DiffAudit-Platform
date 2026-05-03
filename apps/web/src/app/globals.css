@@ -1417,6 +1417,44 @@ html.dark .header-pill-primary:hover {
   border-radius: 4px;
 }
 
+/* Global scrollbar styling for workspace */
+.workspace-main-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(33, 34, 38, 0.12) transparent;
+}
+
+.workspace-main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workspace-main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-main-content::-webkit-scrollbar-thumb {
+  background: rgba(33, 34, 38, 0.12);
+  border-radius: 6px;
+}
+
+.workspace-main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(33, 34, 38, 0.22);
+}
+
+html[data-theme="dark"] .workspace-main-content,
+html.dark .workspace-main-content {
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+html[data-theme="dark"] .workspace-main-content::-webkit-scrollbar-thumb,
+html.dark .workspace-main-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .workspace-main-content::-webkit-scrollbar-thumb:hover,
+html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .workspace-sidebar-link {
   display: flex;
   align-items: center;

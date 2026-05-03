@@ -622,7 +622,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
 
       {/* Table */}
       <ContextualTip id="risk-findings-row-click" locale={locale}>
-        {locale === "zh-CN" ? "点击表格行可查看完整风险详情，包括指标、防御信息和来源。" : "Click any table row to see full risk details, including metrics, defense info, and provenance."}
+        {locale === "zh-CN" ? "点击表格行可查看完整风险详情。AUC/ASR 数值按风险等级着色：红色 >0.85（高危），橙色 >0.7（中危）。" : "Click any table row for full details. AUC/ASR values are color-coded: red >0.85 (high risk), amber >0.7 (medium risk)."}
       </ContextualTip>
       <WorkspaceSectionCard title={copy.findingsTable}>
         {filtered.length > 0 ? (
