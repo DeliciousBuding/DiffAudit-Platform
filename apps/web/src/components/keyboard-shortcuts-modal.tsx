@@ -41,6 +41,14 @@ function getShortcutGroups(locale: Locale): ShortcutGroup[] {
         { keys: "Esc", label: isZh ? "关闭弹窗" : "Close dialog" },
       ],
     },
+    {
+      title: isZh ? "表格" : "Table",
+      shortcuts: [
+        { keys: "J", label: isZh ? "下一行" : "Next row" },
+        { keys: "K", label: isZh ? "上一行" : "Previous row" },
+        { keys: "Enter", label: isZh ? "查看详情" : "Open detail" },
+      ],
+    },
   ];
 }
 

@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatedValue } from "@/components/animated-value";
 import { useScrollFade } from "@/hooks/use-scroll-fade";
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 
 import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
@@ -328,6 +329,15 @@ export function RiskFindingsClient({ rows, locale }: Props) {
 
   /* -- selected finding for detail panel ---------------------------- */
   const [selectedFinding, setSelectedFinding] = useState<AttackDefenseRowViewModel | null>(null);
+
+  /* -- J/K keyboard navigation for table rows ----------------------- */
+  const { activeIndex: kbActiveIndex } = useTableKeyboardNav(
+    paginatedRows,
+    useCallback((item: AttackDefenseRowViewModel | null) => {
+      if (item) setSelectedFinding(item);
+    }, []),
+    { enabled: !selectedFinding, containerRef: tableScrollRef },
+  );
 
   /* -- quick filter preset state ------------------------------------ */
   const [activePreset, setActivePreset] = useState<QuickFilterId | null>("all");
@@ -685,7 +695,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                           setSelectedFinding(row);
                         }
                       }}
-                      className={`table-row-enter cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""}`}
+                      className={`table-row-enter cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""} ${kbActiveIndex === rowIndex ? "ring-1 ring-inset ring-[color:var(--accent-blue)]/30 bg-[color:var(--accent-blue)]/[0.03]" : ""}`}
                       style={{ animationDelay: `${rowIndex * 30}ms` }}
                     >
                       <td className="max-w-[280px] px-4 py-3">
