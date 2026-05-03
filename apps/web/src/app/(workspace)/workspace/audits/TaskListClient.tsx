@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, FileText, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
@@ -8,6 +8,7 @@ import { type Locale } from "@/components/language-picker";
 import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
 import { SortableHeader } from "@/components/sortable-header";
+import { useScrollFade } from "@/hooks/use-scroll-fade";
 import { StatusBadge } from "@/components/status-badge";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { densityClass, type Density } from "@/components/table-density-toggle";
@@ -123,20 +124,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
   const { sorted: sortedHistory, sortKey, sortDir, toggleSort } = useSort(sortableDisplayed);
 
   // Scroll container ref for fade gradient
-  const tableScrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = tableScrollRef.current;
-    if (!el) return;
-    function checkScrollable() {
-      if (el) {
-        el.classList.toggle("is-scrollable", el.scrollWidth > el.clientWidth);
-      }
-    }
-    checkScrollable();
-    const observer = new ResizeObserver(checkScrollable);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [displayed]);
+  const tableScrollRef = useScrollFade<HTMLDivElement>([displayed]);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);

@@ -4,6 +4,7 @@ import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, Che
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatedValue } from "@/components/animated-value";
+import { useScrollFade } from "@/hooks/use-scroll-fade";
 
 import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
@@ -475,20 +476,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const pageWindow = getPaginationWindow(currentPage, totalPages, maxVisiblePages);
 
   /* -- scroll container ref for fade gradient ---------------------- */
-  const tableScrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = tableScrollRef.current;
-    if (!el) return;
-    function checkScrollable() {
-      if (el) {
-        el.classList.toggle("is-scrollable", el.scrollWidth > el.clientWidth);
-      }
-    }
-    checkScrollable();
-    const observer = new ResizeObserver(checkScrollable);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [filtered]);
+  const tableScrollRef = useScrollFade<HTMLDivElement>([filtered]);
 
   /* -- localized number formatter ---------------------------------- */
   const nf = useMemo(() => new Intl.NumberFormat(locale === "zh-CN" ? "zh-CN" : "en-US"), [locale]);
