@@ -898,3 +898,20 @@ Innovation round. Top 2 highest-ROI features from R63 proposals implemented.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 64 rounds total, 62 commits to main. 136/136 tests.
+
+### Phase 65: Priority Sort + Sidebar Prefetch + Performance (COMPLETED)
+Innovation round. Implements remaining high-value proposals from R63.
+
+**New features:**
+1. ✅ RiskFindings: Priority column with composite score (AUC*0.4 + ASR*0.3 + no-defense*0.3)
+   - Color-coded: red >0.7, amber >0.4, gray otherwise
+   - Sortable via column header for instant "worst first" view
+   - Innovation score: User value 3 + Cost 1 + Design 3 + Innovation 3 = 12/20
+
+**Performance:**
+2. ✅ Sidebar links: enable Next.js default viewport prefetching (was explicitly disabled)
+3. ✅ SEVERITY_SCORE moved to module scope (was recreated inside component body every render)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+65 rounds total, 63 commits to main. 136/136 tests.
