@@ -45,7 +45,7 @@ export function ContextualTip({
   const dismissLabel = locale === "zh-CN" ? "知道了" : "Got it";
 
   return (
-    <div className="flex items-start gap-2.5 rounded-2xl border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/[0.04] px-4 py-3 text-[13px] leading-5 text-muted-foreground">
+    <div className="contextual-tip-enter flex items-start gap-2.5 rounded-2xl border border-[color:var(--accent-blue)]/20 bg-[color:var(--accent-blue)]/[0.04] px-4 py-3 text-[13px] leading-5 text-muted-foreground">
       <Lightbulb size={16} strokeWidth={1.5} className="shrink-0 mt-0.5 text-[color:var(--accent-blue)]" aria-hidden="true" />
       <div className="flex-1 min-w-0">{children}</div>
       <button

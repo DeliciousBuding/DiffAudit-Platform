@@ -4547,14 +4547,62 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   animation: chart-fade-in 0.5s ease-out;
 }
 
-/* Skeleton pulse refinement (4.2.4) — smoother than Tailwind default */
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+/* Skeleton shimmer — gradient sweep for premium feel */
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .animate-pulse {
-  animation: skeleton-pulse 2s ease infinite;
+  animation: skeleton-shimmer 2s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    color-mix(in srgb, var(--muted) 60%, var(--background)) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Empty state icon float */
+@keyframes empty-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Progress bar shimmer for running tasks */
+@keyframes progress-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.progress-strip-active {
+  background: linear-gradient(
+    90deg,
+    var(--accent-blue) 0%,
+    color-mix(in srgb, var(--accent-blue) 70%, var(--background)) 50%,
+    var(--accent-blue) 100%
+  ) !important;
+  background-size: 200% 100%;
+  animation: progress-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Contextual tip entrance */
+.contextual-tip-enter {
+  animation: tip-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes tip-slide-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Table row stagger on filter change */
+.table-row-enter {
+  animation: table-row-fade-in 0.2s ease-out both;
+}
+@keyframes table-row-fade-in {
+  from { opacity: 0.5; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4568,6 +4616,9 @@ button:not(.language-option):not(.workspace-sidebar-link):not(.btn-reset):not(.h
   .workspace-page-frame,
   .animate-pulse,
   .chart-animate,
+  .progress-strip-active,
+  .contextual-tip-enter,
+  .table-row-enter,
   .sidebar-collapse-btn,
   .workspace-sidebar,
   .workspace-status-dot,

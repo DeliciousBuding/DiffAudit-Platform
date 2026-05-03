@@ -3,6 +3,7 @@
 import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatedValue } from "@/components/animated-value";
 
 import { ContextualTip } from "@/components/contextual-tip";
 import { EmptyState } from "@/components/empty-state";
@@ -226,9 +227,9 @@ function getPaginationWindow(current: number, total: number, maxVisible: number)
 /*  KPI Card                                                           */
 /* ------------------------------------------------------------------ */
 
-function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value: string | number; accent: string; icon: React.ReactNode }) {
+function KpiCard({ label, value, accent, icon, accentBar }: { label: React.ReactNode; value: string | number; accent: string; icon: React.ReactNode; accentBar?: string }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
+    <div className={`flex items-center gap-4 rounded-2xl border border-border bg-card p-4 card-animate${accentBar ? " border-l-[3px]" : ""}`} style={accentBar ? { borderLeftColor: accentBar } : undefined}>
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
         style={{ background: `color-mix(in srgb, ${accent} 10%, transparent)`, color: accent }}
@@ -236,8 +237,8 @@ function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value
         {icon}
       </div>
       <div>
-        <div className="text-2xl font-bold leading-tight text-foreground">{value}</div>
-        <div className="mt-0.5 text-xs text-muted-foreground">{label}</div>
+        <AnimatedValue value={String(value)} className="text-2xl font-bold leading-tight text-foreground" />
+        <div className="mt-0.5 text-[11px] text-muted-foreground">{label}</div>
       </div>
     </div>
   );
@@ -300,6 +301,17 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") ?? "");
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const hasActiveFilters = severityFilter || categoryFilter || modelFilter || statusFilter || searchQuery.trim();
+
+  /* -- filter version for row entrance animation --------------------- */
+  const [filterVersion, setFilterVersion] = useState(0);
+  const prevFiltersRef = useRef({ severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery });
+  useEffect(() => {
+    const prev = prevFiltersRef.current;
+    if (prev.severityFilter !== severityFilter || prev.categoryFilter !== categoryFilter || prev.modelFilter !== modelFilter || prev.statusFilter !== statusFilter || prev.searchQuery !== searchQuery) {
+      setFilterVersion((v) => v + 1);
+      prevFiltersRef.current = { severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery };
+    }
+  }, [severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery]);
 
   /* -- table density ------------------------------------------------ */
   const DENSITY_KEY = "diffaudit-risk-density";
@@ -481,24 +493,28 @@ export function RiskFindingsClient({ rows, locale }: Props) {
           value={nf.format(totalFindings)}
           accent="var(--info)"
           icon={<FileText size={16} strokeWidth={1.5} aria-hidden="true" />}
+          accentBar="var(--info)"
         />
         <KpiCard
           label={copy.highRisk}
           value={nf.format(criticalHigh)}
           accent="var(--warning)"
           icon={<AlertTriangle size={16} strokeWidth={1.5} aria-hidden="true" />}
+          accentBar="var(--risk-high)"
         />
         <KpiCard
           label={copy.hasDefense}
           value={nf.format(resolvedCount)}
           accent="var(--success)"
           icon={<Shield size={16} strokeWidth={1.5} aria-hidden="true" />}
+          accentBar="var(--success)"
         />
         <KpiCard
           label={<InfoTooltip content={WORKSPACE_COPY[locale].tooltips.defenseRate}>{copy.defenseRate}</InfoTooltip>}
           value={defenseRate !== null ? `${defenseRate}%` : copy.na}
           accent="var(--accent-blue)"
           icon={<BarChart3 size={16} strokeWidth={1.5} aria-hidden="true" />}
+          accentBar="var(--accent-blue)"
         />
       </div>
 
@@ -645,7 +661,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                   <SortableHeader label={copy.status} sortKey="statusKey" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
                 </tr>
               </thead>
-              <tbody>
+              <tbody key={filterVersion}>
                 {paginatedRows.map((row, rowIndex) => {
                   const status = getStatus(row.defense, row.riskLevel);
                   const severityBorder = row.riskLevel === "high"
@@ -670,7 +686,8 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                           setSelectedFinding(row);
                         }
                       }}
-                      className={`cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""}`}
+                      className={`table-row-enter cursor-pointer border-b border-border/40 border-l-2 transition-colors hover:bg-muted/20 ${severityBorder} ${severityBg} ${rowIndex % 2 === 1 ? "bg-muted/[0.04]" : ""} ${selectedFinding && selectedFinding.track === row.track && selectedFinding.attack === row.attack && selectedFinding.model === row.model ? "workspace-row-selected" : ""}`}
+                      style={{ animationDelay: `${rowIndex * 30}ms` }}
                     >
                       <td className="max-w-[280px] px-4 py-3">
                         <div className="font-medium text-foreground">{getRiskDescription(row.attack, row.note ?? "", locale)}</div>

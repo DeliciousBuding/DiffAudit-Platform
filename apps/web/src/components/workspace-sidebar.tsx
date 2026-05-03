@@ -93,7 +93,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
     <div className="flex flex-col h-full">
       <Link
         href="/workspace/audits/new"
-        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-background transition-opacity hover:opacity-90"
+        className="mx-2 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-blue)] px-3 py-2 text-[13px] font-medium text-background transition-all duration-200 hover:shadow-[0_4px_16px_rgba(47,109,246,0.25)] hover:scale-[1.02] active:scale-[0.98]"
       >
         <Plus size={14} strokeWidth={1.5} aria-hidden="true" />
         <span className="workspace-sidebar-label">{createLabel}</span>

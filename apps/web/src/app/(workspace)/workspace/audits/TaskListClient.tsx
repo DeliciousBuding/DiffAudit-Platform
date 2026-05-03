@@ -61,7 +61,7 @@ function statusLabel(status: string, labels: Record<string, string>): string {
   return labels[status] ?? status;
 }
 
-function ProgressStrip({ value }: { value: number }) {
+function ProgressStrip({ value, isActive }: { value: number; isActive?: boolean }) {
   return (
     <div className="mt-2">
       <div
@@ -73,7 +73,7 @@ function ProgressStrip({ value }: { value: number }) {
         aria-label={`Progress: ${value}%`}
       >
         <div
-          className="h-full rounded-full bg-[var(--accent-blue)] transition-all"
+          className={`h-full rounded-full bg-[var(--accent-blue)] transition-all${isActive ? " progress-strip-active" : ""}`}
           style={{ width: `${Math.max(6, Math.min(100, value))}%` }}
         />
       </div>
@@ -241,7 +241,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
               </span>
             </div>
             {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
-              <ProgressStrip value={job.progress_pct} />
+              <ProgressStrip value={job.progress_pct} isActive={job.status === "running"} />
             )}
             {job.status === "running" && typeof job.progress_pct === "number" && (
               <div className="mt-1 text-[11px] text-[color:var(--accent-blue)]">
@@ -335,7 +335,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                     <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
                     {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
                       <div className="mt-1">
-                        <ProgressStrip value={job.progress_pct} />
+                        <ProgressStrip value={job.progress_pct} isActive={job.status === "running"} />
                       </div>
                     )}
                   </td>
