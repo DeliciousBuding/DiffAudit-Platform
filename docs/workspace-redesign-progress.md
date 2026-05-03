@@ -819,3 +819,14 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 60 rounds total, 58 commits to main. 136/136 tests.
+
+### Phase 61: Retry Error Feedback + Template Deletion Confirmation (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product:**
+1. ✅ TaskListClient: show error message when retry fails (was silently swallowed)
+2. ✅ Settings: add confirmation dialog before template deletion (was instant delete)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+61 rounds total, 59 commits to main. 136/136 tests.
