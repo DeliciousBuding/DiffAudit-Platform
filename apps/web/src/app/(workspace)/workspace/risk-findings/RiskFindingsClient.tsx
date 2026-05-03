@@ -330,15 +330,6 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   /* -- selected finding for detail panel ---------------------------- */
   const [selectedFinding, setSelectedFinding] = useState<AttackDefenseRowViewModel | null>(null);
 
-  /* -- J/K keyboard navigation for table rows ----------------------- */
-  const { activeIndex: kbActiveIndex } = useTableKeyboardNav(
-    paginatedRows,
-    useCallback((item: AttackDefenseRowViewModel | null) => {
-      if (item) setSelectedFinding(item);
-    }, []),
-    { enabled: !selectedFinding, containerRef: tableScrollRef },
-  );
-
   /* -- quick filter preset state ------------------------------------ */
   const [activePreset, setActivePreset] = useState<QuickFilterId | null>("all");
 
@@ -487,6 +478,15 @@ export function RiskFindingsClient({ rows, locale }: Props) {
 
   /* -- scroll container ref for fade gradient ---------------------- */
   const tableScrollRef = useScrollFade<HTMLDivElement>([filtered]);
+
+  /* -- J/K keyboard navigation for table rows ----------------------- */
+  const { activeIndex: kbActiveIndex } = useTableKeyboardNav(
+    paginatedRows,
+    useCallback((item: AttackDefenseRowViewModel | null) => {
+      if (item) setSelectedFinding(item);
+    }, []),
+    { enabled: !selectedFinding, containerRef: tableScrollRef },
+  );
 
   /* -- localized number formatter ---------------------------------- */
   const nf = useMemo(() => new Intl.NumberFormat(locale === "zh-CN" ? "zh-CN" : "en-US"), [locale]);

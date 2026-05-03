@@ -221,9 +221,9 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   <span
                     className={`inline-flex items-center justify-center h-6 w-6 rounded-full text-xs font-semibold ${
                       isCompleted
-                        ? "bg-[var(--info-soft)] text-[var(--info)] border border-[color:var(--accent-blue)]/20"
+                        ? "bg-[color:var(--info-soft)] text-[color:var(--info)] border border-[color:var(--accent-blue)]/20"
                         : isActive
-                          ? "bg-[var(--accent-blue)] text-white"
+                          ? "bg-[color:var(--accent-blue)] text-background"
                           : "bg-muted/40 text-muted-foreground border border-border"
                     }`}
                   >
@@ -435,7 +435,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                   }`}
                 >
                   <span
-                    className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
+                    className={`inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform ${
                       form.adaptiveSampling ? "translate-x-4" : "translate-x-0.5"
                     }`}
                   />

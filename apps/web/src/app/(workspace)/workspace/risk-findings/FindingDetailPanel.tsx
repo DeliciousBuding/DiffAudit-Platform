@@ -205,6 +205,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
   const [linkCopied, setLinkCopied] = useState(false);
 
   const handleCopyLink = useCallback(() => {
+    if (!finding) return;
     const url = new URL(window.location.href);
     url.searchParams.set("model", finding.model);
     url.searchParams.set("severity", finding.riskLevel);
@@ -214,9 +215,10 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
     });
   }, [finding]);
 
-  /* Close on Escape */
+  /* Close on Escape + focus restoration */
   useEffect(() => {
     if (!finding) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -225,6 +227,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
     return () => {
       document.removeEventListener("keydown", handleEsc);
       document.body.style.overflow = "";
+      previousFocus?.focus();
     };
   }, [finding, onClose]);
 

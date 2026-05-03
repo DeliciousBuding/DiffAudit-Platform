@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, FileText, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
@@ -88,7 +88,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
   const tableCopy = copy.taskTable;
 
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
-  const [retryError, setRetryError] = useState<string | null>(null);
+  const [retryErrors, setRetryErrors] = useState<Map<string, string>>(new Map());
 
   // Filter by mode (active = running/queued, history = completed/failed/cancelled)
   const modeFiltered =
@@ -128,7 +128,7 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
-    setRetryError(null);
+    setRetryErrors((prev) => { const next = new Map(prev); next.delete(job.job_id); return next; });
     try {
       const res = await fetch("/api/v1/audit/jobs", {
         method: "POST",
@@ -142,10 +142,10 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
       if (res.ok) {
         onRefresh();
       } else {
-        setRetryError(`Retry failed (HTTP ${res.status})`);
+        setRetryErrors((prev) => { const next = new Map(prev); next.set(job.job_id, `Retry failed (HTTP ${res.status})`); return next; });
       }
     } catch {
-      setRetryError(locale === "zh-CN" ? "无法连接到服务器" : "Could not reach the server");
+      setRetryErrors((prev) => { const next = new Map(prev); next.set(job.job_id, locale === "zh-CN" ? "无法连接到服务器" : "Could not reach the server"); return next; });
     } finally {
       setRetryingJobId(null);
     }
@@ -366,8 +366,8 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
                           >
                             {retryingJobId === job.job_id ? copy.retrying : copy.retry}
                           </button>
-                          {retryError && retryingJobId === null && (
-                            <span className="text-[11px] text-[color:var(--risk-high)]">{retryError}</span>
+                          {retryErrors.has(job.job_id) && retryingJobId !== job.job_id && (
+                            <span className="text-[11px] text-[color:var(--risk-high)]">{retryErrors.get(job.job_id)}</span>
                           )}
                         </>
                       )}
