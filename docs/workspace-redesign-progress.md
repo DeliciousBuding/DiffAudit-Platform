@@ -716,3 +716,26 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 55 rounds total, 53 commits to main. 136/136 tests.
+
+### Phase 56: Ctrl+K Conflict, Locale Leaks, Typography & Radius Standardization (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Engineering fixes:**
+1. ✅ Remove duplicate Ctrl+K handler from WorkspaceGlobalSearch (CommandPalette owns it)
+2. ✅ Fix setTimeout leak in CreateTaskClient (stored in ref, cleaned on unmount)
+3. ✅ Sidebar collapse/expand labels localized via WORKSPACE_COPY
+
+**Design fixes:**
+4. ✅ text-[10px] → text-[11px] for non-badge secondary text (start, TaskList, ModelAssets)
+5. ✅ text-[9px] → text-[10px], rounded-sm → rounded-full for task step numbers
+6. ✅ rounded-[10px] → rounded-xl in sidebar CTA, start empty state, ModelAssets
+7. ✅ strokeWidth={1.2} → 1.5 on RiskFindings empty state icon
+8. ✅ KPI cards p-5 → p-4, space-y-6 → space-y-4 in RiskFindings
+9. ✅ Inline SVG → Lucide X icon in CreateTaskClient
+
+**Product fixes:**
+10. ✅ "Active tasks" → "Suggested actions" (misleading static content label)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+56 rounds total, 54 commits to main. 136/136 tests.
