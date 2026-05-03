@@ -941,3 +941,16 @@ Innovation round. Implements remaining high-value proposals from R63.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 66 rounds total, 64 commits to main. 136/136 tests.
+
+### Phase 67: Adaptive Polling + Last-Refreshed Indicator (COMPLETED)
+Innovation round. Implements high-value proposal from R66 product audit.
+
+**New features:**
+1. ✅ Adaptive polling: 5s when active jobs, 30s when idle (was fixed 5s, saves 6x server load)
+2. ✅ Polling status indicator: blue pulse dot + "Auto-refreshing" text when jobs running
+3. ✅ Last refreshed timestamp: exact time of last successful data fetch
+   - Innovation score: User value 4 + Cost 2 + Design 4 + Innovation 4 = 14/20
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+67 rounds total, 65 commits to main. 136/136 tests.
