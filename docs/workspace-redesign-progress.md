@@ -801,3 +801,21 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 59 rounds total, 57 commits to main. 136/136 tests.
+
+### Phase 60: Cancel Error Feedback, Upload Demo Notice, Defense Disclaimer (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Product:**
+1. ✅ Job cancel: show error message on failure (was silently swallowed)
+2. ✅ Upload: add demo mode notice below upload button (was buried at tiny text)
+3. ✅ Reports: add disclaimer to defense strategies ("Industry-standard guidance")
+4. ✅ RiskFindings pagination: show "3 / 15 findings" when filters active
+
+**Design:**
+5. ✅ ModelAssets search input: text-xs → text-[13px]
+6. ✅ RiskFindings search input: text-xs → text-[13px]
+7. ✅ ModelAssets demoModeNote: text-[10px] → text-[11px], opacity boosted
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+60 rounds total, 58 commits to main. 136/136 tests.
