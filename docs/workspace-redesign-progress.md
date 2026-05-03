@@ -996,3 +996,25 @@ Innovation round. Implements power-user keyboard navigation.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 70 rounds total, 68 commits to main. 136/136 tests.
+
+### Phase 71: TDZ Crash Fix, Per-Job Retry Errors, Dark Mode, Accessibility (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Critical fix:**
+1. ✅ RiskFindings: move useTableKeyboardNav after paginatedRows/tableScrollRef (TDZ crash)
+
+**Engineering:**
+2. ✅ TaskListClient: retry errors scoped per-job via Map<string, string>
+3. ✅ TaskListClient: remove unused useEffect import
+
+**Design:**
+4. ✅ CreateTaskClient: text-white → text-background, bg-white → bg-background
+5. ✅ CreateTaskClient: text-[var(--info)] → text-[color:var(--info)]
+
+**Accessibility:**
+6. ✅ FindingDetailPanel: null guard on handleCopyLink
+7. ✅ FindingDetailPanel: focus restoration on panel close
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+71 rounds total, 69 commits to main. 136/136 tests.
