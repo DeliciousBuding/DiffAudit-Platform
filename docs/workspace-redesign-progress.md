@@ -784,3 +784,20 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 58 rounds total, 56 commits to main. 136/136 tests.
+
+### Phase 59: Modal Delete Dialog, Filtered Count, Color Syntax (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Accessibility:**
+1. ✅ ModelAssets: replace hand-rolled delete dialog with Modal component (adds focus trap, Escape handling)
+
+**Product:**
+2. ✅ RiskFindings pagination: show "3 / 15 findings" when filters active (was showing only filtered count)
+
+**Design:**
+3. ✅ ModelAssets: standardize text-[var(--...)] → text-[color:var(--...)] (11 instances)
+4. ✅ Account: standardize text-[var(--...)] → text-[color:var(--...)] (9 instances)
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+59 rounds total, 57 commits to main. 136/136 tests.
