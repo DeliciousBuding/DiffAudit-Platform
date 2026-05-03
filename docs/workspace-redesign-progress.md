@@ -645,3 +645,14 @@ Late design audit findings from R35:
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 49 rounds total, 47 commits to main. 136/136 tests.
+
+### Phase 50: Global Scrollbar Styling & Enhanced Contextual Tip (COMPLETED)
+3 parallel agents audited from product, design, and engineering perspectives.
+
+**Innovation:**
+1. ✅ Global scrollbar: thin, subtle, dark-mode aware for workspace-main-content
+2. ✅ Risk Findings: contextual tip now explains AUC/ASR color coding thresholds
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+50 rounds total, 48 commits to main. 136/136 tests.
