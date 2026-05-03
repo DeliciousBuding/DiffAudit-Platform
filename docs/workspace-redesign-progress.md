@@ -954,3 +954,16 @@ Innovation round. Implements high-value proposal from R66 product audit.
 **Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
 
 67 rounds total, 65 commits to main. 136/136 tests.
+
+### Phase 68: Extract useScrollFade Hook — DRY Refactor (COMPLETED)
+Engineering innovation round. Eliminates 28 lines of duplicated code.
+
+**Refactor:**
+1. ✅ New hook: `useScrollFade<T>()` — ResizeObserver-based horizontal overflow detection
+2. ✅ RiskFindingsClient: 12 lines → 1 line
+3. ✅ TaskListClient: 14 lines → 1 line
+4. ✅ Removed unused `useRef` import from TaskListClient
+
+**Engineering audit:** Clean. 136/136 tests, 0 unused imports, 0 console.log.
+
+68 rounds total, 66 commits to main. 136/136 tests.
