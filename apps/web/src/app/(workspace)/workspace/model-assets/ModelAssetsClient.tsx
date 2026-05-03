@@ -738,7 +738,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                     {timelineEntries.map((entry, index) => {
                       const isBestEvidence = index === 0;
                       return (
-                        <div key={entry.contractKey} className="flex gap-4 rounded-xl border border-border/60 p-4 transition-colors hover:border-border">
+                        <div key={entry.contractKey} className="flex gap-4 rounded-2xl border border-border/60 p-4 transition-colors hover:border-border">
                           <div className="flex flex-col items-center">
                             <div className={`h-3 w-3 rounded-full ${isBestEvidence ? "bg-[var(--accent-blue)]" : "bg-border"}`} aria-hidden="true" />
                             {index < timelineEntries.length - 1 && <div className="w-[2px] flex-1 bg-border/40 mt-1" aria-hidden="true" />}
@@ -829,7 +829,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
                           <ChevronLeft size={12} strokeWidth={1.5} aria-hidden="true" />
                         </button>
                         {Array.from({ length: totalEvidencePages }, (_, i) => i + 1).map((page) => (
-                          <button key={page} type="button" onClick={() => setEvidencePage(page)} aria-label={`Page ${page}`} aria-current={page === evidencePage ? "page" : undefined} className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${page === evidencePage ? "bg-[var(--accent-blue)] text-white" : "text-muted-foreground hover:bg-muted/30"}`}>
+                          <button key={page} type="button" onClick={() => setEvidencePage(page)} aria-label={`Page ${page}`} aria-current={page === evidencePage ? "page" : undefined} className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${page === evidencePage ? "bg-[var(--accent-blue)] text-background" : "text-muted-foreground hover:bg-muted/30"}`}>
                             {page}
                           </button>
                         ))}

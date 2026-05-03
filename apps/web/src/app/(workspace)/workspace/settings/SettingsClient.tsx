@@ -1006,7 +1006,7 @@ export function SettingsClient({
                       <div className="mt-1 truncate text-sm text-muted-foreground">@{profile.username}</div>
                     </div>
                     </div>
-                    <div className="mt-5 rounded-xl border border-border bg-muted/10 px-4 py-3 text-sm leading-6 text-muted-foreground">
+                    <div className="mt-5 rounded-2xl border border-border bg-muted/10 px-4 py-3 text-sm leading-6 text-muted-foreground">
                       {accessSummary}
                     </div>
                   </div>
@@ -1037,7 +1037,7 @@ export function SettingsClient({
                     </div>
                   </div>
                   {showEmailEditor ? (
-                    <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+                    <div className="space-y-3 rounded-2xl border border-border bg-card p-4">
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground" htmlFor="settings-email">
                           {copy.account.email}
@@ -1078,7 +1078,7 @@ export function SettingsClient({
                     </div>
                   ) : null}
                   {profile.pendingEmail ? (
-                    <div className="space-y-3 rounded-xl border border-border bg-muted/10 p-4">
+                    <div className="space-y-3 rounded-2xl border border-border bg-muted/10 p-4">
                       <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                         {copy.account.pendingEmail}
                       </div>
@@ -1167,7 +1167,7 @@ export function SettingsClient({
                       {providerLinkNotice.message}
                     </div>
                   ) : null}
-                  <p className="rounded-lg border border-border bg-muted/10 px-4 py-3 text-[11px] leading-5 text-muted-foreground">
+                  <p className="rounded-2xl border border-border bg-muted/10 px-4 py-3 text-[11px] leading-5 text-muted-foreground">
                     {copy.account.securityNote}{" "}
                     <Link href="/docs/privacy" className="auth-inline-link">{copy.account.privacy}</Link>
                     {" · "}
@@ -1185,7 +1185,7 @@ export function SettingsClient({
             </div>
 
             <div className="settings-section-card p-5 space-y-5">
-              <div className="space-y-2 rounded-xl border border-border bg-muted/10 p-4">
+              <div className="space-y-2 rounded-2xl border border-border bg-muted/10 p-4">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                   {copy.account.accessSummary}
                 </div>
@@ -1231,7 +1231,7 @@ export function SettingsClient({
               ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1 rounded-xl border border-border bg-muted/10 p-4">
+                <div className="space-y-1 rounded-2xl border border-border bg-muted/10 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.password}
                   </div>
@@ -1239,7 +1239,7 @@ export function SettingsClient({
                     {profile?.hasPassword ? copy.account.passwordSet : copy.account.passwordUnset}
                   </div>
                 </div>
-                <div className="space-y-1 rounded-xl border border-border bg-muted/10 p-4">
+                <div className="space-y-1 rounded-2xl border border-border bg-muted/10 p-4">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.loginId}
                   </div>
@@ -1251,7 +1251,7 @@ export function SettingsClient({
                 </div>
               </div>
 
-              <div className="space-y-3 rounded-xl border border-border bg-muted/10 p-4">
+              <div className="space-y-3 rounded-2xl border border-border bg-muted/10 p-4">
                 <div className="space-y-1">
                   <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
                     {copy.account.passwordManage}

@@ -247,7 +247,7 @@ function KpiCard({ label, value, accent, icon }: { label: React.ReactNode; value
 /*  Quick filter presets                                                */
 /* ------------------------------------------------------------------ */
 
-type QuickFilterId = "all" | "high-unmitigated" | "mitigated" | "high-auc";
+type QuickFilterId = "all" | "high-unmitigated" | "mitigated" | "high-severity";
 
 type QuickFilterPreset = {
   id: QuickFilterId;
