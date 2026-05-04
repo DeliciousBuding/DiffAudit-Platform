@@ -518,18 +518,18 @@ export function SettingsClient({
       });
 
       if (!response.ok) {
-        setTwoFactorError(locale === "zh-CN" ? "两步验证状态保存失败，请重新登录后再试。" : "Could not save two-factor status. Sign in again and retry.");
+        setTwoFactorError(copy.account.twoFactorSaveFailed);
         return;
       }
 
       setProfile((prev) => (prev ? { ...prev, twoFactorEnabled: enabled } : prev));
       setTwoFactorNotice(
         enabled
-          ? (locale === "zh-CN" ? "两步验证已启用。" : "Two-factor auth is enabled.")
-          : (locale === "zh-CN" ? "两步验证已关闭。" : "Two-factor auth is disabled."),
+          ? copy.account.twoFactorSavedOn
+          : copy.account.twoFactorSavedOff,
       );
     } catch {
-      setTwoFactorError(locale === "zh-CN" ? "两步验证状态保存失败，请检查本地服务。" : "Could not save two-factor status. Check the local service.");
+      setTwoFactorError(copy.account.twoFactorNetworkFailed);
     } finally {
       setTwoFactorPending(false);
     }
@@ -636,8 +636,8 @@ export function SettingsClient({
 
   const connectedProviders = profile?.providers ?? [];
   const availableProviderConnectors = ([
-    { key: "github", label: profile ? copy.account.connectGithub : (locale === "zh-CN" ? "使用 GitHub 登录" : "Continue with GitHub") },
-    { key: "google", label: profile ? copy.account.connectGoogle : (locale === "zh-CN" ? "使用 Google 登录" : "Continue with Google") },
+    { key: "github", label: profile ? copy.account.connectGithub : copy.account.signInGithub },
+    { key: "google", label: profile ? copy.account.connectGoogle : copy.account.signInGoogle },
   ] as const).filter((provider) => oauthEnabled[provider.key] && (profile ? !connectedProviders.includes(provider.key) : true));
   const accessSummary = getAccessSummary(profile, copy.account);
 
@@ -1218,15 +1218,13 @@ export function SettingsClient({
                     </div>
                     <div className="min-w-0">
                       <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-blue)]/80">
-                        {locale === "zh-CN" ? "未登录" : "Not signed in"}
+                        {copy.account.notSignedIn}
                       </div>
                       <div className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-                        {locale === "zh-CN" ? "选择一种登录方式" : "Choose a sign-in method"}
+                        {copy.account.chooseSignInMethod}
                       </div>
                       <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                        {locale === "zh-CN"
-                          ? "连接 GitHub 后会优先显示 GitHub 名称和头像。"
-                          : "After GitHub sign-in, the GitHub name and avatar are used first."}
+                        {copy.account.githubAvatarPriority}
                       </p>
                     </div>
                   </div>
@@ -1318,7 +1316,7 @@ export function SettingsClient({
                     href="/register?redirectTo=%2Fworkspace%2Faccount"
                     className="workspace-btn-secondary w-full px-3 py-3 text-center text-xs font-medium"
                   >
-                    {locale === "zh-CN" ? "创建本地账号" : "Create local account"}
+                    {copy.account.createLocalAccount}
                   </Link>
                 ) : !showPasswordEditor ? (
                   <button
@@ -1422,18 +1420,14 @@ export function SettingsClient({
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-                      {locale === "zh-CN" ? "两步验证" : "Two-factor auth"}
+                      {copy.account.twoFactor}
                     </div>
                     <p className="text-[11px] leading-5 text-muted-foreground">
-                      {locale === "zh-CN"
-                        ? "本地账户安全开关。启用后会记录到当前用户，后续可接入 TOTP 校验。"
-                        : "Local account security switch. It is saved to the current user and can be wired to TOTP verification later."}
+                      {copy.account.twoFactorHint}
                     </p>
                   </div>
                   <StatusBadge tone={profile?.twoFactorEnabled ? "success" : "neutral"} compact>
-                    {profile?.twoFactorEnabled
-                      ? (locale === "zh-CN" ? "已启用" : "Enabled")
-                      : (locale === "zh-CN" ? "未启用" : "Off")}
+                    {profile?.twoFactorEnabled ? copy.account.twoFactorEnabled : copy.account.twoFactorDisabled}
                   </StatusBadge>
                 </div>
                 <button
@@ -1443,10 +1437,10 @@ export function SettingsClient({
                   className="workspace-btn-secondary w-full px-3 py-3 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {twoFactorPending
-                    ? (locale === "zh-CN" ? "保存中..." : "Saving...")
+                    ? copy.account.twoFactorSaving
                     : profile?.twoFactorEnabled
-                      ? (locale === "zh-CN" ? "关闭两步验证" : "Disable two-factor auth")
-                      : (locale === "zh-CN" ? "启用两步验证" : "Enable two-factor auth")}
+                      ? copy.account.twoFactorDisable
+                      : copy.account.twoFactorEnable}
                 </button>
                 {twoFactorNotice ? (
                   <div className="rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--success)]">

@@ -449,7 +449,7 @@ export const WORKSPACE_COPY: Record<
       description: string;
       systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string; gatewayError: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string; roundsClamped: string; batchClamped: string };
-      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; logout: string };
+      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; signInGoogle: string; signInGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; createLocalAccount: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; twoFactor: string; twoFactorHint: string; twoFactorEnabled: string; twoFactorDisabled: string; twoFactorEnable: string; twoFactorDisable: string; twoFactorSaving: string; twoFactorSavedOn: string; twoFactorSavedOff: string; twoFactorSaveFailed: string; twoFactorNetworkFailed: string; notSignedIn: string; chooseSignInMethod: string; githubAvatarPriority: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
       auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string };
@@ -1191,6 +1191,8 @@ export const WORKSPACE_COPY: Record<
         providers: "Connected sign-in methods",
         connectGoogle: "Connect Google",
         connectGithub: "Connect GitHub",
+        signInGoogle: "Continue with Google",
+        signInGithub: "Continue with GitHub",
         providerLinkedGoogle: "Google is now connected to this account.",
         providerLinkedGithub: "GitHub is now connected to this account.",
         providerAlreadyLinkedGoogle: "Google was already connected to this account.",
@@ -1229,6 +1231,7 @@ export const WORKSPACE_COPY: Record<
         openPasswordCreate: "Add local password",
         openPasswordChange: "Change password",
         closePasswordEditor: "Hide password form",
+        createLocalAccount: "Create local account",
         savePassword: "Save password",
         savingPassword: "Saving...",
         passwordSaved: "Password updated",
@@ -1236,6 +1239,20 @@ export const WORKSPACE_COPY: Record<
         passwordTooShort: "Password must be at least 8 characters.",
         passwordRequired: "Password and confirmation are required.",
         passwordUnauthorized: "Sign in again before changing your password.",
+        twoFactor: "Two-factor auth",
+        twoFactorHint: "Local account security switch. It is saved to the current user and can be wired to TOTP verification later.",
+        twoFactorEnabled: "Enabled",
+        twoFactorDisabled: "Off",
+        twoFactorEnable: "Enable two-factor auth",
+        twoFactorDisable: "Disable two-factor auth",
+        twoFactorSaving: "Saving...",
+        twoFactorSavedOn: "Two-factor auth is enabled.",
+        twoFactorSavedOff: "Two-factor auth is disabled.",
+        twoFactorSaveFailed: "Could not save two-factor status. Sign in again and retry.",
+        twoFactorNetworkFailed: "Could not save two-factor status. Check the local service.",
+        notSignedIn: "Not signed in",
+        chooseSignInMethod: "Choose a sign-in method",
+        githubAvatarPriority: "After GitHub sign-in, the GitHub name and avatar are used first.",
         logout: "Sign out",
       },
       preferences: {
@@ -2035,6 +2052,8 @@ export const WORKSPACE_COPY: Record<
         providers: "已连接登录方式",
         connectGoogle: "绑定 Google",
         connectGithub: "绑定 GitHub",
+        signInGoogle: "使用 Google 登录",
+        signInGithub: "使用 GitHub 登录",
         providerLinkedGoogle: "Google 已绑定到当前账户。",
         providerLinkedGithub: "GitHub 已绑定到当前账户。",
         providerAlreadyLinkedGoogle: "Google 已经绑定在当前账户上。",
@@ -2073,6 +2092,7 @@ export const WORKSPACE_COPY: Record<
         openPasswordCreate: "添加本地密码",
         openPasswordChange: "修改密码",
         closePasswordEditor: "收起密码表单",
+        createLocalAccount: "创建本地账号",
         savePassword: "保存密码",
         savingPassword: "保存中...",
         passwordSaved: "密码已更新",
@@ -2080,6 +2100,20 @@ export const WORKSPACE_COPY: Record<
         passwordTooShort: "密码长度至少为 8 位。",
         passwordRequired: "密码和确认密码不能为空。",
         passwordUnauthorized: "请重新登录后再修改密码。",
+        twoFactor: "两步验证",
+        twoFactorHint: "本地账户安全开关。启用后会记录到当前用户，后续可接入 TOTP 校验。",
+        twoFactorEnabled: "已启用",
+        twoFactorDisabled: "未启用",
+        twoFactorEnable: "启用两步验证",
+        twoFactorDisable: "关闭两步验证",
+        twoFactorSaving: "保存中...",
+        twoFactorSavedOn: "两步验证已启用。",
+        twoFactorSavedOff: "两步验证已关闭。",
+        twoFactorSaveFailed: "两步验证状态保存失败，请重新登录后再试。",
+        twoFactorNetworkFailed: "两步验证状态保存失败，请检查本地服务。",
+        notSignedIn: "未登录",
+        chooseSignInMethod: "选择一种登录方式",
+        githubAvatarPriority: "连接 GitHub 后会优先显示 GitHub 名称和头像。",
         logout: "退出登录",
       },
       preferences: {

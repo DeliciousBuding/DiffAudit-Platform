@@ -16,7 +16,7 @@ Start the web app:
 npm --prefix apps/web run dev
 ```
 
-The default local URL is `http://localhost:3000`. Demo mode is enabled via `DIFFAUDIT_DEMO_MODE=1` in `.env.local`.
+The default local URL is `http://localhost:3000`. Demo mode is enabled via `DIFFAUDIT_DEMO_MODE=1` in `.env.local`; it can render the workspace, audits, reports, and account surfaces without a live runtime.
 
 ## Useful Commands
 
@@ -54,6 +54,8 @@ app/
 - **Data facade**: `lib/workspace-source.ts` provides view models. Pages don't import raw data adapters directly.
 - **i18n**: All user-facing copy lives in `lib/workspace-copy.ts` (en-US + zh-CN). No inline locale ternaries.
 - **Design tokens**: CSS custom properties in `globals.css`. JSX uses `[var(...)]` syntax for Tailwind colors.
+- **Demo data**: Workspace pages use server-injected demo snapshots where possible so first paint is stable under Next/Turbopack dev.
+- **Charts**: Small workspace charts are local SVG components. Avoid reintroducing Recharts unless it is verified under the current Next/React/Turbopack stack.
 
 ### Shared Hooks (`src/hooks/`)
 
@@ -87,6 +89,20 @@ app/
 Use untracked environment files for local values. The root `.env.example` lists the supported variables.
 
 OAuth provider buttons are rendered only when the matching client ID and client secret are configured.
+
+`/workspace/account` reuses the account mode in `SettingsClient`. In demo mode, unauthenticated visitors see GitHub/Google sign-in and local-account creation actions; signed-in users can connect OAuth providers, change local password access, and toggle the local two-factor status. GitHub profile data is preferred for account avatar/name after GitHub sign-in or connection.
+
+## Containers
+
+The web app has a production Dockerfile at `apps/web/Dockerfile`. For the full two-service stack, use the templates in `deploy/`:
+
+```powershell
+Copy-Item .\deploy\compose.env.example .\deploy\.env
+Copy-Item .\deploy\runtime.env.example .\deploy\runtime.env
+docker compose --env-file .\deploy\.env -f .\deploy\docker-compose.example.yml up -d --build
+```
+
+Keep copied env files untracked. Put OAuth secrets, platform URL, CORS origins, and deployment-specific bind addresses in those local files or a secret manager.
 
 ## Repository Hygiene
 
