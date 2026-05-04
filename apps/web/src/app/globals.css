@@ -2062,6 +2062,16 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   display: none;
 }
 
+.workspace-sidebar-divider {
+  margin: 14px 4px 8px;
+  border-top: 1px solid var(--border);
+  opacity: 0.7;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-divider {
+  margin: 12px 6px 6px;
+}
+
 .workspace-sidebar.is-collapsed .workspace-sidebar-link {
   justify-content: center;
   padding: 8px;

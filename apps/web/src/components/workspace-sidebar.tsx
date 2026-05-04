@@ -14,6 +14,9 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const STORAGE_KEY = "diffaudit-sidebar-collapsed";
 
+// Account-related entries get visually grouped at the bottom of the sidebar.
+const ACCOUNT_GROUP_KEYS: ReadonlySet<string> = new Set(["apiKeys", "account", "settings"]);
+
 function getCollapsedFromStorage(): boolean {
   if (typeof window === "undefined") return false;
   try {
@@ -86,21 +89,24 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   return (
     <div className="workspace-sidebar-inner">
       <nav ref={navRef} className="workspace-sidebar-nav" aria-label={sidebarLabel} onKeyDown={onNavKeyDown}>
-        {items.map((item) => {
+        {items.map((item, index) => {
           const active = current.href === item.href;
+          const prevItem = index > 0 ? items[index - 1] : null;
+          const startsAccountGroup =
+            ACCOUNT_GROUP_KEYS.has(item.key) && (!prevItem || !ACCOUNT_GROUP_KEYS.has(prevItem.key));
           return (
             <div key={item.href}>
+              {startsAccountGroup ? (
+                <div className="workspace-sidebar-divider" aria-hidden="true" />
+              ) : null}
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
-                title={collapsed ? item.title : item.subtitle}
+                title={item.title}
               >
                 <NavIcon icon={item.icon} />
-                <div className="workspace-sidebar-label flex flex-col min-w-0">
-                  <span className="text-[13px] font-medium leading-tight truncate">{item.title}</span>
-                  <span className="workspace-sidebar-subtitle text-[11px] leading-tight text-muted-foreground/80 truncate">{item.subtitle}</span>
-                </div>
+                <span className="workspace-sidebar-label text-[13px] font-medium leading-tight truncate">{item.title}</span>
               </Link>
             </div>
           );
