@@ -2112,9 +2112,9 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
   top: 0;
   z-index: 30;
   display: grid;
-  grid-template-columns: minmax(180px, 300px) minmax(300px, 380px) minmax(320px, 1fr);
+  grid-template-columns: minmax(220px, 1fr) minmax(320px, 420px) minmax(320px, 1fr);
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   min-height: 56px;
   padding: 8px 24px;
   border-bottom: 1px solid rgba(226, 232, 240, 0.82);
@@ -2151,8 +2151,8 @@ html.dark .workspace-main-content::-webkit-scrollbar-thumb:hover {
 .workspace-global-search {
   position: relative;
   display: flex;
-  width: min(100%, 380px);
-  justify-self: start;
+  width: min(100%, 420px);
+  justify-self: center;
   height: 38px;
   align-items: center;
   gap: 10px;
@@ -3512,11 +3512,11 @@ html.dark .workspace-table-scroll::after {
 
 @media (max-width: 1280px) {
   .workspace-topbar {
-    grid-template-columns: minmax(150px, 220px) minmax(240px, 340px) minmax(240px, 1fr);
+    grid-template-columns: minmax(180px, 1fr) minmax(280px, 360px) minmax(280px, 1fr);
   }
 
   .workspace-global-search {
-    width: min(100%, 340px);
+    width: min(100%, 360px);
   }
 }
 
