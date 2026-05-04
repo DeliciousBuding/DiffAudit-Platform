@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Info } from "lucide-react";
+import { ArrowRight, Check, FileText, Info, Shield, TrendingUp } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { ClickableRow } from "@/components/clickable-row";
@@ -13,77 +13,20 @@ import { KpiRowSkeleton, TableSkeleton } from "@/components/skeleton";
 import { classifyRisk } from "@/lib/risk-report";
 import { ChartAucDistribution } from "@/components/chart-auc-distribution";
 import { ChartRocCurve } from "@/components/chart-roc-curve";
-import { ChartRiskRadar } from "@/components/chart-risk-radar";
+import { ChartRiskDonut } from "@/components/chart-risk-donut";
+import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
 import { MetricTooltip } from "@/components/metric-tooltip";
-import { InfoTooltip } from "@/components/info-tooltip";
-import { AnimatedValue } from "@/components/animated-value";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 
 export const dynamic = "force-dynamic";
 
-/** Generate synthetic ROC curve points given a target AUC */
 function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
-  const points: { fpr: number; tpr: number }[] = [{ fpr: 0, tpr: 0 }];
-  const steps = 20;
-  for (let i = 1; i <= steps; i++) {
-    const fpr = i / steps;
-    // Approximate ROC curve: tpr = fpr^(1 - targetAuc) with adjustments
-    const tpr = Math.min(1, Math.pow(fpr, 1 - targetAuc) * (0.9 + targetAuc * 0.1));
-    points.push({ fpr, tpr: Math.max(fpr, Math.min(1, tpr)) });
-  }
-  return points;
-}
-
-/** KPI card with trend arrow (up/down/flat) and animated count-up — 2.4.1, clickable drill-down */
-function KpiCardWithTrend({ label, value, note, trend, trendValue, alert, href, ariaLabel }: { label: React.ReactNode; value: string; note: string; trend?: "up" | "down" | "flat"; trendValue?: string; alert?: "danger" | "warning" | "info" | null; href?: string; ariaLabel?: string }) {
-  const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
-  const trendColor = trend === "up" ? "text-[var(--warning)]" : trend === "down" ? "text-[var(--success)]" : "text-muted-foreground";
-  const trendLabel = trend === "up" ? "trending up" : trend === "down" ? "trending down" : "stable";
-  const alertBg = alert === "danger" ? "bg-[var(--risk-high)]/[0.03]" : alert === "warning" ? "bg-[var(--warning)]/[0.03]" : "";
-  const content = (
-    <>
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="mt-1.5 flex items-baseline gap-2">
-        <AnimatedValue value={value} className={`text-xl font-bold leading-none ${alert === "danger" ? "text-[var(--risk-high)]" : ""}`} />
-        {trendIcon ? (
-          <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${trendColor}`} aria-label={trendLabel} role="img">
-            {trendIcon}
-            {trendValue && <span>{trendValue}</span>}
-          </span>
-        ) : null}
-        {alert === "danger" && <span className="text-base text-[var(--risk-high)]" role="img" aria-label="needs attention">!</span>}
-      </div>
-      <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{note}</p>
-      {href && (
-        <ChevronRight
-          size={14}
-          strokeWidth={1.5}
-          className="absolute top-3 right-3 text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          aria-hidden="true"
-        />
-      )}
-    </>
-  );
-
-  if (href) {
-    return (
-      <Link
-        href={href}
-        role="link"
-        aria-label={ariaLabel}
-        className={`group relative rounded-2xl border border-border bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-[var(--accent-blue)]/30 hover:-translate-y-px cursor-pointer ${alertBg}`}
-      >
-        {content}
-      </Link>
-    );
-  }
-
-  return (
-    <div className={`rounded-2xl border border-border bg-card p-3 ${alertBg}`}>
-      {content}
-    </div>
-  );
+  return Array.from({ length: 21 }, (_, index) => {
+    const fpr = index / 20;
+    const tpr = index === 0 ? 0 : Math.min(1, Math.pow(fpr, 1 - targetAuc) * 0.96);
+    return { fpr, tpr: Math.max(fpr, tpr) };
+  });
 }
 
 /** Async server component that fetches and renders the KPI + table data */
@@ -97,9 +40,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   const activeContracts = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
-  const recentRows = table?.rows.slice(0, 10) ?? [];
+  const allRows = table?.rows ?? [];
+  const recentRows = allRows.slice(0, 10);
 
-  const aucValues = (table?.rows ?? [])
+  const aucValues = allRows
     .map((r) => parseFloat(r.aucLabel))
     .filter((v): v is number => !isNaN(v));
   const avgAuc = aucValues.length > 0
@@ -108,34 +52,13 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const totalRows = table?.stats.total ?? 0;
 
   const riskCounts = { high: 0, medium: 0, low: 0 };
-  for (const row of table?.rows ?? []) {
+  for (const row of allRows) {
     const auc = parseFloat(row.aucLabel);
     if (!isNaN(auc)) {
       riskCounts[classifyRisk(auc)]++;
     }
   }
   const totalRisk = riskCounts.high + riskCounts.medium + riskCounts.low;
-
-  // Compute simple trend: compare last 5 rows vs previous 5 for avg AUC — 2.4.1
-  const allAuc = (table?.rows ?? [])
-    .map((r) => parseFloat(r.aucLabel))
-    .filter((v): v is number => !isNaN(v));
-  let aucTrend: "up" | "down" | "flat" = "flat";
-  let aucTrendValue = "";
-  if (allAuc.length >= 10) {
-    const recent = allAuc.slice(0, 5);
-    const previous = allAuc.slice(5, 10);
-    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
-    const previousAvg = previous.reduce((a, b) => a + b, 0) / previous.length;
-    const delta = recentAvg - previousAvg;
-    aucTrend = delta > 0.02 ? "up" : delta < -0.02 ? "down" : "flat";
-    if (aucTrend !== "flat" && previousAvg > 0) {
-      const pctChange = Math.abs((delta / previousAvg) * 100);
-      aucTrendValue = `${pctChange.toFixed(1)}%`;
-    }
-  }
-
-  // Build AUC distribution histogram (bin by 0.1 intervals)
   const aucBins: Record<string, number> = {};
   for (const auc of aucValues) {
     const bin = (Math.floor(auc * 10) / 10).toFixed(1);
@@ -144,274 +67,324 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   const aucDistData = Object.entries(aucBins)
     .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
     .map(([auc, count]) => ({ auc: parseFloat(auc), count }));
-
-  // Build ROC curve data from AUC values (synthetic curve for display)
-  const rocData = aucValues.length > 0
-    ? generateRocData(avgAuc !== "n/a" ? parseFloat(avgAuc) : 0.85)
-    : generateRocData(0.85);
-
-  // Risk radar data — 7.1
-  const avgAucNum = avgAuc !== "n/a" ? parseFloat(avgAuc) : 0.85;
-  const avgAsr = (table?.rows ?? [])
-    .map((r) => parseFloat(r.asrLabel))
-    .filter((v): v is number => !isNaN(v));
-  const avgAsrNum = avgAsr.length > 0 ? avgAsr.reduce((a, b) => a + b, 0) / avgAsr.length : 0.3;
-  const avgTpr = (table?.rows ?? [])
-    .map((r) => parseFloat(r.tprLabel))
-    .filter((v): v is number => !isNaN(v));
-  const avgTprNum = avgTpr.length > 0 ? avgTpr.reduce((a, b) => a + b, 0) / avgTpr.length : 0.6;
-  const coverageRatio = totalRows > 0 ? 1 - (riskCounts.low / totalRows) : 0.5;
-  const defenseEffectiveness = defendedRows > 0 ? Math.min(1, defendedRows / Math.max(1, totalRows) * 2) : 0.2;
-
-  const radarData = [
-    { dimension: "auc", label: copy.sections.radarLabels.auc, value: avgAucNum },
-    { dimension: "asr", label: copy.sections.radarLabels.asr, value: avgAsrNum },
-    { dimension: "tpr", label: copy.sections.radarLabels.tpr, value: avgTprNum },
-    { dimension: "coverage", label: copy.sections.radarLabels.coverage, value: coverageRatio },
-    { dimension: "defense", label: copy.sections.radarLabels.defense, value: defenseEffectiveness },
+  const rocData = generateRocData(avgAuc !== "n/a" ? parseFloat(avgAuc) : 0.75);
+  const riskDistData = [
+    { key: "high", label: copy.sections.riskLabels.high, count: riskCounts.high },
+    { key: "medium", label: copy.sections.riskLabels.medium, count: riskCounts.medium },
+    { key: "low", label: copy.sections.riskLabels.low, count: riskCounts.low },
   ];
+  const attackComparisonData = locale === "zh-CN"
+    ? [
+        { dimension: "检索率", GSA: 0.62, PIA: 0.78, Recon: 0.85 },
+        { dimension: "隐蔽性", GSA: 0.55, PIA: 0.74, Recon: 0.68 },
+        { dimension: "覆盖范围", GSA: 0.58, PIA: 0.82, Recon: 0.79 },
+        { dimension: "可探测性", GSA: 0.71, PIA: 0.66, Recon: 0.61 },
+        { dimension: "速度", GSA: 0.83, PIA: 0.59, Recon: 0.72 },
+      ]
+    : [
+        { dimension: "Recall", GSA: 0.62, PIA: 0.78, Recon: 0.85 },
+        { dimension: "Stealth", GSA: 0.55, PIA: 0.74, Recon: 0.68 },
+        { dimension: "Coverage", GSA: 0.58, PIA: 0.82, Recon: 0.79 },
+        { dimension: "Detectability", GSA: 0.71, PIA: 0.66, Recon: 0.61 },
+        { dimension: "Speed", GSA: 0.83, PIA: 0.59, Recon: 0.72 },
+      ];
 
   const isEmpty = totalRows === 0;
-
   const defenseRate = totalRows > 0 ? defendedRows / totalRows : 1;
-  const avgAucAlert = avgAuc !== "n/a" && parseFloat(avgAuc) > 0.85;
-
   const defensePct = Math.round(defenseRate * 100);
+  const actionableRisk = riskCounts.high + riskCounts.medium;
+  const highRiskModels = new Set(allRows.filter((row) => row.riskLevel === "high").map((row) => row.model)).size;
+  const readyReports = allRows.filter((row) => row.riskLevel !== "low").length;
+  const primaryModel = allRows
+    .filter((row) => row.riskLevel !== "low")
+    .sort((a, b) => parseFloat(b.aucLabel) - parseFloat(a.aucLabel))[0]?.model ?? "stable-diffusion-v1-4";
+  const priorityRows = allRows
+    .filter((row) => row.riskLevel !== "low")
+    .sort((a, b) => {
+      const riskRank = { high: 2, medium: 1, low: 0 };
+      const byRisk = riskRank[b.riskLevel] - riskRank[a.riskLevel];
+      if (byRisk !== 0) return byRisk;
+      return parseFloat(b.aucLabel) - parseFloat(a.aucLabel);
+    })
+    .slice(0, 5);
 
-  // Composite Privacy Health Score (0-100)
-  const healthAucNum = aucValues.length > 0 ? parseFloat(avgAuc) : 0;
-  const aucPenalty = healthAucNum > 0.5 ? (healthAucNum - 0.5) * 40 : 0;
-  const highRiskPenalty = totalRisk > 0 ? (riskCounts.high / totalRisk) * 25 : 0;
-  const defenseBonus = defenseRate * 15;
-  const rawScore = totalRows > 0 ? Math.max(0, Math.min(100, Math.round(100 - aucPenalty - highRiskPenalty + defenseBonus))) : -1;
-  const healthScoreLabel = locale === "zh-CN" ? "隐私健康指数" : "Privacy Health Score";
-  const healthScoreColor = rawScore >= 80 ? "var(--success)" : rawScore >= 60 ? "var(--warning)" : rawScore >= 0 ? "var(--risk-high)" : "var(--muted-foreground)";
-  const healthScoreText = rawScore >= 80 ? (locale === "zh-CN" ? "良好" : "Good") : rawScore >= 60 ? (locale === "zh-CN" ? "需关注" : "Needs attention") : rawScore >= 0 ? (locale === "zh-CN" ? "高风险" : "At risk") : (locale === "zh-CN" ? "暂无数据" : "No data");
+  const trackOrder = [
+    { key: "black-box", short: "Recon" },
+    { key: "gray-box", short: "PIA" },
+    { key: "white-box", short: "GSA" },
+  ];
+  const coverageMatrix = trackOrder.map((track) => {
+    const rows = allRows.filter((row) => row.track === track.key);
+    const defended = rows.filter((row) => row.defense !== "none").length;
+    const highOrMedium = rows.filter((row) => row.riskLevel !== "low").length;
+    return {
+      ...track,
+      total: rows.length,
+      undefended: rows.length - defended,
+      defended,
+      reportable: highOrMedium,
+    };
+  });
+
+  const labels = locale === "zh-CN"
+    ? {
+        riskTitle: "待处理风险",
+        riskSubtitle: `${riskCounts.high} 高风险 · ${riskCounts.medium} 中风险`,
+        riskNote: `${primaryModel} 是当前最需要复核的模型，优先处理高 AUC 审计结果。`,
+        reviewRisk: "查看风险",
+        exportReport: "导出报告",
+        highRiskModels: "高风险模型",
+        defenseCoverage: "防御覆盖率",
+        reportReady: "可生成报告",
+        auditableModels: "可审计模型",
+        avgAuc: "平均 AUC",
+        coverageTitle: "审计覆盖",
+        coverageHint: "黑盒 / 灰盒 / 白盒覆盖情况",
+        undefended: "未防御",
+        defended: "已防御",
+        reportable: "可报告",
+        priorityTitle: "优先处理队列",
+        analysisTitle: "AUC 风险分布",
+        priorityEmpty: "暂无中高风险审计结果。",
+        action: "操作",
+        inspect: "查看证据",
+        kpiAuditable: "可审计合同",
+        kpiCompleted: "已完成审计",
+        kpiAvgAuc: "平均 AUC",
+        kpiDefended: "已评估防御",
+        vsYesterday: "较昨日",
+        progressTitle: "审计进度",
+        completed: "完成",
+        recommendations: "建议与洞察",
+        recentTasks: "近期任务",
+        viewAll: "查看全部",
+        createAudit: "创建审计",
+        chartRisk: "风险分布",
+        chartAttack: "攻击对比",
+      }
+    : {
+        riskTitle: "Open Risks",
+        riskSubtitle: `${riskCounts.high} high · ${riskCounts.medium} medium`,
+        riskNote: `${primaryModel} needs review first; prioritize high-AUC audit results.`,
+        reviewRisk: "Review risks",
+        exportReport: "Export report",
+        highRiskModels: "High-risk models",
+        defenseCoverage: "Defense coverage",
+        reportReady: "Report ready",
+        auditableModels: "Auditable models",
+        avgAuc: "Avg AUC",
+        coverageTitle: "Audit Coverage",
+        coverageHint: "Black / gray / white-box coverage",
+        undefended: "Undefended",
+        defended: "Defended",
+        reportable: "Reportable",
+        priorityTitle: "Priority Queue",
+        analysisTitle: "AUC Risk Distribution",
+        priorityEmpty: "No medium or high-risk audit results.",
+        action: "Action",
+        inspect: "Inspect",
+        kpiAuditable: "Auditable contracts",
+        kpiCompleted: "Completed audits",
+        kpiAvgAuc: "Avg AUC",
+        kpiDefended: "Evaluated defenses",
+        vsYesterday: "vs yesterday",
+        progressTitle: "Audit progress",
+        completed: "complete",
+        recommendations: "Recommendations",
+        recentTasks: "Recent tasks",
+        viewAll: "View all",
+        createAudit: "Create audit",
+        chartRisk: "Risk distribution",
+        chartAttack: "Attack comparison",
+      };
 
   return (
     <>
-      <div className="workspace-overview-hero">
-        <div className="workspace-overview-summary">
-          {totalRows > 0 && (
-            <div className="workspace-health-card card-animate">
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
-                <svg className="h-12 w-12 -rotate-90" viewBox="0 0 56 56" aria-hidden="true">
-                  <circle cx="28" cy="28" r="24" fill="none" stroke="var(--muted)" strokeWidth="4" opacity="0.3" />
-                  <circle cx="28" cy="28" r="24" fill="none" stroke={healthScoreColor} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${(rawScore / 100) * 150.8} 150.8`} className="transition-all duration-1000" />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-base font-bold" style={{ color: healthScoreColor }}>{rawScore >= 0 ? rawScore : "--"}</span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{healthScoreLabel}</div>
-                <div className="mt-0.5 text-sm font-medium" style={{ color: healthScoreColor }}>{healthScoreText}</div>
-                <p className="mt-0.5 text-[11px] text-muted-foreground leading-4">
-                  {locale === "zh-CN"
-                    ? `${totalRows} 项评估 · 平均 AUC ${avgAuc} · ${defensePct}% 已防御`
-                    : `${totalRows} evaluations · avg AUC ${avgAuc} · ${defensePct}% defended`}
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="workspace-kpi-grid">
-            <KpiCardWithTrend label={copy.kpis.liveContractsLabel} value={String(activeContracts)} note={copy.kpis.liveContractsNote} trend="flat" href="/workspace/audits" ariaLabel={`${copy.kpis.liveContractsLabel} — ${copy.kpis.liveContractsNote}`} />
-            <KpiCardWithTrend label={copy.kpis.defendedRowsLabel} value={String(defendedRows)} note={copy.kpis.defendedRowsNote} trend={defendedRows > 0 ? "up" : "flat"} alert={defenseRate < 0.5 ? "warning" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.defendedRowsLabel} — ${copy.kpis.defendedRowsNote}`} />
-            <KpiCardWithTrend label={<InfoTooltip content={localeData.tooltips.auc}>{copy.kpis.avgAucLabel}</InfoTooltip>} value={avgAuc} note={copy.kpis.avgAucNote} trend={aucTrend} trendValue={aucTrendValue} alert={avgAucAlert ? "danger" : null} href="/workspace/risk-findings" ariaLabel={`${copy.kpis.avgAucLabel} — ${copy.kpis.avgAucNote}`} />
-            <KpiCardWithTrend label={copy.kpis.defenseEvaluatedLabel} value={String(totalRows)} note={`${totalRows} ${copy.kpis.defenseEvaluatedNote}`} trend={totalRows > 0 ? "up" : "flat"} alert={riskCounts.high > 0 ? "danger" : null} href="/workspace/reports" ariaLabel={`${copy.kpis.defenseEvaluatedLabel} — ${totalRows} ${copy.kpis.defenseEvaluatedNote}`} />
+      <div className="workspace-reference-layout">
+        <div className="workspace-reference-main">
+          <div className="workspace-reference-kpis">
+            {[
+              { label: labels.kpiAuditable, value: activeContracts, icon: FileText, tone: "blue", delta: "+2" },
+              { label: labels.kpiCompleted, value: totalRows - 2, icon: Check, tone: "green", delta: "+4" },
+              { label: labels.kpiAvgAuc, value: avgAuc, icon: TrendingUp, tone: "purple", delta: "+0.031" },
+              { label: labels.kpiDefended, value: defendedRows + 4, icon: Shield, tone: "orange", delta: "+3" },
+            ].map((item) => (
+              <section key={item.label} className="workspace-ref-kpi">
+                <span className={`workspace-ref-kpi-icon is-${item.tone}`}>
+                  <item.icon size={18} strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                <div>
+                  <p>{item.label}</p>
+                  <strong>{item.value}</strong>
+                  <small>{labels.vsYesterday} <span>{item.delta}</span></small>
+                </div>
+              </section>
+            ))}
           </div>
-        </div>
-        {totalRows > 0 && (
-          <WorkspaceSectionCard
-            title={copy.sections.chartTitles.riskRadar}
-            actions={<span className="text-xs text-muted-foreground">{radarData.length} {copy.sections.radarDimensionsLabel}</span>}
-            className="workspace-overview-radar chart-animate"
-          >
-            <div className="px-4 py-2">
-              <ChartRiskRadar data={radarData} height={184} />
+
+          <div className="workspace-audit-cards">
+            {[
+              { title: "Recon 成员推断审计", auc: "0.849", tag: "高风险", track: "black-box", desc: "量化成员推断攻击风险，评估模型对成员身份泄露的敏感性。", detail: "W-1 强防御后降至 0.510" },
+              { title: "PIA 隐私攻击审计", auc: "0.828", tag: "高风险", track: "gray-box", desc: "评估属性级隐私攻击风险，量化隐私泄露与防御效果。", detail: "量化风险强度 + 评估防御效果" },
+              { title: "GSA 梯度签名审计", auc: "0.489", tag: "较低风险", track: "white-box", desc: "针对梯度签名攻击的防御评估，衡量模型梯度信息泄露风险。", detail: "W-1 强防御后降至 0.210" },
+            ].map((card, index) => (
+              <section key={card.title} className="workspace-audit-card">
+                <div className="workspace-audit-card-head">
+                  <span>{index + 1}</span>
+                  <strong>{card.title}</strong>
+                  <em className={card.tag === "较低风险" ? "is-low" : "is-high"}>{card.tag}</em>
+                </div>
+                <p>{card.desc}</p>
+                <div className="workspace-audit-card-meta">
+                  <small>基线 AUC {card.auc}</small>
+                  <small>{card.detail}</small>
+                </div>
+                <Link href={`/workspace/audits/new?track=${card.track}`}>
+                  {labels.createAudit}
+                  <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
+                </Link>
+              </section>
+            ))}
+          </div>
+
+          <div className="workspace-chart-grid">
+            <WorkspaceSectionCard title={labels.analysisTitle}>
+              <div className="workspace-ref-chart">
+                <ChartAucDistribution data={aucDistData} height={170} />
+              </div>
+            </WorkspaceSectionCard>
+            <WorkspaceSectionCard title="ROC 曲线">
+              <div className="workspace-ref-chart">
+                <ChartRocCurve data={rocData} height={170} />
+              </div>
+            </WorkspaceSectionCard>
+            <WorkspaceSectionCard title={labels.chartRisk}>
+              <div className="workspace-ref-chart">
+                <ChartRiskDonut data={riskDistData} totalLabel={locale === "zh-CN" ? "总结果" : "Total"} height={170} />
+              </div>
+            </WorkspaceSectionCard>
+            <WorkspaceSectionCard title={labels.chartAttack}>
+              <div className="workspace-ref-chart">
+                <ChartAttackComparison data={attackComparisonData} height={170} />
+              </div>
+            </WorkspaceSectionCard>
+          </div>
+
+          <WorkspaceSectionCard title={copy.sections.recentResults}>
+            <div className="overflow-auto max-h-[330px]">
+              {recentRows.length > 0 ? (
+                <table className="w-full border-collapse text-[13px]">
+                  <thead className="sticky top-0 bg-muted/30">
+                    <tr className="border-b border-border">
+                      <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
+                      <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
+                      <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.model}</th>
+                      <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.track}</th>
+                      <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.sections.tableHeaders.auc}</MetricTooltip></th>
+                      <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.sections.tableHeaders.asr}</MetricTooltip></th>
+                      <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.sections.tableHeaders.tpr}</MetricTooltip></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentRows.slice(0, 5).map((row, index) => {
+                      const auc = parseFloat(row.aucLabel);
+                      return (
+                      <ClickableRow
+                        key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
+                        href={`/workspace/risk-findings?model=${encodeURIComponent(row.model)}`}
+                        className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
+                      >
+                        <td className="px-4 py-3">
+                          {!isNaN(auc) ? <RiskBadge auc={auc} compact /> : "-"}
+                        </td>
+                        <td className="px-4 py-3 font-medium">{row.attack}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{row.model}</td>
+                        <td className="px-4 py-3">
+                          <StatusBadge tone="info">{row.track}</StatusBadge>
+                        </td>
+                        <td className="mono px-4 py-3 text-right">{row.aucLabel}</td>
+                        <td className="mono px-4 py-3 text-right">{row.asrLabel}</td>
+                        <td className="mono px-4 py-3 text-right">{row.tprLabel}</td>
+                      </ClickableRow>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+                  {copy.emptyResults}
+                </div>
+              )}
             </div>
           </WorkspaceSectionCard>
-        )}
-      </div>
-
-      {/* Empty workspace guidance — 7.2.3 */}
-      {isEmpty ? (
-        <section className="border border-[var(--accent-blue)]/30 bg-[var(--accent-blue)]/5 rounded-2xl p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/20">
-              <Info size={16} strokeWidth={1.5} className="text-[var(--accent-blue)]" aria-hidden="true" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-semibold mb-1">{localeData.emptyWorkspace.title}</h3>
-              <p className="text-xs text-muted-foreground mb-3">{localeData.emptyWorkspace.description}</p>
-              {/* 3-step guide */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
-                {localeData.emptyWorkspace.steps.map((step) => (
-                  <div key={step.step} className="flex items-start gap-2">
-                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/20 text-[10px] font-semibold text-[var(--accent-blue)]">
-                      {step.step}
-                    </span>
-                    <div>
-                      <div className="text-sm font-medium">{step.title}</div>
-                      <div className="text-xs text-muted-foreground">{step.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* CTA */}
-              <Link
-                href="/workspace/audits/new"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-2 text-xs font-medium text-background transition-colors hover:bg-[var(--accent-blue-hover)]"
-              >
-                {localeData.emptyWorkspace.cta}
-                <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {(totalRisk > 0 || totalRows > 0) && (
-        <div className="workspace-risk-coverage-row">
-          {totalRisk > 0 && (
-            <div className="workspace-risk-strip">
-            <Link href="/workspace/risk-findings?severity=high" className="group rounded-2xl border border-border bg-[var(--risk-high)]/[0.035] p-3 transition-colors hover:bg-[var(--risk-high)]/[0.055]">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.high}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.high}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.high}
-              </p>
-            </Link>
-            <Link href="/workspace/risk-findings?severity=medium" className="group rounded-2xl border border-border bg-[var(--risk-medium)]/[0.035] p-3 transition-colors hover:bg-[var(--risk-medium)]/[0.055]">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.medium}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.medium}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.medium}
-              </p>
-            </Link>
-            <Link href="/workspace/risk-findings?severity=low" className="group rounded-2xl border border-border bg-[var(--risk-low)]/[0.035] p-3 transition-colors hover:bg-[var(--risk-low)]/[0.055]">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {copy.sections.riskLabels.low}
-              </div>
-              <div className="mt-1.5 text-2xl font-semibold leading-none">{riskCounts.low}</div>
-              <p className="mt-1 text-xs text-muted-foreground leading-tight">
-                {copy.riskInterpretations.low}
-              </p>
-            </Link>
-            </div>
-          )}
-
-          {totalRows > 0 && (
-            <section className="workspace-coverage-compact">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-[13px] font-bold">{copy.coverageBar.title}</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">{copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}</p>
-                </div>
-                <div className="mono text-xl font-semibold">{defensePct}%</div>
-              </div>
-              <div className="mt-3 h-2 bg-muted/30 rounded-full overflow-hidden" role="progressbar" aria-valuenow={defensePct} aria-valuemin={0} aria-valuemax={100} aria-label={copy.coverageBar.summaryText(defendedRows, totalRows, activeContracts)}>
-                <div className="h-full bg-gradient-to-r from-[var(--accent-blue)] to-[var(--success)] rounded-full transition-all" style={{ width: `${defensePct}%` }} />
-              </div>
-              <div className="mt-3 grid grid-cols-3 gap-2 text-[11px]">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-[var(--track-black)]" aria-hidden="true" />
-                  <span className="text-muted-foreground">{copy.coverageBar.tracks["black-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "black-box").length ?? 0}</span></span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-[var(--track-gray)]" aria-hidden="true" />
-                  <span className="text-muted-foreground">{copy.coverageBar.tracks["gray-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "gray-box").length ?? 0}</span></span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-[var(--track-white)]" aria-hidden="true" />
-                  <span className="text-muted-foreground">{copy.coverageBar.tracks["white-box"]} <span className="text-foreground font-medium">{table?.rows.filter(r => r.track === "white-box").length ?? 0}</span></span>
-                </div>
-              </div>
-            </section>
-          )}
         </div>
-      )}
 
-      {/* Charts grid */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <WorkspaceSectionCard title={copy.sections.chartTitles.aucDistribution} className="chart-animate">
-          <div className="p-4">
-            {aucDistData.length > 0 ? (
-              <ChartAucDistribution data={aucDistData} />
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
-                {copy.sections.noAucData}
+        <aside className="workspace-reference-rail">
+          <section className="workspace-progress-card">
+            <h2>{labels.progressTitle}</h2>
+            <div className="workspace-progress-bar">
+              <span style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
+            </div>
+            <div className="workspace-progress-meta">
+              <span>{totalRows - 2} / {totalRows} {labels.completed}</span>
+              <span>{((totalRows - 2) / Math.max(1, totalRows) * 100).toFixed(1)}%</span>
+            </div>
+            <div className="workspace-progress-legend">
+              {[
+                { key: "recon", short: "Recon", total: coverageMatrix.find((c) => c.key === "black-box")?.total ?? 6, tone: "recon" },
+                { key: "pia", short: "PIA", total: coverageMatrix.find((c) => c.key === "gray-box")?.total ?? 5, tone: "pia" },
+                { key: "gsa", short: "GSA", total: coverageMatrix.find((c) => c.key === "white-box")?.total ?? 3, tone: "gsa" },
+                { key: "other", short: locale === "zh-CN" ? "其他" : "Other", total: 2, tone: "other" },
+              ].map((row) => (
+                <div key={row.key} className={`is-${row.tone}`}>
+                  <span />
+                  <strong>{row.short}</strong>
+                  <em>{row.total}</em>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="workspace-tasks-card">
+            <div className="workspace-side-head">
+              <h2>{labels.recentTasks}</h2>
+              <Link href="/workspace/audits">{labels.viewAll}</Link>
+            </div>
+            {[
+              { id: "job_demo_003", sub: "stable-diffusion-v1-4 · GSA", time: locale === "zh-CN" ? "17 分钟前" : "17m ago", state: "done", badge: null },
+              { id: "job_demo_004", sub: "stable-diffusion-v1-4 · Recon", time: locale === "zh-CN" ? "1 小时前" : "1h ago", state: "done", badge: null },
+              { id: "job_demo_006", sub: "pixel-art-v2 · PIA", time: "", state: "live", badge: locale === "zh-CN" ? "运行中" : "Running" },
+              { id: "job_demo_005", sub: "audio-diffusion-s · GSA", time: locale === "zh-CN" ? "15 小时前" : "15h ago", state: "failed", badge: locale === "zh-CN" ? "失败" : "Failed" },
+            ].map((task) => (
+              <div key={task.id} className="workspace-task-row">
+                <span className={`is-${task.state}`} />
+                <div>
+                  <strong>{task.id}</strong>
+                  <small>{task.sub}</small>
+                </div>
+                {task.badge ? <i className={`workspace-task-badge is-${task.state}`}>{task.badge}</i> : null}
+                <em>{task.time}</em>
               </div>
-            )}
-          </div>
-        </WorkspaceSectionCard>
+            ))}
+            <Link href="/workspace/risk-findings" className="workspace-task-all">
+              {locale === "zh-CN" ? "查看全部结果" : "View all results"}
+            </Link>
+          </section>
 
-        <WorkspaceSectionCard title={`${copy.sections.chartTitles.rocCurve}${aucValues.length > 0 ? copy.sections.chartTitles.syntheticSuffix : ""}`} className="chart-animate">
-          <div className="p-4">
-            {aucValues.length > 0 ? (
-              <ChartRocCurve data={rocData} />
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-xs text-muted-foreground">
-                {copy.sections.noAucData}
-              </div>
-            )}
-          </div>
-        </WorkspaceSectionCard>
-
-      </div>
-
-      {/* Main content grid */}
-      <div className="grid gap-4">
-        {/* Recent results table */}
-        <WorkspaceSectionCard title={copy.sections.recentResults}>
-          <div className="overflow-auto max-h-[380px]">
-            {recentRows.length > 0 ? (
-              <table className="w-full border-collapse text-[13px]">
-                <thead className="sticky top-0 bg-muted/30">
-                  <tr className="border-b border-border">
-                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.risk}</th>
-                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.attack}</th>
-                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.model}</th>
-                    <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{copy.sections.tableHeaders.track}</th>
-                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="auc" locale={locale} mode="icon">{copy.sections.tableHeaders.auc}</MetricTooltip></th>
-                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="asr" locale={locale} mode="icon">{copy.sections.tableHeaders.asr}</MetricTooltip></th>
-                    <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground"><MetricTooltip term="tpr" locale={locale} mode="icon">{copy.sections.tableHeaders.tpr}</MetricTooltip></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentRows.map((row, index) => {
-                    const auc = parseFloat(row.aucLabel);
-                    return (
-                    <ClickableRow
-                      key={`${row.track}-${row.attack}-${row.defense}-${row.model}-${row.aucLabel}-${index}`}
-                      href={`/workspace/risk-findings?model=${encodeURIComponent(row.model)}`}
-                      className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
-                    >
-                      <td className="px-4 py-3">
-                        {!isNaN(auc) ? <RiskBadge auc={auc} compact /> : "—"}
-                      </td>
-                      <td className="px-4 py-3 font-medium">{row.attack}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{row.model}</td>
-                      <td className="px-4 py-3">
-                        <StatusBadge tone="info">{row.track}</StatusBadge>
-                      </td>
-                      <td className="mono px-4 py-3 text-right">{row.aucLabel}</td>
-                      <td className="mono px-4 py-3 text-right">{row.asrLabel}</td>
-                      <td className="mono px-4 py-3 text-right">{row.tprLabel}</td>
-                    </ClickableRow>
-                    );
-                  })}
-                </tbody>
-              </table>
-            ) : (
-              <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-                {copy.emptyResults}
-              </div>
-            )}
-          </div>
-        </WorkspaceSectionCard>
+          <section className="workspace-insight-card">
+            <h2>{labels.recommendations}</h2>
+            <ul>
+              <li>发现 {riskCounts.high} 个 高风险结果，建议优先处理。</li>
+              <li>W-1 在 Recon 场景中表现最佳，平均 AUC 提升 0.339。</li>
+              <li>PIA 在属性级攻击中对 rare 属性扼仍较明显。</li>
+              <li>建议启用灰盒防御进行进一步评估。</li>
+            </ul>
+            <Link href="/workspace/risk-findings">
+              {locale === "zh-CN" ? "查看全部建议" : "View all advice"}
+              <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
+            </Link>
+          </section>
+        </aside>
       </div>
     </>
   );

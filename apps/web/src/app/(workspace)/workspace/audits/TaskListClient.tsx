@@ -1,21 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ClipboardList, FileText, RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { Activity, Eye, Search, Shield, ClipboardList, RefreshCw } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
-import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
-import { SortableHeader } from "@/components/sortable-header";
-import { useScrollFade } from "@/hooks/use-scroll-fade";
-import { StatusBadge } from "@/components/status-badge";
-import { InfoTooltip } from "@/components/info-tooltip";
-import { densityClass, type Density } from "@/components/table-density-toggle";
-import { useSort } from "@/hooks/use-sort";
+import { useToast } from "@/components/toast-provider";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
-import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export interface JobRecord {
@@ -37,98 +30,105 @@ export interface JobRecord {
   error?: string | null;
 }
 
-interface TaskListClientProps {
-  mode: "active" | "history";
-  locale: Locale;
-  filter?: string;
-  search?: string;
-  jobs: JobRecord[];
-  loading: boolean;
-  loadError: boolean;
-  onRefresh: () => void;
-  density?: Density;
+type Tone = "blue" | "green" | "purple" | "orange" | "muted";
+
+function trackTone(job: JobRecord): Tone {
+  const key = `${job.contract_key} ${job.job_type}`.toLowerCase();
+  if (key.includes("gsa")) return "green";
+  if (key.includes("pia")) return "purple";
+  if (key.includes("recon")) return "blue";
+  if (key.includes("audio")) return "orange";
+  return "muted";
 }
 
-function statusTone(status: string): "info" | "success" | "warning" | "danger" | "primary" | "neutral" {
-  if (status === "completed") return "success";
-  if (status === "failed") return "danger";
-  if (status === "running") return "info";
-  if (status === "queued") return "neutral";
-  if (status === "cancelled") return "neutral";
-  return "primary";
+function trackIcon(tone: Tone) {
+  if (tone === "green") return Shield;
+  if (tone === "purple") return Eye;
+  if (tone === "blue") return Activity;
+  if (tone === "orange") return Search;
+  return Activity;
 }
 
-function statusLabel(status: string, labels: Record<string, string>): string {
-  return labels[status] ?? status;
+function statusToneClass(status: string): string {
+  if (status === "completed") return "is-success";
+  if (status === "failed") return "is-danger";
+  if (status === "running" || status === "queued") return "is-info";
+  if (status === "cancelled") return "is-muted";
+  return "is-muted";
 }
 
-function ProgressStrip({ value, isActive }: { value: number; isActive?: boolean }) {
+function formatRemaining(progressPct: number, createdAt: string, locale: Locale, nowMs: number): string {
+  if (progressPct <= 0 || progressPct >= 100) return "";
+  const elapsed = nowMs - new Date(createdAt).getTime();
+  if (!isFinite(elapsed) || elapsed <= 0) return "";
+  const totalEstimate = elapsed / (progressPct / 100);
+  const remainingMs = Math.max(0, totalEstimate - elapsed);
+  const remainingSec = Math.round(remainingMs / 1000);
+  const m = Math.floor(remainingSec / 60);
+  const s = remainingSec % 60;
+  if (locale === "zh-CN") {
+    return m > 0 ? `预计剩余 ${m} 分 ${String(s).padStart(2, "0")} 秒` : `预计剩余 ${s} 秒`;
+  }
+  return m > 0 ? `~${m}m ${s}s left` : `~${s}s left`;
+}
+
+export function RunningCard({ job, locale }: { job: JobRecord; locale: Locale }) {
+  const copy = WORKSPACE_COPY[locale].audits;
+  const tone = trackTone(job);
+  const Icon = trackIcon(tone);
+  const pct = typeof job.progress_pct === "number" ? Math.round(job.progress_pct) : 0;
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const remaining = formatRemaining(pct, job.created_at, locale, now);
+  const runningLabel = locale === "zh-CN" ? `正在运行 ${pct}%` : `Running ${pct}%`;
+
   return (
-    <div className="mt-2">
-      <div
-        className="h-1.5 overflow-hidden rounded-full bg-muted/40"
-        role="progressbar"
-        aria-valuenow={value}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label={`Progress: ${value}%`}
-      >
-        <div
-          className={`h-full rounded-full bg-[var(--accent-blue)] transition-all${isActive ? " progress-strip-active" : ""}`}
-          style={{ width: `${Math.max(6, Math.min(100, value))}%` }}
-        />
+    <Link
+      href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
+      className="audits-running-card"
+    >
+      <span className={`audits-running-icon is-${tone}`}>
+        <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
+      </span>
+      <div className="audits-running-info">
+        <div className="audits-running-title">
+          <strong>{job.job_id}</strong>
+          <span>{job.target_model ?? job.contract_key}</span>
+        </div>
+        <small className="mono">{job.contract_key}</small>
+        <div className="audits-running-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={copy.viewDetails}>
+          <span style={{ width: `${Math.max(4, Math.min(100, pct))}%` }} />
+        </div>
+        <div className="audits-running-meta">
+          <span>{runningLabel}</span>
+          {remaining ? <span>{remaining}</span> : null}
+        </div>
       </div>
-      <div className="mt-1 text-[11px] text-muted-foreground">{value}%</div>
-    </div>
+    </Link>
   );
 }
 
-export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, loading, loadError, onRefresh, density = "default" }: TaskListClientProps) {
+interface HistoryTableProps {
+  jobs: JobRecord[];
+  locale: Locale;
+  loading: boolean;
+  loadError: boolean;
+  onRefresh: () => void;
+}
+
+export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: HistoryTableProps) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tableCopy = copy.taskTable;
-
+  const { toast } = useToast();
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
-  const [retryErrors, setRetryErrors] = useState<Map<string, string>>(new Map());
-
-  // Filter by mode (active = running/queued, history = completed/failed/cancelled)
-  const modeFiltered =
-    mode === "active"
-      ? allJobs.filter((j) => j.status === "running" || j.status === "queued")
-      : allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
-
-  // Apply status filter
-  const statusFiltered = filter && filter !== "all"
-    ? modeFiltered.filter((j) => j.status === filter)
-    : modeFiltered;
-
-  // Apply search filter
-  const displayed = search
-    ? statusFiltered.filter((j) => {
-        const q = search.toLowerCase();
-        return (
-          j.job_id.toLowerCase().includes(q) ||
-          j.contract_key.toLowerCase().includes(q) ||
-          j.workspace_name.toLowerCase().includes(q) ||
-          (j.target_model ?? "").toLowerCase().includes(q)
-        );
-      })
-    : statusFiltered;
-
-  // Sorting for history table
-  const sortableDisplayed = useMemo(() => displayed.map((j) => ({
-    ...j,
-    name: j.job_id,
-    model: j.target_model ?? "",
-    durationMs: new Date(j.updated_at).getTime() - new Date(j.created_at).getTime(),
-  })), [displayed]);
-  const { sorted: sortedHistory, sortKey, sortDir, toggleSort } = useSort(sortableDisplayed);
-
-  // Scroll container ref for fade gradient
-  const tableScrollRef = useScrollFade<HTMLDivElement>([displayed]);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
-    setRetryErrors((prev) => { const next = new Map(prev); next.delete(job.job_id); return next; });
     try {
       const res = await fetch("/api/v1/audit/jobs", {
         method: "POST",
@@ -142,10 +142,10 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
       if (res.ok) {
         onRefresh();
       } else {
-        setRetryErrors((prev) => { const next = new Map(prev); next.set(job.job_id, `Retry failed (HTTP ${res.status})`); return next; });
+        toast({ type: "error", title: locale === "zh-CN" ? `重试失败 (HTTP ${res.status})` : `Retry failed (HTTP ${res.status})` });
       }
     } catch {
-      setRetryErrors((prev) => { const next = new Map(prev); next.set(job.job_id, locale === "zh-CN" ? "无法连接到服务器" : "Could not reach the server"); return next; });
+      toast({ type: "error", title: locale === "zh-CN" ? "无法连接到服务器" : "Could not reach the server" });
     } finally {
       setRetryingJobId(null);
     }
@@ -153,19 +153,9 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
 
   if (loading) {
     return (
-      <div className="divide-y divide-border/30">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="px-4 py-3 space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="animate-pulse h-3 w-28 rounded-md bg-muted/30" />
-              <div className="animate-pulse h-4 w-16 rounded-full bg-muted/30" />
-            </div>
-            <div className="animate-pulse h-2.5 w-40 rounded-md bg-muted/30" />
-            <div className="flex items-center justify-between">
-              <div className="animate-pulse h-2.5 w-24 rounded-md bg-muted/30" />
-              <div className="animate-pulse h-2.5 w-12 rounded-md bg-muted/30" />
-            </div>
-          </div>
+      <div className="audits-history-skeleton">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="animate-pulse h-12 rounded-md bg-muted/30" />
         ))}
       </div>
     );
@@ -173,190 +163,114 @@ export function TaskListClient({ mode, locale, filter, search, jobs: allJobs, lo
 
   if (loadError) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
+      <div className="flex flex-col items-center justify-center py-10 text-center">
         <RefreshCw className="mb-2 text-muted-foreground/40" size={28} strokeWidth={1.5} />
         <p className="text-xs text-muted-foreground mb-3">{copy.jobsUnavailable}</p>
-        <button
-          type="button"
-          onClick={onRefresh}
-          className="workspace-btn-secondary px-3 py-1.5 text-xs font-medium"
-        >
+        <button type="button" onClick={onRefresh} className="audits-create-btn is-secondary">
           {copy.retry}
         </button>
       </div>
     );
   }
 
-  if (displayed.length === 0) {
-    if (filter && filter !== "all") {
-      return (
-        <EmptyState
-          icon={FileText}
-          title={mode === "history" ? copy.emptyHistoryFiltered : copy.emptyJobs}
-          description=""
-        />
-      );
-    }
+  if (jobs.length === 0) {
     return (
       <EmptyState
         icon={ClipboardList}
-        title={mode === "active" ? copy.emptyTasks : copy.emptyHistory}
-        description={mode === "active"
-          ? (locale === "zh-CN" ? "创建一个新的审计任务开始检测模型隐私风险。" : "Create a new audit task to start detecting model privacy risks.")
-          : copy.emptyHistory}
-        action={mode === "active" ? { label: copy.createTask, href: "/workspace/audits/new" } : undefined}
+        title={copy.emptyHistory}
+        description=""
+        action={{ label: copy.createTaskButton, href: "/workspace/audits/new" }}
       />
     );
   }
 
-  // Active tasks: compact list with live pulse
-  if (mode === "active") {
-    return (
-      <div className="divide-y divide-border/30">
-        {displayed.map((job) => (
-          <div key={job.job_id} className="px-4 py-3 transition-colors hover:bg-[var(--accent-blue)]/5">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="mono text-xs font-medium truncate">{job.job_id}</span>
-              <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
-            </div>
-            <div className="mono text-[11px] text-muted-foreground mb-1 truncate">
-              {job.contract_key}
-            </div>
-            {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
-              <ProgressStrip value={job.progress_pct} isActive={job.status === "running"} />
-            )}
-            {job.error && (
-              <div className="mono mt-1.5 text-[11px] text-[var(--warning)] truncate">
-                {sanitizeRuntimeText(job.error)}
-              </div>
-            )}
-            <Link
-              href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-              className="mt-2 inline-flex text-[11px] font-medium text-[var(--accent-blue)] transition-colors hover:text-foreground"
-            >
-              {copy.viewDetails}
-            </Link>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // History: full table view
   return (
-    <div
-      ref={tableScrollRef}
-      className="workspace-table-scroll"
-      role="region"
-      aria-label={tableCopy.name}
-    >
-      <table className={`workspace-data-table w-full border-collapse text-[13px] ${densityClass(density)}`}>
-        <thead className="sticky top-0 bg-muted/30">
-          <tr className="border-b border-border">
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[200px]">{tableCopy.name}</th>
-            <SortableHeader label={tableCopy.type} sortKey="job_type" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-            <SortableHeader label={tableCopy.model} sortKey="model" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-[11px] uppercase tracking-wider text-muted-foreground min-w-[90px]">{tableCopy.status}</th>
-            <SortableHeader label={tableCopy.created} sortKey="created_at" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} />
-            <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("durationMs")}>
-              <span className="inline-flex items-center gap-1 justify-end">
-                {tableCopy.duration}
-                {sortKey === "durationMs" ? (
-                  sortDir === "asc" ? <ChevronUp size={12} strokeWidth={1.5} /> : <ChevronDown size={12} strokeWidth={1.5} />
-                ) : (
-                  <ChevronsUpDown size={12} strokeWidth={1.5} className="opacity-30" />
-                )}
-              </span>
-            </th>
-            <th scope="col" className="px-4 py-3 text-right font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">{tableCopy.action}</th>
+    <div className="audits-history-table-wrap">
+      <table className="audits-history-table">
+        <thead>
+          <tr>
+            <th>{tableCopy.name}</th>
+            <th>{tableCopy.type}</th>
+            <th>{tableCopy.model}</th>
+            <th>{tableCopy.status}</th>
+            <th>{tableCopy.created}</th>
+            <th>{tableCopy.duration}</th>
+            <th className="text-right">{tableCopy.action}</th>
           </tr>
         </thead>
         <tbody>
-          {sortedHistory.map((job, index) => {
-              const reportHref = buildCompletedJobReportHref(job);
-
-              return (
-                <tr
-                  key={job.job_id}
-                  className="table-row-hover border-b border-border transition-colors hover:bg-muted/20"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-xs whitespace-nowrap">{job.job_id}</span>
-                      <CopyButton text={job.job_id} label="job ID" />
+          {jobs.map((job) => {
+            const tone = trackTone(job);
+            const Icon = trackIcon(tone);
+            const reportHref = buildCompletedJobReportHref(job);
+            return (
+              <tr key={job.job_id}>
+                <td>
+                  <div className="audits-cell-task">
+                    <span className={`audits-running-icon is-${tone} is-sm`}>
+                      <Icon size={13} strokeWidth={1.7} aria-hidden="true" />
+                    </span>
+                    <div>
+                      <strong>{job.job_id}</strong>
+                      <small className="mono">{job.contract_key}</small>
                     </div>
-                    <div className="mono text-[11px] text-muted-foreground mt-0.5 whitespace-nowrap">{job.contract_key}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-xs text-muted-foreground">{job.job_type}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="mono text-xs whitespace-nowrap">{job.target_model ?? "--"}</span>
-                    {job.summary_note && (
-                      <div className="mt-1 text-[11px] leading-4 text-muted-foreground max-w-[18rem]">
-                        {job.summary_note}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge tone={statusTone(job.status)} compact>{statusLabel(job.status, copy.statusLabels)}</StatusBadge>
-                    {typeof job.progress_pct === "number" && (job.status === "queued" || job.status === "running") && (
-                      <div className="mt-1">
-                        <ProgressStrip value={job.progress_pct} isActive={job.status === "running"} />
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="mono text-xs text-muted-foreground">{formatCompactTime(job.created_at, locale)}</span>
-                  </td>
-                  <td className="mono px-4 py-3 text-right text-xs">
-                    {formatDuration(job.created_at, job.updated_at, locale)}
-                    {job.metrics && (
-                      <div className="mt-1 text-[11px] leading-4 text-muted-foreground">
-                        {index === 0 ? (
-                          <InfoTooltip content={WORKSPACE_COPY[locale].tooltips.auc}>{tableCopy.auc}</InfoTooltip>
-                        ) : tableCopy.auc} {formatMetricValue(job.metrics.auc)}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}
-                        className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
+                  </div>
+                </td>
+                <td>
+                  <span className="mono audits-cell-muted">{job.job_type}</span>
+                </td>
+                <td>
+                  <div className="audits-cell-model">
+                    <span className="mono">{job.target_model ?? "--"}</span>
+                    {job.summary_note ? <small>{job.summary_note}</small> : null}
+                  </div>
+                </td>
+                <td>
+                  <span className={`audits-status-pill ${statusToneClass(job.status)}`}>
+                    {copy.statusLabels[job.status] ?? job.status}
+                  </span>
+                </td>
+                <td>
+                  <span className="mono audits-cell-muted">{formatCompactTime(job.created_at, locale)}</span>
+                </td>
+                <td>
+                  <div className="audits-cell-duration">
+                    <span className="mono">{formatDuration(job.created_at, job.updated_at, locale)}</span>
+                    {job.metrics?.auc !== undefined ? (
+                      <small className="mono">AUC {formatMetricValue(job.metrics.auc)}</small>
+                    ) : null}
+                  </div>
+                </td>
+                <td className="text-right">
+                  <div className="audits-cell-actions">
+                    <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}>{copy.viewDetails}</Link>
+                    {reportHref ? <Link href={reportHref}>{copy.viewReport}</Link> : null}
+                    {job.status === "failed" ? (
+                      <button
+                        type="button"
+                        onClick={() => handleRetry(job)}
+                        disabled={retryingJobId === job.job_id}
+                        className="audits-cell-retry"
                       >
-                        {copy.viewDetails}
-                      </Link>
-                      {reportHref ? (
-                        <Link
-                          href={reportHref}
-                          className="text-xs text-[var(--accent-blue)] transition-colors hover:underline"
-                        >
-                          {copy.viewReport}
-                        </Link>
-                      ) : null}
-                      {job.status === "failed" && (
-                        <>
-                          <button
-                            onClick={() => handleRetry(job)}
-                            disabled={retryingJobId === job.job_id}
-                            className="text-xs text-[var(--warning)] hover:underline disabled:opacity-50"
-                            title={copy.retryTitle}
-                          >
-                            {retryingJobId === job.job_id ? copy.retrying : copy.retry}
-                          </button>
-                          {retryErrors.has(job.job_id) && retryingJobId !== job.job_id && (
-                            <span className="text-[11px] text-[var(--risk-high)]">{retryErrors.get(job.job_id)}</span>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                        {retryingJobId === job.job_id ? copy.retrying : copy.retry}
+                      </button>
+                    ) : null}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      <footer className="audits-history-footer">
+        <span>{locale === "zh-CN" ? `共 ${jobs.length} 条` : `${jobs.length} total`}</span>
+        <div className="audits-pagination">
+          <button type="button" disabled aria-label="prev">‹</button>
+          <span className="is-active">1</span>
+          <button type="button" disabled aria-label="next">›</button>
+        </div>
+        <span>{locale === "zh-CN" ? "10 条/页" : "10 / page"}</span>
+      </footer>
     </div>
   );
 }

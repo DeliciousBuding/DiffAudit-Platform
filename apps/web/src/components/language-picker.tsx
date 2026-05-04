@@ -2,6 +2,7 @@
 
 import { startTransition, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Languages } from "lucide-react";
 
 export const LOCALE_STORAGE_KEY = "platform-locale-v2";
 
@@ -130,9 +131,10 @@ export function LanguagePicker({
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-label={`Change language, current language: ${currentOption.label}`}
+        title={currentOption.label}
       >
-        <span className="language-trigger-label">{currentOption.label}</span>
-        <span className="language-trigger-chevron">▾</span>
+        <Languages aria-hidden="true" />
       </button>
 
       {isOpen && (

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
@@ -259,11 +260,11 @@ const HOME_COPY: Record<
       subheadlineNoWrap: true,
       primaryCtaLoggedIn: "进入审计工作台",
       primaryCtaLoggedOut: "登录并开始审计",
-      secondaryCta: "查看能力范围",
+      secondaryCta: "从风险到报告",
     },
     coverage: {
-      caption: "能力范围",
-      heading: "成员推断风险，三层审计深度",
+      caption: "从风险到报告",
+      heading: "一站式模型隐私风险审计",
       items: [
         {
           index: "01",
@@ -283,33 +284,33 @@ const HOME_COPY: Record<
       ],
     },
     flow: {
-      caption: "流程",
-      heading: "首页定义范围，工作台负责执行",
-      body: "首页只做说明与导航。任务、运行状态和报告导出都在工作台完成",
+      caption: "审计流程",
+      heading: "提交目标，跟踪运行，交付报告",
+      body: "从模型与数据配置开始，平台会把任务进度、风险指标和报告材料收束到同一个审计工作流里",
       steps: [
         {
           index: "A",
-          title: "登录",
-          body: "在同一站点完成认证，继续后续操作",
+          title: "提交审计目标",
+          body: "选择模型、数据集和审计线路，快速发起一次隐私风险评估",
         },
         {
           index: "B",
-          title: "创建任务",
-          body: "进入审计流程页，选择目标、发起运行并跟踪状态",
+          title: "跟踪风险信号",
+          body: "实时查看运行状态、攻击效果和关键指标，判断风险暴露程度",
         },
         {
           index: "C",
-          title: "查看结果",
-          body: "回到工作台和报告页，整理关键指标与输出结论",
+          title: "沉淀审计报告",
+          body: "汇总证据、指标和结论，形成可分享、可复查的审计输出",
         },
       ],
     },
     resources: {
-      caption: "开始使用",
-      heading: "从首页进入，在工作台完成审计",
+      caption: "开始审计",
+      heading: "把下一次模型隐私检查放进工作台",
       primaryCtaLoggedIn: "打开审计工作台",
       primaryCtaLoggedOut: "现在登录",
-      secondaryCta: "回到顶部",
+      secondaryCta: "返回顶部",
     },
     footer: {
       note: "DiffAudit Team 2026",
@@ -486,11 +487,11 @@ const HOME_COPY: Record<
       subheadlineNoWrap: true,
       primaryCtaLoggedIn: "Open audit workspace",
       primaryCtaLoggedOut: "Sign in to start",
-      secondaryCta: "Explore coverage",
+      secondaryCta: "From risk to report",
     },
     coverage: {
-      caption: "Coverage",
-      heading: "Membership inference risk, three layers of audit depth",
+      caption: "From risk to report",
+      heading: "Complete model privacy audits in one workspace",
       items: [
         {
           index: "01",
@@ -510,30 +511,30 @@ const HOME_COPY: Record<
       ],
     },
     flow: {
-      caption: "Flow",
-      heading: "The homepage sets scope. The workspace handles execution",
-      body: "The homepage covers scope and entry points. Tasks, runtime status, and report exports live in the workspace",
+      caption: "Audit workflow",
+      heading: "Submit a target. Track the run. Deliver the report",
+      body: "Start with model and dataset setup, then keep progress, risk metrics, and report material inside one audit workflow",
       steps: [
         {
           index: "A",
-          title: "Sign in",
-          body: "Sign in and continue in the same site",
+          title: "Submit audit target",
+          body: "Choose the model, dataset, and audit track to launch a privacy risk evaluation",
         },
         {
           index: "B",
-          title: "Create a job",
-          body: "Open the audit flow, choose the target, launch the run, and follow its state",
+          title: "Track risk signals",
+          body: "Review runtime status, attack performance, and key metrics as the run progresses",
         },
         {
           index: "C",
-          title: "Review results",
-          body: "Return to the workspace and report pages to collect metrics and package the outcome",
+          title: "Package the report",
+          body: "Collect evidence, metrics, and conclusions into an output your team can review",
         },
       ],
     },
     resources: {
-      caption: "Get started",
-      heading: "Start from the homepage. Finish in the workspace",
+      caption: "Start audit",
+      heading: "Put your next model privacy check into the workspace",
       primaryCtaLoggedIn: "Open audit workspace",
       primaryCtaLoggedOut: "Sign in now",
       secondaryCta: "Back to top",
@@ -816,43 +817,140 @@ export function MarketingHome({
         </section>
       </div>
 
-      <section id="coverage" className="section-rule py-20 lg:py-28">
+      <section id="coverage" className="coverage-showcase section-rule">
         <div className="grid-container">
-          <div className="grid gap-14 lg:grid-cols-[0.86fr_1.14fr]">
-            <div>
+          <div className="coverage-showcase-grid">
+            <div className="coverage-showcase-copy">
               <p className="caption">{copy.coverage.caption}</p>
-              <h2 className="heading-3 mt-4">{copy.coverage.heading}</h2>
-            </div>
-
-            <div className="grid gap-8">
+              <h2 className="heading-3">{copy.coverage.heading}</h2>
+              <div className="coverage-list">
               {copy.coverage.items.map((item) => (
-                <div key={item.index} className="grid gap-3 border-t border-[var(--border)] pt-5">
+                <div key={item.index} className="coverage-item">
                   <p className="caption">{item.index}</p>
                   <h3 className="heading-8">{item.title}</h3>
-                  <p className="body-text max-w-[58ch]">{item.body}</p>
+                  <p className="body-text">{item.body}</p>
                 </div>
               ))}
+              </div>
+            </div>
+
+            <div className="audit-preview-stage" aria-hidden="true">
+              <div className="hero-audit-panel hero-audit-panel-main">
+                <div className="hero-audit-panel-header">
+                  <span>Audit run</span>
+                  <span className="hero-status-pill">Live</span>
+                </div>
+                <div className="hero-risk-readout">
+                  <span className="hero-risk-label">MIA exposure</span>
+                  <strong>0.84</strong>
+                  <span className="hero-risk-delta">+18.6%</span>
+                </div>
+                <div className="hero-curve">
+                  <svg viewBox="0 0 320 150" role="img">
+                    <defs>
+                      <linearGradient id="heroCurveFill" x1="0" x2="1" y1="0" y2="1">
+                        <stop offset="0%" stopColor="rgba(47,109,246,0.28)" />
+                        <stop offset="100%" stopColor="rgba(255,95,70,0.03)" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M10 132 C62 124 84 91 126 76 C178 58 204 31 310 18 L310 142 L10 142 Z" fill="url(#heroCurveFill)" />
+                    <path d="M10 132 C62 124 84 91 126 76 C178 58 204 31 310 18" fill="none" stroke="var(--accent-blue)" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M10 130 C76 126 128 121 186 98 C230 81 260 63 310 58" fill="none" stroke="rgba(255,95,70,0.72)" strokeWidth="3" strokeLinecap="round" strokeDasharray="9 8" />
+                    <g fill="var(--background)" stroke="var(--accent-blue)" strokeWidth="3">
+                      <circle cx="126" cy="76" r="6" />
+                    <circle cx="310" cy="18" r="6" />
+                    </g>
+                  </svg>
+                </div>
+                <div className="hero-audit-metrics">
+                  <span><strong>7</strong> jobs</span>
+                  <span><strong>3</strong> tracks</span>
+                  <span><strong>4</strong> reports</span>
+                </div>
+              </div>
+
+              <div className="hero-audit-panel hero-audit-panel-side">
+                <div className="hero-audit-panel-header">
+                  <span>Risk bands</span>
+                  <span>Evidence</span>
+                </div>
+                <div className="hero-risk-bars">
+                  <span style={{ "--bar-size": "86%" } as CSSProperties}><i /> High</span>
+                  <span style={{ "--bar-size": "58%" } as CSSProperties}><i /> Medium</span>
+                  <span style={{ "--bar-size": "32%" } as CSSProperties}><i /> Low</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="flow" className="section-rule py-20 lg:py-28">
+      <section id="flow" className="flow-showcase section-rule">
         <div className="grid-container">
-          <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-end">
-            <div>
+          <div className="flow-showcase-grid">
+            <div className="flow-showcase-copy">
               <p className="caption">{copy.flow.caption}</p>
-              <h2 className="heading-3 mt-4">{copy.flow.heading}</h2>
+              <h2 className="heading-3">{copy.flow.heading}</h2>
+              <p className="body-text">{copy.flow.body}</p>
             </div>
-            <p className="body-text max-w-[54ch]">{copy.flow.body}</p>
+
+            <div className="flow-visual" aria-hidden="true">
+              <div className="flow-visual-toolbar">
+                <span />
+                <span />
+                <span />
+                <strong>Audit pipeline</strong>
+              </div>
+              <div className="flow-visual-body">
+                <svg className="flow-visual-map" viewBox="0 0 620 280" role="img">
+                  <defs>
+                    <linearGradient id="flowLine" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stopColor="var(--accent-blue)" />
+                      <stop offset="100%" stopColor="var(--accent-coral)" />
+                    </linearGradient>
+                    <linearGradient id="flowPanel" x1="0" x2="1" y1="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(47,109,246,0.12)" />
+                      <stop offset="100%" stopColor="rgba(255,95,70,0.08)" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M80 150 C168 82 248 84 320 142 C392 200 476 202 548 112" fill="none" stroke="url(#flowLine)" strokeWidth="8" strokeLinecap="round" />
+                  <path d="M80 150 C168 82 248 84 320 142 C392 200 476 202 548 112" fill="none" stroke="rgba(47,109,246,0.13)" strokeWidth="30" strokeLinecap="round" />
+                  <g className="flow-node">
+                    <circle cx="80" cy="150" r="30" />
+                    <path d="M68 145h24M68 155h16" />
+                  </g>
+                  <g className="flow-node">
+                    <circle cx="320" cy="142" r="30" />
+                    <path d="M308 154l12-25 12 25M313 146h14" />
+                  </g>
+                  <g className="flow-node">
+                    <circle cx="548" cy="112" r="30" />
+                    <path d="M536 101h24v25h-24zM541 109h14M541 117h10" />
+                  </g>
+                  <rect x="118" y="188" width="132" height="54" rx="10" fill="url(#flowPanel)" />
+                  <rect x="372" y="40" width="132" height="54" rx="10" fill="url(#flowPanel)" />
+                  <path d="M136 208h82M136 224h52M390 60h82M390 76h48" stroke="rgba(18,19,23,0.32)" strokeWidth="6" strokeLinecap="round" />
+                </svg>
+
+                <div className="flow-visual-status">
+                  <span><strong>Target</strong> Model + dataset</span>
+                  <span><strong>Signals</strong> Attack metrics</span>
+                  <span><strong>Report</strong> Evidence package</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-16 grid gap-10 lg:grid-cols-3">
+          <div className="flow-step-grid">
             {copy.flow.steps.map((step) => (
-              <div key={step.index} className="grid gap-3 border-t border-[var(--border)] pt-5">
-                <p className="caption">{step.index}</p>
-                <p className="heading-8">{step.title}</p>
-                <p className="body-text">{step.body}</p>
+              <div key={step.index} className="flow-step">
+                <div className="flow-step-icon" aria-hidden="true">
+                  <span>{step.index}</span>
+                </div>
+                <div>
+                  <p className="heading-8">{step.title}</p>
+                  <p className="body-text">{step.body}</p>
+                </div>
               </div>
             ))}
           </div>

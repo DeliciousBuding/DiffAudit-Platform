@@ -42,10 +42,16 @@ function csvEscape(value: unknown) {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
-export function ReportsPageClient({ locale }: { locale: Locale }) {
+export function ReportsPageClient({
+  locale,
+  initialJobs = [],
+}: {
+  locale: Locale;
+  initialJobs?: ReportJob[];
+}) {
   const copy = WORKSPACE_COPY[locale].reports;
-  const [jobs, setJobs] = useState<ReportJob[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [jobs, setJobs] = useState<ReportJob[]>(initialJobs);
+  const [loading, setLoading] = useState(initialJobs.length === 0);
   const [loadError, setLoadError] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -164,7 +170,7 @@ export function ReportsPageClient({ locale }: { locale: Locale }) {
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.track}</th>
               <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.auc}</th>
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{locale === "zh-CN" ? "完成时间" : "Completed"}</th>
-              <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{locale === "zh-CN" ? "操作" : "Actions"}</th>
+              <th className="reports-actions-col px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{locale === "zh-CN" ? "操作" : "Actions"}</th>
             </tr>
           </thead>
           <tbody>
@@ -194,8 +200,8 @@ export function ReportsPageClient({ locale }: { locale: Locale }) {
                     <span className="mono text-xs text-muted-foreground">{formatCompactTime(job.updated_at, locale)}</span>
                     <div className="mt-1 text-[11px] text-muted-foreground">{formatDuration(job.created_at, job.updated_at, locale)}</div>
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="reports-actions-col px-4 py-3 text-right">
+                    <div className="reports-cell-actions">
                       <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="text-xs text-[var(--accent-blue)] hover:underline">
                         {locale === "zh-CN" ? "任务详情" : "Task"}
                       </Link>

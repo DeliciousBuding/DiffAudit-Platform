@@ -25,6 +25,7 @@ export function resolveTurbopackRoot(startDir: string): string {
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  allowedDevOrigins: ["127.0.0.1"],
   turbopack: {
     root: resolveTurbopackRoot(__dirname),
   },

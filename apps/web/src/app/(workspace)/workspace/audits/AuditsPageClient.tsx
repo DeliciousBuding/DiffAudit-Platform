@@ -1,19 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { RefreshCw, Search, ChevronDown } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { useToast } from "@/components/toast-provider";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { WorkspaceSectionCard } from "@/components/workspace-frame";
-import { TableDensityToggle, readPersistedDensity, type Density } from "@/components/table-density-toggle";
-import { type JobRecord, TaskListClient } from "./TaskListClient";
+import { type JobRecord, RunningCard, HistoryTable } from "./TaskListClient";
 
-/* ── Component ────────────────────────────────────────────────────────── */
-
-export function AuditsPageClient({ locale }: { locale: Locale }) {
+export function AuditsPageClient({
+  locale,
+  initialJobs = [],
+}: {
+  locale: Locale;
+  initialJobs?: JobRecord[];
+}) {
   const copy = WORKSPACE_COPY[locale].audits;
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -22,23 +25,15 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
   const { toast } = useToast();
   const prevJobStatuses = useRef<Map<string, string>>(new Map());
 
-  const [allJobs, setAllJobs] = useState<JobRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allJobs, setAllJobs] = useState<JobRecord[]>(initialJobs);
+  const [loading, setLoading] = useState(initialJobs.length === 0);
   const [loadError, setLoadError] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const [filter, setFilter] = useState(() => searchParams.get("filter") ?? "all");
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
 
-  // Adaptive polling: fast when active jobs, slow when idle
   const hasActiveJobs = allJobs.some((j) => j.status === "running" || j.status === "queued");
   const pollInterval = hasActiveJobs ? 5000 : 30000;
-
-  /* -- table density ------------------------------------------------ */
-  const DENSITY_KEY = "diffaudit-audits-density";
-  const [density, setDensity] = useState<Density>(() => readPersistedDensity(DENSITY_KEY));
-  useEffect(() => {
-    localStorage.setItem(DENSITY_KEY, density);
-  }, [density]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -53,7 +48,6 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
         const data = await res.json();
         const jobs = normalizeAuditJobList<JobRecord>(data);
         if (jobs) {
-          // Detect job status transitions and notify
           for (const job of jobs) {
             const prevStatus = prevJobStatuses.current.get(job.job_id);
             if (prevStatus && (prevStatus === "running" || prevStatus === "queued")) {
@@ -83,9 +77,8 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
       controller.abort();
       clearInterval(interval);
     };
-  }, [refreshToken, pollInterval]);
+  }, [refreshToken, pollInterval, locale, toast]);
 
-  /* ── Sync state -> URL ─────────────────────────────────────────────────── */
   useEffect(() => {
     if (urlSyncSource.current === "url") {
       urlSyncSource.current = "state";
@@ -98,114 +91,101 @@ export function AuditsPageClient({ locale }: { locale: Locale }) {
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
   }, [filter, search, pathname, router]);
 
-  /* ── Sync URL -> state (back/forward navigation) ──────────────────────── */
   useEffect(() => {
     const urlFilter = searchParams.get("filter") ?? "all";
     const urlQ = searchParams.get("q") ?? "";
-
     urlSyncSource.current = "url";
     setFilter(urlFilter);
     setSearch(urlQ);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  /* ── Filter tab definitions ───────────────────────────────────────────── */
-
-  const filterTabs: { key: string; label: string }[] = [
-    { key: "all", label: copy.filters.statusAll },
-    { key: "running", label: copy.filters.statusRunning },
-    { key: "completed", label: copy.filters.statusCompleted },
-    { key: "failed", label: copy.filters.statusFailed },
-  ];
-
   function refreshJobs() {
     setRefreshToken((v) => v + 1);
   }
 
-  const showActiveSection = filter === "all" || filter === "running";
-  const showHistorySection = filter === "all" || filter === "completed" || filter === "failed";
-  const historyTitle =
-    filter === "completed"
-      ? copy.statusLabels.completed
-      : filter === "failed"
-        ? copy.statusLabels.failed
-        : copy.sections.taskHistory;
+  const runningJobs = useMemo(
+    () => allJobs.filter((j) => j.status === "running" || j.status === "queued"),
+    [allJobs],
+  );
+
+  const historyJobs = useMemo(() => {
+    const base = allJobs.filter((j) => j.status === "completed" || j.status === "failed" || j.status === "cancelled");
+    const byStatus = filter && filter !== "all" && filter !== "running"
+      ? base.filter((j) => j.status === filter)
+      : base;
+    if (!search.trim()) return byStatus;
+    const q = search.toLowerCase();
+    return byStatus.filter((j) =>
+      j.job_id.toLowerCase().includes(q) ||
+      j.contract_key.toLowerCase().includes(q) ||
+      (j.target_model ?? "").toLowerCase().includes(q),
+    );
+  }, [allJobs, filter, search]);
 
   return (
     <>
-      {/* Toolbar: filter tabs + search */}
-      <div className="workspace-toolbar">
-        <div className="workspace-toolbar-tabs" role="tablist" aria-label={copy.filters.statusGroupLabel}>
-          {filterTabs.map((tab) => (
+      {runningJobs.length > 0 ? (
+        <section className="audits-section">
+          <header className="audits-section-head">
+            <h2>
+              {copy.sections.activeTasks}
+              <span className="audits-section-count">{runningJobs.length}</span>
+            </h2>
+          </header>
+          <div className="audits-running-grid">
+            {runningJobs.slice(0, 4).map((job) => (
+              <RunningCard key={job.job_id} job={job} locale={locale} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="audits-section">
+        <header className="audits-section-head">
+          <h2>{copy.sections.taskHistory}</h2>
+          <div className="audits-history-controls">
+            <div className="audits-select">
+              <select
+                value={filter === "running" ? "all" : filter}
+                onChange={(e) => setFilter(e.target.value)}
+                aria-label={copy.filters.statusGroupLabel}
+              >
+                <option value="all">{copy.filters.statusAll}</option>
+                <option value="completed">{copy.filters.statusCompleted}</option>
+                <option value="failed">{copy.filters.statusFailed}</option>
+              </select>
+              <ChevronDown size={13} strokeWidth={1.7} aria-hidden="true" />
+            </div>
+            <div className="audits-search">
+              <Search size={13} strokeWidth={1.7} aria-hidden="true" />
+              <input
+                type="search"
+                placeholder={copy.filters.searchPlaceholder}
+                aria-label={copy.filters.searchLabel}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
             <button
-              key={tab.key}
               type="button"
-              role="tab"
-              aria-selected={filter === tab.key}
-              className={filter === tab.key ? "is-active" : ""}
-              onClick={() => setFilter(tab.key)}
+              className="audits-icon-btn"
+              onClick={refreshJobs}
+              aria-label={copy.retry}
+              title={copy.retry}
             >
-              {tab.label}
+              <RefreshCw size={14} strokeWidth={1.7} aria-hidden="true" />
             </button>
-          ))}
-        </div>
-        <div className="workspace-toolbar-search">
-          <input
-            type="search"
-            placeholder={copy.filters.searchPlaceholder}
-            aria-label={copy.filters.searchLabel}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="ml-auto">
-          <TableDensityToggle density={density} onChange={setDensity} />
-        </div>
-      </div>
-
-      {/* Main layout: task list only */}
-      <div className="workspace-audit-layout">
-        <div className="workspace-audit-main">
-          {showActiveSection ? (
-            <WorkspaceSectionCard
-              title={copy.sections.activeTasks}
-              actions={<span className="inline-flex h-1.5 w-1.5 rounded-full bg-info animate-pulse" aria-hidden="true" />}
-            >
-              <div className="overflow-auto max-h-[420px]">
-                <TaskListClient
-                  mode="active"
-                  locale={locale}
-                  filter={filter}
-                  search={search}
-                  jobs={allJobs}
-                  loading={loading}
-                  loadError={loadError}
-                  onRefresh={refreshJobs}
-                  density={density}
-                />
-              </div>
-            </WorkspaceSectionCard>
-          ) : null}
-
-          {showHistorySection ? (
-            <WorkspaceSectionCard title={historyTitle}>
-              <div className="overflow-auto">
-                <TaskListClient
-                  mode="history"
-                  locale={locale}
-                  filter={filter}
-                  search={search}
-                  jobs={allJobs}
-                  loading={loading}
-                  loadError={loadError}
-                  onRefresh={refreshJobs}
-                  density={density}
-                />
-              </div>
-            </WorkspaceSectionCard>
-          ) : null}
-        </div>
-      </div>
+          </div>
+        </header>
+        <HistoryTable
+          jobs={historyJobs}
+          locale={locale}
+          loading={loading}
+          loadError={loadError}
+          onRefresh={refreshJobs}
+        />
+      </section>
     </>
   );
 }

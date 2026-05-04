@@ -1,58 +1,43 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
 interface AucDistributionProps {
   data: { auc: number; count: number }[];
+  height?: number;
 }
 
-/** Shared tooltip style for charts */
-const chartTooltipStyle: React.CSSProperties = {
-  fontSize: 11,
-  borderRadius: 6,
-  border: "1px solid var(--border)",
-  background: "var(--card)",
-  color: "var(--foreground)",
-};
+export function ChartAucDistribution({ data, height = 220 }: AucDistributionProps) {
+  const width = 320;
+  const padding = { top: 12, right: 14, bottom: 24, left: 30 };
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
+  const maxCount = Math.max(1, ...data.map((item) => item.count));
+  const barGap = 7;
+  const barWidth = data.length > 0
+    ? Math.max(10, (plotWidth - barGap * (data.length - 1)) / data.length)
+    : 0;
 
-export function ChartAucDistribution({ data }: AucDistributionProps) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-        <XAxis
-          dataKey="auc"
-          tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-          tickFormatter={(v: number) => v.toFixed(2)}
-          tickLine={false}
-          axisLine={{ stroke: "var(--border)" }}
-        />
-        <YAxis
-          tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-          tickLine={false}
-          axisLine={false}
-        />
-        <Tooltip
-          contentStyle={chartTooltipStyle}
-          formatter={((value: string | number | (string | number)[], name: string) => [value, name === "count" ? "Count" : name]) as (...args: unknown[]) => React.ReactNode}
-          labelFormatter={((label: string | number) => `AUC ${Number(label).toFixed(1)}`) as (...args: unknown[]) => React.ReactNode}
-        />
-        <Bar
-          dataKey="count"
-          fill="var(--accent-blue)"
-          radius={[4, 4, 0, 0]}
-          maxBarSize={40}
-          isAnimationActive={false}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-label="AUC distribution">
+      <g stroke="var(--border)" strokeWidth="1">
+        {[0, 0.5, 1].map((ratio) => {
+          const y = padding.top + plotHeight * ratio;
+          return <line key={ratio} x1={padding.left} x2={width - padding.right} y1={y} y2={y} strokeDasharray="3 3" />;
+        })}
+      </g>
+      {data.map((item, index) => {
+        const x = padding.left + index * (barWidth + barGap);
+        const barHeight = (item.count / maxCount) * plotHeight;
+        const y = padding.top + plotHeight - barHeight;
+        return (
+          <g key={`${item.auc}-${index}`}>
+            <rect x={x} y={y} width={barWidth} height={barHeight} rx="4" fill="var(--accent-blue)" />
+            <text x={x + barWidth / 2} y={height - 8} textAnchor="middle" fontSize="10" fill="var(--muted-foreground)">
+              {item.auc.toFixed(1)}
+            </text>
+          </g>
+        );
+      })}
+      <line x1={padding.left} x2={width - padding.right} y1={padding.top + plotHeight} y2={padding.top + plotHeight} stroke="var(--border)" />
+    </svg>
   );
 }

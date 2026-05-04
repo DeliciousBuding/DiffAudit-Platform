@@ -248,6 +248,7 @@ function emailLooksValid(email: string) {
 }
 
 function syncOAuthProfileToUser(
+  provider: string,
   userId: string,
   current: {
     username: string;
@@ -275,13 +276,37 @@ function syncOAuthProfileToUser(
     nextPendingEmail = profile.email;
   }
 
+  const hasGithub = provider === "github" || Boolean(db
+    .select({ id: schema.oauthAccounts.id })
+    .from(schema.oauthAccounts)
+    .where(
+      and(
+        eq(schema.oauthAccounts.userId, userId),
+        eq(schema.oauthAccounts.provider, "github"),
+      ),
+    )
+    .get());
+  const usernameOwner = provider === "github"
+    ? db
+      .select({ id: schema.users.id })
+      .from(schema.users)
+      .where(eq(schema.users.username, profile.username))
+      .get()
+    : null;
+  const canUseProviderUsername = provider === "github" && (!usernameOwner || usernameOwner.id === userId);
+
   db.update(schema.users)
     .set({
-      displayName: profile.displayName ?? current.displayName ?? current.username,
+      username: canUseProviderUsername ? profile.username : current.username,
+      displayName: provider === "github"
+        ? profile.displayName ?? profile.username
+        : current.displayName ?? profile.displayName ?? current.username,
       email: nextEmail,
       pendingEmail: nextPendingEmail,
       emailVerified: nextEmailVerified,
-      avatarUrl: profile.avatarUrl ?? current.avatarUrl,
+      avatarUrl: provider === "github" || !hasGithub
+        ? profile.avatarUrl ?? current.avatarUrl
+        : current.avatarUrl,
     })
     .where(eq(schema.users.id, userId))
     .run();
@@ -404,7 +429,7 @@ export function linkOAuthAccount(
 
     const currentUser = db.select().from(schema.users).where(eq(schema.users.id, userId)).get();
     if (currentUser) {
-      syncOAuthProfileToUser(userId, currentUser, profile);
+      syncOAuthProfileToUser(provider, userId, currentUser, profile);
     }
     return { ok: true, userId, status: "already_linked" };
   }
@@ -434,7 +459,7 @@ export function linkOAuthAccount(
 
   const currentUser = db.select().from(schema.users).where(eq(schema.users.id, userId)).get();
   if (currentUser) {
-    syncOAuthProfileToUser(userId, currentUser, profile);
+    syncOAuthProfileToUser(provider, userId, currentUser, profile);
   }
 
   return { ok: true, userId, status: "linked" };
@@ -544,7 +569,7 @@ export function findOrCreateOAuthUser(
   const now = new Date();
 
   if (existing) {
-    syncOAuthProfileToUser(existing.userId, existing, profile);
+    syncOAuthProfileToUser(provider, existing.userId, existing, profile);
     return { id: existing.userId, username: existing.username };
   }
 
@@ -653,6 +678,33 @@ export function getCurrentUserProfile(token: string | undefined): CurrentUserPro
     hasPassword: Boolean(user.passwordHash),
     twoFactorEnabled: Boolean(twoFactor?.enabled),
   };
+}
+
+export function setTwoFactorEnabled(userId: string, enabled: boolean): void {
+  const db = getDb();
+  const now = new Date();
+  const existing = db
+    .select({ userId: schema.twoFactorSettings.userId })
+    .from(schema.twoFactorSettings)
+    .where(eq(schema.twoFactorSettings.userId, userId))
+    .get();
+
+  if (existing) {
+    db.update(schema.twoFactorSettings)
+      .set({ enabled, updatedAt: now })
+      .where(eq(schema.twoFactorSettings.userId, userId))
+      .run();
+    return;
+  }
+
+  db.insert(schema.twoFactorSettings).values({
+    userId,
+    totpSecret: null,
+    recoveryCodes: null,
+    enabled,
+    createdAt: now,
+    updatedAt: now,
+  }).run();
 }
 
 export const SESSION_COOKIE_OPTIONS = {

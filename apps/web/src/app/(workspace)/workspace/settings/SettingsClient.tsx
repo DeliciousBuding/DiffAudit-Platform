@@ -199,6 +199,9 @@ export function SettingsClient({
   const [showPasswordEditor, setShowPasswordEditor] = useState(false);
   const [passwordSaveNotice, setPasswordSaveNotice] = useState<string | null>(null);
   const passwordNoticeTimerRef = useRef<number | null>(null);
+  const [twoFactorPending, setTwoFactorPending] = useState(false);
+  const [twoFactorNotice, setTwoFactorNotice] = useState<string | null>(null);
+  const [twoFactorError, setTwoFactorError] = useState<string | null>(null);
   const [emailInput, setEmailInput] = useState(initialProfile?.pendingEmail ?? initialProfile?.email ?? "");
   const [emailPending, setEmailPending] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -501,6 +504,37 @@ export function SettingsClient({
     }
   }
 
+  async function handleTwoFactorToggle(enabled: boolean) {
+    setTwoFactorPending(true);
+    setTwoFactorNotice(null);
+    setTwoFactorError(null);
+
+    try {
+      const response = await fetch("/api/auth/two-factor", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ enabled }),
+      });
+
+      if (!response.ok) {
+        setTwoFactorError(locale === "zh-CN" ? "两步验证状态保存失败，请重新登录后再试。" : "Could not save two-factor status. Sign in again and retry.");
+        return;
+      }
+
+      setProfile((prev) => (prev ? { ...prev, twoFactorEnabled: enabled } : prev));
+      setTwoFactorNotice(
+        enabled
+          ? (locale === "zh-CN" ? "两步验证已启用。" : "Two-factor auth is enabled.")
+          : (locale === "zh-CN" ? "两步验证已关闭。" : "Two-factor auth is disabled."),
+      );
+    } catch {
+      setTwoFactorError(locale === "zh-CN" ? "两步验证状态保存失败，请检查本地服务。" : "Could not save two-factor status. Check the local service.");
+    } finally {
+      setTwoFactorPending(false);
+    }
+  }
+
   async function handleEmailSave() {
     setEmailPending(true);
     setEmailError(null);
@@ -602,9 +636,9 @@ export function SettingsClient({
 
   const connectedProviders = profile?.providers ?? [];
   const availableProviderConnectors = ([
-    { key: "google", label: copy.account.connectGoogle },
-    { key: "github", label: copy.account.connectGithub },
-  ] as const).filter((provider) => oauthEnabled[provider.key] && !connectedProviders.includes(provider.key));
+    { key: "github", label: profile ? copy.account.connectGithub : (locale === "zh-CN" ? "使用 GitHub 登录" : "Continue with GitHub") },
+    { key: "google", label: profile ? copy.account.connectGoogle : (locale === "zh-CN" ? "使用 Google 登录" : "Continue with Google") },
+  ] as const).filter((provider) => oauthEnabled[provider.key] && (profile ? !connectedProviders.includes(provider.key) : true));
   const accessSummary = getAccessSummary(profile, copy.account);
 
   return (
@@ -1177,11 +1211,25 @@ export function SettingsClient({
                   </p>
                 </>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--border)]">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-[var(--muted-foreground)]" />
+                <div className="settings-section-card p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-[var(--accent-blue)]/10 text-lg font-semibold text-[var(--accent-blue)]">
+                      ?
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-blue)]/80">
+                        {locale === "zh-CN" ? "未登录" : "Not signed in"}
+                      </div>
+                      <div className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-foreground">
+                        {locale === "zh-CN" ? "选择一种登录方式" : "Choose a sign-in method"}
+                      </div>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        {locale === "zh-CN"
+                          ? "连接 GitHub 后会优先显示 GitHub 名称和头像。"
+                          : "After GitHub sign-in, the GitHub name and avatar are used first."}
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-sm text-muted-foreground">—</span>
                 </div>
               )}
             </div>
@@ -1221,7 +1269,9 @@ export function SettingsClient({
                     {availableProviderConnectors.map((provider) => (
                       <a
                         key={provider.key}
-                        href={`/api/auth/${provider.key}?intent=connect&redirectTo=${encodeURIComponent("/workspace/account")}`}
+                        href={profile
+                          ? `/api/auth/${provider.key}?intent=connect&redirectTo=${encodeURIComponent("/workspace/account")}`
+                          : `/api/auth/${provider.key}?redirectTo=${encodeURIComponent("/workspace/account")}`}
                         className="workspace-btn-secondary px-3 py-2 text-xs font-medium"
                       >
                         <ProviderIcon provider={provider.key} className="h-4 w-4" />
@@ -1263,7 +1313,14 @@ export function SettingsClient({
                   </p>
                 </div>
 
-                {!showPasswordEditor ? (
+                {!profile ? (
+                  <Link
+                    href="/register?redirectTo=%2Fworkspace%2Faccount"
+                    className="workspace-btn-secondary w-full px-3 py-3 text-center text-xs font-medium"
+                  >
+                    {locale === "zh-CN" ? "创建本地账号" : "Create local account"}
+                  </Link>
+                ) : !showPasswordEditor ? (
                   <button
                     type="button"
                     onClick={() => {
@@ -1273,7 +1330,7 @@ export function SettingsClient({
                     }}
                     className="workspace-btn-secondary w-full px-3 py-3 text-xs font-medium"
                   >
-                    {profile?.hasPassword ? copy.account.openPasswordChange : copy.account.openPasswordCreate}
+                    {profile.hasPassword ? copy.account.openPasswordChange : copy.account.openPasswordCreate}
                   </button>
                 ) : (
                   <div className="space-y-3 rounded-2xl border border-border bg-card p-4">
@@ -1361,9 +1418,53 @@ export function SettingsClient({
                 </div>
               ) : null}
 
-              <div className="pt-1">
-                <LogoutButton label={copy.account.logout} />
+              <div className="space-y-3 rounded-2xl border border-border bg-muted/10 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                      {locale === "zh-CN" ? "两步验证" : "Two-factor auth"}
+                    </div>
+                    <p className="text-[11px] leading-5 text-muted-foreground">
+                      {locale === "zh-CN"
+                        ? "本地账户安全开关。启用后会记录到当前用户，后续可接入 TOTP 校验。"
+                        : "Local account security switch. It is saved to the current user and can be wired to TOTP verification later."}
+                    </p>
+                  </div>
+                  <StatusBadge tone={profile?.twoFactorEnabled ? "success" : "neutral"} compact>
+                    {profile?.twoFactorEnabled
+                      ? (locale === "zh-CN" ? "已启用" : "Enabled")
+                      : (locale === "zh-CN" ? "未启用" : "Off")}
+                  </StatusBadge>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleTwoFactorToggle(!profile?.twoFactorEnabled)}
+                  disabled={twoFactorPending || !profile}
+                  className="workspace-btn-secondary w-full px-3 py-3 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {twoFactorPending
+                    ? (locale === "zh-CN" ? "保存中..." : "Saving...")
+                    : profile?.twoFactorEnabled
+                      ? (locale === "zh-CN" ? "关闭两步验证" : "Disable two-factor auth")
+                      : (locale === "zh-CN" ? "启用两步验证" : "Enable two-factor auth")}
+                </button>
+                {twoFactorNotice ? (
+                  <div className="rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--success)]">
+                    {twoFactorNotice}
+                  </div>
+                ) : null}
+                {twoFactorError ? (
+                  <div className="rounded-xl border border-[var(--error)]/20 bg-[var(--error)]/8 px-3 py-2 text-[11px] leading-5 text-[var(--error)]">
+                    {twoFactorError}
+                  </div>
+                ) : null}
               </div>
+
+              {profile ? (
+                <div className="pt-1">
+                  <LogoutButton label={copy.account.logout} />
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
