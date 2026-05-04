@@ -7,7 +7,11 @@ RUN apt-get update \
 
 COPY package.json package-lock.json ./
 COPY apps/web/package.json ./apps/web/package.json
-RUN npm ci --workspace apps/web
+RUN npm ci
+# The lockfile is authored on Windows, so install Linux native optional deps explicitly.
+RUN npm install --no-save --workspace apps/web \
+  lightningcss-linux-x64-gnu@1.32.0 \
+  @tailwindcss/oxide-linux-x64-gnu@4.2.2
 
 FROM node:22-bookworm-slim AS builder
 WORKDIR /repo
