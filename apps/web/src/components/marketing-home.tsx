@@ -130,7 +130,7 @@ const HOME_COPY: Record<
       },
       coverage: {
         id: "coverage",
-        label: "能力范围",
+        label: "审计",
         href: "#coverage",
         dropdown: {
           title: "审计深度",
@@ -357,7 +357,7 @@ const HOME_COPY: Record<
       },
       coverage: {
         id: "coverage",
-        label: "Coverage",
+        label: "Audit",
         href: "#coverage",
         dropdown: {
           title: "Audit depth",
