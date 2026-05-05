@@ -1,17 +1,23 @@
 <div align="center">
 
+<img src="apps/web/public/diffaudit-logo-mark-black.svg" alt="DiffAudit" width="80" />
+
 # DiffAudit Platform
 
-**Privacy-risk audit workspace for diffusion models.**<br>
+**Privacy-Risk Audit Workspace for Diffusion Models**
 **扩散模型隐私风险审计工作台**
 
-[![CI](https://github.com/DeliciousBuding/DiffAudit-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/DeliciousBuding/DiffAudit-Platform/actions/workflows/ci.yml)
-![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
-![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)
-![Go](https://img.shields.io/badge/Go-API%20Gateway-00ADD8?logo=go&logoColor=white)
-![License](https://img.shields.io/badge/License-Apache--2.0-blue)
+---
 
-[English](#english) · [简体中文](#简体中文) · [Quick Start](#quick-start) · [Documentation](#documentation) · [License](#license)
+[![Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-149eca?logo=react)](https://react.dev)
+[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
+
+**Demo** · [diffaudit.vectorcontrol.tech](https://diffaudit.vectorcontrol.tech)
+
+[English](#english) · [简体中文](#简体中文)
 
 </div>
 
@@ -19,282 +25,189 @@
 
 ## English
 
-DiffAudit Platform is the workspace for **DiffAudit**, a privacy audit system for evaluating whether diffusion models leak training-data membership signals.
+**DiffAudit Platform** is an open-source workspace for auditing privacy risks
+in diffusion models. It turns research evidence into a
+reviewable product experience — contracts, metrics, reports, exports — so that
+security teams, model developers, and compliance reviewers can inspect
+training-data membership risks without digging through experiment logs.
 
-It includes a Next.js frontend, a snapshot-backed Go API gateway, demo-ready audit flows, report pages, export tooling, and integration contracts for the broader DiffAudit ecosystem.
+### What It Does
 
-The companion research line lives in [DiffAudit-Research](https://github.com/DeliciousBuding/DiffAudit-Research), which contains the experiment and evidence production side of the project.
+Modern diffusion models can memorize training samples. When that happens,
+attackers can infer whether a given image was used during training — a
+membership inference risk that matters for data compliance, copyright, and
+privacy.
+
+DiffAudit Platform provides one place to answer three practical questions:
+
+| Question | Surface |
+| --- | --- |
+| **What can we audit?** | Catalog and workspace overview |
+| **What did the evidence say?** | Attack-defense tables, metrics, provenance |
+| **How do we share the result?** | PDF / CSV export, report pages |
+
+The platform organizes audits along **three permission tiers** — black-box,
+gray-box, white-box — forming a risk gradient from "we can only see the output"
+to "we have full access to the model."
+
+### Quick Look
+
+<img src="apps/web/public/screenshots/audits-recommended-running.png" alt="Workspace Audit View" width="100%" />
+
+### Capabilities
+
+- **Audit workspace** — dashboard, catalog, job lifecycle, re-audit shortcuts
+- **Evidence views** — attack/defense comparison, risk charts, provenance panels, coverage gaps
+- **Report exports** — PDF and CSV, ready for review meetings or compliance archives
+- **Bilingual UI** — English and Simplified Chinese, with dark-mode
+- **Snapshot-backed read plane** — demo-ready even without a live runtime
+- **Optional runtime bridge** — connect to [DiffAudit Runtime](https://github.com/DeliciousBuding/DiffAudit-Runtime) for live job execution
+- **OAuth** — GitHub and Google sign-in, plus local credentials
+
+### Architecture
+
+```
+Browser → Next.js Web App → Go API Gateway → Snapshot Bundle (demo / read)
+                                         → Runtime Server (optional, live jobs)
+```
+
+The platform separates **read** and **control** paths. The read path serves a
+public snapshot bundle — zero dependency on a running runtime for browsing
+evidence. The control path proxies job requests to the runtime service when
+live execution is needed.
+
+For a full walkthrough see [docs/architecture.md](docs/architecture.md).
+
+### Quick Start
+
+```bash
+# Prerequisites: Node.js ≥20, Go ≥1.22
+
+git clone https://github.com/DeliciousBuding/DiffAudit-Platform.git
+cd DiffAudit-Platform
+
+# Install and run the web app
+npm --prefix apps/web install
+npm run dev:web              # → http://localhost:3000
+
+# In another terminal — start the API gateway
+npm run dev:api              # → http://127.0.0.1:8780
+```
+
+The frontend ships with demo data. Open `http://localhost:3000` and you'll
+see the workspace right away — no runtime, no database, no config needed.
+
+### Documentation
+
+| Document | Covers |
+| --- | --- |
+| [docs/architecture.md](docs/architecture.md) | System boundaries, read/control planes, data objects |
+| [docs/portability.md](docs/portability.md) | Deployment contract and public-ready checklist |
+| [apps/web/README.md](apps/web/README.md) | Web app details |
+| [apps/api-go/README.md](apps/api-go/README.md) | Gateway routes |
+| [deploy/README.md](deploy/README.md) | Docker templates |
+
+### Companion Repositories
+
+| Repository | Role |
+| --- | --- |
+| [DiffAudit-Runtime](https://github.com/DeliciousBuding/DiffAudit-Runtime) | Runtime service — job scheduling, runner orchestration, SQLite-backed contract registry |
+| [DiffAudit-Research](https://github.com/DeliciousBuding/DiffAudit-Research) | Research evidence — experiments, attack/defense artifacts, admitted results |
+
+### Contributing
+
+Issues and PRs are welcome. Before submitting, run the checks in
+[CONTRIBUTING.md](CONTRIBUTING.md). Keep secrets and local paths out of
+commits. Demo data must be safe for public review.
+
+### Security
+
+For sensitive vulnerabilities, use GitHub's private reporting or contact the
+maintainer directly. Never commit API keys, OAuth secrets, databases, or raw
+datasets.
+
+### License
+
+Apache License 2.0 — commercial use, modification, and distribution are
+permitted. See [LICENSE](LICENSE).
+
+---
 
 ## 简体中文
 
-DiffAudit Platform 是 **DiffAudit** 的产品化工作台，用于展示、复现和审阅扩散模型中的隐私泄露风险，尤其是训练数据成员推断相关风险。
+**DiffAudit Platform** 是一个开源的扩散模型隐私风险审计工作台。它把研究证据转化为可交互的产品体验——合同项、指标对比、报告导出——让安全团队、模型开发者和合规审查人员可以直接在浏览器里评估训练数据泄露风险，不用去翻实验脚本。
 
-本仓库包含 Next.js 前端、Go API Gateway、演示模式审计流程、报告页面、导出能力，以及与 DiffAudit 研究与运行时体系对接的公开契约。
+### 解决什么问题
 
-研究主线位于 [DiffAudit-Research](https://github.com/DeliciousBuding/DiffAudit-Research)，负责实验、证据生成和研究结果输出。
+扩散模型在训练过程中可能"记住"训练样本。一旦被记忆，攻击者就能推断某张图片是否参与过训练——这种成员推理风险对数据合规、版权保护和隐私安全都是实实在在的威胁。
 
-### 中文速览
+DiffAudit Platform 围绕三个问题提供答案：
 
-| 你关心的问题 | DiffAudit Platform 提供的能力 |
+| 问题 | 对应能力 |
 | --- | --- |
-| 如何向评委、团队或客户解释模型隐私风险？ | 用工作台、证据表和报告页把实验结果转成可审阅的产品流程 |
-| 没有运行时服务能不能演示？ | 可以，默认支持 snapshot/demo 数据 |
-| 能不能接真实实验结果？ | 可以，通过 DiffAudit-Research 生成证据，再发布为 public snapshot |
-| 能不能导出材料？ | 支持 PDF 和 CSV 导出路径，适合技术评审和报告归档 |
-| 能不能商用？ | Apache-2.0 许可证允许商用和二次开发，需保留版权与许可证声明 |
+| **能审计什么？** | 合同项目录与工作区概览 |
+| **证据怎么说？** | 攻击-防御对比表、指标卡片、来源面板 |
+| **怎么把结果给出去？** | PDF / CSV 导出、报告页面 |
 
-## Why DiffAudit / 为什么需要 DiffAudit
+平台按**黑盒、灰盒、白盒**三种权限场景组织审计，形成从"只看得见输出"到"模型内部全开放"的风险评估梯度。
 
-Modern AI systems are evaluated for accuracy, latency, and cost, but privacy leakage can remain invisible until the model is deployed. DiffAudit turns privacy-risk evidence into a workflow that product, security, compliance, and research teams can inspect together.
+### 快速体验
 
-DiffAudit focuses on three practical questions:
+在线 Demo：[diffaudit.vectorcontrol.tech](https://diffaudit.vectorcontrol.tech)
 
-| Question | DiffAudit Surface |
-| --- | --- |
-| What models or audit contracts are available? | Catalog and workspace overview |
-| What does the evidence say? | Attack-defense tables, metrics, provenance panels |
-| How do we share the result? | Report pages, PDF export, CSV export |
+本地启动：
 
-## Highlights / 功能亮点
+```bash
+# 前提：Node.js ≥20，Go ≥1.22
 
-- **Demo-ready workspace**: explore contracts, jobs, metrics, reports, API keys, account, and settings without a live runtime.
-- **Report and evidence views**: track-level metrics, ROC/risk charts, provenance, coverage gaps, and exportable audit summaries.
-- **Bilingual UI**: English and Simplified Chinese with global language and theme controls.
-- **Snapshot-backed API**: Go gateway serves public catalog/model/evidence bundles for deterministic demos and stable review.
-- **Optional runtime bridge**: audit-job control-plane routes can proxy to a runtime service when configured.
-- **OAuth and local auth**: local credentials plus optional GitHub and Google sign-in.
-- **Trial intake**: trial form can point to an external intake system for demos, pilots, or onboarding.
-- **CI-verified baseline**: web lint/test/build and Go test/build run in GitHub Actions.
-
-## Product Flow / 产品流程
-
-```mermaid
-flowchart LR
-  Visitor["Visitor / Reviewer"] --> Learn["Read docs"]
-  Learn --> Demo["Open demo workspace"]
-  Demo --> Audit["Create or inspect audit jobs"]
-  Audit --> Evidence["Review evidence and provenance"]
-  Evidence --> Report["Generate report views"]
-  Report --> Export["Export PDF / CSV"]
-```
-
-## Architecture / 架构
-
-```mermaid
-flowchart LR
-  Browser["Browser"] --> Web["Next.js Web App"]
-  Web --> Gateway["Go API Gateway"]
-  Gateway --> Snapshot["Public Snapshot Bundle"]
-  Gateway -. optional .-> Runtime["DiffAudit Runtime"]
-  Research["DiffAudit-Research"] --> Publisher["Snapshot Publisher"]
-  Publisher --> Snapshot
-  Snapshot --> Evidence["Catalog · Models · Summaries · Attack/Defense Table"]
-```
-
-| Layer | Path | Responsibility |
-| --- | --- | --- |
-| Web app | [`apps/web`](apps/web) | Marketing site, docs, auth, workspace, audits, reports, account, settings |
-| API gateway | [`apps/api-go`](apps/api-go) | Snapshot-backed read API and optional runtime proxy |
-| Shared contracts | [`packages/shared`](packages/shared) | Stable payload examples and contract notes |
-| Public docs | [`docs`](docs) | Architecture and developer orientation |
-| CI | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Frontend and Go quality gates |
-
-## Capability Matrix / 能力矩阵
-
-| Capability | Status | Notes |
-| --- | --- | --- |
-| Landing page and docs | Available | Product explanation, docs navigation, bilingual interface |
-| Workspace dashboard | Available | Demo-mode metrics, contracts, task summaries |
-| Audit job flow | Available | Demo job store locally; runtime proxy when configured |
-| Reports | Available | Evidence stack, provenance, charts, PDF/CSV export |
-| Authentication | Available | Local credentials, optional GitHub/Google OAuth |
-| Snapshot API | Available | Catalog, models, summaries, attack-defense table |
-| Runtime execution | External integration | Implemented by the runtime service, consumed through API contracts |
-| Research evidence | External integration | Produced by DiffAudit-Research and published into snapshots |
-
-## Quick Start / 快速开始
-
-### Prerequisites
-
-- Node.js 20+
-- npm 10+
-- Go 1.22+
-- Python 3.10+ for helper scripts
-
-### Install
-
-```powershell
 git clone https://github.com/DeliciousBuding/DiffAudit-Platform.git
 cd DiffAudit-Platform
+
 npm --prefix apps/web install
+npm run dev:web              # → http://localhost:3000
+
+# 另开终端启动 API 网关
+npm run dev:api              # → http://127.0.0.1:8780
 ```
 
-### Run the web app
+前端自带演示数据，打开浏览器就能看到工作台——不需要配数据库，不需要启动运行时。
 
-```powershell
-npm run dev:web
+### 主要能力
+
+- **审计工作台** — 仪表板、合同项目录、任务生命周期、一键重审
+- **证据展示** — 攻击/防御对比、风险图表、来源追溯、覆盖缺口
+- **报告导出** — PDF 和 CSV，用于评审会或合规归档
+- **双语界面** — 中英文切换，支持深色模式
+- **Snapshot 驱动** — 展示通道读取预发布数据包，不依赖运行时也能完整浏览
+- **可选运行时桥接** — 接入 [DiffAudit Runtime](https://github.com/DeliciousBuding/DiffAudit-Runtime) 后支持实时任务执行
+- **灵活登录** — 本地账号、GitHub OAuth、Google OAuth 三种方式
+
+### 架构
+
+```
+浏览器 → Next.js 前端 → Go API 网关 → Snapshot 数据包（演示 / 只读）
+                                    → Runtime 服务（可选，实时任务）
 ```
 
-Open `http://localhost:3000`.
+平台在工程上分离了展示通道和控制通道。展示通道吃 snapshot，Runtime 挂了页面照样能用。控制通道只在用户主动提交任务时才跟 Runtime 通信。
 
-### Run the Go gateway
+详见 [docs/architecture.md](docs/architecture.md)。
 
-In another terminal:
+### 配套仓库
 
-```powershell
-npm run dev:api
-```
-
-The default gateway URL is `http://127.0.0.1:8780`.
-
-## Configuration / 配置
-
-Copy `.env.example` into an untracked local file such as `apps/web/.env.local`, then change only the values you need.
-
-```powershell
-Copy-Item .env.example apps/web/.env.local
-```
-
-| Variable | Used by | Purpose |
-| --- | --- | --- |
-| `DIFFAUDIT_PLATFORM_URL` | web | Base URL used for auth redirects |
-| `DIFFAUDIT_API_BASE_URL` | web | Go gateway URL |
-| `DIFFAUDIT_DB_PATH` | web | SQLite path for local users and sessions |
-| `DIFFAUDIT_DEMO_MODE` | web/api | Enables demo-mode defaults |
-| `DIFFAUDIT_FORCE_DEMO_MODE` | web | Optional override that keeps demo mode enabled even if a user cookie tries to disable it |
-| `DIFFAUDIT_PRIMARY_CONTRACT_KEY` | web | Optional preferred contract key for landing-page evidence selection |
-| `DIFFAUDIT_SHARED_USERNAME` | web | Optional first local account username |
-| `DIFFAUDIT_SHARED_PASSWORD` | web | Optional first local account password |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | web | Optional GitHub OAuth provider |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | web | Optional Google OAuth provider |
-| `DIFFAUDIT_TRIAL_FORM_URL` | web | Optional external trial intake form |
-| `DIFFAUDIT_PUBLIC_DATA_DIR` | api | Public snapshot data directory |
-| `DIFFAUDIT_RUNTIME_BASE_URL` | api | Optional runtime upstream |
-| `DIFFAUDIT_CORS_ALLOWED_ORIGINS` | api | Allowed browser origins for the gateway |
-
-OAuth buttons render only when the matching provider has both client ID and client secret configured.
-
-## Container Deployment / 容器部署
-
-Docker is the recommended deployment shape when the target environment needs reproducible builds and rollback-friendly image tags. The repository includes public-safe templates only; real secrets and server-specific settings stay outside Git.
-
-Build traceable local images from a clean commit:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\build_docker_images.ps1
-```
-
-Run the generic compose template:
-
-```powershell
-Copy-Item .\deploy\compose.env.example .\deploy\.env
-Copy-Item .\deploy\runtime.env.example .\deploy\runtime.env
-docker compose --env-file .\deploy\.env -f .\deploy\docker-compose.example.yml up -d --build
-```
-
-The copied `deploy/.env` and `deploy/runtime.env` files are ignored by Git. Set OAuth secrets, public platform URL, CORS origins, snapshot host path, and deployment-specific bind values there or in your deployment secret manager.
-
-GitHub Container Registry publishing is supported through the `Publish Images` workflow. Published image names are:
-
-- `ghcr.io/deliciousbuding/diffaudit-platform-web`
-- `ghcr.io/deliciousbuding/diffaudit-platform-api`
-
-Use immutable `sha-<short-sha>` tags for deployment pinning. Use `latest` only for demos or local evaluation.
-
-See [deploy/README.md](deploy/README.md) for the template contract.
-
-## Portability / 可迁移化
-
-The portable baseline is source code plus a sanitized public snapshot plus environment variables. Private deployment topology, raw Research workspaces, local databases, OAuth secrets, and server-local process files stay outside Git.
-
-迁移基线由源码、可公开的 snapshot 和环境变量组成。私有部署拓扑、原始 Research 工作区、本地数据库、OAuth 密钥和服务器本地进程文件不进入 Git。
-
-See [docs/portability.md](docs/portability.md) for the migration model, environment groups, snapshot contract, and public-ready checklist.
-
-## Research And Runtime Integration / 研究与运行时集成
-
-DiffAudit Platform is designed to sit between research evidence and product review.
-
-- [DiffAudit-Research](https://github.com/DeliciousBuding/DiffAudit-Research) produces experiment artifacts, attack/defense evidence, and admitted result tables.
-- Snapshot publishing turns selected evidence into `apps/api-go/data/public`.
-- The Go gateway serves snapshot-backed read APIs for stable demos and reports.
-- Runtime execution can be connected through `DIFFAUDIT_RUNTIME_BASE_URL` for live job control-plane routes.
-
-Public routes read the generated snapshot bundle. If you want new research evidence to appear in the UI, publish it into the snapshot bundle first.
-
-## Verification / 验证
-
-Run the standard local gates before opening a PR:
-
-```powershell
-python scripts/check_public_boundary.py
-npm --prefix apps/web run lint
-npm --prefix apps/web run test
-npm --prefix apps/web run build
-go -C apps/api-go test ./...
-```
-
-Or run the repository helper:
-
-```powershell
-python scripts/run_local_checks.py
-```
-
-## Documentation / 文档
-
-| Document | Purpose |
+| 仓库 | 定位 |
 | --- | --- |
-| [docs/README.md](docs/README.md) | Documentation map |
-| [docs/architecture.md](docs/architecture.md) | Architecture and data boundaries |
-| [docs/portability.md](docs/portability.md) | Productization and migration contract |
-| [docs/platform-roadmap.md](docs/platform-roadmap.md) | Public product roadmap and implementation guardrails |
-| [apps/web/README.md](apps/web/README.md) | Web app setup and notes |
-| [apps/api-go/README.md](apps/api-go/README.md) | Gateway routes and local usage |
-| [deploy/README.md](deploy/README.md) | Public-safe Docker deployment template |
-| [apps/web/DESIGN.md](apps/web/DESIGN.md) | Product UI and design notes |
-| [AGENTS.md](AGENTS.md) | Agent guardrails for public-safe changes |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution workflow |
+| [DiffAudit-Runtime](https://github.com/DeliciousBuding/DiffAudit-Runtime) | 运行时服务——任务调度、Runner 编排、SQLite 合同项注册 |
+| [DiffAudit-Research](https://github.com/DeliciousBuding/DiffAudit-Research) | 研究证据——实验、攻击/防御工件、admitted 结果 |
 
-## Roadmap / 路线图
+### 参与贡献
 
-| Area | Direction |
-| --- | --- |
-| Evidence UX | More compact provenance views, richer coverage-gap explanations |
-| Workspace observability | Snapshot age, build revision, and Runtime mode surfaced consistently |
-| Report exports | Better academic/report templates and stable printable layouts |
-| Runtime bridge | Stronger live-job observability and retry/error handling |
-| Public trial | Cleaner onboarding flow and optional external intake integration |
-| Research sync | Cleaner handoff from DiffAudit-Research artifacts into public snapshots |
+欢迎提 Issue 和 PR。提交前请跑一下 [CONTRIBUTING.md](CONTRIBUTING.md) 里的验证命令。不要把密钥、本地路径、私有数据集写进提交。
 
-## Contributing / 参与贡献
+### 安全
 
-Issues and pull requests are welcome for documentation, UI improvements, test coverage, and integration-contract polish. For larger changes, open an issue first so the scope can be discussed.
+敏感漏洞请通过 GitHub 私有报告流程提交，或直接联系维护者。严禁提交 API Key、OAuth 密钥、数据库导出或原始私有数据集。
 
-Before submitting:
+### 许可证
 
-- run the verification commands above;
-- keep environment files and secrets out of Git;
-- keep demo data suitable for public review;
-- document user-facing behavior changes.
-
-## Security / 安全
-
-Please do not open public issues for sensitive vulnerabilities. Use GitHub private vulnerability reporting if available, or contact the maintainer privately.
-
-Do not commit API keys, OAuth secrets, database dumps, environment-specific hostnames, local user paths, or raw private datasets.
-
-## License / 许可证
-
-DiffAudit Platform is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE).
-
-Summary:
-
-- commercial use, modification, distribution, and private use are allowed under Apache-2.0;
-- copyright and license notices must be preserved;
-- contributions and third-party dependencies remain under their respective licenses.
-
-中文摘要：
-
-- Apache-2.0 允许商用、修改、分发和私有使用；
-- 需要保留版权与许可证声明；
-- 贡献代码和第三方依赖仍遵循其各自许可证。
+Apache License 2.0 — 允许商用、修改和分发。详见 [LICENSE](LICENSE)。
