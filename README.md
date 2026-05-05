@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="apps/web/public/diffaudit-logo-mark-black.svg" alt="DiffAudit" width="80" />
-
 # DiffAudit Platform
 
 **Privacy-Risk Audit Workspace for Diffusion Models**
@@ -15,7 +13,7 @@
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
 
-**Demo** · [diffaudit.vectorcontrol.tech](https://diffaudit.vectorcontrol.tech)
+**Live Demo** · [diffaudit.vectorcontrol.tech](https://diffaudit.vectorcontrol.tech)
 
 [English](#english) · [简体中文](#简体中文)
 
