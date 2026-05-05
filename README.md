@@ -1,6 +1,6 @@
 <div align="center">
 
-# DiffAudit Platform
+<img src="apps/web/public/brand/diffaudit-logo-black.svg" alt="DiffAudit" width="520" />
 
 **Privacy-Risk Audit Workspace for Diffusion Models**
 **扩散模型隐私风险审计工作台**
