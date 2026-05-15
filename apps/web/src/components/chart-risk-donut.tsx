@@ -27,17 +27,20 @@ export function ChartRiskDonut({ data, totalLabel = "总结果", height = 160 }:
   const router = useRouter();
   const total = data.reduce((acc, item) => acc + item.count, 0);
   const chartSize = Math.max(106, Math.min(124, height - 46));
-  let cursor = 0;
+  const segments = data.map((item, index) => {
+    const start = data
+      .slice(0, index)
+      .reduce((acc, previous) => acc + (total > 0 ? (previous.count / total) * 360 : 0), 0);
+    const sweep = total > 0 ? (item.count / total) * 360 : 0;
+    return { item, start, sweep };
+  });
 
   return (
     <div className="risk-donut-wrap" style={{ height }}>
       <div className="risk-donut-canvas" style={{ height: chartSize, width: chartSize }}>
         <svg viewBox="0 0 160 160" width={chartSize} height={chartSize} role="img" aria-label="Risk distribution">
           <circle cx="80" cy="80" r="58" fill="none" stroke="var(--muted)" strokeWidth="18" opacity="0.55" />
-          {data.map((item) => {
-            const start = cursor;
-            const sweep = total > 0 ? (item.count / total) * 360 : 0;
-            cursor += sweep;
+          {segments.map(({ item, start, sweep }) => {
             return (
               <path
                 key={item.key}

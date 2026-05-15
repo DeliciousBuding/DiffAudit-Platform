@@ -8,9 +8,7 @@ export const dynamic = "force-dynamic";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { sanitizeAuditJobPayload } from "@/lib/audit-job-payload";
-import { isDemoModeEnabledServer } from "@/lib/demo-mode";
-import { listDemoJobs } from "@/lib/demo-jobs-store";
+import { getWorkspaceAuditJobsData } from "@/lib/workspace-source";
 import { AuditsPageClient } from "./AuditsPageClient";
 
 type WorkspaceAuditsPageOptions = {
@@ -20,9 +18,7 @@ type WorkspaceAuditsPageOptions = {
 async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions = {}) {
   const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[resolvedLocale].audits;
-  const initialJobs = await isDemoModeEnabledServer()
-    ? sanitizeAuditJobPayload(listDemoJobs())
-    : [];
+  const initialJobs = await getWorkspaceAuditJobsData();
 
   return (
     <WorkspacePageFrame

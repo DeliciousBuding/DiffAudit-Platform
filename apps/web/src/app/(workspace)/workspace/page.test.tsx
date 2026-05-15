@@ -31,12 +31,13 @@ describe("WorkspaceHomePage", () => {
     const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("建议操作");
-    expect(markup).toContain("最近结果");
+    expect(markup).toContain("工作台总览");
+    expect(markup).toContain("AUC 风险分布");
+    expect(markup).toContain("近期任务");
     expect(markup).toContain("PIA");
     expect(markup).toContain("stable-diffusion-v1-4");
-    expect(markup).toContain("可审计模型");
-    expect(markup).toContain("已防御结果");
+    expect(markup).toContain("可审计合同");
+    expect(markup).toContain("已评估防御");
   });
 
   it("renders en-US copy with forced demo data", async () => {
@@ -44,9 +45,10 @@ describe("WorkspaceHomePage", () => {
     const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
-    expect(markup).toContain("Suggested actions");
-    expect(markup).toContain("Recent results");
+    expect(markup).toContain("Workspace Overview");
+    expect(markup).toContain("AUC Risk Distribution");
+    expect(markup).toContain("Recent tasks");
     expect(markup).toContain("stable-diffusion-v1-4");
-    expect(markup).toContain("Auditable models");
+    expect(markup).toContain("Auditable contracts");
   });
 });

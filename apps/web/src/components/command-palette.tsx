@@ -312,11 +312,6 @@ export function CommandPalette({ locale }: { locale: Locale }) {
     };
   }, [open]);
 
-  /* ---- Reset active index when query changes ---- */
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [query]);
-
   /* ---- Scroll active item into view ---- */
   useEffect(() => {
     if (!listRef.current) return;
@@ -393,7 +388,10 @@ export function CommandPalette({ locale }: { locale: Locale }) {
             aria-controls="command-listbox"
             aria-activedescendant={flatItems[activeIndex] ? `cmd-${flatItems[activeIndex].id}` : undefined}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setActiveIndex(0);
+            }}
             onKeyDown={onInputKeyDown}
           />
           <kbd className="command-palette-kbd">ESC</kbd>

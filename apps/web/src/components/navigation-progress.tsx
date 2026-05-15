@@ -9,14 +9,15 @@ import { usePathname } from "next/navigation";
  */
 export function NavigationProgress() {
   const pathname = usePathname();
-  const [progress, setProgress] = useState(0);
-  const [visible, setVisible] = useState(false);
+
+  return <NavigationProgressBar key={pathname} />;
+}
+
+function NavigationProgressBar() {
+  const [progress, setProgress] = useState(30);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    // Start progress on route change
-    setVisible(true);
-    setProgress(30);
-
     const t1 = setTimeout(() => setProgress(60), 100);
     const t2 = setTimeout(() => setProgress(80), 300);
     const t3 = setTimeout(() => setProgress(100), 500);
@@ -31,7 +32,7 @@ export function NavigationProgress() {
       clearTimeout(t3);
       clearTimeout(t4);
     };
-  }, [pathname]);
+  }, []);
 
   if (!visible) return null;
 

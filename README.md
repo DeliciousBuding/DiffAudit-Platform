@@ -13,7 +13,7 @@
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
 
-**Live Demo** · [diffaudit.vectorcontrol.tech](https://diffaudit.vectorcontrol.tech)
+**Demo** · Run locally or deploy your own instance
 
 [English](#english) · [简体中文](#简体中文)
 
@@ -151,7 +151,7 @@ DiffAudit Platform 围绕三个问题提供答案：
 
 ### 快速体验
 
-在线 Demo：[diffaudit.vectorcontrol.tech](https://diffaudit.vectorcontrol.tech)
+在线 Demo：请部署自己的实例，或按下方命令在本地启动。
 
 本地启动：
 

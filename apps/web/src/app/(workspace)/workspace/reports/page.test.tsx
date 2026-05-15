@@ -25,11 +25,11 @@ describe("WorkspaceReportsPage", () => {
     const { default: WorkspaceReportsPage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceReportsPage());
 
-    expect(markup).toContain("报告生成");
-    expect(markup).toContain("按审计模式生成");
-    expect(markup).toContain("已生成报告");
-    expect(markup).toContain("综合分析");
-    expect(markup).toContain("导出选项");
+    expect(markup).toContain("审计结果和覆盖缺口");
+    expect(markup).toContain("任务报告");
+    expect(markup).toContain("任务报告表");
+    expect(markup).toContain("photo-real-xl");
+    expect(markup).toContain("查看审计报告");
   });
 
   it("renders en-US copy with forced demo data", async () => {
@@ -37,11 +37,10 @@ describe("WorkspaceReportsPage", () => {
     const { default: WorkspaceReportsPage } = await import("./page");
     const markup = await renderMarkup(await WorkspaceReportsPage());
 
-    expect(markup).toContain("Reports");
-    expect(markup).toContain("Report Generation");
-    expect(markup).toContain("Generate by Audit Mode");
-    expect(markup).toContain("Generated Reports");
-    expect(markup).toContain("Comprehensive Analysis");
-    expect(markup).toContain("Export Options");
+    expect(markup).toContain("Audit results and coverage gaps");
+    expect(markup).toContain("Task reports");
+    expect(markup).toContain("Task reports table");
+    expect(markup).toContain("photo-real-xl");
+    expect(markup).toContain("View Report");
   });
 });

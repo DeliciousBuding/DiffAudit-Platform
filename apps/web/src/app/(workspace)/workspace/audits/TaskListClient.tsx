@@ -41,12 +41,13 @@ function trackTone(job: JobRecord): Tone {
   return "muted";
 }
 
-function trackIcon(tone: Tone) {
-  if (tone === "green") return Shield;
-  if (tone === "purple") return Eye;
-  if (tone === "blue") return Activity;
-  if (tone === "orange") return Search;
-  return Activity;
+function TrackIcon({ tone, size }: { tone: Tone; size: number }) {
+  const props = { size, strokeWidth: 1.7, "aria-hidden": true as const };
+  if (tone === "green") return <Shield {...props} />;
+  if (tone === "purple") return <Eye {...props} />;
+  if (tone === "blue") return <Activity {...props} />;
+  if (tone === "orange") return <Search {...props} />;
+  return <Activity {...props} />;
 }
 
 function statusToneClass(status: string): string {
@@ -75,7 +76,6 @@ function formatRemaining(progressPct: number, createdAt: string, locale: Locale,
 export function RunningCard({ job, locale }: { job: JobRecord; locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tone = trackTone(job);
-  const Icon = trackIcon(tone);
   const pct = typeof job.progress_pct === "number" ? Math.round(job.progress_pct) : 0;
   const [now, setNow] = useState(() => Date.now());
 
@@ -93,7 +93,7 @@ export function RunningCard({ job, locale }: { job: JobRecord; locale: Locale })
       className="audits-running-card"
     >
       <span className={`audits-running-icon is-${tone}`}>
-        <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
+        <TrackIcon tone={tone} size={16} />
       </span>
       <div className="audits-running-info">
         <div className="audits-running-title">
@@ -201,14 +201,13 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
         <tbody>
           {jobs.map((job) => {
             const tone = trackTone(job);
-            const Icon = trackIcon(tone);
             const reportHref = buildCompletedJobReportHref(job);
             return (
               <tr key={job.job_id}>
                 <td>
                   <div className="audits-cell-task">
                     <span className={`audits-running-icon is-${tone} is-sm`}>
-                      <Icon size={13} strokeWidth={1.7} aria-hidden="true" />
+                      <TrackIcon tone={tone} size={13} />
                     </span>
                     <div>
                       <strong>{job.job_id}</strong>
