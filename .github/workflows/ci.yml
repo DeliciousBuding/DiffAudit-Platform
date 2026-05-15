@@ -26,6 +26,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
+      - run: npm --prefix apps/web install --no-save --package-lock=false --ignore-scripts @tailwindcss/oxide-linux-x64-gnu@4.2.2 lightningcss-linux-x64-gnu@1.32.0
       - run: npm --prefix apps/web run lint
       - run: npm --prefix apps/web run test
       - run: npm --prefix apps/web run build
