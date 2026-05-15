@@ -1,4 +1,7 @@
 import {
+  sanitizeAuditJobPayload,
+} from "@/lib/audit-job-payload";
+import {
   fetchAttackDefenseTable,
   type AttackDefenseRowViewModel,
   type AttackDefenseTableViewModel,
@@ -9,6 +12,7 @@ import {
   type CatalogEntryViewModel,
   type CatalogTrack,
 } from "@/lib/catalog";
+import { listDemoJobs } from "@/lib/demo-jobs-store";
 import { isDemoModeEnabledServer, isDemoModeForcedServer } from "@/lib/demo-mode";
 
 export type {
@@ -45,4 +49,10 @@ export async function getWorkspaceCatalogData(): Promise<CatalogDashboardViewMod
 
 export async function getWorkspaceAttackDefenseData(): Promise<AttackDefenseTableViewModel | null> {
   return fetchAttackDefenseTable();
+}
+
+export async function getWorkspaceAuditJobsData(): Promise<ReturnType<typeof listDemoJobs>> {
+  return (await isDemoModeEnabledServer())
+    ? sanitizeAuditJobPayload(listDemoJobs())
+    : [];
 }

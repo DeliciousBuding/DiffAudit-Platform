@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, ArrowRight } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { getNavItems } from "@/lib/navigation";
@@ -87,11 +86,6 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
       .slice(0, 6);
   }, [items, query]);
 
-  // Reset active index when matches change
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [matches]);
-
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -151,6 +145,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
         value={query}
         onChange={(event) => {
           setQuery(event.target.value);
+          setActiveIndex(0);
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}

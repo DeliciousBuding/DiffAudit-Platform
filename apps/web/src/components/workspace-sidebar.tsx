@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, Moon, Sun } from "lucide-react";
@@ -13,6 +13,7 @@ import { findActiveNavItem } from "@/lib/platform-shell";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const STORAGE_KEY = "diffaudit-sidebar-collapsed";
+const STORAGE_EVENT = "diffaudit:sidebar-collapsed";
 
 // Account-related entries get visually grouped at the bottom of the sidebar.
 const ACCOUNT_GROUP_KEYS: ReadonlySet<string> = new Set(["apiKeys", "account", "settings"]);
@@ -26,6 +27,16 @@ function getCollapsedFromStorage(): boolean {
   }
 }
 
+function subscribeCollapsedStorage(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(STORAGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(STORAGE_EVENT, onStoreChange);
+  };
+}
+
 export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
   const { resolvedTheme, toggle } = useTheme();
@@ -36,22 +47,16 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const themeLabel = isDark
     ? WORKSPACE_COPY[locale].userMenu.themeDark
     : WORKSPACE_COPY[locale].userMenu.themeLight;
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    setCollapsed(getCollapsedFromStorage());
-  }, []);
+  const collapsed = useSyncExternalStore(subscribeCollapsedStorage, getCollapsedFromStorage, () => false);
 
   const toggleCollapse = useCallback(() => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem(STORAGE_KEY, String(next));
-      } catch {
-        // localStorage may be unavailable
-      }
-      return next;
-    });
+    const next = !getCollapsedFromStorage();
+    try {
+      localStorage.setItem(STORAGE_KEY, String(next));
+    } catch {
+      // localStorage may be unavailable
+    }
+    window.dispatchEvent(new Event(STORAGE_EVENT));
   }, []);
 
   // Expose toggle for keyboard shortcut

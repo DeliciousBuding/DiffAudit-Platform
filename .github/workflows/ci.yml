@@ -18,20 +18,18 @@ jobs:
 
   web:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
-      - run: npm ci --workspaces=false
-      - run: npm run lint
-      - run: npm run test
-      - run: npm run build
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npm --prefix apps/web install --no-save --package-lock=false --ignore-scripts @tailwindcss/oxide-linux-x64-gnu@4.2.2 lightningcss-linux-x64-gnu@1.32.0 react@19.2.4 react-dom@19.2.4
+      - run: npm --prefix apps/web run lint
+      - run: npm --prefix apps/web run test
+      - run: npm --prefix apps/web run build
 
   api-go:
     runs-on: ubuntu-latest
