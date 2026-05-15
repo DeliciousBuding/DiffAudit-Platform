@@ -15,8 +15,7 @@ import { type EvidenceSummaryPayload } from "@/lib/audit-client";
 import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { ReportAuditView, type ReportProvenance } from "./ReportAuditView";
+import { ReportAuditView, type ReportProducerContext, type ReportProvenance } from "./ReportAuditView";
 import { ReportDisplayView } from "./ReportDisplayView";
 
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
@@ -94,12 +93,6 @@ function pageTitle(locale: Locale, label: string) {
   return locale === "zh-CN" ? `${label}报告详情` : `${label} report details`;
 }
 
-function pageDescription(locale: Locale, label: string) {
-  return locale === "zh-CN"
-    ? "同一审计线路的展示视图与长期审计视图共用这一个入口，默认保持展示形态。"
-    : `This route keeps both the display view and the long-term audit view for the ${label.toLowerCase()} track.`;
-}
-
 function toggleLabel(locale: Locale, view: ViewMode) {
   if (locale === "zh-CN") {
     return view === "display" ? "展示视图" : "审计视图";
@@ -107,7 +100,7 @@ function toggleLabel(locale: Locale, view: ViewMode) {
   return view === "display" ? "Display view" : "Audit view";
 }
 
-function historyPlaceholder(locale: Locale, label: string) {
+function historyPlaceholder(locale: Locale) {
   return locale === "zh-CN"
     ? "该审计线路的历史对比功能将在后续版本接入，当前为占位区域。"
     : "Historical comparison for this track will be available in a future release. This area is reserved.";
@@ -204,6 +197,73 @@ function buildJobContext(searchParams?: TrackReportPageSearchParams) {
   };
 }
 
+function readJobEnvelope(payload: unknown) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const job = record.job;
+  if (job && typeof job === "object") {
+    return job as Record<string, unknown>;
+  }
+  return record;
+}
+
+function readStateHistory(value: unknown): ReportProducerContext["stateHistory"] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((entry) => {
+    if (!entry || typeof entry !== "object") {
+      return [];
+    }
+
+    const record = entry as Record<string, unknown>;
+    if (typeof record.state !== "string") {
+      return [];
+    }
+
+    return [{
+      state: record.state,
+      timestamp: typeof record.timestamp === "string" ? record.timestamp : null,
+    }];
+  });
+}
+
+async function fetchProducerContext(jobContext: ReturnType<typeof buildJobContext>): Promise<ReportProducerContext | undefined> {
+  if (!jobContext?.jobId) {
+    return undefined;
+  }
+
+  try {
+    const response = await fetchWithTimeout(
+      new URL(`/api/v1/audit/jobs/${encodeURIComponent(jobContext.jobId)}`, backendBaseUrl()),
+      { cache: "no-store" },
+      { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
+    );
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const job = readJobEnvelope(await response.json());
+    if (!job) {
+      return undefined;
+    }
+
+    return {
+      status: typeof job.status === "string" ? job.status : null,
+      updatedAt: typeof job.updated_at === "string" ? job.updated_at : null,
+      stdoutTail: typeof job.stdout_tail === "string" ? job.stdout_tail : null,
+      stderrTail: typeof job.stderr_tail === "string" ? job.stderr_tail : null,
+      stateHistory: readStateHistory(job.state_history),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 function findHighlightedRows(rows: AttackDefenseRowViewModel[], jobContext: ReturnType<typeof buildJobContext>) {
   if (!jobContext) {
     return [];
@@ -243,9 +303,11 @@ export async function renderTrackReportPage({
   const rows = filterRows(table?.rows ?? [], track);
   const highlightedRowKeys = findHighlightedRows(rows, jobContext);
   const catalogEntries = catalog?.tracks.find((item) => item.track === track)?.entries ?? [];
-  const provenance = await fetchTrackProvenance(pickPrimaryEntry(catalogEntries));
+  const [provenance, producerContext] = await Promise.all([
+    fetchTrackProvenance(pickPrimaryEntry(catalogEntries)),
+    fetchProducerContext(jobContext),
+  ]);
   const label = trackLabel(resolvedLocale, track);
-  const copy = WORKSPACE_COPY[resolvedLocale].reports;
   const displayHref = `/workspace/reports/${track}?view=display`;
   const auditHref = `/workspace/reports/${track}?view=audit`;
 
@@ -290,8 +352,9 @@ export async function renderTrackReportPage({
           locale={resolvedLocale}
           rows={rows}
           provenance={provenance}
-          historyPlaceholder={historyPlaceholder(resolvedLocale, label)}
+          historyPlaceholder={historyPlaceholder(resolvedLocale)}
           jobContext={jobContext}
+          producerContext={producerContext}
           highlightedRowKeys={highlightedRowKeys}
         />
       ) : (
