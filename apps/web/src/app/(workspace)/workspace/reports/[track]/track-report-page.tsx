@@ -244,12 +244,12 @@ async function fetchProducerContext(jobContext: ReturnType<typeof buildJobContex
       { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
     );
     if (!response.ok) {
-      return undefined;
+      return { unavailable: true };
     }
 
     const job = readJobEnvelope(await response.json());
     if (!job) {
-      return undefined;
+      return { unavailable: true };
     }
 
     return {
@@ -260,7 +260,7 @@ async function fetchProducerContext(jobContext: ReturnType<typeof buildJobContex
       stateHistory: readStateHistory(job.state_history),
     };
   } catch {
-    return undefined;
+    return { unavailable: true };
   }
 }
 

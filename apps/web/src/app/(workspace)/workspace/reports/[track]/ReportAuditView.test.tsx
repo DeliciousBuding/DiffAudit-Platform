@@ -118,11 +118,37 @@ describe("ReportAuditView", () => {
     expect(markup).toContain("Completed");
     expect(markup).toContain("Runtime output tail");
     expect(markup).toContain("State history");
+    expect(markup).toContain("data-producer-context");
+    expect(markup).toContain("data-runtime-output-tail");
+    expect(markup).toContain("print:break-inside-avoid");
+    expect(markup).toContain("print:max-h-none");
+    expect(markup).toContain("print:overflow-visible");
     expect(markup).toContain("&lt;local-path&gt;");
     expect(markup).toContain("token=&lt;redacted&gt;");
     expect(markup).toContain("&lt;runtime-url&gt;");
     expect(markup).not.toContain("C:\\runtime\\private");
     expect(markup).not.toContain("abc123");
     expect(markup).not.toContain("localhost:8780");
+  });
+
+  it("renders a public-safe disconnected producer state", () => {
+    const markup = renderToStaticMarkup(
+      <ReportAuditView
+        locale="en-US"
+        rows={rows}
+        provenance={{}}
+        historyPlaceholder="No history data"
+        producerContext={{
+          unavailable: true,
+        }}
+      />,
+    );
+
+    expect(markup).toContain("Producer context");
+    expect(markup).toContain("Runtime disconnected");
+    expect(markup).toContain("Job detail is temporarily unavailable; the report remains based on the current public snapshot.");
+    expect(markup).toContain("data-producer-context");
+    expect(markup).not.toContain("localhost");
+    expect(markup).not.toContain("ECONNREFUSED");
   });
 });

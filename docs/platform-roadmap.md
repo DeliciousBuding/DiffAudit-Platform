@@ -18,9 +18,9 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Docker images | Active | GHCR publishes web and API images with immutable `sha-<short-sha>` tags |
 | Deployment traceability | Active | Gateway health exposes redacted build revision and snapshot status |
 | Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |
-| Reports | Active | Evidence stack, provenance, track review links, job-linked producer context, charts, PDF and CSV export |
+| Reports | Active | Evidence stack, provenance, track review links, print-safe job-linked producer context, charts, PDF and CSV export |
 | Demo mode | Active | Snapshot-backed demo data keeps the workspace reviewable offline |
-| Runtime response facade | Active | Audit job API responses and report-side producer details are normalized through a public-safe redaction layer before rendering |
+| Runtime response facade | Active | Audit job API responses and report-side producer details are normalized through a public-safe redaction layer before rendering, with generic disconnected states when Runtime is unavailable |
 | Workspace controls | Active | Audit filters and create-audit wizard expose named controls, step state, and reduced-motion behavior |
 | Public API docs | Active | Docs record snapshot-backed API contracts, optional evidence fields, and request-time fallback boundaries |
 
@@ -29,7 +29,6 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Priority | Track | Work |
 | --- | --- | --- |
 | P1 | Reports | Improve printable report pagination, table wrapping, and long-evidence layout |
-| P1 | Audit loop | Improve report-side producer context layout for print/export and disconnected Runtime states |
 | P2 | Deployment | Add optional image provenance verification helpers for GHCR and local archive deployments |
 | P2 | Account | Polish account security state for linked providers, verified email, and password access |
 | P2 | Accessibility | Add menu roles, chart text summaries, and stronger focus handling in shared primitives |
