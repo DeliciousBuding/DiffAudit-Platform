@@ -3,7 +3,9 @@ import { ReportEvidenceStack } from "@/components/report-evidence-stack";
 import { MetricTooltip } from "@/components/metric-tooltip";
 import { type Locale } from "@/components/language-picker";
 import { type AttackDefenseRowViewModel } from "@/lib/workspace-source";
+import { formatFullTime } from "@/lib/format";
 import { riskLabel } from "@/lib/risk-report";
+import { sanitizeRuntimeText } from "@/lib/runtime-text";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export type ReportProvenance = {
@@ -26,17 +28,47 @@ export type ReportJobContext = {
   aucLabel?: string;
 };
 
+export type ReportProducerContext = {
+  status?: string | null;
+  updatedAt?: string | null;
+  stdoutTail?: string | null;
+  stderrTail?: string | null;
+  stateHistory?: Array<{
+    state: string;
+    timestamp?: string | null;
+  }>;
+};
+
 type ReportAuditViewProps = {
   locale: Locale;
   rows: AttackDefenseRowViewModel[];
   provenance: ReportProvenance;
   historyPlaceholder: string;
   jobContext?: ReportJobContext;
+  producerContext?: ReportProducerContext;
   highlightedRowKeys?: string[];
 };
 
 function hasValue(value?: string | null): boolean {
   return !!value && value.trim().length > 0 && value.trim() !== "—";
+}
+
+function displayStatus(value?: string | null) {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = value.trim();
+  if (!normalized) {
+    return undefined;
+  }
+
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+function sanitizedTail(value?: string | null) {
+  const sanitized = sanitizeRuntimeText(value);
+  return sanitized?.trim() ? sanitized : undefined;
 }
 
 export function ReportAuditView({
@@ -45,6 +77,7 @@ export function ReportAuditView({
   provenance,
   historyPlaceholder,
   jobContext,
+  producerContext,
   highlightedRowKeys = [],
 }: ReportAuditViewProps) {
   const copy = WORKSPACE_COPY[locale].reports;
@@ -69,6 +102,11 @@ export function ReportAuditView({
         historyTitle: "历史对照",
         historyPlaceholder:
           "历史对照数据将在后续版本接入，敬请期待。",
+        producerTitle: "生产者上下文",
+        producerStatus: "状态",
+        producerUpdated: "更新时间",
+        outputTail: "Runtime 输出尾部",
+        stateHistory: "状态历史",
         noProvenanceData: "暂无溯源数据。",
       }
     : {
@@ -90,10 +128,26 @@ export function ReportAuditView({
         historyTitle: "History comparison",
         historyPlaceholder:
           "Historical comparison data will be available in a future release.",
+        producerTitle: "Producer context",
+        producerStatus: "Status",
+        producerUpdated: "Updated",
+        outputTail: "Runtime output tail",
+        stateHistory: "State history",
         noProvenanceData: "No provenance data available.",
       };
   const defendedRows = rows.filter((row) => row.defense !== "none" && row.defense !== "None").length;
   const undefendedRows = rows.length - defendedRows;
+  const producerStatus = displayStatus(producerContext?.status);
+  const stdoutTail = sanitizedTail(producerContext?.stdoutTail);
+  const stderrTail = sanitizedTail(producerContext?.stderrTail);
+  const stateHistory = producerContext?.stateHistory ?? [];
+  const hasProducerContext = !!producerContext && (
+    hasValue(producerStatus)
+    || hasValue(producerContext.updatedAt)
+    || hasValue(stdoutTail)
+    || hasValue(stderrTail)
+    || stateHistory.length > 0
+  );
 
   return (
     <div className="space-y-4">
@@ -249,6 +303,55 @@ export function ReportAuditView({
         </div>
         <div className="space-y-2 text-[13px] text-muted-foreground">
           <p>{historyPlaceholder}</p>
+          {hasProducerContext ? (
+            <div className="mt-3 rounded-2xl border border-border bg-background p-3">
+              <h3 className="text-[13px] font-bold text-foreground">{t.producerTitle}</h3>
+              <dl className="mt-3 grid gap-3 text-[13px] sm:grid-cols-2">
+                {producerStatus ? (
+                  <div>
+                    <dt className="font-semibold text-foreground">{t.producerStatus}</dt>
+                    <dd className="mt-1 text-muted-foreground">{producerStatus}</dd>
+                  </div>
+                ) : null}
+                {producerContext?.updatedAt ? (
+                  <div>
+                    <dt className="font-semibold text-foreground">{t.producerUpdated}</dt>
+                    <dd className="mt-1 text-muted-foreground">{formatFullTime(producerContext.updatedAt, locale)}</dd>
+                  </div>
+                ) : null}
+              </dl>
+              {stateHistory.length > 0 ? (
+                <div className="mt-3">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t.stateHistory}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {stateHistory.map((entry, index) => (
+                      <span
+                        key={`${entry.state}-${entry.timestamp ?? "none"}-${index}`}
+                        className="rounded-xl border border-border bg-card px-2 py-1 text-[11px] text-muted-foreground"
+                      >
+                        <span className="font-semibold text-foreground">{displayStatus(sanitizeRuntimeText(entry.state)) ?? "Unknown"}</span>
+                        {entry.timestamp ? (
+                          <span className="ml-1 mono">{formatFullTime(entry.timestamp, locale)}</span>
+                        ) : null}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {stdoutTail || stderrTail ? (
+                <div className="mt-3">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t.outputTail}
+                  </div>
+                  <pre className="mt-2 max-h-44 overflow-y-auto whitespace-pre-wrap break-all rounded-xl border border-border bg-card p-3 mono text-[11px] leading-relaxed text-muted-foreground">
+                    {[stdoutTail, stderrTail].filter(Boolean).join("\n")}
+                  </pre>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </section>
 

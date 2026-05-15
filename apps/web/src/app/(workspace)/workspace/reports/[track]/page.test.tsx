@@ -68,6 +68,51 @@ describe("TrackReportPage", () => {
     expect(markup).toContain("recon_artifact_mainline");
   });
 
+  it("hydrates sanitized producer context from the completed job detail facade", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/api/v1/audit/jobs/job_demo_004")) {
+        return Response.json({
+          job: {
+            status: "completed",
+            updated_at: "2026-05-15T08:12:30Z",
+            stdout_tail: "saved C:\\runtime\\private\\score.json\nreported token=abc123",
+            stderr_tail: "upload to http://localhost:8780 failed",
+            state_history: [
+              { state: "queued", timestamp: "2026-05-15T08:12:00Z" },
+              { state: "completed", timestamp: "2026-05-15T08:12:30Z" },
+            ],
+          },
+        });
+      }
+
+      return new Response(null, { status: 404 });
+    }));
+
+    const markup = renderToStaticMarkup(
+      await renderTrackReportPage({
+        locale: "en-US",
+        params: { track: "black-box" },
+        searchParams: {
+          view: "audit",
+          job: "job_demo_004",
+          contract: "recon_artifact_mainline",
+          model: "stable-diffusion-v1-4",
+          auc: "0.849",
+        },
+      }),
+    );
+
+    expect(markup).toContain("Producer context");
+    expect(markup).toContain("Runtime output tail");
+    expect(markup).toContain("&lt;local-path&gt;");
+    expect(markup).toContain("token=&lt;redacted&gt;");
+    expect(markup).toContain("&lt;runtime-url&gt;");
+    expect(markup).not.toContain("C:\\runtime\\private");
+    expect(markup).not.toContain("abc123");
+    expect(markup).not.toContain("localhost:8780");
+  });
+
   it("keeps completed job context safe when no snapshot row matches", async () => {
     const markup = renderToStaticMarkup(
       await renderTrackReportPage({
