@@ -113,6 +113,36 @@ describe("TrackReportPage", () => {
     expect(markup).not.toContain("localhost:8780");
   });
 
+  it("shows a disconnected producer state when job detail is unavailable", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/api/v1/audit/jobs/job_demo_004")) {
+        return new Response("ECONNREFUSED http://localhost:8765", { status: 503 });
+      }
+
+      return new Response(null, { status: 404 });
+    }));
+
+    const markup = renderToStaticMarkup(
+      await renderTrackReportPage({
+        locale: "en-US",
+        params: { track: "black-box" },
+        searchParams: {
+          view: "audit",
+          job: "job_demo_004",
+          contract: "recon_artifact_mainline",
+          model: "stable-diffusion-v1-4",
+          auc: "0.849",
+        },
+      }),
+    );
+
+    expect(markup).toContain("Runtime disconnected");
+    expect(markup).toContain("Job detail is temporarily unavailable; the report remains based on the current public snapshot.");
+    expect(markup).not.toContain("ECONNREFUSED");
+    expect(markup).not.toContain("localhost:8765");
+  });
+
   it("keeps completed job context safe when no snapshot row matches", async () => {
     const markup = renderToStaticMarkup(
       await renderTrackReportPage({
