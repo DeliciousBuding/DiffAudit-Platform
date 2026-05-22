@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 05:48 Asia/Hong_Kong
+Last updated: 2026-05-23 05:58 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -34,6 +34,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Harden theme picker outside-close, Escape close, focus return, and keyboard wrap handling.
 - [x] Extract shared floating-menu focus and keyboard handling for header dropdown controls.
 - [x] Extend shared floating-menu focus handling to the report export menu.
+- [x] Extract shared dismissible-layer outside-click and Escape handling for the workspace status drawer.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates

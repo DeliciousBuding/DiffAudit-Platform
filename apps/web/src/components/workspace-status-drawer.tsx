@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
+import { useDismissibleLayer } from "@/hooks/use-dismissible-layer";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 type WorkspaceStatusDrawerProps = {
@@ -23,6 +24,7 @@ export function WorkspaceStatusDrawer({ locale, dataMode }: WorkspaceStatusDrawe
   const [open, setOpen] = useState(false);
   const [health, setHealth] = useState<GatewayHealth | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const closeDrawer = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -49,31 +51,11 @@ export function WorkspaceStatusDrawer({ locale, dataMode }: WorkspaceStatusDrawe
     };
   }, []);
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    function onPointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
+  useDismissibleLayer({
+    enabled: open,
+    rootRef,
+    onDismiss: closeDrawer,
+  });
 
   const snapshotReady = health?.snapshot_available === true;
   const revision = health?.build?.revision;
