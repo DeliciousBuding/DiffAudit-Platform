@@ -1,6 +1,15 @@
 "use client";
 
-import { type ReactNode, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
@@ -20,6 +29,11 @@ const DEFAULT_LABELS: ThemeToggleLabels = {
   active: "Active",
   prefix: "Theme",
 };
+
+export function nextThemeMenuIndex(currentIndex: number, itemCount: number, delta: 1 | -1): number {
+  if (itemCount <= 0) return 0;
+  return (currentIndex + delta + itemCount) % itemCount;
+}
 
 function SunIcon() {
   return (
@@ -49,7 +63,9 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
   const { theme, resolvedTheme, setTheme } = useTheme();
   const mergedLabels = { ...DEFAULT_LABELS, ...labels };
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const mounted = useSyncExternalStore(
     () => () => undefined,
@@ -57,16 +73,67 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
     () => false,
   );
 
+  const closeMenu = useCallback((restoreFocus = false) => {
+    setOpen(false);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => triggerRef.current?.focus());
+    }
+  }, []);
+
+  const getMenuItems = useCallback(() => {
+    if (!menuRef.current) return [];
+    return Array.from(menuRef.current.querySelectorAll<HTMLButtonElement>("button:not([disabled])"));
+  }, []);
+
+  const focusMenuItem = useCallback((index: number) => {
+    const items = getMenuItems();
+    items[index]?.focus();
+  }, [getMenuItems]);
+
+  const openMenu = useCallback(() => {
+    setOpen(true);
+    window.requestAnimationFrame(() => focusMenuItem(0));
+  }, [focusMenuItem]);
+
   useEffect(() => {
     if (!open) return;
-    function handleClick(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
+
+    function handlePointerDown(event: PointerEvent) {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        closeMenu(false);
       }
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
+
+    function handleDocumentKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu(true);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [closeMenu, open]);
+
+  function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMenu(true);
+      return;
+    }
+
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+
+    event.preventDefault();
+    const items = getMenuItems();
+    const currentIndex = Math.max(0, items.findIndex((item) => item === document.activeElement));
+    const nextIndex = nextThemeMenuIndex(currentIndex, items.length, event.key === "ArrowDown" ? 1 : -1);
+    focusMenuItem(nextIndex);
+  }
 
   const options: Array<{ value: ThemeMode; label: string; icon: ReactNode }> = [
     { value: "light", label: mergedLabels.light, icon: <SunIcon /> },
@@ -102,10 +169,17 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
     : resolvedTheme === "dark" ? <MoonIcon /> : <SunIcon />;
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={rootRef}>
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          if (open) {
+            closeMenu(false);
+            return;
+          }
+          openMenu();
+        }}
         className="header-pill header-pill-icon text-muted-foreground hover:text-foreground"
         aria-label={`${mergedLabels.prefix}: ${activeOption.label}`}
         aria-expanded={open}
@@ -117,7 +191,13 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
       </button>
 
       {open && (
-        <div id={menuId} className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[172px] rounded-2xl p-1.5" role="menu">
+        <div
+          ref={menuRef}
+          id={menuId}
+          className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[172px] rounded-2xl p-1.5"
+          role="menu"
+          onKeyDown={handleMenuKeyDown}
+        >
           {options.map((option) => {
             const selected = theme === option.value;
             return (
@@ -128,7 +208,7 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
                 aria-checked={selected}
                 onClick={() => {
                   setTheme(option.value);
-                  setOpen(false);
+                  closeMenu(true);
                 }}
                 className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-[13px] transition-colors ${
                   selected

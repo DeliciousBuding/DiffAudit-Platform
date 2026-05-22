@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 05:05 Asia/Hong_Kong
+Last updated: 2026-05-23 05:16 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -31,6 +31,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Add accessible title and data summaries to hand-authored SVG charts.
 - [x] Strengthen user menu roles, focus return, keyboard wrap handling, and logout menuitem semantics.
 - [x] Harden language picker outside-close, Escape close, focus return, and keyboard wrap handling.
+- [x] Harden theme picker outside-close, Escape close, focus return, and keyboard wrap handling.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
