@@ -25,6 +25,15 @@ const FINDING_DETAIL_PANEL = path.join(
   "risk-findings",
   "FindingDetailPanel.tsx",
 );
+const SETTINGS_CLIENT = path.join(
+  process.cwd(),
+  "src",
+  "app",
+  "(workspace)",
+  "workspace",
+  "settings",
+  "SettingsClient.tsx",
+);
 const MAX_LEGACY_BUTTON_NOT_SELECTORS = 12;
 
 describe("ui primitive guardrails", () => {
@@ -65,5 +74,13 @@ describe("ui primitive guardrails", () => {
     expect(source).toContain("useDismissibleLayer");
     expect(source).toContain("rootRef: panelRef");
     expect(source).not.toContain('document.addEventListener("keydown"');
+  });
+
+  it("keeps settings template deletion on the shared Modal primitive", () => {
+    const source = readFileSync(SETTINGS_CLIENT, "utf8");
+
+    expect(source).toContain("<Modal");
+    expect(source).toContain("templatePendingDeleteId");
+    expect(source).not.toContain("window.confirm");
   });
 });

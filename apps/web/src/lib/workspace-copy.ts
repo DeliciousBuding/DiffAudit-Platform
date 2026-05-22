@@ -452,7 +452,7 @@ export const WORKSPACE_COPY: Record<
       account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; signInGoogle: string; signInGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; createLocalAccount: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; twoFactor: string; twoFactorHint: string; twoFactorEnabled: string; twoFactorDisabled: string; twoFactorEnable: string; twoFactorDisable: string; twoFactorSaving: string; twoFactorSavedOn: string; twoFactorSavedOff: string; twoFactorSaveFailed: string; twoFactorNetworkFailed: string; notSignedIn: string; chooseSignInMethod: string; githubAvatarPriority: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
-      auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string };
+      auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string; deleteTemplateTitle: string; deleteTemplateBody: string; deleteTemplateCancel: string; deleteTemplateAction: string };
       aboutSystem: { title: string; useCases: string; useCaseItems: { title: string; desc: string }[]; systemBoundary: string; boundaryNote: string; framework: string; frameworkItems: { tier: string; desc: string }[] };
       errorPage: { title: string; description: string; retry: string; goHome: string; errorId: string; errorDetails: string };
       notFound: { title: string; description: string; goHome: string };
@@ -1286,6 +1286,10 @@ export const WORKSPACE_COPY: Record<
         templateLoaded: "Template loaded.",
         templateDeleted: "Template deleted.",
         savedTemplatesTitle: "Saved templates",
+        deleteTemplateTitle: "Delete audit template",
+        deleteTemplateBody: "Delete this saved audit template? Existing audit defaults and tasks are not affected.",
+        deleteTemplateCancel: "Cancel",
+        deleteTemplateAction: "Delete template",
       },
       aboutSystem: {
         title: "About the System",
@@ -2147,6 +2151,10 @@ export const WORKSPACE_COPY: Record<
         templateLoaded: "模板已加载。",
         templateDeleted: "模板已删除。",
         savedTemplatesTitle: "已保存的模板",
+        deleteTemplateTitle: "删除审计模板",
+        deleteTemplateBody: "确定删除这个已保存的审计模板吗？现有默认参数和审计任务不会受到影响。",
+        deleteTemplateCancel: "取消",
+        deleteTemplateAction: "删除模板",
       },
       aboutSystem: {
         title: "关于系统",

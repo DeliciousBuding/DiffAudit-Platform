@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from "react";
 import { Calendar } from "lucide-react";
 
 import { ProviderIcon } from "@/components/auth-icons";
+import { Modal } from "@/components/modal";
 import { RuntimeStatusBadge } from "@/components/runtime-status-badge";
 import { LogoutButton } from "@/components/logout-button";
 import { StatusBadge } from "@/components/status-badge";
@@ -227,6 +228,7 @@ export function SettingsClient({
 
   // Audit templates
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
+  const [templatePendingDeleteId, setTemplatePendingDeleteId] = useState<string | null>(null);
 
   // Load from localStorage
   useEffect(() => {
@@ -448,9 +450,18 @@ export function SettingsClient({
   }
 
   function handleDeleteTemplate(id: string) {
-    const confirmed = window.confirm(locale === "zh-CN" ? "确定要删除此模板吗？" : "Are you sure you want to delete this template?");
-    if (!confirmed) return;
-    persistTemplates(templates.filter((t) => t.id !== id));
+    setTemplatePendingDeleteId(id);
+  }
+
+  function handleCancelDeleteTemplate() {
+    setTemplatePendingDeleteId(null);
+  }
+
+  function handleConfirmDeleteTemplate() {
+    if (!templatePendingDeleteId) return;
+    persistTemplates(templates.filter((t) => t.id !== templatePendingDeleteId));
+    setTemplatePendingDeleteId(null);
+    toast({ type: "success", title: copy.auditTemplates.templateDeleted });
   }
 
   async function handlePasswordSave() {
@@ -674,6 +685,7 @@ export function SettingsClient({
       tone: profile?.twoFactorEnabled ? "success" : "neutral",
     },
   ] as const;
+  const templatePendingDelete = templates.find((template) => template.id === templatePendingDeleteId) ?? null;
 
   return (
     <WorkspacePageFrame
@@ -1524,6 +1536,39 @@ export function SettingsClient({
         </section>
         ) : null}
       </div>
+      <Modal
+        open={templatePendingDelete !== null}
+        onClose={handleCancelDeleteTemplate}
+        title={copy.auditTemplates.deleteTemplateTitle}
+        closeLabel={copy.auditTemplates.deleteTemplateCancel}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={handleCancelDeleteTemplate}
+              className="workspace-btn-secondary px-3 py-2 text-xs"
+            >
+              {copy.auditTemplates.deleteTemplateCancel}
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmDeleteTemplate}
+              className="rounded-xl bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+            >
+              {copy.auditTemplates.deleteTemplateAction}
+            </button>
+          </>
+        }
+      >
+        <p className="text-xs leading-6 text-muted-foreground">
+          {copy.auditTemplates.deleteTemplateBody}
+        </p>
+        {templatePendingDelete ? (
+          <p className="mt-2 rounded-xl border border-border bg-muted/10 px-3 py-2 text-[11px] leading-5 text-muted-foreground">
+            {copy.auditConfig.defaultRounds}: {templatePendingDelete.rounds} · {copy.auditConfig.defaultBatchSize}: {templatePendingDelete.batchSize}
+          </p>
+        ) : null}
+      </Modal>
     </WorkspacePageFrame>
   );
 }
