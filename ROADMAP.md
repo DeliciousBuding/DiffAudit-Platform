@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 06:54 Asia/Hong_Kong
+Last updated: 2026-05-23 07:14 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -40,6 +40,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Route risk finding slide-over dismissal through shared dismissible-layer behavior.
 - [x] Move settings audit-template deletion confirmation onto the shared Modal primitive.
 - [x] Route shared Modal outside-click and Escape dismissal through the shared dismissible-layer hook.
+- [x] Derive command palette workspace navigation from the shared navigation registry.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates

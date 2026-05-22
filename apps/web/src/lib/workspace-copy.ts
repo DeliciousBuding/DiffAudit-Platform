@@ -37,17 +37,11 @@ export const WORKSPACE_COPY: Record<
       placeholder: string;
       noResults: string;
       ariaLabel: string;
+      searchInputLabel: string;
+      groupRecent: string;
       groupNavigation: string;
       groupActions: string;
       groupInfo: string;
-      navDashboard: string;
-      navAudits: string;
-      navModelAssets: string;
-      navRiskFindings: string;
-      navReports: string;
-      navApiKeys: string;
-      navAccount: string;
-      navSettings: string;
       actionNewTask: string;
       actionAddModel: string;
       actionExportReport: string;
@@ -610,17 +604,11 @@ export const WORKSPACE_COPY: Record<
       placeholder: "Type a command...",
       noResults: "No matching commands",
       ariaLabel: "Command palette",
+      searchInputLabel: "Search commands",
+      groupRecent: "Recent",
       groupNavigation: "Navigation",
       groupActions: "Actions",
       groupInfo: "Info",
-      navDashboard: "Go to Dashboard",
-      navAudits: "Go to Audits",
-      navModelAssets: "Go to Model Assets",
-      navRiskFindings: "Go to Risk Findings",
-      navReports: "Go to Reports",
-      navApiKeys: "Go to API Keys",
-      navAccount: "Go to Account",
-      navSettings: "Go to Settings",
       actionNewTask: "Create New Task",
       actionAddModel: "Add Model",
       actionExportReport: "Export Report",
@@ -1475,17 +1463,11 @@ export const WORKSPACE_COPY: Record<
       placeholder: "输入命令...",
       noResults: "没有匹配的命令",
       ariaLabel: "命令面板",
+      searchInputLabel: "搜索命令",
+      groupRecent: "最近使用",
       groupNavigation: "导航",
       groupActions: "操作",
       groupInfo: "信息",
-      navDashboard: "前往工作台",
-      navAudits: "前往审计任务",
-      navModelAssets: "前往模型资产",
-      navRiskFindings: "前往风险发现",
-      navReports: "前往报告中心",
-      navApiKeys: "前往 API 管理",
-      navAccount: "前往个人账户",
-      navSettings: "前往系统设置",
       actionNewTask: "创建新任务",
       actionAddModel: "添加模型",
       actionExportReport: "导出报告",

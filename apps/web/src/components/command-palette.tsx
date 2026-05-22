@@ -22,20 +22,25 @@ import {
 
 import { type Locale } from "@/components/language-picker";
 import { useToast } from "@/components/toast-provider";
+import { getNavItems } from "@/lib/navigation";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
 /* -------------------------------------------------------------------------- */
 
 type CommandCategory = "navigation" | "actions" | "info";
+type CommandGroupCategory = CommandCategory | "recent";
 
-interface CommandItem {
+export interface CommandItem {
   id: string;
   label: string;
-  labelZh: string;
   category: CommandCategory;
   icon: LucideIcon;
+  href?: string;
   shortcut?: string;
+  searchText?: string;
   action: (router: ReturnType<typeof useRouter>, toast: ReturnType<typeof useToast>["toast"], locale: Locale) => void;
 }
 
@@ -43,133 +48,98 @@ interface CommandItem {
 /*  Command definitions                                                       */
 /* -------------------------------------------------------------------------- */
 
-const COMMANDS: CommandItem[] = [
-  // Navigation
-  {
-    id: "nav-dashboard",
-    label: "Go to Dashboard",
-    labelZh: "前往工作台",
-    category: "navigation",
-    icon: LayoutDashboard,
-    shortcut: "Ctrl+1",
-    action: (router) => router.push("/workspace/start"),
-  },
-  {
-    id: "nav-audits",
-    label: "Go to Audits",
-    labelZh: "前往审计任务",
-    category: "navigation",
-    icon: ClipboardList,
-    shortcut: "Ctrl+2",
-    action: (router) => router.push("/workspace/audits"),
-  },
-  {
-    id: "nav-model-assets",
-    label: "Go to Model Assets",
-    labelZh: "前往模型资产",
-    category: "navigation",
-    icon: Database,
-    shortcut: "Ctrl+3",
-    action: (router) => router.push("/workspace/model-assets"),
-  },
-  {
-    id: "nav-risk-findings",
-    label: "Go to Risk Findings",
-    labelZh: "前往风险发现",
-    category: "navigation",
-    icon: ShieldAlert,
-    shortcut: "Ctrl+4",
-    action: (router) => router.push("/workspace/risk-findings"),
-  },
-  {
-    id: "nav-reports",
-    label: "Go to Reports",
-    labelZh: "前往报告中心",
-    category: "navigation",
-    icon: FileBarChart,
-    shortcut: "Ctrl+5",
-    action: (router) => router.push("/workspace/reports"),
-  },
-  {
-    id: "nav-api-keys",
-    label: "Go to API Keys",
-    labelZh: "前往 API 管理",
-    category: "navigation",
-    icon: Key,
-    shortcut: "Ctrl+6",
-    action: (router) => router.push("/workspace/api-keys"),
-  },
-  {
-    id: "nav-account",
-    label: "Go to Account",
-    labelZh: "前往个人账户",
-    category: "navigation",
-    icon: User,
-    shortcut: "Ctrl+7",
-    action: (router) => router.push("/workspace/account"),
-  },
-  {
-    id: "nav-settings",
-    label: "Go to Settings",
-    labelZh: "前往系统设置",
-    category: "navigation",
-    icon: Settings,
-    shortcut: "Ctrl+,",
-    action: (router) => router.push("/workspace/settings"),
-  },
-  // Actions
-  {
-    id: "action-new-task",
-    label: "Create New Task",
-    labelZh: "创建新任务",
-    category: "actions",
-    icon: Plus,
-    shortcut: "Ctrl+N",
-    action: (router) => router.push("/workspace/audits/new"),
-  },
-  {
-    id: "action-add-model",
-    label: "Add Model",
-    labelZh: "添加模型",
-    category: "actions",
-    icon: Upload,
-    action: (router) => router.push("/workspace/model-assets?add=true"),
-  },
-  {
-    id: "action-export-report",
-    label: "Export Report",
-    labelZh: "导出报告",
-    category: "actions",
-    icon: FileText,
-    action: (router) => router.push("/workspace/reports"),
-  },
-  // Info
-  {
-    id: "info-shortcuts",
-    label: "Show Keyboard Shortcuts",
-    labelZh: "显示快捷键",
-    category: "info",
-    icon: Keyboard,
-    action: () => {
-      window.dispatchEvent(new CustomEvent("workspace:show-shortcuts"));
-    },
-  },
-  {
-    id: "info-docs",
-    label: "View Documentation",
-    labelZh: "查看文档",
-    category: "info",
-    icon: BookOpen,
-    action: (router) => router.push("/docs"),
-  },
-];
-
-const CATEGORY_LABELS: Record<string, { en: string; zh: string }> = {
-  recent: { en: "Recent", zh: "最近使用" },
-  navigation: { en: "Navigation", zh: "导航" },
-  actions: { en: "Actions", zh: "操作" },
-  info: { en: "Info", zh: "信息" },
+const NAV_COMMAND_IDS: Record<WorkspaceNavKey, string> = {
+  workspace: "nav-dashboard",
+  audits: "nav-audits",
+  modelAssets: "nav-model-assets",
+  riskFindings: "nav-risk-findings",
+  reportCenter: "nav-reports",
+  apiKeys: "nav-api-keys",
+  account: "nav-account",
+  settings: "nav-settings",
 };
+
+const NAV_SHORTCUTS: Partial<Record<WorkspaceNavKey, string>> = {
+  workspace: "Ctrl+1",
+  audits: "Ctrl+2",
+  modelAssets: "Ctrl+3",
+  riskFindings: "Ctrl+4",
+  reportCenter: "Ctrl+5",
+  apiKeys: "Ctrl+6",
+  account: "Ctrl+7",
+  settings: "Ctrl+,",
+};
+
+const NAV_ICON_COMPONENTS: Record<WorkspaceNavIcon, LucideIcon> = {
+  dashboard: LayoutDashboard,
+  spark: ClipboardList,
+  model: Database,
+  risk: ShieldAlert,
+  report: FileBarChart,
+  key: Key,
+  account: User,
+  settings: Settings,
+};
+
+export function getCommandItems(locale: Locale): CommandItem[] {
+  const copy = WORKSPACE_COPY[locale].commandPalette;
+  const navigationCommands = getNavItems(locale).map((item): CommandItem => ({
+    id: NAV_COMMAND_IDS[item.key],
+    label: item.title,
+    category: "navigation",
+    icon: NAV_ICON_COMPONENTS[item.icon],
+    href: item.href,
+    shortcut: NAV_SHORTCUTS[item.key],
+    searchText: `${item.title} ${item.shortLabel} ${item.subtitle} ${item.href}`,
+    action: (router) => router.push(item.href),
+  }));
+
+  return [
+    ...navigationCommands,
+    {
+      id: "action-new-task",
+      label: copy.actionNewTask,
+      category: "actions",
+      icon: Plus,
+      href: "/workspace/audits/new",
+      shortcut: "Ctrl+N",
+      action: (router) => router.push("/workspace/audits/new"),
+    },
+    {
+      id: "action-add-model",
+      label: copy.actionAddModel,
+      category: "actions",
+      icon: Upload,
+      href: "/workspace/model-assets?add=true",
+      action: (router) => router.push("/workspace/model-assets?add=true"),
+    },
+    {
+      id: "action-export-report",
+      label: copy.actionExportReport,
+      category: "actions",
+      icon: FileText,
+      href: "/workspace/reports",
+      action: (router) => router.push("/workspace/reports"),
+    },
+    {
+      id: "info-shortcuts",
+      label: copy.infoShortcuts,
+      category: "info",
+      icon: Keyboard,
+      action: () => {
+        window.dispatchEvent(new CustomEvent("workspace:show-shortcuts"));
+      },
+    },
+    {
+      id: "info-docs",
+      label: copy.infoDocs,
+      category: "info",
+      icon: BookOpen,
+      href: "/docs",
+      action: (router) => router.push("/docs"),
+    },
+  ];
+}
 
 const RECENT_KEY = "diffaudit-recent-commands";
 const MAX_RECENT = 5;
@@ -201,7 +171,14 @@ function addRecentCommand(id: string) {
 export function CommandPalette({ locale }: { locale: Locale }) {
   const router = useRouter();
   const { toast } = useToast();
-  const isZh = locale === "zh-CN";
+  const copy = WORKSPACE_COPY[locale].commandPalette;
+  const commands = useMemo(() => getCommandItems(locale), [locale]);
+  const categoryLabels: Record<CommandGroupCategory, string> = useMemo(() => ({
+    recent: copy.groupRecent,
+    navigation: copy.groupNavigation,
+    actions: copy.groupActions,
+    info: copy.groupInfo,
+  }), [copy]);
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -215,21 +192,21 @@ export function CommandPalette({ locale }: { locale: Locale }) {
   const filteredGroups = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const matched = normalized
-      ? COMMANDS.filter((cmd) => {
-          const text = `${cmd.label} ${cmd.labelZh}`.toLowerCase();
+      ? commands.filter((cmd) => {
+          const text = `${cmd.label} ${cmd.searchText ?? ""}`.toLowerCase();
           return text.includes(normalized);
         })
-      : COMMANDS;
+      : commands;
 
     // When no query, show recent commands first
     if (!normalized) {
       const recentIds = getRecentCommandIds();
       const recentCmds = recentIds
-        .map((id) => COMMANDS.find((c) => c.id === id))
+        .map((id) => commands.find((c) => c.id === id))
         .filter(Boolean) as CommandItem[];
-      const remaining = COMMANDS.filter((c) => !recentIds.includes(c.id));
+      const remaining = commands.filter((c) => !recentIds.includes(c.id));
 
-      const groups: Array<{ category: string; items: CommandItem[] }> = [];
+      const groups: Array<{ category: CommandGroupCategory; items: CommandItem[] }> = [];
       if (recentCmds.length > 0) {
         groups.push({ category: "recent", items: recentCmds });
       }
@@ -260,7 +237,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
     return (["navigation", "actions", "info"] as const)
       .filter((cat) => groups[cat].length > 0)
       .map((cat) => ({ category: cat, items: groups[cat] }));
-  }, [query]);
+  }, [commands, query]);
 
   const flatItems = useMemo(
     () => filteredGroups.flatMap((g) => g.items),
@@ -368,7 +345,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
       className="command-palette-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label={isZh ? "命令面板" : "Command palette"}
+      aria-label={copy.ariaLabel}
       onClick={(e) => {
         if (e.target === e.currentTarget) closePalette();
       }}
@@ -381,8 +358,8 @@ export function CommandPalette({ locale }: { locale: Locale }) {
             ref={inputRef}
             type="text"
             className="command-palette-input"
-            placeholder={isZh ? "输入命令..." : "Type a command..."}
-            aria-label={isZh ? "搜索命令" : "Search commands"}
+            placeholder={copy.placeholder}
+            aria-label={copy.searchInputLabel}
             role="combobox"
             aria-expanded="true"
             aria-controls="command-listbox"
@@ -401,13 +378,13 @@ export function CommandPalette({ locale }: { locale: Locale }) {
         <div className="command-palette-list" ref={listRef} role="listbox" id="command-listbox">
           {flatItems.length === 0 ? (
             <div className="command-palette-empty">
-              {isZh ? "没有匹配的命令" : "No matching commands"}
+              {copy.noResults}
             </div>
           ) : (
             filteredGroups.map((group, groupIdx) => (
-              <div key={group.category} role="group" aria-label={isZh ? CATEGORY_LABELS[group.category].zh : CATEGORY_LABELS[group.category].en}>
+              <div key={group.category} role="group" aria-label={categoryLabels[group.category]}>
                 <div className="command-palette-group-header">
-                  {isZh ? CATEGORY_LABELS[group.category].zh : CATEGORY_LABELS[group.category].en}
+                  {categoryLabels[group.category]}
                 </div>
                 {group.items.map((cmd, localIdx) => {
                   const idx = groupOffsets[groupIdx] + localIdx;
@@ -427,7 +404,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
                     >
                       <Icon className="command-palette-item-icon" strokeWidth={1.5} aria-hidden="true" />
                       <span className="command-palette-item-label">
-                        {isZh ? cmd.labelZh : cmd.label}
+                        {cmd.label}
                       </span>
                       {cmd.shortcut && (
                         <kbd className="command-palette-kbd">{cmd.shortcut}</kbd>
