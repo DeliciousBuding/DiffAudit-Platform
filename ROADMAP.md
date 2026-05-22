@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 03:02 Asia/Hong_Kong
+Last updated: 2026-05-23 03:23 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -22,6 +22,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Clean workspace lint/build signal before deployment consideration.
 - [x] Cover the Next proxy auth/demo/locale boundary with regression tests.
 - [x] Add Docker/GHCR image provenance verification helpers and clear npm audit.
+- [x] Improve printable report pagination and long evidence layout without changing the report data contract.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
@@ -39,7 +40,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 
 ## Near-Term Product Work
 
-- [ ] Reports: improve printable report pagination, table wrapping, and long-evidence layout.
+- [x] Reports: improve printable report pagination, table wrapping, and long-evidence layout.
 - [ ] Account: polish linked-provider, verified-email, and password-access state.
 - [ ] Accessibility: add stronger menu roles, chart text summaries, and focus handling in shared primitives.
 - [ ] Workspace UX: keep search, sidebar, topbar, settings, account, API management, and report deep pages visually consistent.

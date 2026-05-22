@@ -90,6 +90,8 @@ const TD_STYLE: CSSProperties = {
   wordBreak: "break-word",
 };
 
+const PRINT_RESULTS_ROWS_PER_PAGE = 4;
+
 function chunkArray<T>(items: T[], size: number) {
   const chunks: T[][] = [];
   for (let index = 0; index < items.length; index += size) {
@@ -269,14 +271,40 @@ function RenderEvidenceCell({
   evidenceLevel,
   qualityCost,
   qualityCostLabel,
+  provenanceStatus,
+  provenanceLabel,
+  boundary,
+  boundaryLabel,
+  sourcePath,
+  sourceLabel,
 }: {
   evidenceLevel: string;
   qualityCost: string;
   qualityCostLabel: string;
+  provenanceStatus?: string;
+  provenanceLabel: string;
+  boundary?: string;
+  boundaryLabel: string;
+  sourcePath?: string;
+  sourceLabel: string;
 }) {
   const accent = evidenceAccent(evidenceLevel);
+  const metaRows = [
+    { label: qualityCostLabel, value: qualityCost },
+    { label: provenanceLabel, value: provenanceStatus?.trim() || "—" },
+    { label: boundaryLabel, value: boundary?.trim() || "—" },
+    { label: sourceLabel, value: sourcePath?.trim() || "—", mono: true },
+  ];
+
   return (
-    <div style={{ display: "grid", gap: 6 }}>
+    <div
+      style={{
+        display: "grid",
+        gap: 6,
+        pageBreakInside: "avoid",
+        breakInside: "avoid",
+      }}
+    >
       <span
         style={{
           display: "inline-flex",
@@ -294,25 +322,29 @@ function RenderEvidenceCell({
       >
         {evidenceLevel}
       </span>
-      <span
-        style={{
-          display: "inline-flex",
-          width: "fit-content",
-          maxWidth: "100%",
-          borderRadius: 9999,
-          border: "1px solid #dbe1ea",
-          background: "#f8fafc",
-          color: "#64748b",
-          fontSize: "10px",
-          lineHeight: 1.35,
-          padding: "4px 8px",
-          whiteSpace: "normal",
-          overflowWrap: "anywhere",
-          wordBreak: "break-word",
-        }}
-      >
-        {qualityCostLabel}: {qualityCost}
-      </span>
+      {metaRows.map((item) => (
+        <span
+          key={item.label}
+          style={{
+            display: "block",
+            maxWidth: "100%",
+            borderRadius: 8,
+            border: "1px solid #dbe1ea",
+            background: "#f8fafc",
+            color: "#64748b",
+            fontFamily: item.mono ? "\"IBM Plex Mono\", monospace" : undefined,
+            fontSize: "9.5px",
+            lineHeight: 1.35,
+            padding: "4px 6px",
+            whiteSpace: "normal",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word",
+          }}
+        >
+          <strong style={{ color: "#475569" }}>{item.label}: </strong>
+          {item.value}
+        </span>
+      ))}
     </div>
   );
 }
@@ -370,7 +402,7 @@ export function PrintableAuditReport({
   const comparePairs = computeComparePairs(rows);
   const compareChunks = chunkArray(comparePairs, 5);
   const contractChunks = chunkArray(contracts, 8);
-  const resultChunks = chunkArray(rows, 8);
+  const resultChunks = chunkArray(rows, PRINT_RESULTS_ROWS_PER_PAGE);
 
   const defendedCount = rows.filter((row) => row.defense !== "none" && row.defense !== "None").length;
   const effectivePairs = comparePairs.filter((pair) => (pair.deltaAuc ?? 0) < -0.1).length;
@@ -667,6 +699,12 @@ export function PrintableAuditReport({
                           evidenceLevel={row.evidenceLevel}
                           qualityCost={row.qualityCost}
                           qualityCostLabel={copy.tableHeaders.qualityCost}
+                          provenanceStatus={row.provenanceStatus}
+                          provenanceLabel={copy.tableHeaders.provenance}
+                          boundary={row.boundary}
+                          boundaryLabel={copy.tableHeaders.boundary}
+                          sourcePath={row.sourcePath}
+                          sourceLabel={copy.tableHeaders.source}
                         />
                       </td>
                       <td style={{ ...TD_STYLE, textAlign: "right", fontFamily: "\"IBM Plex Mono\", monospace" }}>{row.aucLabel}</td>

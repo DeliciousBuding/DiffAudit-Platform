@@ -3462,6 +3462,7 @@ html.dark .workspace-table-scroll::after {
   display: grid;
   gap: 4px;
   max-width: 22rem;
+  min-width: 0;
 }
 
 .workspace-evidence-note,
@@ -3471,6 +3472,8 @@ html.dark .workspace-table-scroll::after {
   color: var(--muted-foreground);
   font-size: 10px;
   line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .workspace-evidence-note {
@@ -3495,10 +3498,8 @@ html.dark .workspace-table-scroll::after {
 }
 
 .workspace-evidence-source {
-  overflow: hidden;
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workspace-evidence-stack.is-compact {
