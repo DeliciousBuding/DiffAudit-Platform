@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { StatusBadge } from "@/components/status-badge";
+import { useDismissibleLayer } from "@/hooks/use-dismissible-layer";
 import { buildReportHref } from "@/lib/audit-flow";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 
@@ -206,6 +207,13 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
   const copy = DETAIL_COPY[locale] ?? DETAIL_COPY["en-US"];
   const panelRef = useRef<HTMLDivElement>(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const panelOpen = finding !== null;
+
+  useDismissibleLayer({
+    enabled: panelOpen,
+    rootRef: panelRef,
+    onDismiss: onClose,
+  });
 
   const handleCopyLink = useCallback(() => {
     if (!finding) return;
@@ -218,21 +226,16 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
     });
   }, [finding]);
 
-  /* Close on Escape + focus restoration */
+  /* Body scroll lock + focus restoration */
   useEffect(() => {
     if (!finding) return;
     const previousFocus = document.activeElement as HTMLElement | null;
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleEsc);
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", handleEsc);
       document.body.style.overflow = "";
       previousFocus?.focus();
     };
-  }, [finding, onClose]);
+  }, [finding]);
 
   /* Focus trap */
   useEffect(() => {
@@ -253,7 +256,6 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-        onClick={onClose}
         aria-hidden="true"
       />
 

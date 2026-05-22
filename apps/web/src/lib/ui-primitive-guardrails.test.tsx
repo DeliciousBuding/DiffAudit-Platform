@@ -16,6 +16,15 @@ const MODEL_ASSETS_CLIENT = path.join(
   "model-assets",
   "ModelAssetsClient.tsx",
 );
+const FINDING_DETAIL_PANEL = path.join(
+  process.cwd(),
+  "src",
+  "app",
+  "(workspace)",
+  "workspace",
+  "risk-findings",
+  "FindingDetailPanel.tsx",
+);
 const MAX_LEGACY_BUTTON_NOT_SELECTORS = 12;
 
 describe("ui primitive guardrails", () => {
@@ -47,6 +56,14 @@ describe("ui primitive guardrails", () => {
 
     expect(source).toContain("<Modal");
     expect(source).toContain("open={showDeleteConfirm}");
+    expect(source).not.toContain('document.addEventListener("keydown"');
+  });
+
+  it("keeps risk finding slide-over dismissal on the shared dismissible layer", () => {
+    const source = readFileSync(FINDING_DETAIL_PANEL, "utf8");
+
+    expect(source).toContain("useDismissibleLayer");
+    expect(source).toContain("rootRef: panelRef");
     expect(source).not.toContain('document.addEventListener("keydown"');
   });
 });

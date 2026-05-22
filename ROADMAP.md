@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 06:21 Asia/Hong_Kong
+Last updated: 2026-05-23 06:31 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -37,6 +37,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Extract shared dismissible-layer outside-click and Escape handling for the workspace status drawer.
 - [x] Move the API key revoke confirmation flow onto the shared Modal primitive.
 - [x] Remove redundant model asset delete-dialog Escape handling now covered by the shared Modal primitive.
+- [x] Route risk finding slide-over dismissal through shared dismissible-layer behavior.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
