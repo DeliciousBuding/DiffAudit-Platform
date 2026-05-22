@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
@@ -17,7 +17,9 @@ const SEARCH_ALIASES: Record<string, string> = {
 };
 
 const RECENT_KEY = "diffaudit-recent-pages";
+const RECENT_EVENT = "diffaudit:recent-pages";
 const MAX_RECENT = 3;
+const EMPTY_RECENT: string[] = [];
 
 function getRecentPages(): string[] {
   if (typeof window === "undefined") return [];
@@ -29,11 +31,23 @@ function getRecentPages(): string[] {
   }
 }
 
+function subscribeRecentPages(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(RECENT_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(RECENT_EVENT, onStoreChange);
+  };
+}
+
 function addRecentPage(href: string) {
   try {
     const recent = getRecentPages().filter((h) => h !== href);
     recent.unshift(href);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
+    const nextRecent = recent.slice(0, MAX_RECENT);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(nextRecent));
+    window.dispatchEvent(new Event(RECENT_EVENT));
   } catch {
     // localStorage may be unavailable
   }
@@ -46,6 +60,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const recentHrefs = useSyncExternalStore(subscribeRecentPages, getRecentPages, () => EMPTY_RECENT);
 
   const items = useMemo(() => {
     const navItems = getNavItems(locale).map((item) => ({
@@ -56,11 +71,9 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
     }));
     const extras = locale === "zh-CN"
       ? [
-        { href: "/workspace/api-keys", title: "API 密钥", subtitle: "访问凭证", keywords: "api key 密钥 凭证 developer" },
         { href: "/docs", title: "Docs", subtitle: "产品文档", keywords: "docs 文档 指南" },
       ]
       : [
-        { href: "/workspace/api-keys", title: "API Keys", subtitle: "Access credentials", keywords: "api key credential developer" },
         { href: "/docs", title: "Docs", subtitle: "Product documentation", keywords: "docs documentation guide" },
       ];
     return [...navItems, ...extras];
@@ -74,17 +87,16 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
     const normalized = query.trim().toLowerCase();
     if (!normalized) {
       // Show recent pages first, then fill with defaults
-      const recent = getRecentPages();
-      const recentItems = recent
+      const recentItems = recentHrefs
         .map((href) => items.find((item) => item.href === href))
         .filter(Boolean) as typeof items;
-      const remaining = items.filter((item) => !recent.includes(item.href));
+      const remaining = items.filter((item) => !recentHrefs.includes(item.href));
       return [...recentItems, ...remaining].slice(0, 5);
     }
     return items
       .filter((item) => item.keywords.includes(normalized) || item.title.toLowerCase().includes(normalized))
       .slice(0, 6);
-  }, [items, query]);
+  }, [items, query, recentHrefs]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
