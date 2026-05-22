@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 07:46 Asia/Hong_Kong
+Last updated: 2026-05-23 07:54 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -44,6 +44,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Share workspace navigation shortcut mapping across command palette, shortcut modal, and key handlers.
 - [x] Move workspace global search visible copy into the shared workspace copy contract.
 - [x] Derive workspace global search aliases from navigation keys instead of route strings.
+- [x] Source desktop and mobile workspace navigation accessibility labels from workspace copy.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates

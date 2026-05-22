@@ -2,6 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
 import { PlatformNavDesktop, PlatformNavMobile } from "./platform-nav.client";
 
 const usePathnameMock = vi.fn();
@@ -50,5 +52,21 @@ describe("platform nav prefetch", () => {
     for (const call of linkMock.mock.calls) {
       expect(call[0].prefetch).toBe(false);
     }
+  });
+
+  it("uses localized desktop navigation labels from workspace copy", () => {
+    usePathnameMock.mockReturnValue("/workspace/start");
+
+    const markup = renderToStaticMarkup(<PlatformNavDesktop locale="en-US" />);
+
+    expect(markup).toContain(`aria-label="${WORKSPACE_COPY["en-US"].shell.desktopNavAriaLabel}"`);
+  });
+
+  it("uses localized mobile navigation labels from workspace copy", () => {
+    usePathnameMock.mockReturnValue("/workspace/start");
+
+    const markup = renderToStaticMarkup(<PlatformNavMobile locale="zh-CN" />);
+
+    expect(markup).toContain(`aria-label="${WORKSPACE_COPY["zh-CN"].shell.mobileNavAriaLabel}"`);
   });
 });

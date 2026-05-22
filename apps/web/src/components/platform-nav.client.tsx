@@ -7,14 +7,16 @@ import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";
 import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export function PlatformNavDesktop({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
+  const copy = WORKSPACE_COPY[locale].shell;
   const items = getNavItems(locale);
   const current = findActiveNavItem(pathname, items);
 
   return (
-    <nav className="workspace-nav" aria-label="Workspace navigation">
+    <nav className="workspace-nav" aria-label={copy.desktopNavAriaLabel}>
       {items.map((item) => {
         const active = current.href === item.href;
         return (
@@ -38,13 +40,14 @@ export function PlatformNavDesktop({ locale = "en-US" }: { locale?: Locale }) {
 
 export function PlatformNavMobile({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
+  const copy = WORKSPACE_COPY[locale].shell;
   const items = getNavItems(locale);
   const current = findActiveNavItem(pathname, items);
 
   return (
     <nav
       className="fixed bottom-4 left-4 right-4 z-40 hidden grid-cols-4 gap-2 rounded-[24px] border border-border bg-[var(--color-bg-primary)]/92 p-2 shadow-[0_20px_60px_rgba(18,19,23,0.12)] backdrop-blur-[20px] max-lg:grid sm:grid-cols-7"
-      aria-label="Mobile navigation"
+      aria-label={copy.mobileNavAriaLabel}
     >
       {items.map((item) => {
         const active = current.href === item.href;
