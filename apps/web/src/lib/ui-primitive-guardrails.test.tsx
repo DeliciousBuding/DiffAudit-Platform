@@ -7,6 +7,15 @@ import { Button } from "@/components/button";
 
 const GLOBAL_CSS = path.join(process.cwd(), "src", "app", "globals.css");
 const DESIGN_DOC = path.join(process.cwd(), "DESIGN.md");
+const MODEL_ASSETS_CLIENT = path.join(
+  process.cwd(),
+  "src",
+  "app",
+  "(workspace)",
+  "workspace",
+  "model-assets",
+  "ModelAssetsClient.tsx",
+);
 const MAX_LEGACY_BUTTON_NOT_SELECTORS = 12;
 
 describe("ui primitive guardrails", () => {
@@ -31,5 +40,13 @@ describe("ui primitive guardrails", () => {
     expect(design).toContain("UI Primitive Ownership");
     expect(design).toContain("`WorkspacePageFrame`");
     expect(design).toContain("`WorkspaceSectionCard`");
+  });
+
+  it("keeps model asset destructive dialogs on the shared Modal primitive", () => {
+    const source = readFileSync(MODEL_ASSETS_CLIENT, "utf8");
+
+    expect(source).toContain("<Modal");
+    expect(source).toContain("open={showDeleteConfirm}");
+    expect(source).not.toContain('document.addEventListener("keydown"');
   });
 });

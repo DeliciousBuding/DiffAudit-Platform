@@ -282,16 +282,6 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     };
   }, []);
 
-  // ESC key to close delete confirmation dialog
-  useEffect(() => {
-    if (!showDeleteConfirm) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setShowDeleteConfirm(false);
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [showDeleteConfirm]);
-
   // Sync state -> URL
   useEffect(() => {
     if (urlSyncSource.current === "url") {
