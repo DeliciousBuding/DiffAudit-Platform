@@ -34,6 +34,7 @@ const SETTINGS_CLIENT = path.join(
   "settings",
   "SettingsClient.tsx",
 );
+const MODAL = path.join(process.cwd(), "src", "components", "modal.tsx");
 const MAX_LEGACY_BUTTON_NOT_SELECTORS = 12;
 
 describe("ui primitive guardrails", () => {
@@ -82,5 +83,14 @@ describe("ui primitive guardrails", () => {
     expect(source).toContain("<Modal");
     expect(source).toContain("templatePendingDeleteId");
     expect(source).not.toContain("window.confirm");
+  });
+
+  it("routes Modal outside and Escape dismissal through the shared dismissible layer", () => {
+    const source = readFileSync(MODAL, "utf8");
+
+    expect(source).toContain("useDismissibleLayer");
+    expect(source).toContain("rootRef: contentRef");
+    expect(source).not.toContain("handleEsc");
+    expect(source).not.toContain("onClick={(e)");
   });
 });

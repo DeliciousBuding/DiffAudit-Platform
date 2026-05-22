@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, type ReactNode } from "react";
+
+import { useDismissibleLayer } from "@/hooks/use-dismissible-layer";
 
 type ModalProps = {
   open: boolean;
@@ -12,10 +14,18 @@ type ModalProps = {
 };
 
 export function Modal({ open, onClose, title, children, actions, closeLabel = "Close" }: ModalProps) {
-  const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
+  const handleDismiss = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  useDismissibleLayer({
+    enabled: open,
+    rootRef: contentRef,
+    onDismiss: handleDismiss,
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -27,12 +37,7 @@ export function Modal({ open, onClose, title, children, actions, closeLabel = "C
       )?.focus();
     }, 0);
 
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-        return;
-      }
-
+    const handleTabKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Tab" || !contentRef.current) {
         return;
       }
@@ -61,29 +66,25 @@ export function Modal({ open, onClose, title, children, actions, closeLabel = "C
         first.focus();
       }
     };
-    document.addEventListener("keydown", handleEsc);
+    document.addEventListener("keydown", handleTabKeyDown);
     document.body.style.overflow = "hidden";
     return () => {
       clearTimeout(timer);
-      document.removeEventListener("keydown", handleEsc);
+      document.removeEventListener("keydown", handleTabKeyDown);
       document.body.style.overflow = "";
       previousFocusRef.current?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
   return (
     <div
-      ref={overlayRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       style={{ animation: "modal-backdrop-in 0.15s ease-out forwards" }}
-      onClick={(e) => {
-        if (e.target === overlayRef.current) onClose();
-      }}
     >
       <div
         ref={contentRef}
