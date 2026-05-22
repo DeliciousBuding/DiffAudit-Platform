@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { nextUserMenuIndex, UserAvatar } from "./user-avatar";
+import { UserAvatar } from "./user-avatar";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) =>
@@ -24,14 +24,4 @@ describe("UserAvatar", () => {
     expect(markup).toContain('aria-expanded="false"');
   });
 
-  it("keeps keyboard menu index stable when the menu has no focusable items", () => {
-    expect(nextUserMenuIndex(0, 0, 1)).toBe(0);
-    expect(nextUserMenuIndex(0, 0, -1)).toBe(0);
-  });
-
-  it("wraps keyboard menu index within available menu items", () => {
-    expect(nextUserMenuIndex(0, 3, 1)).toBe(1);
-    expect(nextUserMenuIndex(2, 3, 1)).toBe(0);
-    expect(nextUserMenuIndex(0, 3, -1)).toBe(2);
-  });
 });

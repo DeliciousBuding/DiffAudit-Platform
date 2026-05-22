@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { LOCALE_STORAGE_KEY, type Locale } from "@/components/language-picker";
+import { useFloatingMenu } from "@/hooks/use-floating-menu";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 interface UserInfo {
@@ -14,28 +15,28 @@ interface UserInfo {
 const AVATAR_STORAGE_KEY = "platform-custom-avatar-v1";
 const USERNAME_STORAGE_KEY = "platform-custom-username-v1";
 
-export function nextUserMenuIndex(currentIndex: number, itemCount: number, delta: 1 | -1): number {
-  if (itemCount <= 0) return 0;
-  return (currentIndex + delta + itemCount) % itemCount;
-}
-
 /**
  * User avatar displayed in the topbar.
  * Supports: default initial, GitHub avatar, and custom avatar URL.
  */
 export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
   const [user, setUser] = useState<UserInfo | null>(null);
-  const [showMenu, setShowMenu] = useState(false);
   const [storedLocale] = useState<Locale>(() => {
     if (typeof window === 'undefined') return "en-US";
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
     return (stored === "zh-CN" || stored === "en-US") ? stored : "en-US";
   });
   const [avatarError, setAvatarError] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const menuPanelRef = useRef<HTMLDivElement>(null);
-  const menuId = useId();
+  const {
+    closeMenu,
+    handleMenuKeyDown,
+    menuId,
+    menuRef: menuPanelRef,
+    open: showMenu,
+    rootRef: menuRef,
+    toggleMenu,
+    triggerRef,
+  } = useFloatingMenu();
   const locale = localeProp ?? storedLocale;
 
   // Fetch user info
@@ -87,57 +88,6 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
     };
   }, []);
 
-  const closeMenu = useCallback((restoreFocus = false) => {
-    setShowMenu(false);
-    if (restoreFocus) {
-      window.requestAnimationFrame(() => triggerRef.current?.focus());
-    }
-  }, []);
-
-  const getMenuItems = useCallback(() => {
-    if (!menuPanelRef.current) return [];
-    return Array.from(
-      menuPanelRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"),
-    );
-  }, []);
-
-  const focusMenuItem = useCallback((index: number) => {
-    const items = getMenuItems();
-    items[index]?.focus();
-  }, [getMenuItems]);
-
-  const openMenu = useCallback(() => {
-    setShowMenu(true);
-    window.requestAnimationFrame(() => focusMenuItem(0));
-  }, [focusMenuItem]);
-
-  useEffect(() => {
-    if (!showMenu) return;
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        closeMenu(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [closeMenu, showMenu]);
-
-  function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeMenu(true);
-      return;
-    }
-
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-
-    event.preventDefault();
-    const items = getMenuItems();
-    const currentIndex = Math.max(0, items.findIndex((item) => item === document.activeElement));
-    const nextIndex = nextUserMenuIndex(currentIndex, items.length, event.key === "ArrowDown" ? 1 : -1);
-    focusMenuItem(nextIndex);
-  }
-
   const initial = user?.username?.[0]?.toUpperCase() ?? "?";
   const copy = WORKSPACE_COPY[locale].userMenu;
   const accountLabel = WORKSPACE_COPY[locale].settings.account.title;
@@ -147,13 +97,7 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
       <button
         ref={triggerRef}
         type="button"
-        onClick={() => {
-          if (showMenu) {
-            closeMenu(false);
-            return;
-          }
-          openMenu();
-        }}
+        onClick={toggleMenu}
         className="header-pill flex items-center gap-2"
         aria-label="User menu"
         aria-expanded={showMenu}
