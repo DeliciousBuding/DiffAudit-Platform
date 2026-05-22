@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useId, useState } from "react";
+import { startTransition, type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Languages } from "lucide-react";
 
@@ -23,6 +23,11 @@ export function resolveActiveLocale({
   pendingLocale?: Locale | null;
 }): Locale {
   return pendingLocale ?? value ?? internalLocale;
+}
+
+export function nextLanguageMenuIndex(currentIndex: number, itemCount: number, delta: 1 | -1): number {
+  if (itemCount <= 0) return 0;
+  return (currentIndex + delta + itemCount) % itemCount;
 }
 
 function resolveStoredLocale(): Locale {
@@ -75,6 +80,9 @@ export function LanguagePicker({
   const [internalLocale, setInternalLocale] = useState<Locale>("en-US");
   const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const locale = resolveActiveLocale({ value, internalLocale, pendingLocale });
 
@@ -98,9 +106,71 @@ export function LanguagePicker({
 
   const currentOption = LOCALE_OPTIONS.find((opt) => opt.value === locale) || LOCALE_OPTIONS[0];
 
+  const closeMenu = useCallback((restoreFocus = false) => {
+    setIsOpen(false);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => triggerRef.current?.focus());
+    }
+  }, []);
+
+  const getMenuItems = useCallback(() => {
+    if (!menuRef.current) return [];
+    return Array.from(menuRef.current.querySelectorAll<HTMLButtonElement>("button:not([disabled])"));
+  }, []);
+
+  const focusMenuItem = useCallback((index: number) => {
+    const items = getMenuItems();
+    items[index]?.focus();
+  }, [getMenuItems]);
+
+  const openMenu = useCallback(() => {
+    setIsOpen(true);
+    window.requestAnimationFrame(() => focusMenuItem(0));
+  }, [focusMenuItem]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        closeMenu(false);
+      }
+    }
+
+    function handleDocumentKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu(true);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [closeMenu, isOpen]);
+
+  function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMenu(true);
+      return;
+    }
+
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+
+    event.preventDefault();
+    const items = getMenuItems();
+    const currentIndex = Math.max(0, items.findIndex((item) => item === document.activeElement));
+    const nextIndex = nextLanguageMenuIndex(currentIndex, items.length, event.key === "ArrowDown" ? 1 : -1);
+    focusMenuItem(nextIndex);
+  }
+
   function handleSelect(nextLocale: Locale) {
     if (nextLocale === locale) {
-      setIsOpen(false);
+      closeMenu(true);
       return;
     }
 
@@ -112,7 +182,7 @@ export function LanguagePicker({
     onChange?.(nextLocale);
     persistLocale(nextLocale);
 
-    setIsOpen(false);
+    closeMenu(true);
 
     if (reloadOnChange) {
       startTransition(() => {
@@ -125,11 +195,18 @@ export function LanguagePicker({
   }
 
   return (
-    <div className={`language-picker ${isOpen ? "is-open" : ""}`}>
+    <div ref={rootRef} className={`language-picker ${isOpen ? "is-open" : ""}`}>
       <button
+        ref={triggerRef}
         type="button"
         className="language-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (isOpen) {
+            closeMenu(false);
+            return;
+          }
+          openMenu();
+        }}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         aria-controls={menuId}
@@ -143,10 +220,16 @@ export function LanguagePicker({
         <>
           <div
             className="language-picker-backdrop"
-            onClick={() => setIsOpen(false)}
+            onClick={() => closeMenu(false)}
             aria-hidden="true"
           />
-          <div id={menuId} className="language-menu" role="menu">
+          <div
+            ref={menuRef}
+            id={menuId}
+            className="language-menu"
+            role="menu"
+            onKeyDown={handleMenuKeyDown}
+          >
             {LOCALE_OPTIONS.map((option) => {
               const selected = option.value === locale;
 

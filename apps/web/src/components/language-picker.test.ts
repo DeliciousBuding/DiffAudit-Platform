@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { LanguagePicker, resolveActiveLocale } from "./language-picker";
+import { LanguagePicker, nextLanguageMenuIndex, resolveActiveLocale } from "./language-picker";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -47,5 +47,16 @@ describe("LanguagePicker", () => {
     expect(markup).toContain('aria-haspopup="menu"');
     expect(markup).toContain('aria-controls="');
     expect(markup).toContain('aria-expanded="false"');
+  });
+
+  it("keeps keyboard menu index stable when the menu has no focusable items", () => {
+    expect(nextLanguageMenuIndex(0, 0, 1)).toBe(0);
+    expect(nextLanguageMenuIndex(0, 0, -1)).toBe(0);
+  });
+
+  it("wraps keyboard menu index within available language options", () => {
+    expect(nextLanguageMenuIndex(0, 2, 1)).toBe(1);
+    expect(nextLanguageMenuIndex(1, 2, 1)).toBe(0);
+    expect(nextLanguageMenuIndex(0, 2, -1)).toBe(1);
   });
 });
