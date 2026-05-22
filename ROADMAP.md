@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 03:32 Asia/Hong_Kong
+Last updated: 2026-05-23 03:42 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -24,6 +24,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Add Docker/GHCR image provenance verification helpers and clear npm audit.
 - [x] Improve printable report pagination and long evidence layout without changing the report data contract.
 - [x] Reduce GitHub Actions warning noise by upgrading workflow actions and disabling invalid Go cache lookup.
+- [x] Validate publish-time snapshot top-level schemas and surface public-safe manifest warnings.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
@@ -48,5 +49,5 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 
 ## Backlog
 
-- [ ] Snapshot publisher: add more schema validation and clearer warnings before public bundle publication.
+- [x] Snapshot publisher: add more schema validation and clearer warnings before public bundle publication.
 - [ ] Research handoff: simplify admitted-evidence import from DiffAudit-Research without exposing raw paths.

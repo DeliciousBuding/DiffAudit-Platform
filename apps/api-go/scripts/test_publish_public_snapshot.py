@@ -104,6 +104,63 @@ class PublishPublicSnapshotTests(unittest.TestCase):
             )
             self.assertFalse(any("runtime offline" in warning for warning in manifest_payload["warnings"]))
 
+    def test_invalid_existing_snapshot_shapes_are_replaced_with_public_safe_defaults(self):
+        module = load_script_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            output_dir = root / "public"
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            (output_dir / "catalog.json").write_text(
+                json.dumps({"not": "a catalog list"}),
+                encoding="utf-8",
+            )
+            (output_dir / "attack-defense-table.json").write_text(
+                json.dumps({"schema": "diffaudit.attack_defense_table.v1", "rows": {"bad": "shape"}}),
+                encoding="utf-8",
+            )
+            (output_dir / "models.json").write_text(
+                json.dumps({"not": "a models list"}),
+                encoding="utf-8",
+            )
+
+            with patch.object(
+                module,
+                "parse_args",
+                return_value=SimpleNamespace(
+                    runtime_base_url="http://127.0.0.1:8765",
+                    control_api_base_url=None,
+                    output_dir=str(output_dir),
+                    research_root=str(root / "Research"),
+                ),
+            ), patch.object(module, "fetch_json", side_effect=RuntimeError("runtime offline")):
+                exit_code = module.main()
+
+            self.assertEqual(exit_code, 0)
+
+            catalog_payload = json.loads((output_dir / "catalog.json").read_text(encoding="utf-8"))
+            table_payload = json.loads((output_dir / "attack-defense-table.json").read_text(encoding="utf-8"))
+            models_payload = json.loads((output_dir / "models.json").read_text(encoding="utf-8"))
+            manifest_payload = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+
+            self.assertEqual(catalog_payload, [])
+            self.assertEqual(
+                table_payload,
+                {
+                    "schema": "diffaudit.attack_defense_table.v1",
+                    "rows": [],
+                },
+            )
+            self.assertEqual(models_payload, [])
+            self.assertEqual(manifest_payload["catalog_count"], 0)
+            self.assertIn("catalog: invalid public snapshot schema; wrote empty list.", manifest_payload["warnings"])
+            self.assertIn(
+                "attack-defense-table: invalid public snapshot schema; wrote empty table.",
+                manifest_payload["warnings"],
+            )
+            self.assertIn("models: invalid public snapshot schema; wrote empty list.", manifest_payload["warnings"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -33,6 +33,8 @@ py -3 .\apps\api-go\scripts\publish_public_snapshot.py `
 
 When the Runtime control plane is unavailable during publishing, the publisher can reuse existing snapshot files and optionally read admitted evidence from a local Research checkout. This is a publish-time fallback only. Request-time API routes remain snapshot-backed.
 
+The publisher validates the top-level public snapshot shapes before writing them. Invalid `catalog` or `models` payloads are replaced with empty lists; invalid attack-defense tables are replaced with an empty `diffaudit.attack_defense_table.v1` table. Each replacement is recorded in `manifest.json` warnings so bad publish-time inputs are visible without leaking raw Runtime or filesystem errors.
+
 ## Routes
 
 Snapshot-backed read routes:

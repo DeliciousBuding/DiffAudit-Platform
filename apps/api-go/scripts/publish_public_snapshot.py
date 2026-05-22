@@ -23,6 +23,11 @@ PUBLIC_TEXT_REPLACEMENTS = {
     "real-asset-closed-loop": "snapshot-closed-loop-asset",
 }
 
+EMPTY_ATTACK_DEFENSE_TABLE = {
+    "schema": "diffaudit.attack_defense_table.v1",
+    "rows": [],
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Publish public snapshot data for apps/api-go.")
@@ -104,6 +109,20 @@ def sanitize_existing_json_tree(root: Path) -> None:
         return
     for path in sorted(root.rglob("*.json")):
         write_json(path, sanitize_public_payload(read_json_file(path)))
+
+
+def validate_public_list(payload: Any, *, label: str, warnings: list[str]) -> list[Any]:
+    if isinstance(payload, list):
+        return payload
+    warnings.append(f"{label}: invalid public snapshot schema; wrote empty list.")
+    return []
+
+
+def validate_attack_defense_table(payload: Any, *, warnings: list[str]) -> dict[str, Any]:
+    if isinstance(payload, dict) and isinstance(payload.get("rows"), list):
+        return payload
+    warnings.append("attack-defense-table: invalid public snapshot schema; wrote empty table.")
+    return dict(EMPTY_ATTACK_DEFENSE_TABLE)
 
 
 @dataclass
@@ -240,12 +259,23 @@ def main() -> int:
         warning_label="models",
         warnings=warnings,
     )
-    summaries, summary_warnings = collect_summaries(base_url, catalog if isinstance(catalog, list) else [])
-    warnings.extend(summary_warnings)
+    catalog = validate_public_list(
+        sanitize_public_payload(catalog),
+        label="catalog",
+        warnings=warnings,
+    )
+    attack_defense_table = validate_attack_defense_table(
+        sanitize_public_payload(attack_defense_table),
+        warnings=warnings,
+    )
+    models = validate_public_list(
+        sanitize_public_payload(models),
+        label="models",
+        warnings=warnings,
+    )
 
-    catalog = sanitize_public_payload(catalog)
-    attack_defense_table = sanitize_public_payload(attack_defense_table)
-    models = sanitize_public_payload(models)
+    summaries, summary_warnings = collect_summaries(base_url, catalog)
+    warnings.extend(summary_warnings)
 
     write_json(output_dir / "catalog.json", catalog)
     write_json(output_dir / "attack-defense-table.json", attack_defense_table)
