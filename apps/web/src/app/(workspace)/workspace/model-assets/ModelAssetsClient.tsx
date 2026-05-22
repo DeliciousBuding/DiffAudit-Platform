@@ -108,11 +108,11 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
   const pathname = usePathname();
   const urlSyncSource = useRef<"state" | "url">("state");
 
-  const TRACK_DISPLAY: Record<string, string> = {
+  const TRACK_DISPLAY = useMemo<Record<string, string>>(() => ({
     "black-box": copy.trackBlackBox,
     "gray-box": copy.trackGrayBox,
     "white-box": copy.trackWhiteBox,
-  };
+  }), [copy.trackBlackBox, copy.trackGrayBox, copy.trackWhiteBox]);
 
   // --- Local mutable catalog state ---
   const [localCatalog, setLocalCatalog] = useState<CatalogDashboardViewModel>(catalog);
@@ -449,7 +449,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
       e.track.toLowerCase().includes(q) ||
       (TRACK_DISPLAY[e.track] ?? "").toLowerCase().includes(q)
     );
-  }, [allEntries, searchQuery]);
+  }, [allEntries, searchQuery, TRACK_DISPLAY]);
 
   // [issue 7] Reset selected entry when it is no longer in the filtered list
   useEffect(() => {

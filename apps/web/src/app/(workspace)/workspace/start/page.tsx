@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowRight, Check, FileText, Info, Shield, TrendingUp } from "lucide-react";
+import { ArrowRight, Check, FileText, Shield, TrendingUp } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { ClickableRow } from "@/components/clickable-row";
@@ -58,7 +58,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       riskCounts[classifyRisk(auc)]++;
     }
   }
-  const totalRisk = riskCounts.high + riskCounts.medium + riskCounts.low;
   const aucBins: Record<string, number> = {};
   for (const auc of aucValues) {
     const bin = (Math.floor(auc * 10) / 10).toFixed(1);
@@ -89,24 +88,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         { dimension: "Speed", GSA: 0.83, PIA: 0.59, Recon: 0.72 },
       ];
 
-  const isEmpty = totalRows === 0;
-  const defenseRate = totalRows > 0 ? defendedRows / totalRows : 1;
-  const defensePct = Math.round(defenseRate * 100);
-  const actionableRisk = riskCounts.high + riskCounts.medium;
-  const highRiskModels = new Set(allRows.filter((row) => row.riskLevel === "high").map((row) => row.model)).size;
-  const readyReports = allRows.filter((row) => row.riskLevel !== "low").length;
   const primaryModel = allRows
     .filter((row) => row.riskLevel !== "low")
     .sort((a, b) => parseFloat(b.aucLabel) - parseFloat(a.aucLabel))[0]?.model ?? "stable-diffusion-v1-4";
-  const priorityRows = allRows
-    .filter((row) => row.riskLevel !== "low")
-    .sort((a, b) => {
-      const riskRank = { high: 2, medium: 1, low: 0 };
-      const byRisk = riskRank[b.riskLevel] - riskRank[a.riskLevel];
-      if (byRisk !== 0) return byRisk;
-      return parseFloat(b.aucLabel) - parseFloat(a.aucLabel);
-    })
-    .slice(0, 5);
 
   const trackOrder = [
     { key: "black-box", short: "Recon" },

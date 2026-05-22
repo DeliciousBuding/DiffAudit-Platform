@@ -27,7 +27,7 @@ function isProtectedApi(pathname: string) {
   return pathname.startsWith("/api/v1/");
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const sessionCookie = request.cookies.get(SESSION_COOKIE);
   const hasSession = Boolean(sessionCookie?.value && sessionCookie.value.length >= 32);

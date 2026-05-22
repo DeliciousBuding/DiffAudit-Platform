@@ -69,8 +69,6 @@ export function ReportDisplayView({ locale, rows }: ReportDisplayViewProps) {
     { key: "low", label: riskLabel("low", locale), count: riskCounts.low },
   ];
 
-  const dims = copy.chartDimensions;
-
   // Compute attack comparison from real data — group by attack family
   const attackFamilyMap: Record<string, { aucSum: number; count: number }> = {};
   for (const row of rows) {

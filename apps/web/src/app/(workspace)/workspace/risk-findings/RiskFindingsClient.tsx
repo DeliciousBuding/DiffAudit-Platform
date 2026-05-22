@@ -2,7 +2,7 @@
 
 import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatedValue } from "@/components/animated-value";
 import { useScrollFade } from "@/hooks/use-scroll-fade";
 import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
@@ -18,6 +18,13 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import type { Locale } from "@/components/language-picker";
 import { FindingDetailPanel } from "./FindingDetailPanel";
+import {
+  buildRiskQueryString,
+  normalizePage,
+  normalizeSeverity,
+  parseRiskQuery,
+  type RiskQueryState,
+} from "./risk-findings-query";
 
 /* ------------------------------------------------------------------ */
 /*  Localized copy                                                     */
@@ -284,12 +291,15 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const urlSyncSource = useRef<"state" | "url">("state");
   const PAGE_SIZE = 10;
-  const [currentPage, setCurrentPage] = useState(() => {
-    const page = Number(searchParams.get("page"));
-    return page > 0 ? page : 1;
-  });
+  const query = useMemo(() => parseRiskQuery(searchParams), [searchParams]);
+  const {
+    severityFilter,
+    categoryFilter,
+    modelFilter,
+    statusFilter,
+    searchQuery,
+  } = query;
 
   /* -- KPI data ---------------------------------------------------- */
   const totalFindings = rows.length;
@@ -297,27 +307,23 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const resolvedCount = rows.filter((r) => r.defense !== "none").length;
   const defenseRate = totalFindings > 0 ? Math.round((resolvedCount / totalFindings) * 100) : null;
 
-  /* -- filter state (initialized from URL params) ------------------ */
-  const [severityFilter, setSeverityFilter] = useState(() => {
-    const v = searchParams.get("severity");
-    return v === "high" || v === "medium" || v === "low" ? v : "";
-  });
-  const [categoryFilter, setCategoryFilter] = useState(() => searchParams.get("category") ?? "");
-  const [modelFilter, setModelFilter] = useState(() => searchParams.get("model") ?? "");
-  const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") ?? "");
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
+  /* -- filter state (derived from URL params) ---------------------- */
   const hasActiveFilters = severityFilter || categoryFilter || modelFilter || statusFilter || searchQuery.trim();
+  const filterVersion = `${severityFilter}|${categoryFilter}|${modelFilter}|${statusFilter}|${searchQuery}`;
 
-  /* -- filter version for row entrance animation --------------------- */
-  const [filterVersion, setFilterVersion] = useState(0);
-  const prevFiltersRef = useRef({ severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery });
-  useEffect(() => {
-    const prev = prevFiltersRef.current;
-    if (prev.severityFilter !== severityFilter || prev.categoryFilter !== categoryFilter || prev.modelFilter !== modelFilter || prev.statusFilter !== statusFilter || prev.searchQuery !== searchQuery) {
-      setFilterVersion((v) => v + 1);
-      prevFiltersRef.current = { severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery };
-    }
-  }, [severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery]);
+  const updateQuery = useCallback(
+    (patch: Partial<RiskQueryState>, opts?: { resetPage?: boolean }) => {
+      const next: RiskQueryState = {
+        ...query,
+        ...patch,
+      };
+      next.severityFilter = normalizeSeverity(next.severityFilter);
+      next.page = opts?.resetPage ? 1 : normalizePage(next.page);
+      const qs = buildRiskQueryString(next);
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+    },
+    [pathname, query, router],
+  );
 
   /* -- table density ------------------------------------------------ */
   const DENSITY_KEY = "diffaudit-risk-density";
@@ -330,40 +336,53 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const [selectedFinding, setSelectedFinding] = useState<AttackDefenseRowViewModel | null>(null);
 
   /* -- quick filter preset state ------------------------------------ */
-  const [activePreset, setActivePreset] = useState<QuickFilterId | null>("all");
+  const activePreset = useMemo<QuickFilterId | null>(() => {
+    const matchedPreset = QUICK_FILTERS.find(
+      (preset) =>
+        preset.severity === severityFilter &&
+        preset.status === statusFilter &&
+        !categoryFilter &&
+        !modelFilter &&
+        !searchQuery.trim(),
+    );
+    return matchedPreset?.id ?? null;
+  }, [categoryFilter, modelFilter, searchQuery, severityFilter, statusFilter]);
 
   /* -- unified filter change handler (resets pagination, clears preset) -- */
   const handleFilterChange = useCallback(
-    (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
-      setter(value);
-      setActivePreset(null);
-      setCurrentPage(1);
+    (field: "severityFilter" | "categoryFilter" | "modelFilter" | "statusFilter", value: string) => {
+      updateQuery({ [field]: value }, { resetPage: true });
     },
-    [],
+    [updateQuery],
   );
 
   /* -- apply a quick filter preset ---------------------------------- */
   const applyPreset = useCallback((preset: QuickFilterPreset) => {
-    setActivePreset(preset.id);
-    setSeverityFilter(preset.severity);
-    setStatusFilter(preset.status);
-    // Presets only control severity + status; clear category/model for a clean view
-    setCategoryFilter("");
-    setModelFilter("");
-    setSearchQuery("");
-    setCurrentPage(1);
-  }, []);
+    updateQuery(
+      {
+        severityFilter: normalizeSeverity(preset.severity),
+        statusFilter: preset.status,
+        categoryFilter: "",
+        modelFilter: "",
+        searchQuery: "",
+      },
+      { resetPage: true },
+    );
+  }, [updateQuery]);
 
   /* -- clear all filters ------------------------------------------ */
   const clearAllFilters = useCallback(() => {
-    setSeverityFilter("");
-    setCategoryFilter("");
-    setModelFilter("");
-    setStatusFilter("");
-    setSearchQuery("");
-    setActivePreset("all");
-    setCurrentPage(1);
-  }, []);
+    updateQuery(
+      {
+        severityFilter: "",
+        categoryFilter: "",
+        modelFilter: "",
+        statusFilter: "",
+        searchQuery: "",
+      },
+      { resetPage: true },
+    );
+  }, [updateQuery]);
 
   /* -- filtered rows ----------------------------------------------- */
   const filtered = useMemo(
@@ -406,57 +425,8 @@ export function RiskFindingsClient({ rows, locale }: Props) {
 
   /* -- pagination -------------------------------------------------- */
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const currentPage = Math.min(query.page, totalPages);
   const paginatedRows = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-  /* -- clamp currentPage when rows change ------------------------- */
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages));
-  }, [totalPages]);
-
-  /* -- sync state -> URL -------------------------------------------- */
-  useEffect(() => {
-    if (urlSyncSource.current === "url") {
-      urlSyncSource.current = "state";
-      return;
-    }
-    const sp = new URLSearchParams();
-    if (severityFilter) sp.set("severity", severityFilter);
-    if (categoryFilter) sp.set("category", categoryFilter);
-    if (modelFilter) sp.set("model", modelFilter);
-    if (statusFilter) sp.set("status", statusFilter);
-    if (searchQuery.trim()) sp.set("q", searchQuery.trim());
-    if (currentPage > 1) sp.set("page", String(currentPage));
-    const qs = sp.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
-  }, [severityFilter, categoryFilter, modelFilter, statusFilter, searchQuery, currentPage, pathname, router]);
-
-  /* -- sync URL -> state (back/forward navigation) ----------------- */
-  useEffect(() => {
-    const urlSeverity = searchParams.get("severity") ?? "";
-    const urlCategory = searchParams.get("category") ?? "";
-    const urlModel = searchParams.get("model") ?? "";
-    const urlStatus = searchParams.get("status") ?? "";
-    const urlQ = searchParams.get("q") ?? "";
-    const urlPage = Number(searchParams.get("page")) || 1;
-
-    const validSeverity =
-      urlSeverity === "high" || urlSeverity === "medium" || urlSeverity === "low" ? urlSeverity : "";
-
-    urlSyncSource.current = "url";
-    setSeverityFilter(validSeverity);
-    setCategoryFilter(urlCategory);
-    setModelFilter(urlModel);
-    setStatusFilter(urlStatus);
-    setSearchQuery(urlQ);
-    setCurrentPage(urlPage > 0 ? urlPage : 1);
-
-    // Derive active preset from URL params
-    const matchedPreset = QUICK_FILTERS.find(
-      (p) => p.severity === validSeverity && p.status === urlStatus && !urlCategory && !urlModel && !urlQ.trim(),
-    );
-    setActivePreset(matchedPreset?.id ?? null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
 
   /* -- unique values for filters ----------------------------------- */
   const severities = useMemo(() => [...new Set(rows.map((r) => r.riskLevel))].sort(), [rows]);
@@ -479,11 +449,13 @@ export function RiskFindingsClient({ rows, locale }: Props) {
   const tableScrollRef = useScrollFade<HTMLDivElement>([filtered]);
 
   /* -- J/K keyboard navigation for table rows ----------------------- */
+  const handleKeyboardSelect = useCallback((item: AttackDefenseRowViewModel | null) => {
+    if (item) setSelectedFinding(item);
+  }, [setSelectedFinding]);
+
   const { activeIndex: kbActiveIndex } = useTableKeyboardNav(
     paginatedRows,
-    useCallback((item: AttackDefenseRowViewModel | null) => {
-      if (item) setSelectedFinding(item);
-    }, []),
+    handleKeyboardSelect,
     { enabled: !selectedFinding, containerRef: tableScrollRef },
   );
 
@@ -554,7 +526,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setActivePreset(null); setCurrentPage(1); }}
+              onChange={(e) => updateQuery({ searchQuery: e.target.value }, { resetPage: true })}
               placeholder={copy.searchPlaceholder}
               aria-label={copy.searchPlaceholder}
               className="w-full rounded-xl border border-border bg-background py-2 pl-9 pr-3 text-[13px] text-foreground placeholder:text-muted-foreground/50 focus:border-[var(--accent-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]/20 transition-colors"
@@ -562,7 +534,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => { setSearchQuery(""); setActivePreset(null); setCurrentPage(1); }}
+                onClick={() => updateQuery({ searchQuery: "" }, { resetPage: true })}
                 aria-label={copy.clearSearch}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
               >
@@ -581,7 +553,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={severityFilter}
-                onChange={(e) => handleFilterChange(setSeverityFilter, e.target.value)}
+                onChange={(e) => handleFilterChange("severityFilter", e.target.value)}
                 aria-label={copy.allSeverities}
               >
                 <option value="">{copy.allSeverities}</option>
@@ -593,7 +565,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={categoryFilter}
-                onChange={(e) => handleFilterChange(setCategoryFilter, e.target.value)}
+                onChange={(e) => handleFilterChange("categoryFilter", e.target.value)}
                 aria-label={copy.allCategories}
               >
                 <option value="">{copy.allCategories}</option>
@@ -605,7 +577,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={modelFilter}
-                onChange={(e) => handleFilterChange(setModelFilter, e.target.value)}
+                onChange={(e) => handleFilterChange("modelFilter", e.target.value)}
                 aria-label={copy.allModels}
               >
                 <option value="">{copy.allModels}</option>
@@ -617,7 +589,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <select
                 className="workspace-filter-select appearance-none pl-8 pr-8"
                 value={statusFilter}
-                onChange={(e) => handleFilterChange(setStatusFilter, e.target.value)}
+                onChange={(e) => handleFilterChange("statusFilter", e.target.value)}
                 aria-label={copy.allStatuses}
               >
                 <option value="">{copy.allStatuses}</option>
@@ -741,7 +713,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <button
                 type="button"
                 disabled={currentPage <= 1}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onClick={() => updateQuery({ page: Math.max(1, currentPage - 1) })}
                 aria-label={copy.previous}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/30 disabled:opacity-30"
               >
@@ -754,7 +726,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
                 <button
                   key={page}
                   type="button"
-                  onClick={() => setCurrentPage(page)}
+                  onClick={() => updateQuery({ page })}
                   className={`flex h-8 min-w-[32px] items-center justify-center rounded-lg px-2 text-xs font-medium transition-colors ${
                     page === currentPage
                       ? "bg-[var(--accent-blue)] text-background shadow-sm"
@@ -770,7 +742,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
               <button
                 type="button"
                 disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() => updateQuery({ page: Math.min(totalPages, currentPage + 1) })}
                 aria-label={copy.next}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/30 disabled:opacity-30"
               >

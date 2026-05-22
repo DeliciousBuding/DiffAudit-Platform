@@ -97,7 +97,6 @@ export function AuditsPageClient({
     urlSyncSource.current = "url";
     setFilter(urlFilter);
     setSearch(urlQ);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   function refreshJobs() {
