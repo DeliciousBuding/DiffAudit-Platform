@@ -7,6 +7,7 @@ import { type Locale } from "@/components/language-picker";
 import { ContextualTip } from "@/components/contextual-tip";
 import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
+import { Modal } from "@/components/modal";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { useToast } from "@/components/toast-provider";
 import { formatDateOnly } from "@/lib/format";
@@ -57,6 +58,7 @@ const ALL_SCOPES = ["audit:read", "audit:write", "results:read", "results:export
 const DEFAULT_SCOPES: string[] = ["audit:read", "audit:write", "results:read", "results:export"];
 
 let demoIdCounter = 0;
+type ApiKeysCopy = (typeof WORKSPACE_COPY)["en-US"]["apiKeys"];
 
 function randomDemoToken(bytes = 12) {
   const values = new Uint8Array(bytes);
@@ -77,6 +79,50 @@ function createDemoId() {
   return `demo-key-${Date.now()}-${demoIdCounter}`;
 }
 
+export function ApiKeyRevokeModal({
+  copy,
+  onCancel,
+  onConfirm,
+  pendingRevokeId,
+}: {
+  copy: ApiKeysCopy;
+  onCancel: () => void;
+  onConfirm: (keyId: string) => void;
+  pendingRevokeId: string | null;
+}) {
+  return (
+    <Modal
+      open={pendingRevokeId !== null}
+      onClose={onCancel}
+      title={copy.revokeConfirmTitle}
+      closeLabel={copy.revokeConfirmCancel}
+      actions={
+        <>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="workspace-btn-secondary px-3 py-2 text-xs"
+          >
+            {copy.revokeConfirmCancel}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (pendingRevokeId) onConfirm(pendingRevokeId);
+            }}
+            className="rounded-xl bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+          >
+            {copy.revokeConfirmAction}
+          </button>
+        </>
+      }
+    >
+      <p className="text-xs leading-6 text-muted-foreground">{copy.revokeConfirmBody}</p>
+      <p className="mt-1 text-[11px] leading-5 text-[var(--accent-coral)]">{copy.revokeConfirmIrreversible}</p>
+    </Modal>
+  );
+}
+
 export function ApiKeysClient({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].apiKeys;
   const { toast } = useToast();
@@ -91,7 +137,6 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(
     () => new Set(DEFAULT_SCOPES),
   );
-  const modalRef = useRef<HTMLDivElement>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
   // Scroll container ref for fade gradient
@@ -108,45 +153,6 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     observer.observe(el);
     return () => observer.disconnect();
   }, [keys]);
-
-  // ESC key to close revoke modal
-  useEffect(() => {
-    if (!pendingRevokeId) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setPendingRevokeId(null);
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [pendingRevokeId]);
-
-  // Focus trap for revoke modal
-  useEffect(() => {
-    if (!pendingRevokeId || !modalRef.current) return;
-    const el = modalRef.current;
-    el.focus();
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key !== "Tab") return;
-      const focusable = el.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    }
-    el.addEventListener("keydown", onKeyDown);
-    return () => el.removeEventListener("keydown", onKeyDown);
-  }, [pendingRevokeId]);
 
   function handleToggleScope(scope: string) {
     setSelectedScopes((prev) => {
@@ -202,12 +208,6 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     );
     setPendingRevokeId(null);
     toast({ type: "success", title: copy.revokeSuccess });
-  }
-
-  function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (e.target === modalRef.current) {
-      setPendingRevokeId(null);
-    }
   }
 
   function resetCreateForm() {
@@ -432,39 +432,12 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       )}
 
       {/* Revoke confirmation modal */}
-      {pendingRevokeId ? (
-        <div
-          ref={modalRef}
-          onClick={handleBackdropClick}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 px-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="revoke-dialog-title"
-          tabIndex={-1}
-        >
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
-            <h3 id="revoke-dialog-title" className="text-sm font-semibold text-foreground">{copy.revokeConfirmTitle}</h3>
-            <p className="mt-2 text-xs leading-6 text-muted-foreground">{copy.revokeConfirmBody}</p>
-            <p className="mt-1 text-[11px] leading-5 text-[var(--accent-coral)]">{copy.revokeConfirmIrreversible}</p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setPendingRevokeId(null)}
-                className="workspace-btn-secondary px-3 py-2 text-xs"
-              >
-                {copy.revokeConfirmCancel}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRevoke(pendingRevokeId)}
-                className="rounded-xl bg-[var(--accent-coral)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
-              >
-                {copy.revokeConfirmAction}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ApiKeyRevokeModal
+        copy={copy}
+        onCancel={() => setPendingRevokeId(null)}
+        onConfirm={handleRevoke}
+        pendingRevokeId={pendingRevokeId}
+      />
 
       {/* Code example */}
       <div className="api-code-block mt-6 overflow-hidden rounded-2xl shadow-sm dark:shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
