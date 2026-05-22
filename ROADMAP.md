@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 03:42 Asia/Hong_Kong
+Last updated: 2026-05-23 03:56 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -25,6 +25,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Improve printable report pagination and long evidence layout without changing the report data contract.
 - [x] Reduce GitHub Actions warning noise by upgrading workflow actions and disabling invalid Go cache lookup.
 - [x] Validate publish-time snapshot top-level schemas and surface public-safe manifest warnings.
+- [x] Clarify account access state for verified email, linked providers, password access, and two-factor status.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
@@ -43,7 +44,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 ## Near-Term Product Work
 
 - [x] Reports: improve printable report pagination, table wrapping, and long-evidence layout.
-- [ ] Account: polish linked-provider, verified-email, and password-access state.
+- [x] Account: polish linked-provider, verified-email, and password-access state.
 - [ ] Accessibility: add stronger menu roles, chart text summaries, and focus handling in shared primitives.
 - [ ] Workspace UX: keep search, sidebar, topbar, settings, account, API management, and report deep pages visually consistent.
 

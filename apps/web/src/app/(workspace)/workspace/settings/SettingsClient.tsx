@@ -640,6 +640,40 @@ export function SettingsClient({
     { key: "google", label: profile ? copy.account.connectGoogle : copy.account.signInGoogle },
   ] as const).filter((provider) => oauthEnabled[provider.key] && (profile ? !connectedProviders.includes(provider.key) : true));
   const accessSummary = getAccessSummary(profile, copy.account);
+  const accountStateItems = [
+    {
+      key: "email",
+      label: copy.account.email,
+      value: profile?.email ?? profile?.pendingEmail ?? copy.account.noEmail,
+      status: profile?.email
+        ? profile.emailVerified ? copy.account.verified : copy.account.unverified
+        : profile?.pendingEmail ? copy.account.pendingEmail : copy.account.noEmail,
+      tone: profile?.emailVerified ? "success" : profile?.pendingEmail ? "warning" : "neutral",
+    },
+    {
+      key: "providers",
+      label: copy.account.providers,
+      value: connectedProviders.length
+        ? connectedProviders.map(formatProviderName).join(" / ")
+        : copy.account.accessSummaryNoProvider,
+      status: connectedProviders.length ? String(connectedProviders.length) : copy.account.unverified,
+      tone: connectedProviders.length ? "success" : "neutral",
+    },
+    {
+      key: "password",
+      label: copy.account.password,
+      value: profile?.hasPassword ? copy.account.passwordSet : copy.account.passwordUnset,
+      status: profile?.hasPassword ? copy.account.passwordSet : copy.account.passwordUnset,
+      tone: profile?.hasPassword ? "success" : "neutral",
+    },
+    {
+      key: "two-factor",
+      label: copy.account.twoFactor,
+      value: profile?.twoFactorEnabled ? copy.account.twoFactorEnabled : copy.account.twoFactorDisabled,
+      status: profile?.twoFactorEnabled ? copy.account.twoFactorEnabled : copy.account.twoFactorDisabled,
+      tone: profile?.twoFactorEnabled ? "success" : "neutral",
+    },
+  ] as const;
 
   return (
     <WorkspacePageFrame
@@ -1238,6 +1272,32 @@ export function SettingsClient({
                   {copy.account.accessSummary}
                 </div>
                 <p className="text-base font-semibold leading-7 text-foreground">{accessSummary}</p>
+              </div>
+              <div
+                data-account-state-panel=""
+                className="grid gap-3 sm:grid-cols-2"
+              >
+                {accountStateItems.map((item) => (
+                  <div
+                    key={item.key}
+                    data-account-state-key={item.key}
+                    className="rounded-2xl border border-border bg-muted/10 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                          {item.label}
+                        </div>
+                        <div className="mt-2 break-words text-[13px] font-semibold text-foreground">
+                          {item.value}
+                        </div>
+                      </div>
+                      <StatusBadge tone={item.tone} compact>
+                        {item.status}
+                      </StatusBadge>
+                    </div>
+                  </div>
+                ))}
               </div>
               <div className="space-y-2">
                 <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">

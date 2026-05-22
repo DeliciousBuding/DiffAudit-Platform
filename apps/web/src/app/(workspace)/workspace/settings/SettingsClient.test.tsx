@@ -118,4 +118,38 @@ describe("SettingsClient account verification", () => {
 
     expect(markup).toContain("GitHub is now connected to this account.");
   });
+
+  it("renders a unified account access state panel for verified email, providers, password, and two-factor status", () => {
+    const markup = renderToStaticMarkup(withToast(
+      <SettingsClient
+        locale="en-US"
+        mode="account"
+        oauthEnabled={{ google: true, github: true }}
+        initialProfile={{
+          id: "user-1",
+          username: "demo-reviewer",
+          displayName: "Demo Reviewer",
+          email: "review@diffaudit.test",
+          pendingEmail: null,
+          emailVerified: true,
+          avatarUrl: null,
+          bio: null,
+          providers: ["github", "google"],
+          hasPassword: true,
+          twoFactorEnabled: true,
+        }}
+      />,
+    ));
+
+    expect(markup).toContain("data-account-state-panel");
+    expect(markup).toContain("data-account-state-key=\"email\"");
+    expect(markup).toContain("review@diffaudit.test");
+    expect(markup).toContain("Verified");
+    expect(markup).toContain("data-account-state-key=\"providers\"");
+    expect(markup).toContain("GitHub / Google");
+    expect(markup).toContain("data-account-state-key=\"password\"");
+    expect(markup).toContain("Configured");
+    expect(markup).toContain("data-account-state-key=\"two-factor\"");
+    expect(markup).toContain("Enabled");
+  });
 });
