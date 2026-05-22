@@ -1,6 +1,14 @@
-import { describe, expect, it } from "vitest";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
 
-import { resolveActiveLocale } from "./language-picker";
+import { LanguagePicker, resolveActiveLocale } from "./language-picker";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    refresh: vi.fn(),
+  }),
+}));
 
 describe("resolveActiveLocale", () => {
   it("prefers the pending locale over a stale controlled value", () => {
@@ -29,5 +37,15 @@ describe("resolveActiveLocale", () => {
         internalLocale: "zh-CN",
       }),
     ).toBe("zh-CN");
+  });
+});
+
+describe("LanguagePicker", () => {
+  it("renders the trigger with explicit menu semantics", () => {
+    const markup = renderToStaticMarkup(React.createElement(LanguagePicker, { value: "en-US" }));
+
+    expect(markup).toContain('aria-haspopup="menu"');
+    expect(markup).toContain('aria-controls="');
+    expect(markup).toContain('aria-expanded="false"');
   });
 });

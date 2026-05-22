@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
@@ -50,6 +50,7 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
   const mergedLabels = { ...DEFAULT_LABELS, ...labels };
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const menuId = useId();
   const mounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
@@ -108,25 +109,28 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
         className="header-pill header-pill-icon text-muted-foreground hover:text-foreground"
         aria-label={`${mergedLabels.prefix}: ${activeOption.label}`}
         aria-expanded={open}
-        aria-haspopup="true"
+        aria-haspopup="menu"
+        aria-controls={menuId}
         title={`${mergedLabels.prefix}: ${activeOption.label}`}
       >
         {previewIcon}
       </button>
 
       {open && (
-        <div className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[172px] rounded-2xl p-1.5">
+        <div id={menuId} className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[172px] rounded-2xl p-1.5" role="menu">
           {options.map((option) => {
             const selected = theme === option.value;
             return (
               <button
                 key={option.value}
                 type="button"
+                role="menuitemradio"
+                aria-checked={selected}
                 onClick={() => {
                   setTheme(option.value);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors ${
+                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-[13px] transition-colors ${
                   selected
                     ? "bg-[var(--accent-blue)]/10 text-foreground"
                     : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
@@ -136,7 +140,7 @@ export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabe
                   <span className="shrink-0">{option.icon}</span>
                   <span>{option.label}</span>
                 </span>
-                {selected ? <span className="text-xs font-semibold text-[var(--accent-blue)]">{mergedLabels.active}</span> : null}
+                {selected ? <span className="text-[11px] font-semibold text-[var(--accent-blue)]">{mergedLabels.active}</span> : null}
               </button>
             );
           })}

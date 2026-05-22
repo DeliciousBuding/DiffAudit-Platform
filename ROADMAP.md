@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 04:10 Asia/Hong_Kong
+Last updated: 2026-05-23 04:23 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -27,6 +27,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Validate publish-time snapshot top-level schemas and surface public-safe manifest warnings.
 - [x] Clarify account access state for verified email, linked providers, password access, and two-factor status.
 - [x] Strengthen workspace global search combobox semantics, outside-close behavior, and empty-result keyboard bounds.
+- [x] Unify theme and language header menu semantics with menu controls and radio-style option state.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Languages } from "lucide-react";
 
@@ -75,6 +75,7 @@ export function LanguagePicker({
   const [internalLocale, setInternalLocale] = useState<Locale>("en-US");
   const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const menuId = useId();
   const locale = resolveActiveLocale({ value, internalLocale, pendingLocale });
 
   useEffect(() => {
@@ -130,7 +131,8 @@ export function LanguagePicker({
         className="language-trigger"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        aria-haspopup="true"
+        aria-haspopup="menu"
+        aria-controls={menuId}
         aria-label={`Change language, current language: ${currentOption.label}`}
         title={currentOption.label}
       >
@@ -144,7 +146,7 @@ export function LanguagePicker({
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
-          <div className="language-menu">
+          <div id={menuId} className="language-menu" role="menu">
             {LOCALE_OPTIONS.map((option) => {
               const selected = option.value === locale;
 
@@ -152,6 +154,8 @@ export function LanguagePicker({
                 <button
                   key={option.value}
                   type="button"
+                  role="menuitemradio"
+                  aria-checked={selected}
                   className={`language-option ${selected ? "is-selected" : ""}`}
                   onClick={() => handleSelect(option.value)}
                 >
