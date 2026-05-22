@@ -53,8 +53,14 @@ function addRecentPage(href: string) {
   }
 }
 
+export function nextSearchActiveIndex(currentIndex: number, itemCount: number, delta: 1 | -1): number {
+  if (itemCount <= 0) return 0;
+  return (currentIndex + delta + itemCount) % itemCount;
+}
+
 export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const router = useRouter();
+  const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
@@ -98,17 +104,39 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
       .slice(0, 6);
   }, [items, query, recentHrefs]);
 
+  const closeSearch = useCallback(() => {
+    setOpen(false);
+  }, []);
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setOpen(false);
+        closeSearch();
         inputRef.current?.blur();
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [closeSearch]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeIfOutside(event: PointerEvent | FocusEvent) {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (rootRef.current?.contains(target)) return;
+      closeSearch();
+    }
+
+    document.addEventListener("pointerdown", closeIfOutside);
+    document.addEventListener("focusin", closeIfOutside);
+    return () => {
+      document.removeEventListener("pointerdown", closeIfOutside);
+      document.removeEventListener("focusin", closeIfOutside);
+    };
+  }, [closeSearch, open]);
 
   // Scroll active item into view
   useEffect(() => {
@@ -130,11 +158,11 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
-        setActiveIndex((i) => (i + 1 < matches.length ? i + 1 : 0));
+        setActiveIndex((i) => nextSearchActiveIndex(i, matches.length, 1));
         break;
       case "ArrowUp":
         event.preventDefault();
-        setActiveIndex((i) => (i - 1 >= 0 ? i - 1 : matches.length - 1));
+        setActiveIndex((i) => nextSearchActiveIndex(i, matches.length, -1));
         break;
       case "Enter":
         event.preventDefault();
@@ -148,7 +176,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const isRecent = !query.trim();
 
   return (
-    <div className="workspace-global-search" role="search" onMouseLeave={() => setOpen(false)}>
+    <div ref={rootRef} className="workspace-global-search" role="search" onMouseLeave={closeSearch}>
       <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4">
         <path d="m21 21-4.4-4.4M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
@@ -165,9 +193,12 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
         placeholder={placeholder}
         aria-label={placeholder}
         role="combobox"
+        aria-autocomplete="list"
         aria-expanded={open}
+        aria-haspopup="listbox"
         aria-controls="search-listbox"
         aria-activedescendant={open && matches[activeIndex] ? `search-item-${activeIndex}` : undefined}
+        autoComplete="off"
       />
       <kbd aria-hidden="true">Ctrl K</kbd>
       {open ? (

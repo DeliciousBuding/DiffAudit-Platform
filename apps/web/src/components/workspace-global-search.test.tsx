@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { WorkspaceGlobalSearch } from "./workspace-global-search";
+import { WorkspaceGlobalSearch, nextSearchActiveIndex } from "./workspace-global-search";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -32,6 +32,8 @@ describe("WorkspaceGlobalSearch", () => {
 
       expect(markup).toContain('role="search"');
       expect(markup).toContain('role="combobox"');
+      expect(markup).toContain('aria-autocomplete="list"');
+      expect(markup).toContain('autoComplete="off"');
       expect(markup).toContain("Search pages...");
       expect(markup).not.toContain("workspace-search-menu");
       expect(getItem).not.toHaveBeenCalled();
@@ -47,5 +49,16 @@ describe("WorkspaceGlobalSearch", () => {
         writable: true,
       });
     }
+  });
+
+  it("keeps keyboard active index stable when there are no search results", () => {
+    expect(nextSearchActiveIndex(0, 0, 1)).toBe(0);
+    expect(nextSearchActiveIndex(0, 0, -1)).toBe(0);
+  });
+
+  it("wraps keyboard active index within available search results", () => {
+    expect(nextSearchActiveIndex(0, 3, 1)).toBe(1);
+    expect(nextSearchActiveIndex(2, 3, 1)).toBe(0);
+    expect(nextSearchActiveIndex(0, 3, -1)).toBe(2);
   });
 });

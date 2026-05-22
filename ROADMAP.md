@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 03:56 Asia/Hong_Kong
+Last updated: 2026-05-23 04:10 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -26,6 +26,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Reduce GitHub Actions warning noise by upgrading workflow actions and disabling invalid Go cache lookup.
 - [x] Validate publish-time snapshot top-level schemas and surface public-safe manifest warnings.
 - [x] Clarify account access state for verified email, linked providers, password access, and two-factor status.
+- [x] Strengthen workspace global search combobox semantics, outside-close behavior, and empty-result keyboard bounds.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
