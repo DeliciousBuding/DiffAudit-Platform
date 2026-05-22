@@ -24,6 +24,7 @@ import { type Locale } from "@/components/language-picker";
 import { useToast } from "@/components/toast-provider";
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_NAV_SHORTCUTS } from "@/lib/workspace-shortcuts";
 import { type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
 
 /* -------------------------------------------------------------------------- */
@@ -59,17 +60,6 @@ const NAV_COMMAND_IDS: Record<WorkspaceNavKey, string> = {
   settings: "nav-settings",
 };
 
-const NAV_SHORTCUTS: Partial<Record<WorkspaceNavKey, string>> = {
-  workspace: "Ctrl+1",
-  audits: "Ctrl+2",
-  modelAssets: "Ctrl+3",
-  riskFindings: "Ctrl+4",
-  reportCenter: "Ctrl+5",
-  apiKeys: "Ctrl+6",
-  account: "Ctrl+7",
-  settings: "Ctrl+,",
-};
-
 const NAV_ICON_COMPONENTS: Record<WorkspaceNavIcon, LucideIcon> = {
   dashboard: LayoutDashboard,
   spark: ClipboardList,
@@ -89,7 +79,7 @@ export function getCommandItems(locale: Locale): CommandItem[] {
     category: "navigation",
     icon: NAV_ICON_COMPONENTS[item.icon],
     href: item.href,
-    shortcut: NAV_SHORTCUTS[item.key],
+    shortcut: WORKSPACE_NAV_SHORTCUTS[item.key],
     searchText: `${item.title} ${item.shortLabel} ${item.subtitle} ${item.href}`,
     action: (router) => router.push(item.href),
   }));

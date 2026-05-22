@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_NAV_SHORTCUTS } from "@/lib/workspace-shortcuts";
 
 import { getCommandItems } from "./command-palette";
 
@@ -19,6 +20,7 @@ describe("command palette commands", () => {
     expect(commands).toHaveLength(navItems.length);
     expect(commands.map((command) => command.label)).toEqual(navItems.map((item) => item.title));
     expect(commands.map((command) => command.href)).toEqual(navItems.map((item) => item.href));
+    expect(commands.map((command) => command.shortcut)).toEqual(navItems.map((item) => WORKSPACE_NAV_SHORTCUTS[item.key]));
   });
 
   it("derives Chinese navigation commands from the workspace navigation registry", () => {

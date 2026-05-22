@@ -48,6 +48,24 @@ export const WORKSPACE_COPY: Record<
       infoShortcuts: string;
       infoDocs: string;
     };
+    keyboardShortcuts: {
+      ariaLabel: string;
+      title: string;
+      closeLabel: string;
+      footerHint: string;
+      groupNavigation: string;
+      groupActions: string;
+      groupGeneral: string;
+      groupTable: string;
+      openCommandPalette: string;
+      createNewTask: string;
+      toggleSidebar: string;
+      showShortcuts: string;
+      closeDialog: string;
+      nextRow: string;
+      previousRow: string;
+      openDetail: string;
+    };
     userMenu: {
       loggedIn: string;
       themeLabel: string;
@@ -614,6 +632,24 @@ export const WORKSPACE_COPY: Record<
       actionExportReport: "Export Report",
       infoShortcuts: "Show Keyboard Shortcuts",
       infoDocs: "View Documentation",
+    },
+    keyboardShortcuts: {
+      ariaLabel: "Keyboard shortcuts",
+      title: "Keyboard Shortcuts",
+      closeLabel: "Close",
+      footerHint: "Press ? anytime to view shortcuts",
+      groupNavigation: "Navigation",
+      groupActions: "Actions",
+      groupGeneral: "General",
+      groupTable: "Table",
+      openCommandPalette: "Open command palette",
+      createNewTask: "Create new task",
+      toggleSidebar: "Toggle sidebar",
+      showShortcuts: "Show shortcuts",
+      closeDialog: "Close dialog",
+      nextRow: "Next row",
+      previousRow: "Previous row",
+      openDetail: "Open detail",
     },
     userMenu: {
       loggedIn: "Signed in",
@@ -1473,6 +1509,24 @@ export const WORKSPACE_COPY: Record<
       actionExportReport: "导出报告",
       infoShortcuts: "显示快捷键",
       infoDocs: "查看文档",
+    },
+    keyboardShortcuts: {
+      ariaLabel: "快捷键",
+      title: "键盘快捷键",
+      closeLabel: "关闭",
+      footerHint: "按 ? 随时查看快捷键",
+      groupNavigation: "导航",
+      groupActions: "操作",
+      groupGeneral: "通用",
+      groupTable: "表格",
+      openCommandPalette: "打开命令面板",
+      createNewTask: "创建新任务",
+      toggleSidebar: "折叠/展开侧栏",
+      showShortcuts: "显示快捷键",
+      closeDialog: "关闭弹窗",
+      nextRow: "下一行",
+      previousRow: "上一行",
+      openDetail: "查看详情",
     },
     userMenu: {
       loggedIn: "已登录",

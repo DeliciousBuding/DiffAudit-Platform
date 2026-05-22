@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { WORKSPACE_NAV_REGISTRY } from "@/lib/workspace-registry";
+import { type Locale } from "@/components/language-picker";
 import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";
+import { getWorkspaceNavHrefForShortcutKey } from "@/lib/workspace-shortcuts";
 
 /**
  * Global keyboard shortcuts for the workspace.
@@ -13,13 +14,13 @@ import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";
  *   Ctrl+K  — Command palette (handled by CommandPalette)
  *   Ctrl+N  — New audit task
  *   Ctrl+B  — Toggle sidebar collapse
- *   Ctrl+1..8 — Navigate to sidebar items
- *   Ctrl+,  — Settings
+ *   Ctrl+1..7 and Ctrl+, — Navigate to registered workspace items
  *   ?       — Show shortcuts modal (when not in input)
  */
 export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
+  const activeLocale: Locale = locale === "zh-CN" ? "zh-CN" : "en-US";
 
   const closeModal = useCallback(() => setModalOpen(false), []);
 
@@ -63,20 +64,13 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
         return;
       }
 
-      // Ctrl+,: Settings
-      if ((event.ctrlKey || event.metaKey) && event.key === ",") {
-        event.preventDefault();
-        router.push("/workspace/settings");
-        return;
-      }
-
-      // Ctrl+1..8: Navigate to sidebar items
-      if ((event.ctrlKey || event.metaKey) && event.key >= "1" && event.key <= "8") {
-        const index = parseInt(event.key, 10) - 1;
-        const navItem = WORKSPACE_NAV_REGISTRY[index];
-        if (navItem) {
+      // Ctrl+number/Ctrl+comma: Navigate to registered workspace items.
+      if (event.ctrlKey || event.metaKey) {
+        const navHref = getWorkspaceNavHrefForShortcutKey(event.key);
+        if (navHref) {
           event.preventDefault();
-          router.push(navItem.href);
+          router.push(navHref);
+          return;
         }
         return;
       }
@@ -94,7 +88,7 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
 
   return (
     <KeyboardShortcutsModal
-      locale={(locale ?? "en-US") as "zh-CN" | "en-US"}
+      locale={activeLocale}
       open={modalOpen}
       onClose={closeModal}
     />

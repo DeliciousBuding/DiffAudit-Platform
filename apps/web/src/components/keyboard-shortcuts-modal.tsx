@@ -4,53 +4,8 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
-
-interface ShortcutGroup {
-  title: string;
-  shortcuts: Array<{ keys: string; label: string }>;
-}
-
-function getShortcutGroups(locale: Locale): ShortcutGroup[] {
-  const isZh = locale === "zh-CN";
-  return [
-    {
-      title: isZh ? "导航" : "Navigation",
-      shortcuts: [
-        { keys: "Ctrl + K", label: isZh ? "打开命令面板" : "Open command palette" },
-        { keys: "Ctrl + 1", label: isZh ? "工作台总览" : "Dashboard" },
-        { keys: "Ctrl + 2", label: isZh ? "审计任务" : "Audits" },
-        { keys: "Ctrl + 3", label: isZh ? "模型资产" : "Model Assets" },
-        { keys: "Ctrl + 4", label: isZh ? "风险发现" : "Risk Findings" },
-        { keys: "Ctrl + 5", label: isZh ? "报告中心" : "Reports" },
-        { keys: "Ctrl + 6", label: isZh ? "API 管理" : "API Keys" },
-        { keys: "Ctrl + 7", label: isZh ? "个人账户" : "Account" },
-        { keys: "Ctrl + ,", label: isZh ? "系统设置" : "Settings" },
-      ],
-    },
-    {
-      title: isZh ? "操作" : "Actions",
-      shortcuts: [
-        { keys: "Ctrl + N", label: isZh ? "创建新任务" : "Create new task" },
-        { keys: "Ctrl + B", label: isZh ? "折叠/展开侧栏" : "Toggle sidebar" },
-      ],
-    },
-    {
-      title: isZh ? "通用" : "General",
-      shortcuts: [
-        { keys: "?", label: isZh ? "显示快捷键" : "Show shortcuts" },
-        { keys: "Esc", label: isZh ? "关闭弹窗" : "Close dialog" },
-      ],
-    },
-    {
-      title: isZh ? "表格" : "Table",
-      shortcuts: [
-        { keys: "J", label: isZh ? "下一行" : "Next row" },
-        { keys: "K", label: isZh ? "上一行" : "Previous row" },
-        { keys: "Enter", label: isZh ? "查看详情" : "Open detail" },
-      ],
-    },
-  ];
-}
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { getWorkspaceShortcutGroups } from "@/lib/workspace-shortcuts";
 
 export function KeyboardShortcutsModal({
   locale,
@@ -61,8 +16,8 @@ export function KeyboardShortcutsModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const groups = getShortcutGroups(locale);
-  const isZh = locale === "zh-CN";
+  const copy = WORKSPACE_COPY[locale].keyboardShortcuts;
+  const groups = getWorkspaceShortcutGroups(locale);
 
   useEffect(() => {
     if (!open) return;
@@ -83,7 +38,7 @@ export function KeyboardShortcutsModal({
       className="command-palette-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label={isZh ? "快捷键" : "Keyboard shortcuts"}
+      aria-label={copy.ariaLabel}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -98,13 +53,13 @@ export function KeyboardShortcutsModal({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <h2 className="text-[13px] font-bold text-foreground">
-            {isZh ? "键盘快捷键" : "Keyboard Shortcuts"}
+            {copy.title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             className="p-1 rounded-lg hover:bg-muted/40 transition-colors"
-            aria-label={isZh ? "关闭" : "Close"}
+            aria-label={copy.closeLabel}
           >
             <X size={16} strokeWidth={1.5} className="text-muted-foreground" />
           </button>
@@ -137,7 +92,7 @@ export function KeyboardShortcutsModal({
         {/* Footer hint */}
         <div className="px-4 py-3 border-t border-border text-center">
           <span className="text-[11px] text-muted-foreground/60">
-            {isZh ? "按 ? 随时查看快捷键" : "Press ? anytime to view shortcuts"}
+            {copy.footerHint}
           </span>
         </div>
       </div>
