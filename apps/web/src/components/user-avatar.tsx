@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { LOCALE_STORAGE_KEY, type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -13,6 +13,11 @@ interface UserInfo {
 
 const AVATAR_STORAGE_KEY = "platform-custom-avatar-v1";
 const USERNAME_STORAGE_KEY = "platform-custom-username-v1";
+
+export function nextUserMenuIndex(currentIndex: number, itemCount: number, delta: 1 | -1): number {
+  if (itemCount <= 0) return 0;
+  return (currentIndex + delta + itemCount) % itemCount;
+}
 
 /**
  * User avatar displayed in the topbar.
@@ -28,6 +33,9 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
   });
   const [avatarError, setAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
   const locale = localeProp ?? storedLocale;
 
   // Fetch user info
@@ -79,17 +87,56 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
     };
   }, []);
 
-  // Close menu on outside click
+  const closeMenu = useCallback((restoreFocus = false) => {
+    setShowMenu(false);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => triggerRef.current?.focus());
+    }
+  }, []);
+
+  const getMenuItems = useCallback(() => {
+    if (!menuPanelRef.current) return [];
+    return Array.from(
+      menuPanelRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"),
+    );
+  }, []);
+
+  const focusMenuItem = useCallback((index: number) => {
+    const items = getMenuItems();
+    items[index]?.focus();
+  }, [getMenuItems]);
+
+  const openMenu = useCallback(() => {
+    setShowMenu(true);
+    window.requestAnimationFrame(() => focusMenuItem(0));
+  }, [focusMenuItem]);
+
   useEffect(() => {
     if (!showMenu) return;
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setShowMenu(false);
+        closeMenu(false);
       }
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [showMenu]);
+  }, [closeMenu, showMenu]);
+
+  function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMenu(true);
+      return;
+    }
+
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+
+    event.preventDefault();
+    const items = getMenuItems();
+    const currentIndex = Math.max(0, items.findIndex((item) => item === document.activeElement));
+    const nextIndex = nextUserMenuIndex(currentIndex, items.length, event.key === "ArrowDown" ? 1 : -1);
+    focusMenuItem(nextIndex);
+  }
 
   const initial = user?.username?.[0]?.toUpperCase() ?? "?";
   const copy = WORKSPACE_COPY[locale].userMenu;
@@ -98,11 +145,20 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
   return (
     <div className="relative" ref={menuRef}>
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setShowMenu(!showMenu)}
+        onClick={() => {
+          if (showMenu) {
+            closeMenu(false);
+            return;
+          }
+          openMenu();
+        }}
         className="header-pill flex items-center gap-2"
         aria-label="User menu"
         aria-expanded={showMenu}
+        aria-haspopup="menu"
+        aria-controls={menuId}
       >
         {user?.avatarUrl && !avatarError ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -124,7 +180,14 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-1.5 w-64 rounded-2xl border border-border bg-card shadow-xl overflow-hidden z-50">
+        <div
+          ref={menuPanelRef}
+          id={menuId}
+          role="menu"
+          aria-label="User menu"
+          onKeyDown={handleMenuKeyDown}
+          className="absolute right-0 top-full mt-1.5 w-64 rounded-2xl border border-border bg-card shadow-xl overflow-hidden z-50"
+        >
           {/* User info header */}
           <div className="px-3 py-2.5 border-b border-border bg-muted/10">
             <div className="flex items-center gap-2">
@@ -152,8 +215,9 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
           <div className="p-1.5">
             <Link
               href="/workspace/account"
+              role="menuitem"
               className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
-              onClick={() => setShowMenu(false)}
+              onClick={() => closeMenu(false)}
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M12 3.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 0 1 0-6.4Z" />
@@ -163,8 +227,9 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
             </Link>
             <Link
               href="/workspace/settings"
+              role="menuitem"
               className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-muted/30"
-              onClick={() => setShowMenu(false)}
+              onClick={() => closeMenu(false)}
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -174,7 +239,7 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
             </Link>
             <div className="mt-1 pt-1 border-t border-border">
               <div className="px-2.5 py-1.5">
-                <LogoutButton label={copy.signOut} />
+                <LogoutButton role="menuitem" label={copy.signOut} />
               </div>
             </div>
           </div>
