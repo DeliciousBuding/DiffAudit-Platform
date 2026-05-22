@@ -1,11 +1,15 @@
 "use client";
 
+import { useId } from "react";
+
 interface RocCurveProps {
   data: { fpr: number; tpr: number }[];
   height?: number;
 }
 
 export function ChartRocCurve({ data, height = 220 }: RocCurveProps) {
+  const titleId = useId();
+  const descId = useId();
   const width = 320;
   const padding = { top: 12, right: 14, bottom: 24, left: 30 };
   const plotWidth = width - padding.left - padding.right;
@@ -18,9 +22,16 @@ export function ChartRocCurve({ data, height = 220 }: RocCurveProps) {
     const p = point(item.fpr, item.tpr);
     return `${index === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`;
   }).join(" ");
+  const lastPoint = data.at(-1);
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-label="ROC curve">
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-labelledby={`${titleId} ${descId}`}>
+      <title id={titleId}>ROC curve</title>
+      <desc id={descId}>
+        {lastPoint
+          ? `${data.length} ROC points, ending at FPR ${lastPoint.fpr.toFixed(2)} and TPR ${lastPoint.tpr.toFixed(2)}.`
+          : "No ROC points available."}
+      </desc>
       <g stroke="var(--border)" strokeWidth="1">
         {[0, 0.5, 1].map((ratio) => {
           const x = padding.left + plotWidth * ratio;

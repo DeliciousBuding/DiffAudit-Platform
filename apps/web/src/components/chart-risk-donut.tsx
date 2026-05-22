@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useRouter } from "next/navigation";
 
 interface RiskDonutProps {
@@ -23,9 +24,19 @@ function donutSegment(cx: number, cy: number, radius: number, start: number, end
   return `M ${startPoint.x} ${startPoint.y} A ${radius} ${radius} 0 ${largeArc} 1 ${endPoint.x} ${endPoint.y}`;
 }
 
+function resultLabel(count: number) {
+  return count === 1 ? "result" : "results";
+}
+
 export function ChartRiskDonut({ data, totalLabel = "总结果", height = 160 }: RiskDonutProps) {
   const router = useRouter();
+  const titleId = useId();
+  const descId = useId();
   const total = data.reduce((acc, item) => acc + item.count, 0);
+  const largest = data.reduce<{ label: string; count: number } | null>(
+    (current, item) => current === null || item.count > current.count ? item : current,
+    null,
+  );
   const chartSize = Math.max(106, Math.min(124, height - 46));
   const segments = data.map((item, index) => {
     const start = data
@@ -38,7 +49,13 @@ export function ChartRiskDonut({ data, totalLabel = "总结果", height = 160 }:
   return (
     <div className="risk-donut-wrap" style={{ height }}>
       <div className="risk-donut-canvas" style={{ height: chartSize, width: chartSize }}>
-        <svg viewBox="0 0 160 160" width={chartSize} height={chartSize} role="img" aria-label="Risk distribution">
+        <svg viewBox="0 0 160 160" width={chartSize} height={chartSize} role="img" aria-labelledby={`${titleId} ${descId}`}>
+          <title id={titleId}>Risk distribution</title>
+          <desc id={descId}>
+            {largest
+              ? `${total} total ${resultLabel(total)}; largest segment ${largest.label} with ${largest.count} ${resultLabel(largest.count)}.`
+              : "No risk distribution data available."}
+          </desc>
           <circle cx="80" cy="80" r="58" fill="none" stroke="var(--muted)" strokeWidth="18" opacity="0.55" />
           {segments.map(({ item, start, sweep }) => {
             return (

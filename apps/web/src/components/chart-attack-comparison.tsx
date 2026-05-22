@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 interface AttackComparisonProps {
   data: Record<string, string | number>[];
   height?: number;
@@ -20,6 +22,8 @@ function getNumericKeys(data: Record<string, string | number>[]): string[] {
 }
 
 export function ChartAttackComparison({ data, height = 170 }: AttackComparisonProps) {
+  const titleId = useId();
+  const descId = useId();
   const keys = getNumericKeys(data);
   const width = 220;
   const cx = width / 2;
@@ -42,7 +46,11 @@ export function ChartAttackComparison({ data, height = 170 }: AttackComparisonPr
   }).join(" ");
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-label="Attack comparison">
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-labelledby={`${titleId} ${descId}`}>
+      <title id={titleId}>Attack comparison</title>
+      <desc id={descId}>
+        {`${data.length} dimensions compared across ${keys.length} attack ${keys.length === 1 ? "family" : "families"}.`}
+      </desc>
       {[0.25, 0.5, 0.75, 1].map((ratio) => (
         <polygon
           key={ratio}

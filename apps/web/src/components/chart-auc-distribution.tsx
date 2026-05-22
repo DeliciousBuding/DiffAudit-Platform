@@ -1,23 +1,41 @@
 "use client";
 
+import { useId } from "react";
+
 interface AucDistributionProps {
   data: { auc: number; count: number }[];
   height?: number;
 }
 
+function resultLabel(count: number) {
+  return count === 1 ? "result" : "results";
+}
+
 export function ChartAucDistribution({ data, height = 220 }: AucDistributionProps) {
+  const titleId = useId();
+  const descId = useId();
   const width = 320;
   const padding = { top: 12, right: 14, bottom: 24, left: 30 };
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
   const maxCount = Math.max(1, ...data.map((item) => item.count));
+  const peak = data.reduce<{ auc: number; count: number } | null>(
+    (current, item) => current === null || item.count > current.count ? item : current,
+    null,
+  );
   const barGap = 7;
   const barWidth = data.length > 0
     ? Math.max(10, (plotWidth - barGap * (data.length - 1)) / data.length)
     : 0;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-label="AUC distribution">
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-labelledby={`${titleId} ${descId}`}>
+      <title id={titleId}>AUC distribution</title>
+      <desc id={descId}>
+        {peak
+          ? `${data.length} bins. Peak bin ${peak.auc.toFixed(1)} with ${peak.count} ${resultLabel(peak.count)}.`
+          : "No AUC bins available."}
+      </desc>
       <g stroke="var(--border)" strokeWidth="1">
         {[0, 0.5, 1].map((ratio) => {
           const y = padding.top + plotHeight * ratio;
