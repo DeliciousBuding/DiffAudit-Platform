@@ -101,6 +101,18 @@ docker image inspect ghcr.io/deliciousbuding/diffaudit-platform-api:sha-1c9d67d 
 curl http://127.0.0.1:8780/health
 ```
 
+You can automate the revision-label check with the repository helper:
+
+```powershell
+# Verify local images built by scripts/build_docker_images.ps1 with its default tag.
+python .\scripts\verify_image_provenance.py --local-tag (git rev-parse --short=12 HEAD)
+
+# Verify pulled GHCR images pinned to an immutable tag.
+python .\scripts\verify_image_provenance.py --ghcr-tag sha-1c9d67d --expected-revision 1c9d67d
+```
+
+The helper checks `org.opencontainers.image.revision` and exits non-zero when a web or API image does not match the expected Git revision. Add `--expected-source https://github.com/DeliciousBuding/DiffAudit-Platform` when you also want to verify the public source label.
+
 ## Migration Checklist
 
 - Pin image tags to a Git revision or immutable GHCR `sha-<short-sha>` tag.

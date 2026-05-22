@@ -30,6 +30,7 @@ def main() -> None:
     repo_root = Path(__file__).resolve().parents[1]
 
     run(["python", "scripts/check_public_boundary.py"], repo_root)
+    run(["python", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_*.py"], repo_root)
     run(["npm", "--prefix", "apps/web", "run", "lint"], repo_root)
     run(["npm", "--prefix", "apps/web", "run", "test"], repo_root)
     run(["go", "-C", "./apps/api-go", "test", "./..."], repo_root)

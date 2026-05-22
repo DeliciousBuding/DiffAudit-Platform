@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 02:36 Asia/Hong_Kong
+Last updated: 2026-05-23 03:02 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -21,6 +21,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Remove render-time browser storage reads from workspace global search to reduce hydration drift risk.
 - [x] Clean workspace lint/build signal before deployment consideration.
 - [x] Cover the Next proxy auth/demo/locale boundary with regression tests.
+- [x] Add Docker/GHCR image provenance verification helpers and clear npm audit.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
@@ -31,6 +32,8 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Frontend tests passed.
 - [x] Frontend build passed.
 - [x] Public boundary check passed.
+- [x] Unified local quality gate passed.
+- [x] npm audit passed with zero vulnerabilities.
 - [x] Go API tests and build passed.
 - [x] Git status reviewed before handoff.
 
@@ -43,6 +46,5 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 
 ## Backlog
 
-- [ ] Deployment: add optional GHCR/local archive image provenance verification helpers.
 - [ ] Snapshot publisher: add more schema validation and clearer warnings before public bundle publication.
 - [ ] Research handoff: simplify admitted-evidence import from DiffAudit-Research without exposing raw paths.
