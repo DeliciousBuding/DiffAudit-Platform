@@ -6,15 +6,24 @@ import { useRouter } from "next/navigation";
 import { type Locale } from "@/components/language-picker";
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { type WorkspaceNavKey } from "@/lib/workspace-registry";
 
-const SEARCH_ALIASES: Record<string, string> = {
-  "/workspace/start": "工作台 home dashboard overview metrics 总览 指标",
-  "/workspace/audits": "审计任务 审计流程 tasks jobs audit run 创建 运行",
-  "/workspace/model-assets": "模型资产 model assets catalog contracts datasets versions 模型 资产 合同 数据集 版本",
-  "/workspace/risk-findings": "风险发现 risk findings leakage evidence remediation 风险 发现 证据 修复",
-  "/workspace/reports": "报告中心 reports export pdf csv 报告 导出",
-  "/workspace/api-keys": "api 管理 api management keys tokens credentials 密钥 秘钥 凭证 分发 停用",
-  "/workspace/account": "个人账户 account profile login password oauth 账户 登录 密码 个人资料",
+export type WorkspaceSearchItem = {
+  href: string;
+  title: string;
+  subtitle: string;
+  keywords: string;
+};
+
+const SEARCH_ALIASES: Record<WorkspaceNavKey, string> = {
+  workspace: "工作台 home dashboard overview metrics 总览 指标",
+  audits: "审计任务 审计流程 tasks jobs audit run 创建 运行",
+  modelAssets: "模型资产 model assets catalog contracts datasets versions 模型 资产 合同 数据集 版本",
+  riskFindings: "风险发现 risk findings leakage evidence remediation 风险 发现 证据 修复",
+  reportCenter: "报告中心 reports export pdf csv 报告 导出",
+  apiKeys: "api 管理 api management keys tokens credentials 密钥 秘钥 凭证 分发 停用",
+  account: "个人账户 account profile login password oauth 账户 登录 密码 个人资料",
+  settings: "系统设置 settings runtime preferences config 系统 设置 配置",
 };
 
 const RECENT_KEY = "diffaudit-recent-pages";
@@ -59,6 +68,25 @@ export function nextSearchActiveIndex(currentIndex: number, itemCount: number, d
   return (currentIndex + delta + itemCount) % itemCount;
 }
 
+export function getWorkspaceSearchItems(locale: Locale): WorkspaceSearchItem[] {
+  const copy = WORKSPACE_COPY[locale].shell;
+  const navItems = getNavItems(locale).map((item) => ({
+    href: item.href,
+    title: item.title,
+    subtitle: item.subtitle,
+    keywords: `${item.title} ${item.subtitle} ${item.shortLabel} ${SEARCH_ALIASES[item.key]}`.toLowerCase(),
+  }));
+  const extras = [
+    {
+      href: "/docs",
+      title: copy.searchDocsTitle,
+      subtitle: copy.searchDocsSubtitle,
+      keywords: copy.searchDocsKeywords,
+    },
+  ];
+  return [...navItems, ...extras];
+}
+
 export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const router = useRouter();
   const copy = WORKSPACE_COPY[locale].shell;
@@ -70,23 +98,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const recentHrefs = useSyncExternalStore(subscribeRecentPages, getRecentPages, () => EMPTY_RECENT);
 
-  const items = useMemo(() => {
-    const navItems = getNavItems(locale).map((item) => ({
-      href: item.href,
-      title: item.title,
-      subtitle: item.subtitle,
-      keywords: `${item.title} ${item.subtitle} ${item.shortLabel} ${SEARCH_ALIASES[item.href] ?? ""}`.toLowerCase(),
-    }));
-    const extras = [
-      {
-        href: "/docs",
-        title: copy.searchDocsTitle,
-        subtitle: copy.searchDocsSubtitle,
-        keywords: copy.searchDocsKeywords,
-      },
-    ];
-    return [...navItems, ...extras];
-  }, [copy.searchDocsKeywords, copy.searchDocsSubtitle, copy.searchDocsTitle, locale]);
+  const items = useMemo(() => getWorkspaceSearchItems(locale), [locale]);
 
   const matches = useMemo(() => {
     const normalized = query.trim().toLowerCase();

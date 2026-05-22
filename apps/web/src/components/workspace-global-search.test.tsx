@@ -2,9 +2,10 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-import { WorkspaceGlobalSearch, nextSearchActiveIndex } from "./workspace-global-search";
+import { WorkspaceGlobalSearch, getWorkspaceSearchItems, nextSearchActiveIndex } from "./workspace-global-search";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -67,6 +68,41 @@ describe("WorkspaceGlobalSearch", () => {
     expect(markup).toContain(copy.searchPlaceholder);
     expect(markup).toContain(copy.searchShortcut);
     expect(markup).not.toContain(WORKSPACE_COPY["en-US"].shell.searchPlaceholder);
+  });
+
+  it("derives English navigation search items from the workspace navigation registry", () => {
+    const navItems = getNavItems("en-US");
+    const searchItems = getWorkspaceSearchItems("en-US");
+    const navSearchItems = searchItems.slice(0, navItems.length);
+
+    expect(navSearchItems.map((item) => item.href)).toEqual(navItems.map((item) => item.href));
+    expect(navSearchItems.map((item) => item.title)).toEqual(navItems.map((item) => item.title));
+    expect(searchItems.at(-1)).toMatchObject({
+      href: "/docs",
+      title: WORKSPACE_COPY["en-US"].shell.searchDocsTitle,
+      subtitle: WORKSPACE_COPY["en-US"].shell.searchDocsSubtitle,
+    });
+  });
+
+  it("derives Chinese navigation search items from the workspace navigation registry", () => {
+    const navItems = getNavItems("zh-CN");
+    const searchItems = getWorkspaceSearchItems("zh-CN");
+    const navSearchItems = searchItems.slice(0, navItems.length);
+
+    expect(navSearchItems.map((item) => item.href)).toEqual(navItems.map((item) => item.href));
+    expect(navSearchItems.map((item) => item.title)).toEqual(navItems.map((item) => item.title));
+    expect(searchItems.at(-1)).toMatchObject({
+      href: "/docs",
+      title: WORKSPACE_COPY["zh-CN"].shell.searchDocsTitle,
+      subtitle: WORKSPACE_COPY["zh-CN"].shell.searchDocsSubtitle,
+    });
+  });
+
+  it("keeps system settings discoverable through search aliases", () => {
+    const settings = getWorkspaceSearchItems("en-US").find((item) => item.href === "/workspace/settings");
+
+    expect(settings?.keywords).toContain("runtime");
+    expect(settings?.keywords).toContain("config");
   });
 
   it("wraps keyboard active index within available search results", () => {
