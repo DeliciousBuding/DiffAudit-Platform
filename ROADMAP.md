@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 02:28 Asia/Hong_Kong
+Last updated: 2026-05-23 02:36 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -20,6 +20,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Create a root `ROADMAP.md` so autonomous Platform work has a repository-local goal ledger.
 - [x] Remove render-time browser storage reads from workspace global search to reduce hydration drift risk.
 - [x] Clean workspace lint/build signal before deployment consideration.
+- [x] Cover the Next proxy auth/demo/locale boundary with regression tests.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
