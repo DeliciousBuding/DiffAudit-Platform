@@ -10,8 +10,8 @@ jobs:
   public-boundary:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
       - run: python scripts/check_public_boundary.py
@@ -19,8 +19,8 @@ jobs:
   web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version: 22
           cache: npm
@@ -37,10 +37,10 @@ jobs:
       run:
         working-directory: apps/api-go
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-go@v6.4.0
         with:
           go-version-file: apps/api-go/go.mod
-          cache: true
+          cache: false
       - run: go test ./...
       - run: go build ./cmd/platform-api
