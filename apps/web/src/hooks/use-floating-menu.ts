@@ -3,10 +3,19 @@
 import { type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 
 type Direction = 1 | -1;
+type FloatingMenuFocusTarget = number | "first" | "last";
 
 export function nextFloatingMenuIndex(currentIndex: number, itemCount: number, delta: Direction): number {
   if (itemCount <= 0) return 0;
   return (currentIndex + delta + itemCount) % itemCount;
+}
+
+export function resolveFloatingMenuFocusIndex(target: FloatingMenuFocusTarget, itemCount: number): number {
+  if (itemCount <= 0) return 0;
+  if (target === "first") return 0;
+  if (target === "last") return itemCount - 1;
+  if (target < 0) return Math.max(0, itemCount + target);
+  return Math.min(target, itemCount - 1);
 }
 
 export function useFloatingMenu<TItem extends HTMLElement = HTMLElement>({
@@ -32,14 +41,15 @@ export function useFloatingMenu<TItem extends HTMLElement = HTMLElement>({
     return Array.from(menuRef.current.querySelectorAll<TItem>(itemSelector));
   }, [itemSelector]);
 
-  const focusMenuItem = useCallback((index: number) => {
+  const focusMenuItem = useCallback((target: FloatingMenuFocusTarget) => {
     const items = getMenuItems();
+    const index = resolveFloatingMenuFocusIndex(target, items.length);
     items[index]?.focus();
   }, [getMenuItems]);
 
-  const openMenu = useCallback(() => {
+  const openMenu = useCallback((focusTarget: FloatingMenuFocusTarget = "first") => {
     setOpen(true);
-    window.requestAnimationFrame(() => focusMenuItem(0));
+    window.requestAnimationFrame(() => focusMenuItem(focusTarget));
   }, [focusMenuItem]);
 
   const toggleMenu = useCallback(() => {
@@ -81,10 +91,22 @@ export function useFloatingMenu<TItem extends HTMLElement = HTMLElement>({
       return;
     }
 
+    const items = getMenuItems();
+    if (event.key === "Home") {
+      event.preventDefault();
+      focusMenuItem("first");
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      focusMenuItem("last");
+      return;
+    }
+
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
 
     event.preventDefault();
-    const items = getMenuItems();
     const currentIndex = Math.max(0, items.findIndex((item) => item === document.activeElement));
     const nextIndex = nextFloatingMenuIndex(currentIndex, items.length, event.key === "ArrowDown" ? 1 : -1);
     focusMenuItem(nextIndex);

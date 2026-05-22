@@ -1,13 +1,14 @@
 "use client";
 
 import { RefreshCw, FileText, ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useCallback, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 
 import type { CatalogEntryViewModel } from "@/lib/catalog";
 import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { PrintableAuditReport } from "@/components/printable-audit-report";
+import { useFloatingMenu } from "@/hooks/use-floating-menu";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type Locale } from "@/components/language-picker";
 import {
@@ -67,20 +68,17 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
   const copy = WORKSPACE_COPY[locale].exportButton;
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const menuId = useId();
-  const menuRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const menuItemRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  const focusMenuItem = useCallback((index: number) => {
-    menuItemRefs.current[index]?.focus();
-  }, []);
-
-  const openMenuAndFocus = useCallback((index: number) => {
-    setOpen(true);
-    window.requestAnimationFrame(() => focusMenuItem(index));
-  }, [focusMenuItem]);
+  const {
+    closeMenu,
+    handleMenuKeyDown,
+    menuId,
+    menuRef,
+    open,
+    openMenu,
+    rootRef,
+    toggleMenu,
+    triggerRef,
+  } = useFloatingMenu<HTMLButtonElement>({ itemSelector: "button:not([disabled])" });
 
   const exportAsPdf = useCallback(async () => {
     setIsExporting(true);
@@ -173,78 +171,26 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
     }
   }, [locale, rows]);
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    function handlePointerDown(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-        triggerRef.current?.focus();
-      }
-    }
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
   const handleTriggerKeyDown = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      openMenuAndFocus(0);
+      openMenu("first");
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      openMenuAndFocus(1);
+      openMenu("last");
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      openMenuAndFocus(0);
+      openMenu("first");
     }
-  }, [openMenuAndFocus]);
-
-  const handleMenuKeyDown = useCallback((event: ReactKeyboardEvent<HTMLDivElement>) => {
-    const itemCount = menuItemRefs.current.filter(Boolean).length;
-    if (itemCount === 0) {
-      return;
-    }
-
-    const activeIndex = menuItemRefs.current.findIndex((item) => item === document.activeElement);
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      focusMenuItem((activeIndex + 1 + itemCount) % itemCount);
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      focusMenuItem((activeIndex - 1 + itemCount) % itemCount);
-    } else if (event.key === "Home") {
-      event.preventDefault();
-      focusMenuItem(0);
-    } else if (event.key === "End") {
-      event.preventDefault();
-      focusMenuItem(itemCount - 1);
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setOpen(false);
-      triggerRef.current?.focus();
-    }
-  }, [focusMenuItem]);
+  }, [openMenu]);
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative" ref={rootRef}>
       <button
         ref={triggerRef}
         type="button"
         className="workspace-btn-primary px-3 py-1.5 text-xs font-medium"
-        onClick={() => setOpen((current) => !current)}
+        onClick={toggleMenu}
         onKeyDown={handleTriggerKeyDown}
         disabled={isExporting}
         aria-expanded={open}
@@ -267,6 +213,7 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
 
       {open && !isExporting ? (
         <div
+          ref={menuRef}
           id={menuId}
           className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[180px] rounded-2xl p-1.5"
           role="menu"
@@ -274,30 +221,24 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
           onKeyDown={handleMenuKeyDown}
         >
           <button
-            ref={(node) => {
-              menuItemRefs.current[0] = node;
-            }}
             type="button"
             className="flex w-full items-center rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
             role="menuitem"
             tabIndex={-1}
             onClick={() => {
-              setOpen(false);
+              closeMenu(false);
               void exportAsPdf();
             }}
           >
             {copy.pdf}
           </button>
           <button
-            ref={(node) => {
-              menuItemRefs.current[1] = node;
-            }}
             type="button"
             className="flex w-full items-center rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
             role="menuitem"
             tabIndex={-1}
             onClick={() => {
-              setOpen(false);
+              closeMenu(false);
               exportAsCsv();
             }}
           >
