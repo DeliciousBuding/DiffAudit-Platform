@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 07:28 Asia/Hong_Kong
+Last updated: 2026-05-23 07:37 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -42,6 +42,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Route shared Modal outside-click and Escape dismissal through the shared dismissible-layer hook.
 - [x] Derive command palette workspace navigation from the shared navigation registry.
 - [x] Share workspace navigation shortcut mapping across command palette, shortcut modal, and key handlers.
+- [x] Move workspace global search visible copy into the shared workspace copy contract.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates

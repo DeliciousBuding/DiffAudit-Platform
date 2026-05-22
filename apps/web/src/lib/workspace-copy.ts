@@ -29,6 +29,11 @@ export const WORKSPACE_COPY: Record<
       statusUnknown: string;
       searchPlaceholder: string;
       searchShortcut: string;
+      searchNoResults: string;
+      searchRecentLabel: string;
+      searchDocsTitle: string;
+      searchDocsSubtitle: string;
+      searchDocsKeywords: string;
       notificationTitle: string;
       collapseSidebar: string;
       expandSidebar: string;
@@ -612,8 +617,13 @@ export const WORKSPACE_COPY: Record<
       statusReady: "Ready",
       statusMissing: "Missing",
       statusUnknown: "Unknown",
-      searchPlaceholder: "Search models, tasks, reports...",
-      searchShortcut: "⌘ K",
+      searchPlaceholder: "Search pages...",
+      searchShortcut: "Ctrl K",
+      searchNoResults: "No results",
+      searchRecentLabel: "Recent",
+      searchDocsTitle: "Docs",
+      searchDocsSubtitle: "Product documentation",
+      searchDocsKeywords: "docs documentation guide",
       notificationTitle: "Notifications",
       collapseSidebar: "Collapse sidebar",
       expandSidebar: "Expand sidebar",
@@ -1489,8 +1499,13 @@ export const WORKSPACE_COPY: Record<
       statusReady: "已就绪",
       statusMissing: "缺失",
       statusUnknown: "未知",
-      searchPlaceholder: "搜索模型、任务、报告...",
-      searchShortcut: "⌘ K",
+      searchPlaceholder: "搜索页面...",
+      searchShortcut: "Ctrl K",
+      searchNoResults: "没有匹配结果",
+      searchRecentLabel: "最近访问",
+      searchDocsTitle: "Docs",
+      searchDocsSubtitle: "产品文档",
+      searchDocsKeywords: "docs 文档 指南",
       notificationTitle: "通知",
       collapseSidebar: "收起侧边栏",
       expandSidebar: "展开侧边栏",

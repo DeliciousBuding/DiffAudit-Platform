@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { getNavItems } from "@/lib/navigation";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const SEARCH_ALIASES: Record<string, string> = {
   "/workspace/start": "工作台 home dashboard overview metrics 总览 指标",
@@ -60,6 +61,7 @@ export function nextSearchActiveIndex(currentIndex: number, itemCount: number, d
 
 export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const router = useRouter();
+  const copy = WORKSPACE_COPY[locale].shell;
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -75,19 +77,16 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
       subtitle: item.subtitle,
       keywords: `${item.title} ${item.subtitle} ${item.shortLabel} ${SEARCH_ALIASES[item.href] ?? ""}`.toLowerCase(),
     }));
-    const extras = locale === "zh-CN"
-      ? [
-        { href: "/docs", title: "Docs", subtitle: "产品文档", keywords: "docs 文档 指南" },
-      ]
-      : [
-        { href: "/docs", title: "Docs", subtitle: "Product documentation", keywords: "docs documentation guide" },
-      ];
+    const extras = [
+      {
+        href: "/docs",
+        title: copy.searchDocsTitle,
+        subtitle: copy.searchDocsSubtitle,
+        keywords: copy.searchDocsKeywords,
+      },
+    ];
     return [...navItems, ...extras];
-  }, [locale]);
-
-  const placeholder = locale === "zh-CN" ? "搜索页面..." : "Search pages...";
-  const noResultsText = locale === "zh-CN" ? "没有匹配结果" : "No results";
-  const recentLabel = locale === "zh-CN" ? "最近访问" : "Recent";
+  }, [copy.searchDocsKeywords, copy.searchDocsSubtitle, copy.searchDocsTitle, locale]);
 
   const matches = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -190,8 +189,8 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
         }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        placeholder={placeholder}
-        aria-label={placeholder}
+        placeholder={copy.searchPlaceholder}
+        aria-label={copy.searchPlaceholder}
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={open}
@@ -200,12 +199,12 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
         aria-activedescendant={open && matches[activeIndex] ? `search-item-${activeIndex}` : undefined}
         autoComplete="off"
       />
-      <kbd aria-hidden="true">Ctrl K</kbd>
+      <kbd aria-hidden="true">{copy.searchShortcut}</kbd>
       {open ? (
         <div className="workspace-search-menu" id="search-listbox" ref={listRef} role="listbox">
           {isRecent && (
             <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">
-              {recentLabel}
+              {copy.searchRecentLabel}
             </div>
           )}
           {matches.length > 0 ? matches.map((item, index) => {
@@ -228,7 +227,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
               </button>
             );
           }) : (
-            <div className="workspace-search-empty">{noResultsText}</div>
+            <div className="workspace-search-empty">{copy.searchNoResults}</div>
           )}
         </div>
       ) : null}
