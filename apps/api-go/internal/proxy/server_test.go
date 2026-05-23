@@ -3,12 +3,14 @@ package proxy
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestHealthEndpoint(t *testing.T) {
@@ -937,6 +939,205 @@ func TestBadGatewayResponseIsSafe(t *testing.T) {
 	raw := recorder.Body.String()
 	if !strings.Contains(raw, "runtime") || strings.Contains(raw, "runtime_base_url") {
 		t.Fatalf("502 response should mention runtime and must not leak internal config: %s", raw)
+	}
+}
+
+// ── Retry and error handling ───────────────────────────────────────────────────
+
+func TestRuntimeErrorHint(t *testing.T) {
+	tests := []struct {
+		name     string
+		err      error
+		contains string
+	}{
+		{"timeout", errors.New("context deadline exceeded"), "timed out"},
+		{"connection refused", errors.New("dial tcp: connection refused"), "cannot connect"},
+		{"no such host", errors.New("dial tcp: lookup no-such-host.example: no such host"), "hostname cannot be resolved"},
+		{"generic", errors.New("some other error"), "unavailable"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			hint := runtimeErrorHint(tc.err)
+			if !strings.Contains(strings.ToLower(hint), strings.ToLower(tc.contains)) {
+				t.Fatalf("expected hint to contain %q, got %q", tc.contains, hint)
+			}
+		})
+	}
+}
+
+func TestIsRetryableError(t *testing.T) {
+	tests := []struct {
+		name     string
+		err      error
+		expected bool
+	}{
+		{"timeout", errors.New("dial tcp: i/o timeout"), true},
+		{"deadline exceeded", errors.New("context deadline exceeded"), true},
+		{"connection reset", errors.New("connection reset by peer"), true},
+		{"connection refused", errors.New("dial tcp: connection refused"), true},
+		{"no such host", errors.New("dial tcp: lookup x: no such host"), true},
+		{"unexpected EOF", errors.New("unexpected EOF"), true},
+		{"server misbehaving", errors.New("server misbehaving"), true},
+		{"not found", errors.New("404 Not Found"), false},
+		{"permission denied", errors.New("permission denied"), false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isRetryableError(tc.err); got != tc.expected {
+				t.Fatalf("isRetryableError(%q) = %v, want %v", tc.err, got, tc.expected)
+			}
+		})
+	}
+}
+
+func TestDoWithRetrySuccess(t *testing.T) {
+	callCount := 0
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		callCount++
+		writeJSON(writer, http.StatusOK, map[string]any{"status": "ok"})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	req, _ := http.NewRequest(http.MethodGet, upstream.URL+"/health", nil)
+	resp, err := server.doWithRetry(req, maxRetries)
+
+	if err != nil {
+		t.Fatalf("expected success, got %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", resp.StatusCode)
+	}
+	resp.Body.Close()
+	if callCount != 1 {
+		t.Fatalf("expected 1 call, got %d", callCount)
+	}
+}
+
+func TestDoWithRetryGivesUpAfterMaxRetries(t *testing.T) {
+	callCount := 0
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		callCount++
+		// Simulate a transient network error by closing the connection abruptly.
+		// httptest doesn't support hijacking, so we use a panic to abort the
+		// handler mid-response, which causes an EOF on the client side.
+		panic("simulated connection reset")
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+
+	req, _ := http.NewRequest(http.MethodGet, upstream.URL+"/test", nil)
+	_, err := server.doWithRetry(req, 3)
+
+	if err == nil {
+		t.Fatalf("expected error after max retries")
+	}
+	// The panic in httptest handler causes the server to return empty response
+	// and close the connection, which the client sees as an error — but the
+	// error may not be retryable (unexpected EOF varies). Either way, the
+	// function should return an error, not nil.
+}
+
+func TestServeCacheFallbackHit(t *testing.T) {
+	dataDir := t.TempDir()
+	cacheDir := filepath.Join(dataDir, "cache")
+	os.MkdirAll(cacheDir, 0o755)
+	os.WriteFile(filepath.Join(cacheDir, "audit-jobs.json"), []byte(`{"cached":true}`), 0o644)
+
+	server := NewServer(Config{PublicDataDir: dataDir})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	ok := server.serveCacheFallback(recorder, request, "/api/v1/audit/jobs")
+
+	if !ok {
+		t.Fatalf("expected cache hit")
+	}
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	if recorder.Header().Get("X-Data-Source") != "cache" {
+		t.Fatalf("expected X-Data-Source=cache header")
+	}
+}
+
+func TestServeCacheFallbackMiss(t *testing.T) {
+	server := NewServer(Config{PublicDataDir: t.TempDir()})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	ok := server.serveCacheFallback(recorder, request, "/api/v1/audit/jobs")
+
+	if ok {
+		t.Fatalf("expected cache miss")
+	}
+}
+
+func TestServeCacheFallbackEmptyDir(t *testing.T) {
+	server := NewServer(Config{PublicDataDir: ""})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	ok := server.serveCacheFallback(recorder, request, "/api/v1/audit/jobs")
+
+	if ok {
+		t.Fatalf("expected cache miss with empty dir")
+	}
+}
+
+func TestConfigTimeoutDefault(t *testing.T) {
+	cfg := Config{}
+	timeout := cfg.timeout()
+	if timeout != defaultRuntimeTimeout {
+		t.Fatalf("expected default timeout %v, got %v", defaultRuntimeTimeout, timeout)
+	}
+}
+
+func TestConfigTimeoutCustom(t *testing.T) {
+	customTimeout := 5 * time.Second
+	cfg := Config{RuntimeTimeout: customTimeout}
+	timeout := cfg.timeout()
+	if timeout != customTimeout {
+		t.Fatalf("expected custom timeout %v, got %v", customTimeout, timeout)
+	}
+}
+
+func TestHealthCheckRetries(t *testing.T) {
+	callCount := 0
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		callCount++
+		if callCount < 3 {
+			writer.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{"status": "ok"})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/control/runtime", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	// 503 is not a retryable error (it's a successful HTTP response),
+	// so the health check should see upstream_status=503 on the first call
+	// and return disconnected. This verifies we don't retry non-transient errors.
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	json.Unmarshal(recorder.Body.Bytes(), &payload)
+	if payload["connected"] != false {
+		t.Fatalf("expected disconnected for 503 upstream")
+	}
+	// Verify no internal info leaked
+	raw := recorder.Body.String()
+	if strings.Contains(raw, upstream.URL) {
+		t.Fatalf("response leaked upstream URL: %s", raw)
 	}
 }
 

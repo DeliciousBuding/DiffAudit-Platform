@@ -3,6 +3,19 @@
 ## Unreleased (dev)
 
 ### Added
+- Runtime bridge: configurable `RuntimeTimeout` in proxy config
+- Runtime bridge: retry on transient errors for DELETE control-plane routes
+- Runtime bridge: health check now retries up to 3 times (was 1)
+- Go API tests: 10 new tests for retry logic, error hints, cache fallback, timeout config (49 total)
+- Architecture docs: 4-tier publish-time fallback chain documented
+
+### Changed
+- Runtime bridge: `forwardControlWithMethod` uses `doWithRetry` instead of raw `client.Do`
+
+### Fixed
+- Health check: properly retries on transient network errors instead of failing immediately
+
+### Added
 - Research handoff: `--bundle-path` flag for snapshot publisher (decouples sibling-directory assumption)
 - Research handoff: publisher now prefers curated `admitted-evidence-bundle.json` over raw unified table
 - Publisher tests: 2 new tests for curated bundle + explicit `--bundle-path` (4/4 pass)

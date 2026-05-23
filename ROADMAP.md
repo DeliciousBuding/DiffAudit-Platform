@@ -10,8 +10,10 @@ Dev → main merged (45 commits, dc6a01b). Next phase: Runtime-Server bridge har
 
 - [x] Merge dev → main (dc6a01b): onboarding UX, Research handoff, publisher tests.
 - [x] Research handoff: publisher consumes curated bundle + --bundle-path flag + tests (4/4).
-- [ ] Runtime bridge: improve error messages when runtime is unreachable.
-- [ ] Documentation: update architecture.md with current handoff flow.
+- [x] Runtime bridge: improve error messages when runtime is unreachable.
+- [x] Documentation: update architecture.md with current handoff flow.
+- [x] Runtime bridge: health check retry, connection timeout, error messaging.
+- [x] Runtime bridge: configurable timeout, retry on DELETE, cache fallback tests.
 
 ## Review Gates
 
@@ -25,7 +27,8 @@ Dev → main merged (45 commits, dc6a01b). Next phase: Runtime-Server bridge har
 ## Near-Term Product Work
 
 - [x] Reports, Account, Accessibility, Workspace UX — all completed.
-- [ ] Runtime bridge: health check retry, connection timeout, error messaging.
+- [x] Runtime bridge: health check retry, connection timeout, error messaging.
+- [x] Runtime bridge: configurable timeout, DELETE retry, cache fallback tests (10 new tests, 49 total).
 
 ## Backlog
 

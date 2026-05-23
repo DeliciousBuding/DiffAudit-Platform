@@ -25,6 +25,14 @@ type Config struct {
 	BuildDate      string
 	DemoMode       bool
 	CORS           CORSConfig
+	RuntimeTimeout time.Duration // 0 means use defaultTimeout
+}
+
+func (c Config) timeout() time.Duration {
+	if c.RuntimeTimeout > 0 {
+		return c.RuntimeTimeout
+	}
+	return defaultRuntimeTimeout
 }
 
 type Server struct {
@@ -41,7 +49,7 @@ func NewServer(config Config) *Server {
 		config:    config,
 		mux:       mux,
 		client:    &http.Client{
-			Timeout: defaultRuntimeTimeout,
+			Timeout: config.timeout(),
 		},
 		cacheDir:  config.PublicDataDir,
 		demoStore: NewDemoJobStore(),
@@ -121,7 +129,7 @@ func (s *Server) handleRuntimeHealth(writer http.ResponseWriter, _ *http.Request
 		return
 	}
 
-	response, err := s.doWithRetry(upstreamRequest, 1)
+	response, err := s.doWithRetry(upstreamRequest, maxRetries)
 	if err != nil {
 		payload["detail"] = runtimeErrorHint(err)
 		writeJSON(writer, http.StatusOK, payload)
@@ -390,7 +398,7 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 	if contentType := request.Header.Get("Content-Type"); contentType != "" {
 		upstreamRequest.Header.Set("Content-Type", contentType)
 	}
-	response, err := s.client.Do(upstreamRequest)
+	response, err := s.doWithRetry(upstreamRequest, maxRetries)
 	if err != nil {
 		s.writeRuntimeError(writer, err)
 		return
