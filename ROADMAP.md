@@ -51,7 +51,11 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Guard workspace navigation registry uniqueness and shortcut format.
 - [x] Derive command palette navigation ids from workspace navigation keys.
 - [x] Remove public workspace redesign progress diary and guard docs hygiene.
-- [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
+- [x] Eliminate hardcoded locale strings in ReportsPageClient — all display strings now sourced from workspace-copy contract.
+- [x] Extract shared getTrackDisplayLabel to eliminate duplicate trackLabel functions across ReportsPageClient, CreateTaskClient, and track-report-page.
+- [x] Scaffold Playwright E2E test infrastructure: config, fixtures, page objects, smoke/auth/navigation/a11y specs, CI job.
+- [x] Add e2e test scripts (test:e2e, test:e2e:ui, test:e2e:chromium, test:all) to both root and web package.json.
+- [ ] Continue polishing workspace IA and deep-page consistency — remaining pages still have hardcoded locale strings to migrate.
 
 ## Review Gates
 

@@ -9,9 +9,9 @@ import { EmptyState } from "@/components/empty-state";
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
-import { buildCompletedJobReportHref, inferReportTrack, type AuditReportTrack } from "@/lib/audit-flow";
+import { buildCompletedJobReportHref, inferReportTrack } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_COPY, getTrackDisplayLabel } from "@/lib/workspace-copy";
 
 type ReportJob = {
   job_id: string;
@@ -29,13 +29,6 @@ type ReportJob = {
     tpr?: number;
   };
 };
-
-function trackLabel(track: AuditReportTrack | null, locale: Locale) {
-  if (track === "black-box") return locale === "zh-CN" ? "Recon / 黑盒" : "Recon / Black-box";
-  if (track === "gray-box") return locale === "zh-CN" ? "PIA / 灰盒" : "PIA / Gray-box";
-  if (track === "white-box") return locale === "zh-CN" ? "GSA / 白盒" : "GSA / White-box";
-  return "--";
-}
 
 function csvEscape(value: unknown) {
   const text = String(value ?? "");
@@ -98,7 +91,7 @@ export function ReportsPageClient({
       return [
         job.job_id,
         job.target_model ?? "",
-        trackLabel(track, locale),
+        getTrackDisplayLabel(track, locale),
         job.contract_key,
         job.workspace_name,
         job.created_at,
@@ -127,9 +120,9 @@ export function ReportsPageClient({
     return (
       <EmptyState
         icon={RefreshCw}
-        title={locale === "zh-CN" ? "报告列表加载失败" : "Could not load reports"}
-        description={locale === "zh-CN" ? "任务接口暂时不可用，请重试。" : "The task endpoint is not available. Try again."}
-        action={{ label: locale === "zh-CN" ? "重试" : "Retry", onClick: () => loadJobs() }}
+        title={copy.loadErrorTitle}
+        description={copy.loadErrorDescription}
+        action={{ label: copy.loadErrorRetry, onClick: () => loadJobs() }}
       />
     );
   }
@@ -139,7 +132,7 @@ export function ReportsPageClient({
       <EmptyState
         icon={FileText}
         title={copy.emptyResults}
-        description={locale === "zh-CN" ? "完成任务后，每条任务报告会在这里按行显示。" : "Completed task reports will appear here as rows."}
+        description={copy.emptyReportsDescription}
         action={{ label: copy.createAuditTask, href: "/workspace/audits/new" }}
       />
     );
@@ -149,28 +142,24 @@ export function ReportsPageClient({
     <section className="workspace-section-card">
       <div className="workspace-section-card-header">
         <div>
-          <h2 className="workspace-section-card-title">{locale === "zh-CN" ? "任务报告" : "Task reports"}</h2>
-          <p className="mt-1 text-[12px] text-muted-foreground">
-            {locale === "zh-CN"
-              ? "按完成任务汇总报告；同一模型的 Recon、PIA、GSA 会分别成行，方便统一查看和导出。"
-              : "Reports are grouped by completed task. Recon, PIA, and GSA runs for the same model remain separate rows."}
-          </p>
+          <h2 className="workspace-section-card-title">{copy.taskReportsTitle}</h2>
+          <p className="mt-1 text-[12px] text-muted-foreground">{copy.taskReportsDescription}</p>
         </div>
         <button type="button" onClick={exportCsv} className="workspace-btn-secondary px-3 py-2 text-xs font-medium">
           <Download size={14} strokeWidth={1.5} aria-hidden="true" />
-          {locale === "zh-CN" ? "导出列表" : "Export list"}
+          {copy.exportList}
         </button>
       </div>
-      <div ref={tableRef} className="workspace-table-scroll" role="region" aria-label={locale === "zh-CN" ? "任务报告表" : "Task reports table"}>
+      <div ref={tableRef} className="workspace-table-scroll" role="region" aria-label={copy.taskReportsTableAriaLabel}>
         <table className="workspace-data-table w-full border-collapse text-[13px]">
           <thead className="sticky top-0 bg-muted/30">
             <tr className="border-b border-border">
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{locale === "zh-CN" ? "任务" : "Task"}</th>
+              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.task}</th>
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.model}</th>
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.track}</th>
               <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.auc}</th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{locale === "zh-CN" ? "完成时间" : "Completed"}</th>
-              <th className="reports-actions-col px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{locale === "zh-CN" ? "操作" : "Actions"}</th>
+              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.completed}</th>
+              <th className="reports-actions-col px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{copy.tableHeaders.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -192,7 +181,7 @@ export function ReportsPageClient({
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge tone={track === "white-box" ? "warning" : track === "gray-box" ? "info" : "neutral"}>
-                      {trackLabel(track, locale)}
+                      {getTrackDisplayLabel(track, locale)}
                     </StatusBadge>
                   </td>
                   <td className="mono px-4 py-3 text-right text-xs">{formatMetricValue(job.metrics?.auc)}</td>
@@ -203,7 +192,7 @@ export function ReportsPageClient({
                   <td className="reports-actions-col px-4 py-3 text-right">
                     <div className="reports-cell-actions">
                       <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="text-xs text-[var(--accent-blue)] hover:underline">
-                        {locale === "zh-CN" ? "任务详情" : "Task"}
+                                                {copy.viewTask}
                       </Link>
                       {reportHref ? (
                         <Link href={reportHref} className="text-xs text-[var(--accent-blue)] hover:underline">

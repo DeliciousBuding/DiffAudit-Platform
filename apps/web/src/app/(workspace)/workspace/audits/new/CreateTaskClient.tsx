@@ -6,7 +6,7 @@ import { Info, X } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_COPY, getTrackDisplayLabel } from "@/lib/workspace-copy";
 
 type AttackType = "black-box" | "gray-box" | "white-box";
 
@@ -54,13 +54,6 @@ const ATTACK_TYPES: AttackType[] = ["black-box", "gray-box", "white-box"];
 function attackTypeFromTrack(track: string): AttackType | null {
   if (track === "black-box" || track === "gray-box" || track === "white-box") return track;
   return null;
-}
-
-function trackLabel(track: string, locale: Locale) {
-  if (track === "black-box") return locale === "zh-CN" ? "Recon / 黑盒" : "Recon / Black-box";
-  if (track === "gray-box") return locale === "zh-CN" ? "PIA / 灰盒" : "PIA / Gray-box";
-  if (track === "white-box") return locale === "zh-CN" ? "GSA / 白盒" : "GSA / White-box";
-  return track;
 }
 
 export function CreateTaskClient({ locale, availableModels }: CreateTaskClientProps) {
@@ -312,7 +305,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {group.models.map((model) => (
                           <span key={model.contractKey} className="rounded-full border border-border bg-muted/20 px-2 py-0.5 text-[10px] text-muted-foreground">
-                            {trackLabel(model.track, locale)}
+                            {getTrackDisplayLabel(model.track, locale)}
                           </span>
                         ))}
                       </div>
@@ -339,7 +332,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       <div className="flex flex-wrap gap-1.5">
                         {form.selectedAttackTypes.map((type) => (
                           <StatusBadge key={type} tone={type === "white-box" ? "warning" : type === "gray-box" ? "info" : "neutral"} compact>
-                            {trackLabel(type, locale)}
+                            {getTrackDisplayLabel(type, locale)}
                           </StatusBadge>
                         ))}
                       </div>
@@ -516,7 +509,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     {labels.reviewAttackType}
                   </span>
                   <span className="text-[13px] font-medium">
-                    {form.selectedAttackTypes.map((type) => trackLabel(type, locale)).join(", ")}
+                    {form.selectedAttackTypes.map((type) => getTrackDisplayLabel(type, locale)).join(", ")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

@@ -1,6 +1,16 @@
 import { type Locale } from "@/components/language-picker";
 import type { WorkspaceNavKey } from "@/lib/workspace-registry";
 
+/** Compose "Recon / Black-box" style display label from the copy contract. */
+export function getTrackDisplayLabel(track: string | null | undefined, locale: Locale): string {
+  if (!track) return "--";
+  const copy = WORKSPACE_COPY[locale].reports;
+  const method = copy.trackMethods[track];
+  const label = copy.trackLabels[track];
+  if (method && label) return `${method} / ${label}`;
+  return "--";
+}
+
 export const WORKSPACE_COPY: Record<
   Locale,
   {
@@ -356,6 +366,14 @@ export const WORKSPACE_COPY: Record<
       exportSummary: string;
       emptyResults: string;
       emptyGaps: string;
+      taskReportsTitle: string;
+      taskReportsDescription: string;
+      taskReportsTableAriaLabel: string;
+      exportList: string;
+      loadErrorTitle: string;
+      loadErrorDescription: string;
+      loadErrorRetry: string;
+      emptyReportsDescription: string;
       jobContext: {
         title: string;
         matched: (count: number) => string;
@@ -368,6 +386,9 @@ export const WORKSPACE_COPY: Record<
       };
       chartDimensions: string[];
       tableHeaders: {
+        task: string;
+        completed: string;
+        actions: string;
         attack: string;
         defense: string;
         model: string;
@@ -407,6 +428,7 @@ export const WORKSPACE_COPY: Record<
       noFinding: string;
       date: string;
       view: string;
+      viewTask: string;
       download: string;
       downloadComingSoon: string;
       popupBlocked: string;
@@ -1028,6 +1050,14 @@ export const WORKSPACE_COPY: Record<
       exportSummary: "Export report",
       emptyResults: "No audit results yet",
       emptyGaps: "No coverage gap data",
+      taskReportsTitle: "Task reports",
+      taskReportsDescription: "Reports are grouped by completed task. Recon, PIA, and GSA runs for the same model remain separate rows.",
+      taskReportsTableAriaLabel: "Task reports table",
+      exportList: "Export list",
+      loadErrorTitle: "Could not load reports",
+      loadErrorDescription: "The task endpoint is not available. Try again.",
+      loadErrorRetry: "Retry",
+      emptyReportsDescription: "Completed task reports will appear here as rows.",
       jobContext: {
         title: "Reviewing completed job",
         matched: (count: number) => `${count} matching admitted result row${count === 1 ? "" : "s"} found in this snapshot.`,
@@ -1039,6 +1069,9 @@ export const WORKSPACE_COPY: Record<
         matchedRow: "Matched job",
       },
       tableHeaders: {
+        task: "Task",
+        completed: "Completed",
+        actions: "Actions",
         attack: "Attack",
         defense: "Defense",
         model: "Model",
@@ -1094,6 +1127,7 @@ export const WORKSPACE_COPY: Record<
       noFinding: "No audit results available for analysis.",
       date: "Date",
       view: "View Report",
+      viewTask: "Task",
       download: "Download",
       downloadComingSoon: "Download coming soon",
       popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
@@ -1910,6 +1944,14 @@ export const WORKSPACE_COPY: Record<
       exportSummary: "导出报告",
       emptyResults: "还没有审计结果",
       emptyGaps: "暂无覆盖缺口数据",
+      taskReportsTitle: "任务报告",
+      taskReportsDescription: "按完成任务汇总报告；同一模型的 Recon、PIA、GSA 会分别成行，方便统一查看和导出。",
+      taskReportsTableAriaLabel: "任务报告表",
+      exportList: "导出列表",
+      loadErrorTitle: "报告列表加载失败",
+      loadErrorDescription: "任务接口暂时不可用，请重试。",
+      loadErrorRetry: "重试",
+      emptyReportsDescription: "完成任务后，每条任务报告会在这里按行显示。",
       jobContext: {
         title: "正在审阅已完成任务",
         matched: (count: number) => `当前快照中找到 ${count} 条匹配的已公开结果行`,
@@ -1921,6 +1963,9 @@ export const WORKSPACE_COPY: Record<
         matchedRow: "匹配任务",
       },
       tableHeaders: {
+        task: "任务",
+        completed: "完成时间",
+        actions: "操作",
         attack: "攻击方法",
         defense: "防御方法",
         model: "目标模型",
@@ -1976,6 +2021,7 @@ export const WORKSPACE_COPY: Record<
       noFinding: "暂无审计结果可用于分析。",
       date: "日期",
       view: "查看审计报告",
+      viewTask: "任务详情",
       download: "下载",
       downloadComingSoon: "下载功能即将推出",
       popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
