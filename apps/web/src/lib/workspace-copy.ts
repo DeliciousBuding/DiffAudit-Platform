@@ -373,6 +373,62 @@ export const WORKSPACE_COPY: Record<
       toastUpdated: (name: string) => string;
       toastDeleted: string;
     };
+    modelAssetsPage: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      tabModels: string;
+      nav: string;
+      bestEvidence: string;
+      emptyNav: string;
+      emptyTimeline: string;
+      emptyDetail: string;
+      emptyEvidence: string;
+      noSearchResults: string;
+      clearSearch: string;
+      addModelDisabled: string;
+      attack: string;
+      defense: string;
+      auc: string;
+      asr: string;
+      tpr: string;
+      source: string;
+      runtime: string;
+      evidenceLevel: string;
+      workspace: string;
+      systemGap: string;
+      addModel: string;
+      searchModels: string;
+      modelsCount: string;
+      categoriesCount: string;
+      tabTimeline: string;
+      tabEvidence: string;
+      trackBlackBox: string;
+      trackGrayBox: string;
+      trackWhiteBox: string;
+      availabilityLabels: Record<string, string>;
+      evidenceLevelLabels: Record<string, string>;
+      addModelTitle: string;
+      editModelTitle: string;
+      modelName: string;
+      modelNamePlaceholder: string;
+      modelTrack: string;
+      modelTrackPlaceholder: string;
+      modelDescription: string;
+      modelDescriptionPlaceholder: string;
+      cancel: string;
+      submit: string;
+      edit: string;
+      delete: string;
+      deleteModelTitle: string;
+      deleteModelConfirm: string;
+      deleteModelAction: string;
+      demoModeNote: string;
+      uploadFile: string;
+      uploadDragDrop: string;
+      uploadComplete: string;
+      uploadProgress: string;
+    };
     emptyWorkspace: {
       title: string; description: string; cta: string;
       steps: Array<{ step: string; title: string; desc: string }>;
@@ -529,6 +585,14 @@ export const WORKSPACE_COPY: Record<
         producerUnavailableBody: string;
         stateHistory: string;
         noProvenanceData: string;
+      };
+      printableReport: {
+        summarySectionTitle: string;
+        comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) => string;
+        comparisonSummaryIneffective: (avgAucReduction: string) => string;
+        coverageGapsHighRisk: (count: number) => string;
+        coverageGapsNone: string;
+        riskDistributionDetail: (high: number, medium: number, low: number, defended: number) => string;
       };
     };
     riskFindings: {
@@ -1138,6 +1202,62 @@ export const WORKSPACE_COPY: Record<
       toastUpdated: (name: string) => `Model "${name}" updated`,
       toastDeleted: "Model deleted",
     },
+    modelAssetsPage: {
+      eyebrow: "Model Assets",
+      title: "Model Assets",
+      description: "Manage auditable models, datasets, and runtime versions with traceable safety context.",
+      tabModels: "Models",
+      nav: "Model Navigation",
+      bestEvidence: "Best Evidence",
+      emptyNav: "No model assets available.",
+      emptyTimeline: "Select a model",
+      emptyDetail: "Select a model from the list to view details and audit evidence.",
+      emptyEvidence: "No evidence data available.",
+      noSearchResults: "No matching models found.",
+      clearSearch: "Clear search",
+      addModelDisabled: "This feature is not yet available",
+      attack: "Attack",
+      defense: "Defense",
+      auc: "AUC",
+      asr: "ASR",
+      tpr: "TPR@1%",
+      source: "Source",
+      runtime: "Runtime",
+      evidenceLevel: "Evidence level",
+      workspace: "Workspace",
+      systemGap: "System gap",
+      addModel: "Add Model",
+      searchModels: "Search models...",
+      modelsCount: "models",
+      categoriesCount: "Access modes",
+      tabTimeline: "Version History",
+      tabEvidence: "Audit Evidence",
+      trackBlackBox: "Black-box audit / Recon",
+      trackGrayBox: "Gray-box audit / PIA",
+      trackWhiteBox: "White-box audit / GSA",
+      availabilityLabels: { ready: "Ready", partial: "Partial", planned: "Planned" } as Record<string, string>,
+      evidenceLevelLabels: { mainline: "Mainline", catalog: "Catalog", challenger: "Challenger" } as Record<string, string>,
+      addModelTitle: "Add Model",
+      editModelTitle: "Edit Model",
+      modelName: "Model Name",
+      modelNamePlaceholder: "Enter model name",
+      modelTrack: "Access mode",
+      modelTrackPlaceholder: "Select access mode",
+      modelDescription: "Description",
+      modelDescriptionPlaceholder: "Enter description (optional)",
+      cancel: "Cancel",
+      submit: "Confirm",
+      edit: "Edit",
+      delete: "Delete",
+      deleteModelTitle: "Delete Model",
+      deleteModelConfirm: "Are you sure you want to delete this model? This action cannot be undone.",
+      deleteModelAction: "Confirm Delete",
+      demoModeNote: "Demo mode: all changes are local.",
+      uploadFile: "Upload file",
+      uploadDragDrop: "Click or drag file here to upload",
+      uploadComplete: "Upload complete",
+      uploadProgress: "Uploading...",
+    },
     emptyWorkspace: {
       title: "No audit results yet",
       description: "Discover privacy risks in diffusion models through black-box, gray-box, and white-box audit tracks",
@@ -1333,6 +1453,18 @@ export const WORKSPACE_COPY: Record<
         producerUnavailableBody: "Job detail is temporarily unavailable; the report remains based on the current public snapshot.",
         stateHistory: "State history",
         noProvenanceData: "No provenance data available.",
+      },
+      printableReport: {
+        summarySectionTitle: "Summary",
+        comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) =>
+          `${effectivePairs} / ${totalPairs} defense pairs show a meaningful AUC reduction, and the average AUC change is ${avgAucReduction}.`,
+        comparisonSummaryIneffective: (avgAucReduction: string) =>
+          `No defense pair currently shows a strong AUC reduction. The average AUC change is ${avgAucReduction}.`,
+        coverageGapsHighRisk: (count: number) =>
+          `${count} high-risk gaps remain above the configured threshold. Prioritize the highest-AUC attack and defense pairs first.`,
+        coverageGapsNone: "No high-risk coverage gaps were detected in the current snapshot.",
+        riskDistributionDetail: (high: number, medium: number, low: number, defended: number) =>
+          `High risk: ${high} · Medium risk: ${medium} · Low risk: ${low} · Defended rows: ${defended}`,
       },
     },
     riskFindings: {
@@ -2120,6 +2252,62 @@ export const WORKSPACE_COPY: Record<
       toastUpdated: (name: string) => `模型「${name}」已更新`,
       toastDeleted: "模型已删除",
     },
+    modelAssetsPage: {
+      eyebrow: "模型资产",
+      title: "模型资产",
+      description: "集中管理已纳入审计的模型、数据集与环境版本，保留资产安全与合规可追溯。",
+      tabModels: "模型",
+      nav: "模型导航",
+      bestEvidence: "最佳证据",
+      emptyNav: "暂无模型资产。",
+      emptyTimeline: "选择一个模型",
+      emptyDetail: "从左侧列表中选择一个模型查看详细信息和审计证据。",
+      emptyEvidence: "暂无证据数据。",
+      noSearchResults: "未找到匹配的模型。",
+      clearSearch: "清除搜索",
+      addModelDisabled: "该功能暂不可用",
+      attack: "攻击",
+      defense: "防御",
+      auc: "AUC",
+      asr: "ASR",
+      tpr: "TPR@1%",
+      source: "来源",
+      runtime: "运行时",
+      evidenceLevel: "证据等级",
+      workspace: "工作区",
+      systemGap: "系统差距",
+      addModel: "新增模型",
+      searchModels: "搜索模型...",
+      modelsCount: "个模型",
+      categoriesCount: "访问模式",
+      tabTimeline: "版本历史",
+      tabEvidence: "审计证据",
+      trackBlackBox: "黑盒审计 / Recon",
+      trackGrayBox: "灰盒审计 / PIA",
+      trackWhiteBox: "白盒审计 / GSA",
+      availabilityLabels: { ready: "就绪", partial: "部分可用", planned: "规划中" } as Record<string, string>,
+      evidenceLevelLabels: { mainline: "主线", catalog: "目录", challenger: "挑战者" } as Record<string, string>,
+      addModelTitle: "新增模型",
+      editModelTitle: "编辑模型",
+      modelName: "模型名称",
+      modelNamePlaceholder: "输入模型名称",
+      modelTrack: "访问模式",
+      modelTrackPlaceholder: "选择访问模式",
+      modelDescription: "描述",
+      modelDescriptionPlaceholder: "输入模型描述（可选）",
+      cancel: "取消",
+      submit: "确认",
+      edit: "编辑",
+      delete: "删除",
+      deleteModelTitle: "删除模型",
+      deleteModelConfirm: "确定要删除该模型吗？此操作不可撤销。",
+      deleteModelAction: "确认删除",
+      demoModeNote: "演示模式：所有变更仅保存在本地。",
+      uploadFile: "上传文件",
+      uploadDragDrop: "点击或拖拽文件到此处上传",
+      uploadComplete: "上传完成",
+      uploadProgress: "上传中...",
+    },
     emptyWorkspace: {
       title: "还没有审计结果",
       description: "通过黑盒、灰盒、白盒三条审计线路，发现扩散模型的隐私泄露风险",
@@ -2315,6 +2503,18 @@ export const WORKSPACE_COPY: Record<
         producerUnavailableBody: "任务详情暂时不可用；报告仍基于当前公开快照展示。",
         stateHistory: "状态历史",
         noProvenanceData: "暂无溯源数据。",
+      },
+      printableReport: {
+        summarySectionTitle: "摘要",
+        comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) =>
+          `${effectivePairs} / ${totalPairs} 个防御配对显示出显著的 AUC 降低，平均 AUC 变化为 ${avgAucReduction}。`,
+        comparisonSummaryIneffective: (avgAucReduction: string) =>
+          `目前没有防御配对显示出显著的 AUC 降低。平均 AUC 变化为 ${avgAucReduction}。`,
+        coverageGapsHighRisk: (count: number) =>
+          `${count} 个高风险缺口仍高于配置阈值。请优先处理 AUC 最高的攻击和防御配对。`,
+        coverageGapsNone: "当前快照中未检测到高风险覆盖缺口。",
+        riskDistributionDetail: (high: number, medium: number, low: number, defended: number) =>
+          `高风险: ${high} · 中风险: ${medium} · 低风险: ${low} · 已防御行数: ${defended}`,
       },
     },
     riskFindings: {
