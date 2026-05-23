@@ -763,18 +763,27 @@ export function SettingsClient({
               <RuntimeStatusBadge locale={locale} />
             </div>
             <div className="rounded-2xl border border-border bg-muted/10 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs text-muted-foreground">{copy.systemStatus.snapshot}</span>
-                <StatusBadge tone={gatewayHealth?.snapshot_available ? "success" : "warning"} compact>
-                  {gatewayHealth?.snapshot_available ? copy.systemStatus.snapshotReady : copy.systemStatus.snapshotMissing}
-                </StatusBadge>
-              </div>
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <span className="text-xs text-muted-foreground">{copy.systemStatus.build}</span>
-                <span className="max-w-[12rem] truncate font-mono text-[11px] text-muted-foreground" title={gatewayHealth?.build?.revision ?? copy.systemStatus.unknown}>
-                  {gatewayHealth?.build?.revision?.slice(0, 12) ?? copy.systemStatus.unknown}
-                </span>
-              </div>
+              {gatewayHealthLoading ? (
+                <div className="space-y-3">
+                  <div className="animate-pulse rounded-xl bg-muted/30 h-4 w-3/4" />
+                  <div className="animate-pulse rounded-xl bg-muted/30 h-4 w-1/2" />
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-muted-foreground">{copy.systemStatus.snapshot}</span>
+                    <StatusBadge tone={gatewayHealth?.snapshot_available ? "success" : "warning"} compact>
+                      {gatewayHealth?.snapshot_available ? copy.systemStatus.snapshotReady : copy.systemStatus.snapshotMissing}
+                    </StatusBadge>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-3">
+                    <span className="text-xs text-muted-foreground">{copy.systemStatus.build}</span>
+                    <span className="max-w-[12rem] truncate font-mono text-[11px] text-muted-foreground" title={gatewayHealth?.build?.revision ?? copy.systemStatus.unknown}>
+                      {gatewayHealth?.build?.revision?.slice(0, 12) ?? copy.systemStatus.unknown}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
             {gatewayHealthError ? (
               <div className="rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--warning)]">

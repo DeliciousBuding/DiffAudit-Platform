@@ -760,6 +760,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      shortDescription: string;
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
@@ -778,6 +779,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      shortDescription: string;
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
@@ -1907,6 +1909,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "Sign in",
       title: "Sign in to the DiffAudit workspace",
       description: "Use your account and password by default. You can also continue with Google or GitHub.",
+      shortDescription: "Welcome back to your workspace.",
       formEyebrow: "Workspace access",
       formTitle: "Sign in to continue",
       oauthDivider: "Or continue with",
@@ -1925,6 +1928,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "Local account",
       title: "Create a local account",
       description: "Use this page only when you explicitly need an independent local account/password entry. It fits recovery access, controlled demos, or environments without OAuth.",
+      shortDescription: "Get started with DiffAudit workspace.",
       formEyebrow: "Local account setup",
       formTitle: "Create a DiffAudit account",
       oauthDivider: "Prefer OAuth?",
@@ -3053,6 +3057,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "登录",
       title: "登录 DiffAudit 工作区",
       description: "默认使用账号密码登录。也支持通过 Google 或 GitHub 快速继续",
+      shortDescription: "默认使用账号密码登录",
       formEyebrow: "工作台访问",
       formTitle: "登录工作台",
       oauthDivider: "或使用以下方式继续",
@@ -3071,6 +3076,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "本地账号",
       title: "创建本地账户",
       description: "只有在你明确需要独立的本地账号/密码入口时，才使用这个页面。它更适合恢复访问、内部演示或没有 OAuth 的场景",
+      shortDescription: "只有在你明确需要独立的本地账号/密码入口时，才使用这个页面",
       formEyebrow: "本地账号设置",
       formTitle: "创建 DiffAudit 账号",
       oauthDivider: "更倾向 OAuth？",
