@@ -113,7 +113,9 @@ export function ReportsPageClient({
   }
 
   if (loading) {
-    return <div className="h-80 animate-pulse rounded-2xl border border-border bg-muted/10" />;
+    return <div className="flex h-80 items-center justify-center rounded-2xl border border-border bg-muted/10">
+      <p className="text-[13px] text-muted-foreground animate-pulse">{locale === "en-US" ? "Loading reports..." : "加载报告中..."}</p>
+    </div>;
   }
 
   if (loadError) {
