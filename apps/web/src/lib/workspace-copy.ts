@@ -72,6 +72,7 @@ export const WORKSPACE_COPY: Record<
       collapseSidebar: string;
       expandSidebar: string;
       dismissTip: string;
+      dismissToast: string;
       scrollToTop: string;
     };
     commandPalette: {
@@ -920,6 +921,7 @@ export const WORKSPACE_COPY: Record<
       collapseSidebar: "Collapse sidebar",
       expandSidebar: "Expand sidebar",
       dismissTip: "Got it",
+      dismissToast: "Dismiss",
       scrollToTop: "Scroll to top",
     },
     commandPalette: {
@@ -2080,6 +2082,7 @@ export const WORKSPACE_COPY: Record<
       collapseSidebar: "收起侧边栏",
       expandSidebar: "展开侧边栏",
       dismissTip: "知道了",
+      dismissToast: "关闭",
       scrollToTop: "回到顶部",
     },
     commandPalette: {
