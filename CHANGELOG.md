@@ -3,17 +3,20 @@
 ## Unreleased (dev)
 
 ### Added
-- Runtime bridge: configurable `RuntimeTimeout` in proxy config
-- Runtime bridge: retry on transient errors for DELETE control-plane routes
-- Runtime bridge: health check now retries up to 3 times (was 1)
-- Go API tests: 10 new tests for retry logic, error hints, cache fallback, timeout config (49 total)
+- CI: GitHub Actions workflow with 4 jobs (frontend, Go, Python, E2E)
+- Go API tests: 15 DemoJobStore unit tests + 2 retry method guard tests (66 total)
+- Go API tests: 10 tests for retry logic, error hints, cache fallback, timeout config
 - Architecture docs: 4-tier publish-time fallback chain documented
 
 ### Changed
-- Runtime bridge: `forwardControlWithMethod` uses `doWithRetry` instead of raw `client.Do`
+- Runtime bridge: `forwardControlWithMethod` uses `doWithRetry` (was raw `client.Do`)
+- Runtime bridge: configurable `RuntimeTimeout` in proxy config
+- Runtime bridge: health check now retries up to 3 times (was 1)
+- error-boundary.tsx: hardcoded English strings migrated to WORKSPACE_COPY i18n contract
 
 ### Fixed
-- Health check: properly retries on transient network errors instead of failing immediately
+- Retry safety: `doWithRetry` now only retries GET/HEAD; POST body is not re-consumed on retry
+- Retry reliability: `isRetryableError` uses `net.Error` type checks instead of fragile string matching
 
 ### Added
 - Research handoff: `--bundle-path` flag for snapshot publisher (decouples sibling-directory assumption)
