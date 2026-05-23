@@ -4,15 +4,13 @@ Last updated: 2026-05-23 21:43 Asia/Hong_Kong
 
 ## Current Goal
 
-Dev → main merged (68cafd8). Tooling hardened, CI in place. Next: cross-repo CI trigger, backlog grooming.
+Tooling hardened, CI in place, cross-repo dispatch configured. Next: accessibility, release provenance, docs polish.
 
 ## Active Work
 
 - [x] Dev → main merged (68cafd8): Runtime bridge hardening, CI workflow, retry safety fix, demo audit.
-- [x] Runtime bridge: retry safety (GET/HEAD only), net.Error types, cross-platform reliability.
-- [x] DemoJobStore: 15 unit tests covering all CRUD operations and helpers (66 Go tests total).
-- [x] Documentation: architecture.md, CHANGELOG, ROADMAP all current.
-- [x] CI: GitHub Actions workflow with 4 jobs, all gates green.
+- [x] Cross-repo CI trigger: snapshot-publish.yml dispatch workflow for Research bundle updates.
+- [x] docs/platform-roadmap.md: stale Longer-Term items cleaned up (Runtime bridge, snapshot publisher, Research handoff, product demo all completed).
 
 ## Review Gates
 
