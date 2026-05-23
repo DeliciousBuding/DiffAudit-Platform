@@ -17,6 +17,11 @@
 ### Fixed
 - Retry safety: `doWithRetry` now only retries GET/HEAD; POST body is not re-consumed on retry
 - Retry reliability: `isRetryableError` uses `net.Error` type checks instead of fragile string matching
+- copy-button.tsx: removed `navigator.language` anti-pattern, now uses WORKSPACE_COPY via getStoredLocale
+- snapshot-publish.yml: sanitized workflow_dispatch inputs to prevent shell injection
+- DemoJobStore.Create: input length limits + control character rejection
+- Printable report: hardcoded KPI labels migrated to WORKSPACE_COPY
+- error-boundary.tsx: hardcoded English strings migrated to WORKSPACE_COPY
 
 ### Added
 - Research handoff: `--bundle-path` flag for snapshot publisher (decouples sibling-directory assumption)
