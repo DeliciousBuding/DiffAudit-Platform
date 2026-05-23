@@ -53,9 +53,12 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Remove public workspace redesign progress diary and guard docs hygiene.
 - [x] Eliminate hardcoded locale strings in ReportsPageClient — all display strings now sourced from workspace-copy contract.
 - [x] Extract shared getTrackDisplayLabel to eliminate duplicate trackLabel functions across ReportsPageClient, CreateTaskClient, and track-report-page.
-- [x] Scaffold Playwright E2E test infrastructure: config, fixtures, page objects, smoke/auth/navigation/a11y specs, CI job.
+- [x] Migrate hardcoded locale strings in AuditsPageClient, TaskListClient, CreateTaskClient, ApiKeysClient, track-report-page to workspace-copy contract.
+- [x] Scaffold Playwright E2E test infrastructure: config, fixtures, smoke/auth/navigation/a11y specs, CI job.
 - [x] Add e2e test scripts (test:e2e, test:e2e:ui, test:e2e:chromium, test:all) to both root and web package.json.
-- [ ] Continue polishing workspace IA and deep-page consistency — remaining pages still have hardcoded locale strings to migrate.
+- [x] Cross-review fix: remove dead E2E page objects fixture.
+- [x] Create project-level skill: .claude/skills/platform-dev/SKILL.md documenting i18n, testing, and dev workflow SOPs.
+- [ ] Continue polishing workspace IA and deep-page consistency — start/page.tsx labels object and a few remaining inline strings to migrate.
 
 ## Review Gates
 
