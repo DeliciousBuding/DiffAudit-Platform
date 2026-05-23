@@ -35,4 +35,6 @@ Tooling hardened, CI in place, cross-repo dispatch configured. Next: accessibili
 
 ## Backlog
 
-- [ ] 国创阶段 migration entry.
+- [x] 国创阶段 — 已结束。
+- [ ] 大创申报 — 申报中，待后续需求明确。
+- [ ] 计算机设计大赛省赛 — 等待省赛结果，如有展示/部署需求提前准备。
