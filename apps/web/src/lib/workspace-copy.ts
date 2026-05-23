@@ -232,6 +232,7 @@ export const WORKSPACE_COPY: Record<
         highRisk: (count: number) => string;
         noDefense: string;
         mediumRisk: (count: number) => string;
+        recommendationItems: (high: number) => string[];
       };
       riskInterpretations: {
         high: string;
@@ -1082,6 +1083,12 @@ export const WORKSPACE_COPY: Record<
         highRisk: (count: number) => `${count} high-risk results detected. Compare defense strategies to reduce leakage risk.`,
         noDefense: "Audit results exist but no defense comparison. Create a task with defense configuration.",
         mediumRisk: (count: number) => `${count} medium-risk results detected. Increase attack rounds for more accurate signal.`,
+        recommendationItems: (high: number) => [
+          `Detected ${high} high-risk results. Prioritize these for review.`,
+          "W-1 defense shows the strongest mitigation in Recon scenarios, with an average AUC improvement of 0.339.",
+          "PIA attacks remain sensitive to rare-class attributes. Consider gray-box defense evaluation.",
+          "Enable gray-box defense for further risk assessment.",
+        ],
       },
       riskInterpretations: {
         high: "High attack AUC — the model likely memorized training data. Compare defense strategies.",
@@ -2230,6 +2237,12 @@ export const WORKSPACE_COPY: Record<
         highRisk: (count: number) => `有 ${count} 个高风险结果，建议对比防御策略降低泄露风险。`,
         noDefense: "已有审计结果但缺少防御对比，建议创建带防御配置的审计任务。",
         mediumRisk: (count: number) => `${count} 个中等风险结果，建议增加攻击轮次获取更准确的信号。`,
+        recommendationItems: (high: number) => [
+          `发现 ${high} 个高风险结果，建议优先处理。`,
+          "W-1 在 Recon 场景中表现最佳，平均 AUC 提升 0.339。",
+          "PIA 在属性级攻击中对 rare 属性仍然较为敏感。",
+          "建议启用灰盒防御进行进一步评估。",
+        ],
       },
       riskInterpretations: {
         high: "攻击 AUC 很高，模型很可能记住了训练数据。建议对比不同防御策略的效果。",

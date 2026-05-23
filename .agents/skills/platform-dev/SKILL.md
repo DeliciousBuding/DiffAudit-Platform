@@ -40,17 +40,19 @@ const copy = WORKSPACE_COPY[locale].reports;
 
 | 层级 | 工具 | 用途 |
 |---|---|---|
-| Unit | Vitest | 工具函数、数据转换、组件逻辑 |
+| Unit (web) | Vitest | 工具函数、数据转换、组件逻辑 |
+| Unit (api) | Go test | API handlers, middleware, models |
 | E2E | Playwright | 页面加载、用户流程、i18n、a11y |
 
-- `npm test` — Vitest unit tests
-- `npm run test:e2e` — Playwright E2E (smoke + user-flows)
-- `npm run test:all` — 全部
+- `npm run test:web` — Vitest (67 files / 250 tests)
+- `npm run test:api` — Go tests
+- `npm run test:e2e` — Playwright (41 tests: smoke + user-flows + report-flow)
+- `npm run test:all` — web + e2e
 
 从 Platform 根目录运行: `npm run lint:web`, `npm run test:web`, `npm run build:web`.
 新建 lib 工具必须写 test。E2E 测试至少覆盖每个 workspace 页面的加载和核心用户流程。
 
-### 3. 工作台 Copy Contract 速查
+### 3. Copy Contract 速查
 
 | Section | 用途 | 文件数 |
 |---|---|---|

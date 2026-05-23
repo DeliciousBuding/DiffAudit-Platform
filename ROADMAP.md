@@ -4,7 +4,12 @@ Last updated: 2026-05-23 08:52 Asia/Hong_Kong
 
 ## Current Goal
 
-Keep the public Platform repository product-ready while advancing workspace UX, report quality, public-safe data boundaries, and deployment portability in small verified increments.
+Dev → main merged (35 commits, ebd9160). Next phase: Go API hardening + integration tests.
+
+## Active Work
+
+- [x] Merge dev → main (ebd9160): i18n migration, E2E infra, PM/UX polish.
+- [ ] Go API: expand test coverage beyond cached 2-package baseline.
 
 ## Principles
 
