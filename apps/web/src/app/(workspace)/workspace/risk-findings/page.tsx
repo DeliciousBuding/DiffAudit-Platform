@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { getWorkspaceAttackDefenseData } from "@/lib/workspace-source";
 import { RiskFindingsClient } from "./RiskFindingsClient";
 
@@ -16,19 +17,7 @@ export default async function RiskFindingsPage() {
     .filter((row) => !Number.isNaN(Number.parseFloat(row.aucLabel)))
     .sort((left, right) => Number.parseFloat(right.aucLabel) - Number.parseFloat(left.aucLabel));
 
-  const copy = locale === "zh-CN"
-    ? {
-      eyebrow: "风险发现",
-      title: "风险发现",
-      description: "追踪隐私泄露风险，查看证据链与缓解建议，降低模型安全风险。",
-      viewReport: "查看完整报告",
-    }
-    : {
-      eyebrow: "Risk Findings",
-      title: "Risk Findings",
-      description: "Track privacy leakage risks, evidence chains, and mitigation recommendations.",
-      viewReport: "View full report",
-    };
+  const copy = WORKSPACE_COPY[locale].riskFindings;
 
   return (
     <WorkspacePageFrame

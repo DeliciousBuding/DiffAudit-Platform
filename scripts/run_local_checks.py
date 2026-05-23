@@ -36,7 +36,7 @@ def main() -> None:
     run(["go", "-C", "./apps/api-go", "test", "./..."], repo_root)
 
     if not args.fast:
-        build_dir = repo_root / "tmp" / "quality-gates"
+        build_dir = repo_root / "quality-gates"
         build_dir.mkdir(parents=True, exist_ok=True)
         build_name = "platform-api-check.exe" if sys.platform.startswith("win") else "platform-api-check"
         run(["npm", "--prefix", "apps/web", "run", "build"], repo_root)

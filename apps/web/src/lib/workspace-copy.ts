@@ -189,6 +189,15 @@ export const WORKSPACE_COPY: Record<
         createAudit: string;
       };
       riskBadgeLabels: { high: string; medium: string; low: string; critical: string };
+      startCards: Array<{
+        track: string;
+        title: string;
+        desc: string;
+        tag: string;
+        tagTone: string;
+        detail: string;
+        auc: string;
+      }>;
       coverageBar: {
         title: string; summaryText: (defended: number, total: number, contracts: number) => string;
         tracks: Record<string, string>; trackCountSuffix: string;
@@ -494,6 +503,39 @@ export const WORKSPACE_COPY: Record<
       docxComingSoon: string;
       pptxComingSoon: string;
       defenseStrategies: Array<{ name: string; desc: string; tag: string }>;
+      reportAuditView: {
+        summaryTitle: string;
+        resultRows: string;
+        defendedRows: string;
+        undefendedRows: string;
+        provenanceTitle: string;
+        runDirectory: string;
+        seed: string;
+        schedule: string;
+        fixtureVersion: string;
+        summaryPath: string;
+        evidenceLevel: string;
+        admissionStatus: string;
+        admissionLevel: string;
+        provenanceStatus: string;
+        intakeManifest: string;
+        historyTitle: string;
+        historyPlaceholder: string;
+        producerTitle: string;
+        producerStatus: string;
+        producerUpdated: string;
+        outputTail: string;
+        producerUnavailableTitle: string;
+        producerUnavailableBody: string;
+        stateHistory: string;
+        noProvenanceData: string;
+      };
+    };
+    riskFindings: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      viewReport: string;
     };
     apiKeys: {
       eyebrow: string;
@@ -1265,6 +1307,39 @@ export const WORKSPACE_COPY: Record<
           tag: "Effective",
         },
       ],
+      reportAuditView: {
+        summaryTitle: "Audit view summary",
+        resultRows: "Result rows",
+        defendedRows: "Defended",
+        undefendedRows: "Undefended",
+        provenanceTitle: "Experiment provenance",
+        runDirectory: "Run directory",
+        seed: "Seed",
+        schedule: "Schedule",
+        fixtureVersion: "Fixture version",
+        summaryPath: "summary.json",
+        evidenceLevel: "Evidence level",
+        admissionStatus: "Admission status",
+        admissionLevel: "Admission level",
+        provenanceStatus: "Provenance status",
+        intakeManifest: "Intake manifest",
+        historyTitle: "History comparison",
+        historyPlaceholder: "Historical comparison data will be available in a future release.",
+        producerTitle: "Producer context",
+        producerStatus: "Status",
+        producerUpdated: "Updated",
+        outputTail: "Runtime output tail",
+        producerUnavailableTitle: "Runtime disconnected",
+        producerUnavailableBody: "Job detail is temporarily unavailable; the report remains based on the current public snapshot.",
+        stateHistory: "State history",
+        noProvenanceData: "No provenance data available.",
+      },
+    },
+    riskFindings: {
+      eyebrow: "Risk Findings",
+      title: "Risk Findings",
+      description: "Track privacy leakage risks, evidence chains, and mitigation recommendations.",
+      viewReport: "View full report",
     },
     apiKeys: {
       eyebrow: "API Management",
@@ -2214,6 +2289,39 @@ export const WORKSPACE_COPY: Record<
           tag: "有效",
         },
       ],
+      reportAuditView: {
+        summaryTitle: "审计视图摘要",
+        resultRows: "结果行数",
+        defendedRows: "已防御",
+        undefendedRows: "无防御",
+        provenanceTitle: "实验溯源",
+        runDirectory: "Run 目录",
+        seed: "Seed",
+        schedule: "调度",
+        fixtureVersion: "Fixture 版本",
+        summaryPath: "summary.json",
+        evidenceLevel: "证据等级",
+        admissionStatus: "准入状态",
+        admissionLevel: "准入层级",
+        provenanceStatus: "溯源状态",
+        intakeManifest: "导入清单",
+        historyTitle: "历史对照",
+        historyPlaceholder: "历史对照数据将在后续版本接入，敬请期待。",
+        producerTitle: "生产者上下文",
+        producerStatus: "状态",
+        producerUpdated: "更新时间",
+        outputTail: "Runtime 输出尾部",
+        producerUnavailableTitle: "Runtime 未连接",
+        producerUnavailableBody: "任务详情暂时不可用；报告仍基于当前公开快照展示。",
+        stateHistory: "状态历史",
+        noProvenanceData: "暂无溯源数据。",
+      },
+    },
+    riskFindings: {
+      eyebrow: "风险发现",
+      title: "风险发现",
+      description: "追踪隐私泄露风险，查看证据链与缓解建议，降低模型安全风险。",
+      viewReport: "查看完整报告",
     },
     apiKeys: {
       eyebrow: "API 管理",
