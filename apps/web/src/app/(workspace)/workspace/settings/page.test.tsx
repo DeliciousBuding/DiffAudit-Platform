@@ -42,8 +42,10 @@ describe("WorkspaceSettingsPage locale", () => {
     getCurrentUserProfileMock.mockReturnValue(null);
 
     const { default: WorkspaceSettingsPage } = await import("./page");
-    const result = await WorkspaceSettingsPage({});
+    const result = await WorkspaceSettingsPage();
     expect(result).toBeDefined();
-    expect(result.props.mode).toBe("settings");
+    // The page renders with mode="settings" by default
+    const pageElement = result as { props?: { mode?: string } };
+    expect(pageElement.props?.mode).toBe("settings");
   });
 });

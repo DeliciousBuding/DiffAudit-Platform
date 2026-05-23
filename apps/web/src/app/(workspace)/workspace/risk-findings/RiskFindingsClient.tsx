@@ -32,7 +32,7 @@ import {
 
 /** Map track name to a display label. Preserves the original track name when
  *  it does not match a known category so the user sees the actual value. */
-function getCategory(track: string, copy: typeof WORKSPACE_COPY[string]["riskFindings"]): string {
+function getCategory(track: string, copy: typeof WORKSPACE_COPY[Locale]["riskFindings"]): string {
   if (track === "black-box") return copy.catBlackBox;
   if (track === "gray-box") return copy.catGrayBox;
   if (track === "white-box") return copy.catWhiteBox;
