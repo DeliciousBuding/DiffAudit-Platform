@@ -57,8 +57,17 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Scaffold Playwright E2E test infrastructure: config, fixtures, smoke/auth/navigation/a11y specs, CI job.
 - [x] Add e2e test scripts (test:e2e, test:e2e:ui, test:e2e:chromium, test:all) to both root and web package.json.
 - [x] Cross-review fix: remove dead E2E page objects fixture.
+- [x] Fix contextual-tip dismiss label locale bypass — use WORKSPACE_COPY.shell.dismissTip.
+- [x] Fix scroll-to-top locale bypass — accept locale prop, use WORKSPACE_COPY.shell.scrollToTop.
+- [x] Fix metric-tooltip direction label — use WORKSPACE_COPY.tooltips.direction.
+- [x] Fix RiskFindingsClient empty state description — use emptyState.noRiskFindings from copy.
+- [x] Fix ModelAssetsClient toast messages — add modelAssets section to copy contract.
 - [x] Create project-level skill: .claude/skills/platform-dev/SKILL.md documenting i18n, testing, and dev workflow SOPs.
-- [ ] Continue polishing workspace IA and deep-page consistency — start/page.tsx labels object and a few remaining inline strings to migrate.
+- [ ] Migrate start/page.tsx ~40-key labels object to workspace-copy contract.
+- [ ] Migrate risk-findings/page.tsx and model-assets/page.tsx inline copy objects.
+- [ ] Migrate ReportAuditView.tsx ~28-key inline `t` object.
+- [ ] Migrate printable-audit-report.tsx inline strings.
+- [ ] PM/UX: add demo mode indicator on start page, unify empty states, add loading skeletons.
 
 ## Review Gates
 
