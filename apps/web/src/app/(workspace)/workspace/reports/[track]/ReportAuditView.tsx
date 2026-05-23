@@ -83,65 +83,6 @@ export function ReportAuditView({
 }: ReportAuditViewProps) {
   const copy = WORKSPACE_COPY[locale].reports;
   const highlightedRows = new Set(highlightedRowKeys);
-  const t = locale === "zh-CN"
-    ? {
-        summaryTitle: "审计视图摘要",
-        resultRows: "结果行数",
-        defendedRows: "已防御",
-        undefendedRows: "无防御",
-        provenanceTitle: "实验溯源",
-        runDirectory: "Run 目录",
-        seed: "Seed",
-        schedule: "调度",
-        fixtureVersion: "Fixture 版本",
-        summaryPath: "summary.json",
-        evidenceLevel: "证据等级",
-        admissionStatus: "准入状态",
-        admissionLevel: "准入层级",
-        provenanceStatus: "溯源状态",
-        intakeManifest: "导入清单",
-        historyTitle: "历史对照",
-        historyPlaceholder:
-          "历史对照数据将在后续版本接入，敬请期待。",
-        producerTitle: "生产者上下文",
-        producerStatus: "状态",
-        producerUpdated: "更新时间",
-        outputTail: "Runtime 输出尾部",
-        producerUnavailableTitle: "Runtime 未连接",
-        producerUnavailableBody:
-          "任务详情暂时不可用；报告仍基于当前公开快照展示。",
-        stateHistory: "状态历史",
-        noProvenanceData: "暂无溯源数据。",
-      }
-    : {
-        summaryTitle: "Audit view summary",
-        resultRows: "Result rows",
-        defendedRows: "Defended",
-        undefendedRows: "Undefended",
-        provenanceTitle: "Experiment provenance",
-        runDirectory: "Run directory",
-        seed: "Seed",
-        schedule: "Schedule",
-        fixtureVersion: "Fixture version",
-        summaryPath: "summary.json",
-        evidenceLevel: "Evidence level",
-        admissionStatus: "Admission status",
-        admissionLevel: "Admission level",
-        provenanceStatus: "Provenance status",
-        intakeManifest: "Intake manifest",
-        historyTitle: "History comparison",
-        historyPlaceholder:
-          "Historical comparison data will be available in a future release.",
-        producerTitle: "Producer context",
-        producerStatus: "Status",
-        producerUpdated: "Updated",
-        outputTail: "Runtime output tail",
-        producerUnavailableTitle: "Runtime disconnected",
-        producerUnavailableBody:
-          "Job detail is temporarily unavailable; the report remains based on the current public snapshot.",
-        stateHistory: "State history",
-        noProvenanceData: "No provenance data available.",
-      };
   const defendedRows = rows.filter((row) => row.defense !== "none" && row.defense !== "None").length;
   const undefendedRows = rows.length - defendedRows;
   const producerStatus = displayStatus(producerContext?.status);
