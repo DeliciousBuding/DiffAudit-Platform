@@ -68,7 +68,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] PM: add demo banner to start page, migrate baseline AUC label, fix ROC title.
 - [x] ESLint: ignore playwright-report/ and test-results/.
 - [x] Add E2E user-flows.spec.ts — navigation, login, interaction tests.
-- [ ] Migrate RiskFindingsClient 40-key COPY shadow contract → WORKSPACE_COPY.riskFindings.
+- [x] Migrate RiskFindingsClient 40-key COPY shadow contract → WORKSPACE_COPY.riskFindings (last shadow contract).
 - [ ] PM/UX: unify loading states, fix decoy pagination, add onboarding hints.
 
 ## Review Gates
