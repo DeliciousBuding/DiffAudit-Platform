@@ -99,7 +99,7 @@ test.describe("Settings page user flows", () => {
     const toggleCount = await toggleButtons.count();
     if (toggleCount >= 2) {
       await expect(toggleButtons.first()).toBeVisible({ timeout: 10000 });
-      const pressedCount = await toggleButtons.locator('[aria-pressed="true"]').count();
+      const pressedCount = await page.locator('.settings-toggle-btn[aria-pressed="true"]').count();
       expect(pressedCount).toBeGreaterThanOrEqual(1);
     }
 
