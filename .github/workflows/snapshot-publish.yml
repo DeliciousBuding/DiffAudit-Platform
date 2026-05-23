@@ -1,0 +1,66 @@
+name: Snapshot Publish
+
+on:
+  repository_dispatch:
+    types: [research-bundle-update]
+  workflow_dispatch:
+    inputs:
+      bundle_path:
+        description: "Path or URL to the admitted evidence bundle"
+        required: false
+        type: string
+      research_ref:
+        description: "Git ref of the Research repo to use"
+        required: false
+        type: string
+        default: "main"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish public snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout Research repo
+        uses: actions/checkout@v4
+        with:
+          repository: DeliciousBuding/DiffAudit-Research
+          path: research-checkout
+          ref: ${{ github.event.inputs.research_ref || 'main' }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run snapshot publisher
+        working-directory: apps/api-go/scripts
+        run: |
+          BUNDLE_ARG=""
+          if [ -n "${{ github.event.inputs.bundle_path }}" ]; then
+            BUNDLE_ARG="--bundle-path=${{ github.event.inputs.bundle_path }}"
+          elif [ -f "../../../research-checkout/workspaces/implementation/artifacts/admitted-evidence-bundle.json" ]; then
+            BUNDLE_ARG="--bundle-path=../../../research-checkout/workspaces/implementation/artifacts/admitted-evidence-bundle.json"
+          fi
+          python publish_public_snapshot.py \
+            --research-root=../../../research-checkout \
+            $BUNDLE_ARG
+
+      - name: Verify snapshot integrity
+        working-directory: apps/api-go
+        run: go test ./internal/proxy/... -run TestCatalogEndpoint -count=1
+
+      - name: Commit updated snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/api-go/data/public/
+          if git diff --staged --quiet; then
+            echo "No snapshot changes to commit."
+          else
+            git commit -m "snapshot: auto-publish from Research bundle update"
+            git push
+          fi

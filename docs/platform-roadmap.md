@@ -20,7 +20,8 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |
 | Reports | Active | Evidence stack, provenance, track review links, print-safe job-linked producer context, charts, PDF and CSV export |
 | Demo mode | Active | Snapshot-backed demo data keeps the workspace reviewable offline |
-| Runtime response facade | Active | Audit job API responses and report-side producer details are normalized through a public-safe redaction layer before rendering, with generic disconnected states when Runtime is unavailable |
+| Runtime bridge | Active | Configurable timeout, retry with method guard, health check hardening, safe error responses |
+| CI pipeline | Active | GitHub Actions: lint, typecheck, test (frontend + Go + Python), E2E Playwright, snapshot publish dispatch |
 | Workspace controls | Active | Audit filters and create-audit wizard expose named controls, step state, and reduced-motion behavior |
 | Public API docs | Active | Docs record snapshot-backed API contracts, optional evidence fields, and request-time fallback boundaries |
 
@@ -37,12 +38,10 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 
 | Track | Direction |
 | --- | --- |
-| Runtime bridge | Better live-job retry, cancellation, and disconnected-state handling |
-| Snapshot publisher | More schema validation and clearer warnings before public bundle publication |
-| Research handoff | Cleaner admitted-evidence import from DiffAudit-Research without exposing raw paths |
-| Product demo | More realistic seeded jobs, reports, and coverage gaps while keeping data sanitized |
 | Release management | Signed/provenance-aware images after the GHCR baseline is stable |
 | Data source facade | Normalize demo/live response shapes and sanitize Runtime text before rendering |
+| Accessibility | Menu roles, chart text summaries, and stronger focus handling in shared primitives |
+| Deployment | Optional image provenance verification helpers for GHCR and local archive deployments |
 
 ## Guardrails
 

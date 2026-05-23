@@ -1,19 +1,16 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 21:40 Asia/Hong_Kong
+Last updated: 2026-05-23 21:43 Asia/Hong_Kong
 
 ## Current Goal
 
-Runtime bridge hardened, CI workflow in place. Next: merge dev → main, then backlog grooming.
+Tooling hardened, CI in place, cross-repo dispatch configured. Next: accessibility, release provenance, docs polish.
 
 ## Active Work
 
-- [x] Merge dev → main (dc6a01b): onboarding UX, Research handoff, publisher tests.
-- [x] Research handoff: publisher consumes curated bundle + --bundle-path flag + tests (4/4).
-- [x] Runtime bridge: retry logic, health check, configurable timeout, cache fallback.
-- [x] Retry safety: method guard (GET/HEAD only), net.Error type checks, cross-platform reliability.
-- [x] Documentation: architecture.md 4-tier fallback chain, error-boundary.tsx i18n.
-- [x] CI: GitHub Actions workflow (frontend, Go, Python, E2E — 4 jobs).
+- [x] Dev → main merged (68cafd8): Runtime bridge hardening, CI workflow, retry safety fix, demo audit.
+- [x] Cross-repo CI trigger: snapshot-publish.yml dispatch workflow for Research bundle updates.
+- [x] docs/platform-roadmap.md: stale Longer-Term items cleaned up (Runtime bridge, snapshot publisher, Research handoff, product demo all completed).
 
 ## Review Gates
 
@@ -28,13 +25,12 @@ Runtime bridge hardened, CI workflow in place. Next: merge dev → main, then ba
 ## Near-Term Product Work
 
 - [x] Reports, Account, Accessibility, Workspace UX — all completed.
-- [x] Runtime bridge: retry, health check, timeout, cache fallback (49 Go tests).
+- [x] Runtime bridge: retry, health check, timeout, cache fallback (66 Go tests).
 - [x] error-boundary.tsx: hardcoded English strings migrated to WORKSPACE_COPY i18n contract.
 - [x] Demo mode: audit the demo experience end-to-end for first-time user quality (no critical issues found).
 - [x] CI readiness: GitHub Actions workflow for Platform CI (lint, test, build, E2E).
-- [x] DemoJobStore: 15 unit tests covering List, Find, Create, Cancel, helpers (66 Go tests total).
+- [x] Cross-repo CI trigger: snapshot-publish.yml dispatch workflow for Research bundle updates.
 
 ## Backlog
 
-- [ ] CI trigger: auto-publish Platform snapshot on Research bundle update (cross-repo).
 - [ ] 国创阶段 migration entry.
