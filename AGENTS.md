@@ -66,6 +66,7 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 | `/workspace/model-assets` | `model-assets/ModelAssetsClient.tsx` | Model CRUD, evidence table with risk coloring |
 | `/workspace/risk-findings` | `risk-findings/RiskFindingsClient.tsx` | Findings table with Priority Sort, J/K nav, share links |
 | `/workspace/reports` | `reports/page.tsx` | Report center with track-based generation |
+| `/workspace/api-keys` | `api-keys/ApiKeysClient.tsx` | API key management and scoped credentials |
 | `/workspace/settings` | `settings/SettingsClient.tsx` | System config, templates, runtime status |
 | `/workspace/account` | `account/page.tsx` | User profile, providers, security |
 
