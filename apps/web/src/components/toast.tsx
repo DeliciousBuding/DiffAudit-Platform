@@ -1,6 +1,9 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useToast, type ToastItem } from "./toast-provider";
+import { getStoredLocale, type Locale } from "./language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const iconMap: Record<ToastItem["type"], React.ReactNode> = {
   success: (
@@ -33,6 +36,13 @@ const variantClasses: Record<ToastItem["type"], string> = {
 };
 
 function ToastCard({ toast, onDismiss }: { toast: ToastItem; onDismiss: () => void }) {
+  const locale = useSyncExternalStore<Locale>(
+    () => () => undefined,
+    () => getStoredLocale(),
+    () => "en-US",
+  );
+  const copy = WORKSPACE_COPY[locale].shell;
+
   return (
     <div
       className={`pointer-events-auto flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium shadow-xl ${variantClasses[toast.type]}`}
@@ -46,9 +56,9 @@ function ToastCard({ toast, onDismiss }: { toast: ToastItem; onDismiss: () => vo
       <button
         onClick={onDismiss}
         className="rounded p-0.5 opacity-60 transition-opacity hover:opacity-100"
-        aria-label="Dismiss"
+        aria-label={copy.dismissToast}
       >
-        <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3">
+        <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true">
           <path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z" />
         </svg>
       </button>
