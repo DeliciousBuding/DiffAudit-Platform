@@ -11,6 +11,30 @@ export function getTrackDisplayLabel(track: string | null | undefined, locale: L
   return "--";
 }
 
+/** Shared risk note translations — backend-provided English notes mapped to zh-CN. */
+export const RISK_NOTE_ZH: Record<string, string> = {
+  "Photoreal face generations show stronger memorization on member portraits.":
+    "人脸生成模型对成员肖像表现出更强的记忆效应。",
+  "White-box gradients expose memorized waveform fragments without mitigation.":
+    "白盒梯度暴露了未缓解的记忆波形片段。",
+  "Black-box membership inference via loss deviation. High AUC indicates significant leakage.":
+    "基于损失偏差的黑盒成员推断攻击。高 AUC 表明存在显著泄露。",
+  "Gray-box posterior deviation attack. High ASR shows gradient leakage is exploitable.":
+    "灰盒后验偏差攻击。高 ASR 表明梯度泄露可被利用。",
+  "Rare-class lesion samples remain highly vulnerable to posterior attacks.":
+    "罕见类病变样本对后验攻击仍然高度脆弱。",
+  "Stochastic dropout at all steps reduces ASR by ~15pp with moderate overhead.":
+    "全步骤随机丢弃将 ASR 降低约 15 个百分点，开销适中。",
+  "Lower AUC on PixelArt suggests stronger baseline privacy.":
+    "PixelArt 上较低的 AUC 表明基线隐私保护更强。",
+  "Gradient leakage present but lower magnitude than SD v1.4.":
+    "存在梯度泄露但幅度低于 SD v1.4。",
+  "SMP-LoRA shows stronger mitigation under gray-box attack.":
+    "SMP-LoRA 在灰盒攻击下表现出更强的缓解效果。",
+  "Clip-guided sanitization lowers leakage while keeping prompt fidelity acceptable.":
+    "Clip 引导的净化降低了泄露，同时保持提示保真度在可接受水平。",
+};
+
 export const WORKSPACE_COPY: Record<
   Locale,
   {
