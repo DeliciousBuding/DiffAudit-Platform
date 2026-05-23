@@ -265,20 +265,19 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               </div>
             ))}
             <Link href="/workspace/risk-findings" className="workspace-task-all">
-              {locale === "zh-CN" ? "查看全部结果" : "View all results"}
+                            {copy.sections.viewAllResults}
             </Link>
           </section>
 
           <section className="workspace-insight-card">
             <h2>{copy.sections.recommendations}</h2>
             <ul>
-              <li>发现 {riskCounts.high} 个 高风险结果，建议优先处理。</li>
-              <li>W-1 在 Recon 场景中表现最佳，平均 AUC 提升 0.339。</li>
-              <li>PIA 在属性级攻击中对 rare 属性扼仍较明显。</li>
-              <li>建议启用灰盒防御进行进一步评估。</li>
+              {copy.suggestions.recommendationItems(riskCounts.high).map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
             <Link href="/workspace/risk-findings">
-              {locale === "zh-CN" ? "查看全部建议" : "View all advice"}
+              {copy.sections.viewAllSuggestions}
               <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
             </Link>
           </section>
