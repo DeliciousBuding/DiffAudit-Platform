@@ -4,12 +4,15 @@ Last updated: 2026-05-23 08:52 Asia/Hong_Kong
 
 ## Current Goal
 
-Dev → main merged (35 commits, ebd9160). Next phase: Go API hardening + integration tests.
+Dev → main merged (40 commits, 78f0e8b). Next phase: Research handoff pipeline + onboarding UX.
 
 ## Active Work
 
-- [x] Merge dev → main (ebd9160): i18n migration, E2E infra, PM/UX polish.
-- [ ] Go API: expand test coverage beyond cached 2-package baseline.
+- [x] Merge dev → main (78f0e8b): Go API tests, i18n bug fixes, CHANGELOG.
+- [x] User onboarding: empty start page now shows 3-step guide + CTA button.
+- [ ] Research handoff: have snapshot publisher consume `admitted-evidence-bundle.json` (not raw unified table).
+- [ ] Research handoff: decouple `--research-root` sibling-directory assumption.
+- [ ] Research handoff: add CI trigger to auto-publish snapshot on Research bundle update.
 
 ## Principles
 

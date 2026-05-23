@@ -209,8 +209,25 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                   </tbody>
                 </table>
               ) : (
-                <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-                  {copy.emptyResults}
+                <div className="px-4 py-6 space-y-4">
+                  <div className="text-center">
+                    <p className="text-[13px] font-semibold">{localeData.emptyWorkspace.title}</p>
+                    <p className="mt-1 text-[12px] text-muted-foreground">{localeData.emptyWorkspace.description}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    {localeData.emptyWorkspace.steps.map((s) => (
+                      <div key={s.step} className="flex items-center gap-3 rounded-xl border border-border bg-muted/10 px-3 py-2">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-[11px] font-bold text-[var(--accent-blue)]">{s.step}</span>
+                        <div>
+                          <p className="text-[12px] font-medium">{s.title}</p>
+                          <p className="text-[11px] text-muted-foreground">{s.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <Link href="/workspace/audits/new" className="workspace-btn-primary w-full justify-center px-4 py-2.5 text-sm font-semibold">
+                    {localeData.emptyWorkspace.cta}
+                  </Link>
                 </div>
               )}
             </div>

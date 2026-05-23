@@ -162,5 +162,97 @@ class PublishPublicSnapshotTests(unittest.TestCase):
             self.assertIn("models: invalid public snapshot schema; wrote empty list.", manifest_payload["warnings"])
 
 
+    def test_falls_back_to_curated_bundle_when_unified_table_is_missing(self):
+        module = load_script_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            output_dir = root / "public"
+            summaries_dir = output_dir / "summaries"
+            summaries_dir.mkdir(parents=True, exist_ok=True)
+
+            (output_dir / "catalog.json").write_text(
+                json.dumps(
+                    [{"contract_key": "white-box/gsa/ddpm-cifar10", "best_workspace": "gsa-cifar-buckets"}]
+                ),
+                encoding="utf-8",
+            )
+            (output_dir / "models.json").write_text(json.dumps([]), encoding="utf-8")
+            (output_dir / "manifest.json").write_text(
+                json.dumps({"summary_keys": [], "contract_summary_keys": {}, "warnings": []}),
+                encoding="utf-8",
+            )
+
+            research_root = root / "Research"
+            artifacts = research_root / "workspaces" / "implementation" / "artifacts"
+            artifacts.mkdir(parents=True, exist_ok=True)
+            # Only create the curated bundle — no unified table
+            (artifacts / "admitted-evidence-bundle.json").write_text(
+                json.dumps({
+                    "schema": "diffaudit.admitted_evidence_bundle.v1",
+                    "rows": [{"track": "white-box", "attack": "GSA mainline", "defense": "dpdm"}],
+                }),
+                encoding="utf-8",
+            )
+
+            with patch.object(
+                module, "parse_args",
+                return_value=SimpleNamespace(
+                    runtime_base_url="http://127.0.0.1:8765",
+                    control_api_base_url=None,
+                    output_dir=str(output_dir),
+                    research_root=str(research_root),
+                    bundle_path=None,
+                ),
+            ), patch.object(module, "fetch_json", side_effect=RuntimeError("runtime offline")):
+                exit_code = module.main()
+
+            self.assertEqual(exit_code, 0)
+            table = json.loads((output_dir / "attack-defense-table.json").read_text(encoding="utf-8"))
+            self.assertEqual(table["rows"][0]["attack"], "GSA mainline")
+
+    def test_explicit_bundle_path_takes_priority_over_research_root(self):
+        module = load_script_module()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            output_dir = root / "public"
+            summaries_dir = output_dir / "summaries"
+            summaries_dir.mkdir(parents=True, exist_ok=True)
+
+            (output_dir / "catalog.json").write_text(json.dumps([]), encoding="utf-8")
+            (output_dir / "models.json").write_text(json.dumps([]), encoding="utf-8")
+            (output_dir / "manifest.json").write_text(
+                json.dumps({"summary_keys": [], "contract_summary_keys": {}, "warnings": []}),
+                encoding="utf-8",
+            )
+
+            # Explicit bundle path — should be used regardless of research-root
+            bundle_dir = root / "explicit-bundles"
+            bundle_dir.mkdir(parents=True)
+            (bundle_dir / "admitted-evidence-bundle.json").write_text(
+                json.dumps({
+                    "rows": [{"track": "black-box", "attack": "explicit-bundle-attack"}],
+                }),
+                encoding="utf-8",
+            )
+
+            with patch.object(
+                module, "parse_args",
+                return_value=SimpleNamespace(
+                    runtime_base_url="http://127.0.0.1:8765",
+                    control_api_base_url=None,
+                    output_dir=str(output_dir),
+                    research_root=str(root / "Research"),
+                    bundle_path=str(bundle_dir / "admitted-evidence-bundle.json"),
+                ),
+            ), patch.object(module, "fetch_json", side_effect=RuntimeError("runtime offline")):
+                exit_code = module.main()
+
+            self.assertEqual(exit_code, 0)
+            table = json.loads((output_dir / "attack-defense-table.json").read_text(encoding="utf-8"))
+            self.assertEqual(table["rows"][0]["attack"], "explicit-bundle-attack")
+
+
 if __name__ == "__main__":
     unittest.main()
