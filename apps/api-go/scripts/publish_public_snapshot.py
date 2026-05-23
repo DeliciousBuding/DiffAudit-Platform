@@ -51,6 +51,11 @@ def parse_args() -> argparse.Namespace:
         default=str(Path(__file__).resolve().parents[4] / "Research"),
         help="Research checkout root used for direct admitted-table fallback when Runtime is unavailable.",
     )
+    parser.add_argument(
+        "--bundle-path",
+        default=None,
+        help="Explicit path to admitted-evidence-bundle.json (preferred over unified-table fallback).",
+    )
     return parser.parse_args()
 
 
@@ -175,12 +180,26 @@ def load_runtime_json_with_existing_fallback(
         raise
 
 
-def resolve_research_attack_defense_table_path(research_root: str | Path | None) -> Path | None:
-    if research_root is None:
-        return None
-    root = Path(research_root)
-    path = root / "workspaces" / "implementation" / "artifacts" / "unified-attack-defense-table.json"
-    return path if path.exists() else None
+def resolve_research_attack_defense_table_path(
+    research_root: str | Path | None,
+    bundle_path: str | Path | None = None,
+) -> Path | None:
+    # Prefer explicit bundle path (curated admitted-evidence-bundle.json)
+    if bundle_path is not None:
+        bundle = Path(bundle_path)
+        if bundle.exists():
+            return bundle
+    # Try curated bundle under research root first
+    if research_root is not None:
+        root = Path(research_root)
+        curated = root / "workspaces" / "implementation" / "artifacts" / "admitted-evidence-bundle.json"
+        if curated.exists():
+            return curated
+        # Fall back to raw unified table
+        unified = root / "workspaces" / "implementation" / "artifacts" / "unified-attack-defense-table.json"
+        if unified.exists():
+            return unified
+    return None
 
 
 def load_attack_defense_table(
@@ -188,12 +207,13 @@ def load_attack_defense_table(
     base_url: str,
     output_dir: Path,
     research_root: str | Path | None,
+    bundle_path: str | Path | None = None,
     warnings: list[str],
 ) -> tuple[Any, str]:
     try:
         return fetch_json(base_url, "/api/v1/evidence/attack-defense-table"), base_url
     except Exception:  # noqa: BLE001
-        research_table_path = resolve_research_attack_defense_table_path(research_root)
+        research_table_path = resolve_research_attack_defense_table_path(research_root, bundle_path)
         if research_table_path is not None:
             warnings.append(
                 "attack-defense-table: runtime unavailable; synced from "
@@ -250,6 +270,7 @@ def main() -> int:
         base_url=base_url,
         output_dir=output_dir,
         research_root=getattr(args, "research_root", None),
+        bundle_path=getattr(args, "bundle_path", None),
         warnings=warnings,
     )
     models = load_runtime_json_with_existing_fallback(
