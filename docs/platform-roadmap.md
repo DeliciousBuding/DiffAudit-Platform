@@ -18,7 +18,7 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | Docker images | Active | GHCR publishes web and API images with immutable `sha-<short-sha>` tags |
 | Deployment traceability | Active | Gateway health exposes redacted build revision and snapshot status |
 | Workspace observability | Active | Shell status drawer and Settings show data mode, snapshot state, and build revision |
-| Reports | Active | Evidence stack, provenance, track review links, print-safe job-linked producer context, charts, PDF and CSV export |
+| Reports | Active | Evidence stack, provenance, track review links, print-safe job-linked producer context, charts, PDF and CSV export, paginated printable report with i18n |
 | Demo mode | Active | Snapshot-backed demo data keeps the workspace reviewable offline |
 | Runtime bridge | Active | Configurable timeout, retry with method guard, health check hardening, safe error responses |
 | CI pipeline | Active | GitHub Actions: lint, typecheck, test (frontend + Go + Python), E2E Playwright, snapshot publish dispatch |
@@ -29,10 +29,9 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 
 | Priority | Track | Work |
 | --- | --- | --- |
-| P1 | Reports | Improve printable report pagination, table wrapping, and long-evidence layout |
 | P2 | Deployment | Add optional image provenance verification helpers for GHCR and local archive deployments |
 | P2 | Account | Polish account security state for linked providers, verified email, and password access |
-| P2 | Accessibility | Add menu roles, chart text summaries, and stronger focus handling in shared primitives |
+| P2 | Accessibility | Menu roles, chart text summaries, and stronger focus handling in shared primitives |
 
 ## Longer-Term Direction
 

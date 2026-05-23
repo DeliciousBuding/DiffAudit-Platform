@@ -615,6 +615,9 @@ export const WORKSPACE_COPY: Record<
         noProvenanceData: string;
       };
       printableReport: {
+        kpiRows: string;
+        kpiContracts: string;
+        kpiAvgAuc: string;
         summarySectionTitle: string;
         comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) => string;
         comparisonSummaryIneffective: (avgAucReduction: string) => string;
@@ -1579,6 +1582,9 @@ export const WORKSPACE_COPY: Record<
         noProvenanceData: "No provenance data available.",
       },
       printableReport: {
+        kpiRows: "Rows",
+        kpiContracts: "Contracts",
+        kpiAvgAuc: "Avg AUC",
         summarySectionTitle: "Summary",
         comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) =>
           `${effectivePairs} / ${totalPairs} defense pairs show a meaningful AUC reduction, and the average AUC change is ${avgAucReduction}.`,
@@ -2740,6 +2746,9 @@ export const WORKSPACE_COPY: Record<
         noProvenanceData: "暂无溯源数据。",
       },
       printableReport: {
+        kpiRows: "结果行",
+        kpiContracts: "合同项",
+        kpiAvgAuc: "平均 AUC",
         summarySectionTitle: "摘要",
         comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) =>
           `${effectivePairs} / ${totalPairs} 个防御配对显示出显著的 AUC 降低，平均 AUC 变化为 ${avgAucReduction}。`,
