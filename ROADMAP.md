@@ -27,13 +27,12 @@ Dev → main merged (68cafd8). Tooling hardened, CI in place. Next: cross-repo C
 ## Near-Term Product Work
 
 - [x] Reports, Account, Accessibility, Workspace UX — all completed.
-- [x] Runtime bridge: retry, health check, timeout, cache fallback (49 Go tests).
+- [x] Runtime bridge: retry, health check, timeout, cache fallback (66 Go tests).
 - [x] error-boundary.tsx: hardcoded English strings migrated to WORKSPACE_COPY i18n contract.
 - [x] Demo mode: audit the demo experience end-to-end for first-time user quality (no critical issues found).
 - [x] CI readiness: GitHub Actions workflow for Platform CI (lint, test, build, E2E).
-- [x] DemoJobStore: 15 unit tests covering List, Find, Create, Cancel, helpers (66 Go tests total).
+- [x] Cross-repo CI trigger: snapshot-publish.yml dispatch workflow for Research bundle updates.
 
 ## Backlog
 
-- [ ] CI trigger: auto-publish Platform snapshot on Research bundle update (cross-repo).
 - [ ] 国创阶段 migration entry.
