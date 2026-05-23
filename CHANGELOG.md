@@ -18,7 +18,8 @@
 ### Changed
 - **i18n migration**: 21 files migrated to WORKSPACE_COPY contract (~400 keys)
   - All inline COPY/labels/t objects eliminated
-  - All `locale === "zh-CN" ? "..." : "..."` display string ternaries removed
+  - All user-facing `locale === "zh-CN" ? "..." : "..."` display string ternaries removed
+  - 3 demo fixture time strings remain (not user-facing — replaced by live data in production)
   - Shared components: contextual-tip, scroll-to-top, metric-tooltip, printable-audit-report
 - Pagination: decoy prev/next → functional client-side pagination (10 items/page)
 - Start page: audit cards bilingual, recommendation items bilingual, ROC title from copy

@@ -9,8 +9,10 @@ Dev → main merged (40 commits, 78f0e8b). Next phase: Research handoff pipeline
 ## Active Work
 
 - [x] Merge dev → main (78f0e8b): Go API tests, i18n bug fixes, CHANGELOG.
-- [ ] Research handoff: simplify admitted-evidence import from DiffAudit-Research.
-- [ ] User onboarding: add getting-started hints for first-time workspace visitors.
+- [x] User onboarding: empty start page now shows 3-step guide + CTA button.
+- [ ] Research handoff: have snapshot publisher consume `admitted-evidence-bundle.json` (not raw unified table).
+- [ ] Research handoff: decouple `--research-root` sibling-directory assumption.
+- [ ] Research handoff: add CI trigger to auto-publish snapshot on Research bundle update.
 
 ## Principles
 
