@@ -688,6 +688,264 @@ func TestConflictStatusIsPassedThrough(t *testing.T) {
 	}
 }
 
+// ── Demo control-plane endpoints ────────────────────────────────────────────
+
+func TestDemoJobsListEndpoint(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["demo_mode"] != true {
+		t.Fatalf("expected demo_mode=true, got %v", payload["demo_mode"])
+	}
+	total, ok := payload["total"].(float64)
+	if !ok || total != 6 {
+		t.Fatalf("expected total=6, got %v", payload["total"])
+	}
+	jobs, ok := payload["jobs"].([]any)
+	if !ok || len(jobs) != 6 {
+		t.Fatalf("expected 6 jobs, got %v", payload["jobs"])
+	}
+}
+
+func TestDemoJobDetailEndpoint(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs/demo-job-001", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["job_id"] != "demo-job-001" {
+		t.Fatalf("expected job_id=demo-job-001, got %v", payload["job_id"])
+	}
+	if payload["status"] != "completed" {
+		t.Fatalf("expected status=completed, got %v", payload["status"])
+	}
+	if payload["contract_key"] != "black-box/recon/sd15-ddim" {
+		t.Fatalf("unexpected contract_key: %v", payload["contract_key"])
+	}
+}
+
+func TestDemoJobDetailNotFound(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs/nonexistent-job-id", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["demo_mode"] != true {
+		t.Fatalf("expected demo_mode=true, got %v", payload["demo_mode"])
+	}
+}
+
+func TestDemoJobCreationEndpoint(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	body, _ := json.Marshal(map[string]any{
+		"contract_key":   "black-box/recon/sd15-ddim",
+		"workspace_name": "demo-test-workspace",
+		"job_type":       "attack",
+	})
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusAccepted {
+		t.Fatalf("expected 202, got %d: %s", recorder.Code, recorder.Body.String())
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["status"] != "queued" {
+		t.Fatalf("expected status=queued, got %v", payload["status"])
+	}
+	if payload["contract_key"] != "black-box/recon/sd15-ddim" {
+		t.Fatalf("expected contract_key preserved, got %v", payload["contract_key"])
+	}
+	if payload["workspace_name"] != "demo-test-workspace" {
+		t.Fatalf("expected workspace_name preserved, got %v", payload["workspace_name"])
+	}
+	if payload["demo_mode"] != true {
+		t.Fatalf("expected demo_mode=true, got %v", payload["demo_mode"])
+	}
+}
+
+func TestDemoJobCreationRejectsMissingContractKey(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	body, _ := json.Marshal(map[string]any{
+		"workspace_name": "no-contract-key-workspace",
+	})
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d: %s", recorder.Code, recorder.Body.String())
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if !strings.Contains(recorder.Body.String(), "contract_key") {
+		t.Fatalf("expected contract_key validation detail, got %v", payload["detail"])
+	}
+}
+
+func TestDemoJobCreationRejectsMissingWorkspaceName(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	body, _ := json.Marshal(map[string]any{
+		"contract_key": "black-box/recon/sd15-ddim",
+	})
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", recorder.Code)
+	}
+}
+
+func TestDemoJobCreationRejectsInvalidJson(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", strings.NewReader("not json"))
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d: %s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestDemoJobCancelEndpoint(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	request := httptest.NewRequest(http.MethodDelete, "/api/v1/audit/jobs/demo-job-004", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["status"] != "cancelled" {
+		t.Fatalf("expected status=cancelled, got %v", payload["status"])
+	}
+	if payload["job_id"] != "demo-job-004" {
+		t.Fatalf("expected job_id=demo-job-004, got %v", payload["job_id"])
+	}
+}
+
+func TestDemoJobCancelNotFound(t *testing.T) {
+	server := NewServer(Config{DemoMode: true})
+	request := httptest.NewRequest(http.MethodDelete, "/api/v1/audit/jobs/nonexistent-job-id", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", recorder.Code)
+	}
+}
+
+// ── Error safety ─────────────────────────────────────────────────────────────
+
+func TestRuntimeErrorResponseIsSafe(t *testing.T) {
+	server := NewServer(Config{RuntimeBaseURL: "http://192.0.2.10:9999"})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503, got %d", recorder.Code)
+	}
+	raw := recorder.Body.String()
+	if strings.Contains(raw, "192.0.2.10") || strings.Contains(raw, "runtime_base_url") || strings.Contains(raw, "control_api_base_url") {
+		t.Fatalf("runtime error leaked upstream URL: %s", raw)
+	}
+	if !strings.Contains(raw, "runtime upstream is unavailable") {
+		t.Fatalf("expected generic error detail, got %s", raw)
+	}
+}
+
+func TestSnapshotUnavailableResponseIsSafe(t *testing.T) {
+	server := NewServer(Config{
+		PublicDataDir:  "",
+		RuntimeBaseURL: "",
+	})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/catalog", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503, got %d", recorder.Code)
+	}
+	raw := recorder.Body.String()
+	if !strings.Contains(raw, "snapshot unavailable") {
+		t.Fatalf("expected snapshot unavailable detail, got %s", raw)
+	}
+	if strings.Contains(raw, "public_data_dir") || strings.Contains(raw, "runtime_base_url") {
+		t.Fatalf("503 response leaked internal config keys: %s", raw)
+	}
+}
+
+func TestBadGatewayResponseIsSafe(t *testing.T) {
+	// Without runtime configured and demo mode off, control-plane routes return 502.
+	server := NewServer(Config{
+		RuntimeBaseURL: "",
+	})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusBadGateway {
+		t.Fatalf("expected 502, got %d", recorder.Code)
+	}
+	raw := recorder.Body.String()
+	if strings.Contains(raw, "runtime_base_url") || strings.Contains(raw, "control_api_base_url") {
+		t.Fatalf("502 response leaked internal config keys: %s", raw)
+	}
+	if !strings.Contains(raw, "runtime base url is not configured") {
+		t.Fatalf("expected generic detail, got %s", raw)
+	}
+}
+
 func findEntryByContractKey(entries []map[string]any, key string) (map[string]any, bool) {
 	for _, entry := range entries {
 		entryKey, _ := entry["contract_key"].(string)
