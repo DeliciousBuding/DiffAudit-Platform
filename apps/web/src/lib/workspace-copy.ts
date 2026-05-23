@@ -73,6 +73,8 @@ export const WORKSPACE_COPY: Record<
       expandSidebar: string;
       dismissTip: string;
       dismissToast: string;
+      copyLabel: string;
+      copiedLabel: string;
       scrollToTop: string;
     };
     commandPalette: {
@@ -925,6 +927,8 @@ export const WORKSPACE_COPY: Record<
       expandSidebar: "Expand sidebar",
       dismissTip: "Got it",
       dismissToast: "Dismiss",
+      copyLabel: "Copy",
+      copiedLabel: "Copied",
       scrollToTop: "Scroll to top",
     },
     commandPalette: {
@@ -2089,6 +2093,8 @@ export const WORKSPACE_COPY: Record<
       expandSidebar: "展开侧边栏",
       dismissTip: "知道了",
       dismissToast: "关闭",
+      copyLabel: "复制",
+      copiedLabel: "已复制",
       scrollToTop: "回到顶部",
     },
     commandPalette: {

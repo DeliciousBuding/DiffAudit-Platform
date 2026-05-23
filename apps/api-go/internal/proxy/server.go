@@ -511,6 +511,12 @@ func (s *Server) handleDemoJobCreation(writer http.ResponseWriter, body []byte) 
 	}
 
 	job := s.demoStore.Create(contractKey, workspaceName, jobType)
+	if job == nil {
+		writeJSON(writer, http.StatusBadRequest, map[string]any{
+			"detail": "contract_key and workspace_name must be <= 256 characters with valid characters",
+		})
+		return
+	}
 	writeJSON(writer, http.StatusAccepted, job)
 }
 

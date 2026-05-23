@@ -36,18 +36,36 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validate inputs
+        run: |
+          # Reject inputs containing shell metacharacters or path traversal
+          INVALID_CHARS='[;&|`$(){}<>"'"'"'\\]'
+          if [ -n "$BUNDLE_PATH" ] && echo "$BUNDLE_PATH" | grep -qE "$INVALID_CHARS|\.\."; then
+            echo "::error::bundle_path contains invalid characters"
+            exit 1
+          fi
+          if [ -n "$RESEARCH_REF" ] && echo "$RESEARCH_REF" | grep -qE "$INVALID_CHARS"; then
+            echo "::error::research_ref contains invalid characters"
+            exit 1
+          fi
+        env:
+          BUNDLE_PATH: ${{ github.event.inputs.bundle_path }}
+          RESEARCH_REF: ${{ github.event.inputs.research_ref }}
+
       - name: Run snapshot publisher
         working-directory: apps/api-go/scripts
         run: |
           BUNDLE_ARG=""
-          if [ -n "${{ github.event.inputs.bundle_path }}" ]; then
-            BUNDLE_ARG="--bundle-path=${{ github.event.inputs.bundle_path }}"
+          if [ -n "${BUNDLE_PATH}" ]; then
+            BUNDLE_ARG="--bundle-path=${BUNDLE_PATH}"
           elif [ -f "../../../research-checkout/workspaces/implementation/artifacts/admitted-evidence-bundle.json" ]; then
             BUNDLE_ARG="--bundle-path=../../../research-checkout/workspaces/implementation/artifacts/admitted-evidence-bundle.json"
           fi
           python publish_public_snapshot.py \
             --research-root=../../../research-checkout \
             $BUNDLE_ARG
+        env:
+          BUNDLE_PATH: ${{ github.event.inputs.bundle_path }}
 
       - name: Verify snapshot integrity
         working-directory: apps/api-go
