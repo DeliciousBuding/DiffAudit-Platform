@@ -1,19 +1,18 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 21:40 Asia/Hong_Kong
+Last updated: 2026-05-23 21:43 Asia/Hong_Kong
 
 ## Current Goal
 
-Runtime bridge hardened, CI workflow in place. Next: merge dev → main, then backlog grooming.
+Dev → main merged (68cafd8). Tooling hardened, CI in place. Next: cross-repo CI trigger, backlog grooming.
 
 ## Active Work
 
-- [x] Merge dev → main (dc6a01b): onboarding UX, Research handoff, publisher tests.
-- [x] Research handoff: publisher consumes curated bundle + --bundle-path flag + tests (4/4).
-- [x] Runtime bridge: retry logic, health check, configurable timeout, cache fallback.
-- [x] Retry safety: method guard (GET/HEAD only), net.Error type checks, cross-platform reliability.
-- [x] Documentation: architecture.md 4-tier fallback chain, error-boundary.tsx i18n.
-- [x] CI: GitHub Actions workflow (frontend, Go, Python, E2E — 4 jobs).
+- [x] Dev → main merged (68cafd8): Runtime bridge hardening, CI workflow, retry safety fix, demo audit.
+- [x] Runtime bridge: retry safety (GET/HEAD only), net.Error types, cross-platform reliability.
+- [x] DemoJobStore: 15 unit tests covering all CRUD operations and helpers (66 Go tests total).
+- [x] Documentation: architecture.md, CHANGELOG, ROADMAP all current.
+- [x] CI: GitHub Actions workflow with 4 jobs, all gates green.
 
 ## Review Gates
 
