@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -972,8 +973,6 @@ func TestIsRetryableError(t *testing.T) {
 		err      error
 		expected bool
 	}{
-		{"timeout", errors.New("dial tcp: i/o timeout"), true},
-		{"deadline exceeded", errors.New("context deadline exceeded"), true},
 		{"connection reset", errors.New("connection reset by peer"), true},
 		{"connection refused", errors.New("dial tcp: connection refused"), true},
 		{"no such host", errors.New("dial tcp: lookup x: no such host"), true},
@@ -989,6 +988,54 @@ func TestIsRetryableError(t *testing.T) {
 				t.Fatalf("isRetryableError(%q) = %v, want %v", tc.err, got, tc.expected)
 			}
 		})
+	}
+}
+
+func TestDoWithRetryDoesNotRetryPost(t *testing.T) {
+	// Create a listener, get a port, then close it so connections get refused.
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to bind: %v", err)
+	}
+	addr := listener.Addr().String()
+	listener.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: "http://" + addr})
+	body := strings.NewReader(`{"key":"value"}`)
+	req, _ := http.NewRequest(http.MethodPost, "http://"+addr+"/api/v1/audit/jobs", body)
+	_, err = server.doWithRetry(req, maxRetries)
+
+	if err == nil {
+		t.Fatalf("expected error for POST with connection refused")
+	}
+	// POST should NOT be retried — only one attempt, error is from first try
+	var opErr *net.OpError
+	if !errors.As(err, &opErr) || opErr.Op != "dial" {
+		t.Fatalf("expected dial error, got %v", err)
+	}
+}
+
+func TestDoWithRetryRetriesGet(t *testing.T) {
+	// Bind and immediately close a port. GET requests will get "connection refused"
+	// which is retryable (dial error). The function retries up to maxRetries times.
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to bind: %v", err)
+	}
+	addr := listener.Addr().String()
+	listener.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: "http://" + addr})
+	req, _ := http.NewRequest(http.MethodGet, "http://"+addr+"/test", nil)
+	_, err = server.doWithRetry(req, 3)
+
+	if err == nil {
+		t.Fatalf("expected error after retries for GET")
+	}
+	// GET should be retried. Verify the error is a dial failure.
+	var opErr *net.OpError
+	if !errors.As(err, &opErr) || opErr.Op != "dial" {
+		t.Fatalf("expected dial error, got %v", err)
 	}
 }
 

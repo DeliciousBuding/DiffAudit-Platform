@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -427,6 +428,13 @@ func writePublicGatewayError(writer http.ResponseWriter, detail string) {
 var errSnapshotUnavailable = errors.New("snapshot unavailable")
 
 func (s *Server) doWithRetry(request *http.Request, maxAttempts int) (*http.Response, error) {
+	// Only retry safe, idempotent methods (GET, HEAD).
+	// POST/PUT/DELETE with bodies cannot be safely retried because the request
+	// body reader is consumed on the first attempt and cannot be rewound.
+	if request.Method != http.MethodGet && request.Method != http.MethodHead {
+		return s.client.Do(request)
+	}
+
 	var lastErr error
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
 		response, err := s.client.Do(request)
@@ -435,8 +443,6 @@ func (s *Server) doWithRetry(request *http.Request, maxAttempts int) (*http.Resp
 		}
 		lastErr = err
 
-		// Only retry on transient network errors, not for successful responses or client errors.
-		// Retry is safe for GET (idempotent) and for transient failures (timeout, connection reset).
 		isRetryable := isRetryableError(err)
 		if !isRetryable || attempt >= maxAttempts {
 			break
@@ -448,11 +454,24 @@ func (s *Server) doWithRetry(request *http.Request, maxAttempts int) (*http.Resp
 
 // isRetryableError returns true for transient network errors that are safe to retry.
 func isRetryableError(err error) bool {
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
+		return true
+	}
+
+	var opErr *net.OpError
+	if errors.As(err, &opErr) {
+		// Dial failures (connection refused, no such host, etc.) are transient
+		if opErr.Op == "dial" {
+			return true
+		}
+	}
+
+	// Fallback string matching for wrapped or non-standard errors
 	errStr := err.Error()
-	return strings.Contains(errStr, "timeout") ||
-		strings.Contains(errStr, "deadline exceeded") ||
-		strings.Contains(errStr, "connection reset") ||
+	return strings.Contains(errStr, "connection reset") ||
 		strings.Contains(errStr, "connection refused") ||
+		strings.Contains(errStr, "refused") ||
 		strings.Contains(errStr, "no such host") ||
 		strings.Contains(errStr, "server misbehaving") ||
 		strings.Contains(errStr, "unexpected EOF")
