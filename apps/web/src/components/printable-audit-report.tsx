@@ -435,13 +435,13 @@ export function PrintableAuditReport({
         >
           <div style={{ ...SECTION_STYLE, padding: "10px 12px" }}>
             <div style={{ color: "#64748b", fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Rows
+              {copy.printableReport.kpiRows}
             </div>
             <div style={{ marginTop: "6px", fontSize: "24px", fontWeight: 700 }}>{rows.length}</div>
           </div>
           <div style={{ ...SECTION_STYLE, padding: "10px 12px" }}>
             <div style={{ color: "#64748b", fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Contracts
+              {copy.printableReport.kpiContracts}
             </div>
             <div style={{ marginTop: "6px", fontSize: "24px", fontWeight: 700 }}>{contracts.length}</div>
           </div>
@@ -453,7 +453,7 @@ export function PrintableAuditReport({
           </div>
           <div style={{ ...SECTION_STYLE, padding: "10px 12px" }}>
             <div style={{ color: "#64748b", fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Avg AUC
+              {copy.printableReport.kpiAvgAuc}
             </div>
             <div style={{ marginTop: "6px", fontSize: "24px", fontWeight: 700 }}>{avgAuc.toFixed(3)}</div>
           </div>
@@ -582,7 +582,7 @@ export function PrintableAuditReport({
                     <th style={{ ...TH_STYLE, textAlign: "right" }}>{copy.compareView.delta} AUC</th>
                     <th style={{ ...TH_STYLE, textAlign: "right" }}>{copy.compareView.delta} ASR</th>
                     <th style={{ ...TH_STYLE, textAlign: "right" }}>{copy.compareView.delta} TPR</th>
-                    <th style={TH_STYLE}>Model</th>
+                    <th style={TH_STYLE}>{copy.tableHeaders.model}</th>
                   </tr>
                 </thead>
                 <tbody>
