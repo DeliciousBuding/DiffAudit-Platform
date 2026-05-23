@@ -45,7 +45,7 @@ test.describe("Audits page user flows", () => {
   test("create-task button navigates to /workspace/audits/new", async ({ page }) => {
     await page.goto("/workspace/audits", { waitUntil: "networkidle" });
     // The button is inside a Suspense boundary — wait for it to resolve
-    const createBtn = page.locator("a[href='/workspace/audits/new']");
+    const createBtn = page.locator(".audits-create-btn");
     await expect(createBtn).toBeVisible({ timeout: 15000 });
     await createBtn.click();
     await page.waitForURL(/\/workspace\/audits\/new/, { timeout: 10000 });

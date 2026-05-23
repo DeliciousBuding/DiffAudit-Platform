@@ -225,6 +225,7 @@ export function SettingsClient({
   const [runtimeConnected, setRuntimeConnected] = useState<boolean | null>(null);
   const [gatewayHealth, setGatewayHealth] = useState<GatewayHealth | null>(null);
   const [gatewayHealthError, setGatewayHealthError] = useState(false);
+  const [gatewayHealthLoading, setGatewayHealthLoading] = useState(true);
 
   // Audit templates
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
@@ -318,6 +319,7 @@ export function SettingsClient({
         setGatewayHealthError(true);
       } finally {
         window.clearTimeout(timeoutId);
+        setGatewayHealthLoading(false);
       }
     }
 

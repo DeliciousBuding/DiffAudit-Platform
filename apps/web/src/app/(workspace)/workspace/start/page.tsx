@@ -232,7 +232,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 { key: "recon", short: "Recon", total: coverageMatrix.find((c) => c.key === "black-box")?.total ?? 6, tone: "recon" },
                 { key: "pia", short: "PIA", total: coverageMatrix.find((c) => c.key === "gray-box")?.total ?? 5, tone: "pia" },
                 { key: "gsa", short: "GSA", total: coverageMatrix.find((c) => c.key === "white-box")?.total ?? 3, tone: "gsa" },
-                { key: "other", short: locale === "zh-CN" ? "其他" : "Other", total: 2, tone: "other" },
+                { key: "other", short: copy.sections.otherLabel, total: 2, tone: "other" },
               ].map((row) => (
                 <div key={row.key} className={`is-${row.tone}`}>
                   <span />
@@ -251,8 +251,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             {[
               { id: "job_demo_003", sub: "stable-diffusion-v1-4 · GSA", time: locale === "zh-CN" ? "17 分钟前" : "17m ago", state: "done", badge: null },
               { id: "job_demo_004", sub: "stable-diffusion-v1-4 · Recon", time: locale === "zh-CN" ? "1 小时前" : "1h ago", state: "done", badge: null },
-              { id: "job_demo_006", sub: "pixel-art-v2 · PIA", time: "", state: "live", badge: locale === "zh-CN" ? "运行中" : "Running" },
-              { id: "job_demo_005", sub: "audio-diffusion-s · GSA", time: locale === "zh-CN" ? "15 小时前" : "15h ago", state: "failed", badge: locale === "zh-CN" ? "失败" : "Failed" },
+              { id: "job_demo_006", sub: "pixel-art-v2 · PIA", time: "", state: "live", badge: copy.sections.runningBadge },
+              { id: "job_demo_005", sub: "audio-diffusion-s · GSA", time: locale === "zh-CN" ? "15 小时前" : "15h ago", state: "failed", badge: copy.sections.failedBadge },
             ].map((task) => (
               <div key={task.id} className="workspace-task-row">
                 <span className={`is-${task.state}`} />

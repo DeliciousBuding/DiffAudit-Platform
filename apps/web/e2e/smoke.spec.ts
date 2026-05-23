@@ -85,3 +85,30 @@ test.describe("No client-side crash on interaction", () => {
     await expect(page.locator("body")).not.toContainText("Something went wrong", { timeout: 5000 });
   });
 });
+
+test.describe("Job detail page", () => {
+  test("job detail page renders for demo job ID without crashing", async ({ page }) => {
+    const res = await page.goto("/workspace/audits/job_demo_001", {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
+    // Must return a valid HTTP status (not 500)
+    expect(res?.status()).toBeLessThan(500);
+
+    // Wait for the client-side fetch to settle (loading skeleton → content or error state)
+    await page.waitForTimeout(4000);
+
+    // Verify no React error boundary crash
+    await expect(page.locator("body")).not.toContainText("Something went wrong", {
+      timeout: 10000,
+    });
+
+    // Body must not be empty
+    await expect(page.locator("body")).not.toBeEmpty({ timeout: 10000 });
+
+    // Even if the demo job doesn't exist in the backend, the page should
+    // show a graceful error state — not a white screen or crash
+    const bodyText = await page.locator("body").innerText();
+    expect(bodyText.length).toBeGreaterThan(10);
+  });
+});
