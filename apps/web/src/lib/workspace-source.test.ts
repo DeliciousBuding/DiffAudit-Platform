@@ -24,6 +24,18 @@ function walkFiles(dir: string): string[] {
 }
 
 describe("workspace source-of-truth boundaries", () => {
+  it("keeps workspace navigation registry entries unique and well-formed", () => {
+    const keys = WORKSPACE_NAV_REGISTRY.map((entry) => entry.key);
+    const hrefs = WORKSPACE_NAV_REGISTRY.map((entry) => entry.href);
+    const shortcuts = WORKSPACE_NAV_REGISTRY.map((entry) => entry.shortcut);
+
+    expect(new Set(keys)).toHaveLength(keys.length);
+    expect(new Set(hrefs)).toHaveLength(hrefs.length);
+    expect(new Set(shortcuts)).toHaveLength(shortcuts.length);
+    expect(hrefs.every((href) => href.startsWith("/workspace"))).toBe(true);
+    expect(shortcuts.every((shortcut) => /^Ctrl\+(?:[1-9]|,)$/.test(shortcut))).toBe(true);
+  });
+
   it("derives every localized workspace nav item from the registry order", () => {
     const registryKeys = WORKSPACE_NAV_REGISTRY.map((entry) => entry.key);
     const registryGroups = WORKSPACE_NAV_REGISTRY.map((entry) => entry.group);
