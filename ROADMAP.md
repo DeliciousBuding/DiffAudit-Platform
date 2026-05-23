@@ -1,34 +1,35 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 08:52 Asia/Hong_Kong
+Last updated: 2026-05-23 21:24 Asia/Hong_Kong
 
 ## Current Goal
 
-Dev → main merged (45 commits, dc6a01b). Next phase: Runtime-Server bridge hardening.
+Runtime bridge hardening complete. Next phase: production polish, demo mode quality, CI readiness.
 
 ## Active Work
 
 - [x] Merge dev → main (dc6a01b): onboarding UX, Research handoff, publisher tests.
 - [x] Research handoff: publisher consumes curated bundle + --bundle-path flag + tests (4/4).
-- [x] Runtime bridge: improve error messages when runtime is unreachable.
-- [x] Documentation: update architecture.md with current handoff flow.
-- [x] Runtime bridge: health check retry, connection timeout, error messaging.
-- [x] Runtime bridge: configurable timeout, retry on DELETE, cache fallback tests.
+- [x] Runtime bridge: retry logic, health check, configurable timeout, cache fallback (49 Go tests).
+- [x] Documentation: architecture.md 4-tier fallback chain, error-boundary.tsx i18n.
 
 ## Review Gates
 
 - [x] Frontend lint passed with zero warnings.
 - [x] Frontend tests passed (67 files / 250 tests).
-- [x] Go API tests passed (39 tests).
+- [x] Go API tests passed (49 tests).
 - [x] Python publisher tests passed (4 tests).
-- [x] E2E tests passed (41/41).
+- [x] E2E tests passed (123 total / 41 cases × 3 browsers).
 - [x] Public boundary check passed.
+- [x] i18n key parity: en-US ≡ zh-CN (verified by workspace-copy.test.ts).
 
 ## Near-Term Product Work
 
 - [x] Reports, Account, Accessibility, Workspace UX — all completed.
-- [x] Runtime bridge: health check retry, connection timeout, error messaging.
-- [x] Runtime bridge: configurable timeout, DELETE retry, cache fallback tests (10 new tests, 49 total).
+- [x] Runtime bridge: retry, health check, timeout, cache fallback (49 Go tests).
+- [x] error-boundary.tsx: hardcoded English strings migrated to WORKSPACE_COPY i18n contract.
+- [ ] CI readiness: GitHub Actions workflow for Platform CI (lint, test, build, E2E).
+- [ ] Demo mode: audit the demo experience end-to-end for first-time user quality.
 
 ## Backlog
 
