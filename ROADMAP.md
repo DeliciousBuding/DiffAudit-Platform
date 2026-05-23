@@ -64,8 +64,8 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Fix ModelAssetsClient toast messages — add modelAssets section to copy contract.
 - [x] Create project-level skill: .agents/skills/platform-dev/SKILL.md documenting i18n, testing, and dev workflow SOPs.
 - [x] Migrate start/page.tsx ~40-key labels object to workspace-copy contract (22 new keys added, 14 refs migrated).
-- [ ] Migrate risk-findings/page.tsx and model-assets/page.tsx inline copy objects.
-- [ ] Migrate ReportAuditView.tsx ~28-key inline `t` object.
+- [x] Migrate risk-findings/page.tsx inline copy object to WORKSPACE_COPY riskFindings section.
+- [x] Migrate ReportAuditView.tsx ~59-line inline `t` object to reportAuditView subsection (24 keys).
 - [ ] Migrate printable-audit-report.tsx inline strings.
 - [ ] PM/UX: add demo mode indicator on start page, unify empty states, add loading skeletons.
 
