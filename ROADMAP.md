@@ -63,7 +63,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Fix RiskFindingsClient empty state description — use emptyState.noRiskFindings from copy.
 - [x] Fix ModelAssetsClient toast messages — add modelAssets section to copy contract.
 - [x] Create project-level skill: .claude/skills/platform-dev/SKILL.md documenting i18n, testing, and dev workflow SOPs.
-- [ ] Migrate start/page.tsx ~40-key labels object to workspace-copy contract.
+- [x] Migrate start/page.tsx ~40-key labels object to workspace-copy contract (22 new keys added, 14 refs migrated).
 - [ ] Migrate risk-findings/page.tsx and model-assets/page.tsx inline copy objects.
 - [ ] Migrate ReportAuditView.tsx ~28-key inline `t` object.
 - [ ] Migrate printable-audit-report.tsx inline strings.
