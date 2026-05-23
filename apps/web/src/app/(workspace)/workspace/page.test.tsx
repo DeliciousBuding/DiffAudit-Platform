@@ -36,7 +36,7 @@ describe("WorkspaceHomePage", () => {
     expect(markup).toContain("近期任务");
     expect(markup).toContain("PIA");
     expect(markup).toContain("stable-diffusion-v1-4");
-    expect(markup).toContain("可审计合同");
+    expect(markup).toContain("可审计模型");
     expect(markup).toContain("已评估防御");
   });
 
@@ -49,6 +49,6 @@ describe("WorkspaceHomePage", () => {
     expect(markup).toContain("AUC Risk Distribution");
     expect(markup).toContain("Recent tasks");
     expect(markup).toContain("stable-diffusion-v1-4");
-    expect(markup).toContain("Auditable contracts");
+    expect(markup).toContain("Auditable models");
   });
 });

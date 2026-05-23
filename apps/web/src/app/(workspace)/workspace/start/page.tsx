@@ -79,10 +79,6 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     Recon: [0.85, 0.68, 0.79, 0.61, 0.72][i] ?? 0,
   }));
 
-  const primaryModel = allRows
-    .filter((row) => row.riskLevel !== "low")
-    .sort((a, b) => parseFloat(b.aucLabel) - parseFloat(a.aucLabel))[0]?.model ?? "stable-diffusion-v1-4";
-
   const trackOrder = [
     { key: "black-box", short: "Recon" },
     { key: "gray-box", short: "PIA" },
@@ -101,88 +97,16 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     };
   });
 
-  const labels = locale === "zh-CN"
-    ? {
-        riskTitle: "待处理风险",
-        riskSubtitle: `${riskCounts.high} 高风险 · ${riskCounts.medium} 中风险`,
-        riskNote: `${primaryModel} 是当前最需要复核的模型，优先处理高 AUC 审计结果。`,
-        reviewRisk: "查看风险",
-        exportReport: "导出报告",
-        highRiskModels: "高风险模型",
-        defenseCoverage: "防御覆盖率",
-        reportReady: "可生成报告",
-        auditableModels: "可审计模型",
-        avgAuc: "平均 AUC",
-        coverageTitle: "审计覆盖",
-        coverageHint: "黑盒 / 灰盒 / 白盒覆盖情况",
-        undefended: "未防御",
-        defended: "已防御",
-        reportable: "可报告",
-        priorityTitle: "优先处理队列",
-        analysisTitle: "AUC 风险分布",
-        priorityEmpty: "暂无中高风险审计结果。",
-        action: "操作",
-        inspect: "查看证据",
-        kpiAuditable: "可审计合同",
-        kpiCompleted: "已完成审计",
-        kpiAvgAuc: "平均 AUC",
-        kpiDefended: "已评估防御",
-        vsYesterday: "较昨日",
-        progressTitle: "审计进度",
-        completed: "完成",
-        recommendations: "建议与洞察",
-        recentTasks: "近期任务",
-        viewAll: "查看全部",
-        createAudit: "创建审计",
-        chartRisk: "风险分布",
-        chartAttack: "攻击对比",
-      }
-    : {
-        riskTitle: "Open Risks",
-        riskSubtitle: `${riskCounts.high} high · ${riskCounts.medium} medium`,
-        riskNote: `${primaryModel} needs review first; prioritize high-AUC audit results.`,
-        reviewRisk: "Review risks",
-        exportReport: "Export report",
-        highRiskModels: "High-risk models",
-        defenseCoverage: "Defense coverage",
-        reportReady: "Report ready",
-        auditableModels: "Auditable models",
-        avgAuc: "Avg AUC",
-        coverageTitle: "Audit Coverage",
-        coverageHint: "Black / gray / white-box coverage",
-        undefended: "Undefended",
-        defended: "Defended",
-        reportable: "Reportable",
-        priorityTitle: "Priority Queue",
-        analysisTitle: "AUC Risk Distribution",
-        priorityEmpty: "No medium or high-risk audit results.",
-        action: "Action",
-        inspect: "Inspect",
-        kpiAuditable: "Auditable contracts",
-        kpiCompleted: "Completed audits",
-        kpiAvgAuc: "Avg AUC",
-        kpiDefended: "Evaluated defenses",
-        vsYesterday: "vs yesterday",
-        progressTitle: "Audit progress",
-        completed: "complete",
-        recommendations: "Recommendations",
-        recentTasks: "Recent tasks",
-        viewAll: "View all",
-        createAudit: "Create audit",
-        chartRisk: "Risk distribution",
-        chartAttack: "Attack comparison",
-      };
-
   return (
     <>
       <div className="workspace-reference-layout">
         <div className="workspace-reference-main">
           <div className="workspace-reference-kpis">
             {[
-              { label: labels.kpiAuditable, value: activeContracts, icon: FileText, tone: "blue", delta: "+2" },
-              { label: labels.kpiCompleted, value: totalRows - 2, icon: Check, tone: "green", delta: "+4" },
-              { label: labels.kpiAvgAuc, value: avgAuc, icon: TrendingUp, tone: "purple", delta: "+0.031" },
-              { label: labels.kpiDefended, value: defendedRows + 4, icon: Shield, tone: "orange", delta: "+3" },
+              { label: copy.kpis.liveContractsLabel, value: activeContracts, icon: FileText, tone: "blue", delta: "+2" },
+              { label: copy.sections.kpiCompleted, value: totalRows - 2, icon: Check, tone: "green", delta: "+4" },
+              { label: copy.kpis.avgAucLabel, value: avgAuc, icon: TrendingUp, tone: "purple", delta: "+0.031" },
+              { label: copy.kpis.defenseEvaluatedLabel, value: defendedRows + 4, icon: Shield, tone: "orange", delta: "+3" },
             ].map((item) => (
               <section key={item.label} className="workspace-ref-kpi">
                 <span className={`workspace-ref-kpi-icon is-${item.tone}`}>
@@ -191,7 +115,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <div>
                   <p>{item.label}</p>
                   <strong>{item.value}</strong>
-                  <small>{labels.vsYesterday} <span>{item.delta}</span></small>
+                  <small>{copy.sections.vsYesterday} <span>{item.delta}</span></small>
                 </div>
               </section>
             ))}
@@ -215,7 +139,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                   <small>{card.detail}</small>
                 </div>
                 <Link href={`/workspace/audits/new?track=${card.track}`}>
-                  {labels.createAudit}
+                  {copy.auditTracks.createAudit}
                   <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
                 </Link>
               </section>
@@ -223,7 +147,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
 
           <div className="workspace-chart-grid">
-            <WorkspaceSectionCard title={labels.analysisTitle}>
+            <WorkspaceSectionCard title={copy.sections.analysisTitle}>
               <div className="workspace-ref-chart">
                 <ChartAucDistribution data={aucDistData} height={170} />
               </div>
@@ -233,12 +157,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <ChartRocCurve data={rocData} height={170} />
               </div>
             </WorkspaceSectionCard>
-            <WorkspaceSectionCard title={labels.chartRisk}>
+            <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution}>
               <div className="workspace-ref-chart">
                 <ChartRiskDonut data={riskDistData} totalLabel={copy.sections.chartTotalLabel} height={170} />
               </div>
             </WorkspaceSectionCard>
-            <WorkspaceSectionCard title={labels.chartAttack}>
+            <WorkspaceSectionCard title={copy.sections.chartTitles.attackComparison}>
               <div className="workspace-ref-chart">
                 <ChartAttackComparison data={attackComparisonData} height={170} />
               </div>
@@ -296,12 +220,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <aside className="workspace-reference-rail">
           <section className="workspace-progress-card">
-            <h2>{labels.progressTitle}</h2>
+            <h2>{copy.sections.progressTitle}</h2>
             <div className="workspace-progress-bar">
               <span style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
             </div>
             <div className="workspace-progress-meta">
-              <span>{totalRows - 2} / {totalRows} {labels.completed}</span>
+              <span>{totalRows - 2} / {totalRows} {localeData.audits.statusLabels.completed}</span>
               <span>{((totalRows - 2) / Math.max(1, totalRows) * 100).toFixed(1)}%</span>
             </div>
             <div className="workspace-progress-legend">
@@ -322,8 +246,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
           <section className="workspace-tasks-card">
             <div className="workspace-side-head">
-              <h2>{labels.recentTasks}</h2>
-              <Link href="/workspace/audits">{labels.viewAll}</Link>
+              <h2>{copy.sections.recentTasks}</h2>
+              <Link href="/workspace/audits">{copy.sections.viewAllResults}</Link>
             </div>
             {[
               { id: "job_demo_003", sub: "stable-diffusion-v1-4 · GSA", time: locale === "zh-CN" ? "17 分钟前" : "17m ago", state: "done", badge: null },
@@ -347,7 +271,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </section>
 
           <section className="workspace-insight-card">
-            <h2>{labels.recommendations}</h2>
+            <h2>{copy.sections.recommendations}</h2>
             <ul>
               <li>发现 {riskCounts.high} 个 高风险结果，建议优先处理。</li>
               <li>W-1 在 Recon 场景中表现最佳，平均 AUC 提升 0.339。</li>

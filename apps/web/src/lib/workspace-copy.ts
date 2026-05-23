@@ -144,6 +144,28 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: string;
         chartDimensions: string[];
         suggestedNextSteps: string;
+        riskTitle: string;
+        reviewRisk: string;
+        highRiskModels: string;
+        defenseCoverage: string;
+        reportReady: string;
+        coverageHint: string;
+        undefended: string;
+        defended: string;
+        reportable: string;
+        priorityTitle: string;
+        analysisTitle: string;
+        priorityEmpty: string;
+        inspect: string;
+        kpiCompleted: string;
+        progressTitle: string;
+        completed: string;
+        recommendations: string;
+        recentTasks: string;
+        vsYesterday: string;
+        riskSubtitle: (high: number, medium: number) => string;
+        riskNote: (model: string) => string;
+        exportReport: string;
         partialDataWarning: string;
         chartTotalLabel: string;
         viewAllResults: string;
@@ -784,6 +806,28 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: "dimensions",
         chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
         suggestedNextSteps: "Suggested next steps",
+        riskTitle: "Open Risks",
+        riskSubtitle: (high: number, medium: number) => `${high} high · ${medium} medium`,
+        riskNote: (model: string) => `${model} needs review first; prioritize high-AUC audit results.`,
+        reviewRisk: "Review risks",
+        exportReport: "Export report",
+        highRiskModels: "High-risk models",
+        defenseCoverage: "Defense coverage",
+        reportReady: "Report ready",
+        coverageHint: "Black / gray / white-box coverage",
+        undefended: "Undefended",
+        defended: "Defended",
+        reportable: "Reportable",
+        priorityTitle: "Priority Queue",
+        analysisTitle: "AUC Risk Distribution",
+        priorityEmpty: "No medium or high-risk audit results.",
+        inspect: "Inspect",
+        kpiCompleted: "Completed audits",
+        progressTitle: "Audit progress",
+        completed: "complete",
+        recommendations: "Recommendations",
+        recentTasks: "Recent tasks",
+        vsYesterday: "vs yesterday",
         partialDataWarning: "Some data sources failed to load. The information below may be incomplete.",
         chartTotalLabel: "Total",
         viewAllResults: "View all results",
@@ -1711,6 +1755,28 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: "维度",
         chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
         suggestedNextSteps: "建议的下一步",
+        riskTitle: "待处理风险",
+        riskSubtitle: (high: number, medium: number) => `${high} 高风险 · ${medium} 中风险`,
+        riskNote: (model: string) => `${model} 是当前最需要复核的模型，优先处理高 AUC 审计结果。`,
+        reviewRisk: "查看风险",
+        exportReport: "导出报告",
+        highRiskModels: "高风险模型",
+        defenseCoverage: "防御覆盖率",
+        reportReady: "可生成报告",
+        coverageHint: "黑盒 / 灰盒 / 白盒覆盖情况",
+        undefended: "未防御",
+        defended: "已防御",
+        reportable: "可报告",
+        priorityTitle: "优先处理队列",
+        analysisTitle: "AUC 风险分布",
+        priorityEmpty: "暂无中高风险审计结果。",
+        inspect: "查看证据",
+        kpiCompleted: "已完成审计",
+        progressTitle: "审计进度",
+        completed: "完成",
+        recommendations: "建议与洞察",
+        recentTasks: "近期任务",
+        vsYesterday: "较昨日",
         partialDataWarning: "部分数据源加载失败，以下信息可能不完整。",
         chartTotalLabel: "总结果",
         viewAllResults: "查看全部结果",
