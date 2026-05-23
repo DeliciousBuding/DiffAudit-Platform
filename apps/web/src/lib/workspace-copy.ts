@@ -754,7 +754,7 @@ export const WORKSPACE_COPY: Record<
       runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
       auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string; deleteTemplateTitle: string; deleteTemplateBody: string; deleteTemplateCancel: string; deleteTemplateAction: string };
       aboutSystem: { title: string; useCases: string; useCaseItems: { title: string; desc: string }[]; systemBoundary: string; boundaryNote: string; framework: string; frameworkItems: { tier: string; desc: string }[] };
-      errorPage: { title: string; description: string; retry: string; goHome: string; errorId: string; errorDetails: string };
+      errorPage: { title: string; description: string; retry: string; goHome: string; errorId: string; errorDetails: string; runtimeTitle: string; runtimeDescription: string; quickFixes: string; quickFixCheckRuntime: string; quickFixVerifyNetwork: string; quickFixEnableDemo: string };
       notFound: { title: string; description: string; goHome: string };
     };
     loginPage: {
@@ -1905,6 +1905,12 @@ export const WORKSPACE_COPY: Record<
         goHome: "Return to workspace",
         errorId: "Error ID",
         errorDetails: "Error details",
+        runtimeTitle: "Runtime Service Unavailable",
+        runtimeDescription: "Unable to connect to the DiffAudit Runtime service. Please ensure the Runtime server is running and accessible.",
+        quickFixes: "Quick fixes:",
+        quickFixCheckRuntime: "Check Runtime server is running on the configured host/port",
+        quickFixVerifyNetwork: "Verify network connectivity to the Runtime service",
+        quickFixEnableDemo: "Enable Demo Mode in Settings to use snapshot data",
       },
       notFound: {
         title: "Page not found",
@@ -3059,6 +3065,12 @@ export const WORKSPACE_COPY: Record<
         goHome: "返回工作台",
         errorId: "错误 ID",
         errorDetails: "错误详情",
+        runtimeTitle: "Runtime 服务不可用",
+        runtimeDescription: "无法连接到 DiffAudit Runtime 服务。请确认 Runtime 服务器正在运行且可以访问。",
+        quickFixes: "快速修复：",
+        quickFixCheckRuntime: "检查 Runtime 服务器是否在配置的主机/端口运行",
+        quickFixVerifyNetwork: "验证到 Runtime 服务的网络连接",
+        quickFixEnableDemo: "在设置中启用演示模式以使用快照数据",
       },
       notFound: {
         title: "页面未找到",

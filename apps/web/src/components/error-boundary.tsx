@@ -1,9 +1,12 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
+import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  locale?: Locale;
   fallback?: (error: Error, reset: () => void) => ReactNode;
 }
 
@@ -12,10 +15,6 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-/**
- * Global error boundary for catching React errors.
- * Wraps the workspace layout to handle Runtime unavailability and other errors gracefully.
- */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -42,14 +41,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback(this.state.error, this.reset);
       }
 
-      return <DefaultErrorFallback error={this.state.error} reset={this.reset} />;
+      return <DefaultErrorFallback error={this.state.error} reset={this.reset} locale={this.props.locale ?? "en-US"} />;
     }
 
     return this.props.children;
   }
 }
 
-function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
+function DefaultErrorFallback({ error, reset, locale }: { error: Error; reset: () => void; locale: Locale }) {
+  const copy = WORKSPACE_COPY[locale].settings.errorPage;
   const isRuntimeError = error.message.toLowerCase().includes("runtime") ||
                          error.message.toLowerCase().includes("fetch") ||
                          error.message.toLowerCase().includes("network");
@@ -65,17 +65,15 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-semibold mb-2 text-foreground">
-              {isRuntimeError ? "Runtime Service Unavailable" : "Something went wrong"}
+              {isRuntimeError ? copy.runtimeTitle : copy.title}
             </h2>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              {isRuntimeError
-                ? "Unable to connect to the DiffAudit Runtime service. Please ensure the Runtime server is running and accessible."
-                : "An unexpected error occurred while rendering this page."}
+              {isRuntimeError ? copy.runtimeDescription : copy.description}
             </p>
 
             <details className="mb-4">
               <summary className="text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                Error details
+                {copy.errorDetails}
               </summary>
               <pre className="mt-2 p-3 bg-muted/30 rounded-md text-xs overflow-auto max-h-32 border border-border">
                 {error.message}
@@ -87,23 +85,23 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
                 onClick={reset}
                 className="inline-flex items-center gap-2 rounded-md border border-[var(--accent-blue)] bg-[var(--accent-blue)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md hover:opacity-90"
               >
-                Try again
+                {copy.retry}
               </button>
               <a
                 href="/workspace/start"
                 className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/30"
               >
-                Go to workspace
+                {copy.goHome}
               </a>
             </div>
 
             {isRuntimeError && (
               <div className="mt-4 pt-4 border-t border-border">
-                <p className="text-xs text-muted-foreground mb-2 font-medium">Quick fixes:</p>
+                <p className="text-xs text-muted-foreground mb-2 font-medium">{copy.quickFixes}</p>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-                  <li>Check Runtime server is running on the configured host/port</li>
-                  <li>Verify network connectivity to the Runtime service</li>
-                  <li>Enable Demo Mode in Settings to use snapshot data</li>
+                  <li>{copy.quickFixCheckRuntime}</li>
+                  <li>{copy.quickFixVerifyNetwork}</li>
+                  <li>{copy.quickFixEnableDemo}</li>
                 </ul>
               </div>
             )}

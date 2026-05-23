@@ -45,8 +45,8 @@ const copy = WORKSPACE_COPY[locale].reports;
 | E2E | Playwright | 页面加载、用户流程、i18n、a11y |
 
 - `npm run test:web` — Vitest (67 files / 250 tests)
-- `npm run test:api` — Go tests
-- `npm run test:e2e` — Playwright (41 tests: smoke + user-flows + report-flow)
+- `npm run test:api` — Go tests (49 tests)
+- `npm run test:e2e` — Playwright (41 cases × 3 browsers = 123 total)
 - `npm run test:all` — web + e2e
 
 从 Platform 根目录运行: `npm run lint:web`, `npm run test:web`, `npm run build:web`.

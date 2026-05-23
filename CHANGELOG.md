@@ -3,6 +3,22 @@
 ## Unreleased (dev)
 
 ### Added
+- CI: GitHub Actions workflow with 4 jobs (frontend, Go, Python, E2E)
+- Go API tests: 15 DemoJobStore unit tests + 2 retry method guard tests (66 total)
+- Go API tests: 10 tests for retry logic, error hints, cache fallback, timeout config
+- Architecture docs: 4-tier publish-time fallback chain documented
+
+### Changed
+- Runtime bridge: `forwardControlWithMethod` uses `doWithRetry` (was raw `client.Do`)
+- Runtime bridge: configurable `RuntimeTimeout` in proxy config
+- Runtime bridge: health check now retries up to 3 times (was 1)
+- error-boundary.tsx: hardcoded English strings migrated to WORKSPACE_COPY i18n contract
+
+### Fixed
+- Retry safety: `doWithRetry` now only retries GET/HEAD; POST body is not re-consumed on retry
+- Retry reliability: `isRetryableError` uses `net.Error` type checks instead of fragile string matching
+
+### Added
 - Research handoff: `--bundle-path` flag for snapshot publisher (decouples sibling-directory assumption)
 - Research handoff: publisher now prefers curated `admitted-evidence-bundle.json` over raw unified table
 - Publisher tests: 2 new tests for curated bundle + explicit `--bundle-path` (4/4 pass)
