@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { ChevronUp } from "lucide-react";
 
-export function ScrollToTop() {
+import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
+export function ScrollToTop({ locale }: { locale: Locale }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -16,9 +19,7 @@ export function ScrollToTop() {
 
   if (!visible) return null;
 
-  const label = typeof document !== "undefined" && document.documentElement.lang === "zh-CN"
-    ? "回到顶部"
-    : "Scroll to top";
+  const label = WORKSPACE_COPY[locale].shell.scrollToTop;
 
   return (
     <button

@@ -6,7 +6,7 @@ import { Info, X } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { StatusBadge } from "@/components/status-badge";
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_COPY, getTrackDisplayLabel } from "@/lib/workspace-copy";
 
 type AttackType = "black-box" | "gray-box" | "white-box";
 
@@ -54,13 +54,6 @@ const ATTACK_TYPES: AttackType[] = ["black-box", "gray-box", "white-box"];
 function attackTypeFromTrack(track: string): AttackType | null {
   if (track === "black-box" || track === "gray-box" || track === "white-box") return track;
   return null;
-}
-
-function trackLabel(track: string, locale: Locale) {
-  if (track === "black-box") return locale === "zh-CN" ? "Recon / 黑盒" : "Recon / Black-box";
-  if (track === "gray-box") return locale === "zh-CN" ? "PIA / 灰盒" : "PIA / Gray-box";
-  if (track === "white-box") return locale === "zh-CN" ? "GSA / 白盒" : "GSA / White-box";
-  return track;
 }
 
 export function CreateTaskClient({ locale, availableModels }: CreateTaskClientProps) {
@@ -285,7 +278,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {form.step === 1 && (
             <div className="space-y-3">
               <div className="text-[13px] text-muted-foreground mb-3">
-                {locale === "zh-CN" ? "先选择目标模型；下一步可为同一个模型勾选多条审计路线。" : "Select a target model first. You can choose multiple audit routes for the same model next."}
+                {labels.selectModelHint}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {modelGroups.map((group) => {
@@ -306,13 +299,13 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[13px] font-bold">{group.label}</span>
                         <StatusBadge tone="info" compact>
-                          {routeCount} {locale === "zh-CN" ? "条路线" : "routes"}
+                                                    {labels.routeCount(routeCount)}
                         </StatusBadge>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {group.models.map((model) => (
                           <span key={model.contractKey} className="rounded-full border border-border bg-muted/20 px-2 py-0.5 text-[10px] text-muted-foreground">
-                            {trackLabel(model.track, locale)}
+                            {getTrackDisplayLabel(model.track, locale)}
                           </span>
                         ))}
                       </div>
@@ -334,12 +327,12 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     <Info size={16} strokeWidth={1.5} className="shrink-0 text-[var(--accent-blue)] mt-0.5" />
                     <div className="space-y-1">
                       <div className="text-[13px] font-bold text-[var(--accent-blue)]">
-                        {locale === "zh-CN" ? "已选择审计路线" : "Selected audit routes"}
+                        {labels.selectedRoutesTitle}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {form.selectedAttackTypes.map((type) => (
                           <StatusBadge key={type} tone={type === "white-box" ? "warning" : type === "gray-box" ? "info" : "neutral"} compact>
-                            {trackLabel(type, locale)}
+                            {getTrackDisplayLabel(type, locale)}
                           </StatusBadge>
                         ))}
                       </div>
@@ -348,7 +341,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 </div>
               )}
               <div className="text-[13px] text-muted-foreground mb-3">
-                {locale === "zh-CN" ? "为该模型选择要同时创建的审计路线。每条路线会生成一个独立任务，报告中心会按任务逐行展示。" : "Choose the audit routes to create for this model. Each route creates one task and one report row."}
+                {labels.selectedRoutesDescription}
               </div>
               {!selectedModelGroup ? (
                 <div className="text-[13px] text-muted-foreground text-center py-6 border border-dashed border-border rounded-2xl">
@@ -516,7 +509,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     {labels.reviewAttackType}
                   </span>
                   <span className="text-[13px] font-medium">
-                    {form.selectedAttackTypes.map((type) => trackLabel(type, locale)).join(", ")}
+                    {form.selectedAttackTypes.map((type) => getTrackDisplayLabel(type, locale)).join(", ")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

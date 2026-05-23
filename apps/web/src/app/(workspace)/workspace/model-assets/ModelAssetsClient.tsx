@@ -4,6 +4,7 @@ import { Search, Plus, Pencil, Trash2, X, ChevronLeft, ChevronRight, Upload, Che
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { CopyButton } from "@/components/copy-button";
 import { Modal } from "@/components/modal";
 import { EmptyState } from "@/components/empty-state";
@@ -371,8 +372,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     setActiveTab("timeline");
     setEvidencePage(1);
     setShowAddModal(false);
-    const isZh = locale === "zh-CN";
-    toast({ type: "success", title: isZh ? `模型「${name}」已添加` : `Model "${name}" added` });
+    toast({ type: "success", title: WORKSPACE_COPY[locale].modelAssets.toastAdded(name) });
   }
 
   // --- Edit Model ---
@@ -402,8 +402,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
         : prev,
     );
     setShowEditModal(false);
-    const isZh = locale === "zh-CN";
-    toast({ type: "success", title: isZh ? `模型「${name}」已更新` : `Model "${name}" updated` });
+    toast({ type: "success", title: WORKSPACE_COPY[locale].modelAssets.toastUpdated(name) });
   }
 
   // --- Delete Model ---
@@ -425,8 +424,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     setActiveTab("timeline");
     setEvidencePage(1);
     setShowDeleteConfirm(false);
-    const isZh = locale === "zh-CN";
-    toast({ type: "success", title: isZh ? "模型已删除" : "Model deleted" });
+    toast({ type: "success", title: WORKSPACE_COPY[locale].modelAssets.toastDeleted });
   }
 
   // [issue 1] Filter entries by search — also match track display name

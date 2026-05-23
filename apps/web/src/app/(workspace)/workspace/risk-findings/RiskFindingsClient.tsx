@@ -14,7 +14,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { TableDensityToggle, readPersistedDensity, densityClass, type Density } from "@/components/table-density-toggle";
 import { WorkspaceSectionCard } from "@/components/workspace-frame";
 import { useSort } from "@/hooks/use-sort";
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_COPY, RISK_NOTE_ZH } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
 import type { Locale } from "@/components/language-picker";
 import { FindingDetailPanel } from "./FindingDetailPanel";
@@ -27,147 +27,12 @@ import {
 } from "./risk-findings-query";
 
 /* ------------------------------------------------------------------ */
-/*  Localized copy                                                     */
-/* ------------------------------------------------------------------ */
-
-const COPY: Record<string, {
-  totalFindings: string;
-  highRisk: string;
-  hasDefense: string;
-  defenseRate: string;
-  na: string;
-  allSeverities: string;
-  allCategories: string;
-  allModels: string;
-  allStatuses: string;
-  riskDescription: string;
-  severity: string;
-  category: string;
-  sourceModel: string;
-  status: string;
-  detected: string;
-  estimated: string;
-  noDataYet: string;
-  high: string;
-  medium: string;
-  low: string;
-  hasDefenseStatus: string;
-  monitoring: string;
-  investigating: string;
-  previous: string;
-  next: string;
-  emptyNoData: string;
-  emptyNoResults: string;
-  findingsTable: string;
-  catBlackBox: string;
-  catGrayBox: string;
-  catWhiteBox: string;
-  catOther: string;
-  clearFilters: string;
-  clearSearch: string;
-  searchPlaceholder: string;
-  createAuditTask: string;
-  presetAll: string;
-  presetHighUnmitigated: string;
-  presetMitigated: string;
-  presetHighSeverity: string;
-  priority: string;
-}> = {
-  "en-US": {
-    totalFindings: "Total Findings",
-    highRisk: "High Risk",
-    hasDefense: "Has Defense",
-    defenseRate: "Defense Rate",
-    na: "N/A",
-    allSeverities: "All Severities",
-    allCategories: "All Categories",
-    allModels: "All Models",
-    allStatuses: "All Statuses",
-    riskDescription: "Risk Description",
-    severity: "Severity",
-    category: "Category",
-    sourceModel: "Source Model",
-    status: "Status",
-    detected: "Detected",
-    estimated: "Est.",
-    noDataYet: "no data yet",
-    high: "High",
-    medium: "Medium",
-    low: "Low",
-    hasDefenseStatus: "Has Defense",
-    monitoring: "Monitoring",
-    investigating: "Investigating",
-    previous: "Previous",
-    next: "Next",
-    emptyNoData: "No risk findings available.",
-    emptyNoResults: "No findings match the current filters.",
-    findingsTable: "Findings",
-    catBlackBox: "Privacy Leakage",
-    catGrayBox: "Data Exposure",
-    catWhiteBox: "Prompt Security",
-    catOther: "Safety Bypass",
-    clearFilters: "Clear filters",
-    clearSearch: "Clear search",
-    searchPlaceholder: "Search by description or model...",
-    createAuditTask: "Create audit task",
-    presetAll: "All",
-    presetHighUnmitigated: "High Risk Unmitigated",
-    presetMitigated: "Mitigated",
-    presetHighSeverity: "High Severity",
-    priority: "Priority",
-  },
-  "zh-CN": {
-    totalFindings: "发现总数",
-    highRisk: "高危",
-    hasDefense: "已有防御",
-    defenseRate: "防御率",
-    na: "暂无",
-    allSeverities: "全部严重度",
-    allCategories: "全部类别",
-    allModels: "全部模型",
-    allStatuses: "全部状态",
-    riskDescription: "风险描述",
-    severity: "严重度",
-    category: "类别",
-    sourceModel: "来源模型",
-    status: "状态",
-    detected: "发现时间",
-    estimated: "估",
-    noDataYet: "暂无数据",
-    high: "高",
-    medium: "中",
-    low: "低",
-    hasDefenseStatus: "已有防御",
-    monitoring: "监控中",
-    investigating: "调查中",
-    previous: "上一页",
-    next: "下一页",
-    emptyNoData: "暂无风险发现。",
-    emptyNoResults: "没有符合当前筛选条件的发现。",
-    findingsTable: "发现列表",
-    catBlackBox: "隐私泄露",
-    catGrayBox: "数据暴露",
-    catWhiteBox: "提示安全",
-    catOther: "安全绕过",
-    clearFilters: "清除筛选",
-    clearSearch: "清除搜索",
-    searchPlaceholder: "搜索描述或模型...",
-    createAuditTask: "创建审计任务",
-    presetAll: "全部",
-    presetHighUnmitigated: "高危未防御",
-    presetMitigated: "已有防御",
-    presetHighSeverity: "高严重度",
-    priority: "优先级",
-  },
-};
-
-/* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
 /** Map track name to a display label. Preserves the original track name when
  *  it does not match a known category so the user sees the actual value. */
-function getCategory(track: string, copy: typeof COPY[string]): string {
+function getCategory(track: string, copy: typeof WORKSPACE_COPY[string]["riskFindings"]): string {
   if (track === "black-box") return copy.catBlackBox;
   if (track === "gray-box") return copy.catGrayBox;
   if (track === "white-box") return copy.catWhiteBox;
@@ -188,28 +53,6 @@ const SEVERITY_SCORE: Record<string, number> = { high: 3, medium: 2, low: 1 };
 /*  Localized risk description map                                     */
 /* ------------------------------------------------------------------ */
 
-const RISK_NOTE_ZH: Record<string, string> = {
-  "Photoreal face generations show stronger memorization on member portraits.":
-    "人脸生成模型对成员肖像表现出更强的记忆效应。",
-  "White-box gradients expose memorized waveform fragments without mitigation.":
-    "白盒梯度暴露了未缓解的记忆波形片段。",
-  "Black-box membership inference via loss deviation. High AUC indicates significant leakage.":
-    "基于损失偏差的黑盒成员推断攻击。高 AUC 表明存在显著泄露。",
-  "Gray-box posterior deviation attack. High ASR shows gradient leakage is exploitable.":
-    "灰盒后验偏差攻击。高 ASR 表明梯度泄露可被利用。",
-  "Rare-class lesion samples remain highly vulnerable to posterior attacks.":
-    "罕见类病变样本对后验攻击仍然高度脆弱。",
-  "Stochastic dropout at all steps reduces ASR by ~15pp with moderate overhead.":
-    "全步骤随机丢弃将 ASR 降低约 15 个百分点，开销适中。",
-  "Lower AUC on PixelArt suggests stronger baseline privacy.":
-    "PixelArt 上较低的 AUC 表明基线隐私保护更强。",
-  "Gradient leakage present but lower magnitude than SD v1.4.":
-    "存在梯度泄露但幅度低于 SD v1.4。",
-  "SMP-LoRA shows stronger mitigation under gray-box attack.":
-    "SMP-LoRA 在灰盒攻击下表现出更强的缓解效果。",
-  "Clip-guided sanitization lowers leakage while keeping prompt fidelity acceptable.":
-    "Clip 引导的净化降低了泄露，同时保持提示保真度在可接受水平。",
-};
 
 function getRiskDescription(attack: string, note: string, locale: string): string {
   if (note && note.length > 10) {
@@ -265,7 +108,7 @@ type QuickFilterId = "all" | "high-unmitigated" | "mitigated" | "high-severity";
 
 type QuickFilterPreset = {
   id: QuickFilterId;
-  labelKey: keyof typeof COPY["en-US"];
+  labelKey: keyof typeof WORKSPACE_COPY["en-US"]["riskFindings"];
   severity: string;
   status: string;
 };
@@ -287,7 +130,7 @@ type Props = {
 };
 
 export function RiskFindingsClient({ rows, locale }: Props) {
-  const copy = COPY[locale] ?? COPY["en-US"];
+  const copy = WORKSPACE_COPY[locale].riskFindings ?? WORKSPACE_COPY["en-US"].riskFindings;
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -695,7 +538,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             <EmptyState
               icon={ShieldCheck}
               title={copy.emptyNoData}
-              description={locale === "zh-CN" ? "完成审计任务后，风险发现将显示在此处。" : "Risk findings will appear here after completing audit tasks."}
+              description={WORKSPACE_COPY[locale].emptyState.noRiskFindings.description}
               action={{ label: copy.createAuditTask, href: "/workspace/audits/new" }}
             />
           )

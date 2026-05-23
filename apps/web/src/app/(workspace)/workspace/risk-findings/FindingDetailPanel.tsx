@@ -6,161 +6,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { StatusBadge } from "@/components/status-badge";
+import { type Locale } from "@/components/language-picker";
 import { useDismissibleLayer } from "@/hooks/use-dismissible-layer";
 import { buildReportHref } from "@/lib/audit-flow";
+import { WORKSPACE_COPY, RISK_NOTE_ZH } from "@/lib/workspace-copy";
 import type { AttackDefenseRowViewModel } from "@/lib/workspace-source";
-
-/* ------------------------------------------------------------------ */
-/*  Localized copy                                                     */
-/* ------------------------------------------------------------------ */
-
-const DETAIL_COPY: Record<
-  string,
-  {
-    findingDetail: string;
-    riskDescription: string;
-    severity: string;
-    category: string;
-    sourceModel: string;
-    status: string;
-    attackVector: string;
-    defense: string;
-    auc: string;
-    asr: string;
-    tpr: string;
-    qualityCost: string;
-    evidenceLevel: string;
-    boundary: string;
-    close: string;
-    high: string;
-    medium: string;
-    low: string;
-    hasDefenseStatus: string;
-    monitoring: string;
-    investigating: string;
-    noDefense: string;
-    relatedAudit: string;
-    viewReport: string;
-    copyLink: string;
-    linkCopied: string;
-    sourcePath: string;
-    reAudit: string;
-  }
-> = {
-  "en-US": {
-    findingDetail: "Finding Detail",
-    riskDescription: "Risk Description",
-    severity: "Severity",
-    category: "Category",
-    sourceModel: "Source Model",
-    status: "Status",
-    attackVector: "Attack Vector",
-    defense: "Defense",
-    auc: "AUC",
-    asr: "ASR",
-    tpr: "TPR",
-    qualityCost: "Quality Cost",
-    evidenceLevel: "Evidence Level",
-    boundary: "Boundary",
-    close: "Close",
-    high: "High",
-    medium: "Medium",
-    low: "Low",
-    hasDefenseStatus: "Has Defense",
-    monitoring: "Monitoring",
-    investigating: "Investigating",
-    noDefense: "None",
-    relatedAudit: "Related Audit",
-    viewReport: "View Report",
-    copyLink: "Copy Link",
-    linkCopied: "Copied!",
-    sourcePath: "Source Path",
-    reAudit: "Re-audit",
-  },
-  "zh-CN": {
-    findingDetail: "发现详情",
-    riskDescription: "风险描述",
-    severity: "严重度",
-    category: "类别",
-    sourceModel: "来源模型",
-    status: "状态",
-    attackVector: "攻击向量",
-    defense: "防御措施",
-    auc: "AUC",
-    asr: "ASR",
-    tpr: "TPR",
-    qualityCost: "质量代价",
-    evidenceLevel: "证据等级",
-    boundary: "边界",
-    close: "关闭",
-    high: "高",
-    medium: "中",
-    low: "低",
-    hasDefenseStatus: "已有防御",
-    monitoring: "监控中",
-    investigating: "调查中",
-    noDefense: "无",
-    relatedAudit: "相关审计",
-    viewReport: "查看报告",
-    copyLink: "复制链接",
-    linkCopied: "已复制！",
-    sourcePath: "来源路径",
-    reAudit: "重新审计",
-  },
-};
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
-const CATEGORY_MAP: Record<string, Record<string, string>> = {
-  "en-US": {
-    "black-box": "Privacy Leakage",
-    "gray-box": "Data Exposure",
-    "white-box": "Prompt Security",
-    other: "Safety Bypass",
-  },
-  "zh-CN": {
-    "black-box": "隐私泄露",
-    "gray-box": "数据暴露",
-    "white-box": "提示安全",
-    other: "安全绕过",
-  },
-};
-
-function getCategory(track: string, locale: string): string {
-  const map = CATEGORY_MAP[locale] ?? CATEGORY_MAP["en-US"];
-  return map[track] ?? track;
-}
-
-function getStatus(defense: string, riskLevel: string): string {
-  if (defense !== "none") return "has-defense";
-  if (riskLevel === "high") return "investigating";
-  return "monitoring";
-}
-
-const RISK_NOTE_ZH: Record<string, string> = {
-  "Photoreal face generations show stronger memorization on member portraits.":
-    "人脸生成模型对成员肖像表现出更强的记忆效应。",
-  "White-box gradients expose memorized waveform fragments without mitigation.":
-    "白盒梯度暴露了未缓解的记忆波形片段。",
-  "Black-box membership inference via loss deviation. High AUC indicates significant leakage.":
-    "基于损失偏差的黑盒成员推断攻击。高 AUC 表明存在显著泄露。",
-  "Gray-box posterior deviation attack. High ASR shows gradient leakage is exploitable.":
-    "灰盒后验偏差攻击。高 ASR 表明梯度泄露可被利用。",
-  "Rare-class lesion samples remain highly vulnerable to posterior attacks.":
-    "罕见类病变样本对后验攻击仍然高度脆弱。",
-  "Stochastic dropout at all steps reduces ASR by ~15pp with moderate overhead.":
-    "全步骤随机丢弃将 ASR 降低约 15 个百分点，开销适中。",
-  "Lower AUC on PixelArt suggests stronger baseline privacy.":
-    "PixelArt 上较低的 AUC 表明基线隐私保护更强。",
-  "Gradient leakage present but lower magnitude than SD v1.4.":
-    "存在梯度泄露但幅度低于 SD v1.4。",
-  "SMP-LoRA shows stronger mitigation under gray-box attack.":
-    "SMP-LoRA 在灰盒攻击下表现出更强的缓解效果。",
-  "Clip-guided sanitization lowers leakage while keeping prompt fidelity acceptable.":
-    "Clip 引导的净化降低了泄露，同时保持提示保真度在可接受水平。",
-};
 
 function getRiskDescription(attack: string, note: string, locale: string): string {
   if (note && note.length > 10) {
@@ -170,6 +25,22 @@ function getRiskDescription(attack: string, note: string, locale: string): strin
     return note;
   }
   return attack;
+}
+
+function getStatus(defense: string, riskLevel: string): string {
+  if (defense !== "none") return "has-defense";
+  if (riskLevel === "high") return "investigating";
+  return "monitoring";
+}
+
+function getCategory(track: string, copy: ReturnType<typeof WORKSPACE_COPY[Locale]["riskFindings"]>): string {
+  const map: Record<string, string> = {
+    "black-box": copy.catBlackBox,
+    "gray-box": copy.catGrayBox,
+    "white-box": copy.catWhiteBox,
+    other: copy.catOther,
+  };
+  return map[track] ?? track;
 }
 
 /* ------------------------------------------------------------------ */
@@ -204,7 +75,7 @@ type Props = {
 };
 
 export function FindingDetailPanel({ finding, locale, onClose }: Props) {
-  const copy = DETAIL_COPY[locale] ?? DETAIL_COPY["en-US"];
+  const copy = WORKSPACE_COPY[locale as Locale]?.riskFindings ?? WORKSPACE_COPY["en-US"].riskFindings;
   const panelRef = useRef<HTMLDivElement>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const panelOpen = finding !== null;
@@ -313,7 +184,7 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
 
             {/* Category */}
             <DetailRow label={copy.category}>
-              <span>{getCategory(finding.track, locale)}</span>
+              <span>{getCategory(finding.track, copy)}</span>
             </DetailRow>
 
             {/* Source Model */}
@@ -370,19 +241,19 @@ export function FindingDetailPanel({ finding, locale, onClose }: Props) {
 
             {/* Metrics */}
             {finding.aucLabel && finding.aucLabel !== "n/a" && (
-              <DetailRow label={copy.auc}>
+              <DetailRow label={copy.aucLabel}>
                 <span className={`mono text-[12px] ${parseFloat(finding.aucLabel) > 0.85 ? "text-[var(--risk-high)] font-medium" : parseFloat(finding.aucLabel) > 0.7 ? "text-[var(--warning)]" : ""}`}>{finding.aucLabel}</span>
               </DetailRow>
             )}
 
             {finding.asrLabel && finding.asrLabel !== "n/a" && (
-              <DetailRow label={copy.asr}>
+              <DetailRow label={copy.asrLabel}>
                 <span className={`mono text-[12px] ${parseFloat(finding.asrLabel) > 0.5 ? "text-[var(--risk-high)] font-medium" : parseFloat(finding.asrLabel) > 0.3 ? "text-[var(--warning)]" : ""}`}>{finding.asrLabel}</span>
               </DetailRow>
             )}
 
             {finding.tprLabel && finding.tprLabel !== "n/a" && (
-              <DetailRow label={copy.tpr}>
+              <DetailRow label={copy.tprLabel}>
                 <span className="mono text-[12px]">{finding.tprLabel}</span>
               </DetailRow>
             )}

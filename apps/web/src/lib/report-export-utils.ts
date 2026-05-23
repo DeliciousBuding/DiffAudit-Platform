@@ -3,6 +3,9 @@
  * Eliminates duplication between ExportReportButton and ReportExportButtons.
  */
 
+import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
 /** Timeout (ms) after which the print window is force-closed if onafterprint never fires. */
 export const PDF_CLEANUP_TIMEOUT_MS = 60_000;
 
@@ -49,17 +52,13 @@ export function buildPrintHtmlTemplate(locale: string): string {
 /**
  * Build CSV metadata header rows with report generation info.
  */
-export function buildCsvMetadataHeader(locale: string, rowCount: number): string {
-  const isZh = locale === "zh-CN";
+export function buildCsvMetadataHeader(locale: Locale, rowCount: number): string {
+  const copy = WORKSPACE_COPY[locale].reportExport;
   const date = new Date().toISOString().slice(0, 10);
-  const reportLabel = isZh ? "报告" : "Report";
-  const titleLabel = isZh ? "DiffAudit 隐私审计报告" : "DiffAudit Privacy Audit Report";
-  const dateLabel = isZh ? "生成日期" : "Generated";
-  const countLabel = isZh ? "结果总数" : "Total rows";
 
   return [
-    `"${reportLabel}","${titleLabel}"`,
-    `"${dateLabel}","${date}"`,
-    `"${countLabel}","${rowCount}"`,
+    `"${copy.reportLabel}","${copy.reportTitle}"`,
+    `"${copy.dateLabel}","${date}"`,
+    `"${copy.totalRowsLabel}","${rowCount}"`,
   ].join("\n");
 }

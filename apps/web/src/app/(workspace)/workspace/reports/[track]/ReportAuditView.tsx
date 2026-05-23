@@ -83,65 +83,6 @@ export function ReportAuditView({
 }: ReportAuditViewProps) {
   const copy = WORKSPACE_COPY[locale].reports;
   const highlightedRows = new Set(highlightedRowKeys);
-  const t = locale === "zh-CN"
-    ? {
-        summaryTitle: "审计视图摘要",
-        resultRows: "结果行数",
-        defendedRows: "已防御",
-        undefendedRows: "无防御",
-        provenanceTitle: "实验溯源",
-        runDirectory: "Run 目录",
-        seed: "Seed",
-        schedule: "调度",
-        fixtureVersion: "Fixture 版本",
-        summaryPath: "summary.json",
-        evidenceLevel: "证据等级",
-        admissionStatus: "准入状态",
-        admissionLevel: "准入层级",
-        provenanceStatus: "溯源状态",
-        intakeManifest: "导入清单",
-        historyTitle: "历史对照",
-        historyPlaceholder:
-          "历史对照数据将在后续版本接入，敬请期待。",
-        producerTitle: "生产者上下文",
-        producerStatus: "状态",
-        producerUpdated: "更新时间",
-        outputTail: "Runtime 输出尾部",
-        producerUnavailableTitle: "Runtime 未连接",
-        producerUnavailableBody:
-          "任务详情暂时不可用；报告仍基于当前公开快照展示。",
-        stateHistory: "状态历史",
-        noProvenanceData: "暂无溯源数据。",
-      }
-    : {
-        summaryTitle: "Audit view summary",
-        resultRows: "Result rows",
-        defendedRows: "Defended",
-        undefendedRows: "Undefended",
-        provenanceTitle: "Experiment provenance",
-        runDirectory: "Run directory",
-        seed: "Seed",
-        schedule: "Schedule",
-        fixtureVersion: "Fixture version",
-        summaryPath: "summary.json",
-        evidenceLevel: "Evidence level",
-        admissionStatus: "Admission status",
-        admissionLevel: "Admission level",
-        provenanceStatus: "Provenance status",
-        intakeManifest: "Intake manifest",
-        historyTitle: "History comparison",
-        historyPlaceholder:
-          "Historical comparison data will be available in a future release.",
-        producerTitle: "Producer context",
-        producerStatus: "Status",
-        producerUpdated: "Updated",
-        outputTail: "Runtime output tail",
-        producerUnavailableTitle: "Runtime disconnected",
-        producerUnavailableBody:
-          "Job detail is temporarily unavailable; the report remains based on the current public snapshot.",
-        stateHistory: "State history",
-        noProvenanceData: "No provenance data available.",
-      };
   const defendedRows = rows.filter((row) => row.defense !== "none" && row.defense !== "None").length;
   const undefendedRows = rows.length - defendedRows;
   const producerStatus = displayStatus(producerContext?.status);
@@ -205,25 +146,25 @@ export function ReportAuditView({
         <section className="rounded-2xl border border-border bg-card p-4">
           <div className="border-b border-border pb-3 mb-3">
             <h2 className="text-[13px] font-bold text-foreground">
-              {t.summaryTitle}
+              {copy.reportAuditView.summaryTitle}
             </h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-border bg-background px-3 py-3">
               <div className="text-[13px] text-muted-foreground">
-                {t.resultRows}
+                {copy.reportAuditView.resultRows}
               </div>
               <div className="mt-2 text-2xl font-semibold">{rows.length}</div>
             </div>
             <div className="rounded-2xl border border-border bg-background px-3 py-3">
               <div className="text-[13px] text-muted-foreground">
-                {t.defendedRows}
+                {copy.reportAuditView.defendedRows}
               </div>
               <div className="mt-2 text-2xl font-semibold">{defendedRows}</div>
             </div>
             <div className="rounded-2xl border border-border bg-background px-3 py-3">
               <div className="text-[13px] text-muted-foreground">
-                {t.undefendedRows}
+                {copy.reportAuditView.undefendedRows}
               </div>
               <div className="mt-2 text-2xl font-semibold">{undefendedRows}</div>
             </div>
@@ -233,72 +174,72 @@ export function ReportAuditView({
         <section className="rounded-2xl border border-border bg-card p-4">
           <div className="border-b border-border pb-3 mb-3">
             <h2 className="text-[13px] font-bold text-foreground">
-              {t.provenanceTitle}
+              {copy.reportAuditView.provenanceTitle}
             </h2>
           </div>
           <dl className="grid gap-4 text-[13px]">
             {hasValue(provenance.runDirectoryPath) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.runDirectory}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.runDirectory}</dt>
                 <dd className="mt-1 break-all text-muted-foreground">{provenance.runDirectoryPath}</dd>
               </div>
             ) : null}
             {hasValue(provenance.seed) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.seed}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.seed}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.seed}</dd>
               </div>
             ) : null}
             {hasValue(provenance.schedule) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.schedule}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.schedule}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.schedule}</dd>
               </div>
             ) : null}
             {hasValue(provenance.fixtureVersion) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.fixtureVersion}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.fixtureVersion}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.fixtureVersion}</dd>
               </div>
             ) : null}
             {hasValue(provenance.summaryPath) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.summaryPath}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.summaryPath}</dt>
                 <dd className="mt-1 break-all text-muted-foreground">{provenance.summaryPath}</dd>
               </div>
             ) : null}
             {hasValue(provenance.evidenceLevel) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.evidenceLevel}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.evidenceLevel}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.evidenceLevel}</dd>
               </div>
             ) : null}
             {hasValue(provenance.admissionStatus) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.admissionStatus}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.admissionStatus}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.admissionStatus}</dd>
               </div>
             ) : null}
             {hasValue(provenance.admissionLevel) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.admissionLevel}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.admissionLevel}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.admissionLevel}</dd>
               </div>
             ) : null}
             {hasValue(provenance.provenanceStatus) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.provenanceStatus}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.provenanceStatus}</dt>
                 <dd className="mt-1 text-muted-foreground">{provenance.provenanceStatus}</dd>
               </div>
             ) : null}
             {hasValue(provenance.intakeManifest) ? (
               <div>
-                <dt className="font-semibold text-foreground">{t.intakeManifest}</dt>
+                <dt className="font-semibold text-foreground">{copy.reportAuditView.intakeManifest}</dt>
                 <dd className="mt-1 break-all text-muted-foreground">{provenance.intakeManifest}</dd>
               </div>
             ) : null}
             {!hasValue(provenance.runDirectoryPath) && !hasValue(provenance.seed) && !hasValue(provenance.schedule) && !hasValue(provenance.fixtureVersion) && !hasValue(provenance.summaryPath) && !hasValue(provenance.evidenceLevel) && !hasValue(provenance.admissionStatus) && !hasValue(provenance.admissionLevel) && !hasValue(provenance.provenanceStatus) && !hasValue(provenance.intakeManifest) ? (
-              <p className="text-muted-foreground text-[13px] italic">{t.noProvenanceData}</p>
+              <p className="text-muted-foreground text-[13px] italic">{copy.reportAuditView.noProvenanceData}</p>
             ) : null}
           </dl>
         </section>
@@ -307,7 +248,7 @@ export function ReportAuditView({
       <section className="rounded-2xl border border-border bg-card p-4">
         <div className="border-b border-border pb-3 mb-3">
             <h2 className="text-[13px] font-bold text-foreground">
-              {t.historyTitle}
+              {copy.reportAuditView.historyTitle}
             </h2>
         </div>
         <div className="space-y-2 text-[13px] text-muted-foreground">
@@ -318,28 +259,28 @@ export function ReportAuditView({
               className="mt-3 rounded-2xl border border-border bg-background p-3 print:break-inside-avoid print:bg-white"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-[13px] font-bold text-foreground">{t.producerTitle}</h3>
+                <h3 className="text-[13px] font-bold text-foreground">{copy.reportAuditView.producerTitle}</h3>
                 {producerUnavailable ? (
                   <span className="rounded-xl border border-[var(--warning)]/25 bg-[var(--warning-soft-strong)] px-2 py-1 text-[11px] font-semibold text-[var(--warning)]">
-                    {t.producerUnavailableTitle}
+                    {copy.reportAuditView.producerUnavailableTitle}
                   </span>
                 ) : null}
               </div>
               {producerUnavailable ? (
                 <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
-                  {t.producerUnavailableBody}
+                  {copy.reportAuditView.producerUnavailableBody}
                 </p>
               ) : null}
               <dl className="mt-3 grid gap-3 text-[13px] sm:grid-cols-2">
                 {producerStatus ? (
                   <div>
-                    <dt className="font-semibold text-foreground">{t.producerStatus}</dt>
+                    <dt className="font-semibold text-foreground">{copy.reportAuditView.producerStatus}</dt>
                     <dd className="mt-1 text-muted-foreground">{producerStatus}</dd>
                   </div>
                 ) : null}
                 {producerContext?.updatedAt ? (
                   <div>
-                    <dt className="font-semibold text-foreground">{t.producerUpdated}</dt>
+                    <dt className="font-semibold text-foreground">{copy.reportAuditView.producerUpdated}</dt>
                     <dd className="mt-1 text-muted-foreground">{formatFullTime(producerContext.updatedAt, locale)}</dd>
                   </div>
                 ) : null}
@@ -347,7 +288,7 @@ export function ReportAuditView({
               {stateHistory.length > 0 ? (
                 <div className="mt-3">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t.stateHistory}
+                    {copy.reportAuditView.stateHistory}
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {stateHistory.map((entry, index) => (
@@ -367,7 +308,7 @@ export function ReportAuditView({
               {stdoutTail || stderrTail ? (
                 <div className="mt-3">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t.outputTail}
+                    {copy.reportAuditView.outputTail}
                   </div>
                   <pre
                     data-runtime-output-tail=""

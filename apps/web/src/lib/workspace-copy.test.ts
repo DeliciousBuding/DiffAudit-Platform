@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+import { WORKSPACE_COPY, getTrackDisplayLabel } from "@/lib/workspace-copy";
 
 function collectKeys(obj: unknown, prefix = ""): string[] {
   if (typeof obj !== "object" || obj === null) {
@@ -56,5 +56,35 @@ describe("WORKSPACE_COPY key parity", () => {
     }
     walk(enCopy, "");
     expect(violations).toEqual([]);
+  });
+});
+
+describe("getTrackDisplayLabel", () => {
+  it("returns composed label for black-box in English", () => {
+    expect(getTrackDisplayLabel("black-box", "en-US")).toBe("Recon / Black-box");
+  });
+
+  it("returns composed label for black-box in Chinese", () => {
+    expect(getTrackDisplayLabel("black-box", "zh-CN")).toBe("Recon / 黑盒");
+  });
+
+  it("returns composed label for gray-box in English", () => {
+    expect(getTrackDisplayLabel("gray-box", "en-US")).toBe("PIA / Gray-box");
+  });
+
+  it("returns composed label for white-box in Chinese", () => {
+    expect(getTrackDisplayLabel("white-box", "zh-CN")).toBe("GSA / 白盒");
+  });
+
+  it("returns -- for null track", () => {
+    expect(getTrackDisplayLabel(null, "en-US")).toBe("--");
+  });
+
+  it("returns -- for undefined track", () => {
+    expect(getTrackDisplayLabel(undefined, "zh-CN")).toBe("--");
+  });
+
+  it("returns -- for unknown track", () => {
+    expect(getTrackDisplayLabel("unknown", "en-US")).toBe("--");
   });
 });

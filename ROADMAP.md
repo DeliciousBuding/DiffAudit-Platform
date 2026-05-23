@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 08:42 Asia/Hong_Kong
+Last updated: 2026-05-23 08:52 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -50,7 +50,30 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Derive workspace navigation shortcuts from the workspace navigation registry.
 - [x] Guard workspace navigation registry uniqueness and shortcut format.
 - [x] Derive command palette navigation ids from workspace navigation keys.
-- [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
+- [x] Remove public workspace redesign progress diary and guard docs hygiene.
+- [x] Eliminate hardcoded locale strings in ReportsPageClient — all display strings now sourced from workspace-copy contract.
+- [x] Extract shared getTrackDisplayLabel to eliminate duplicate trackLabel functions across ReportsPageClient, CreateTaskClient, and track-report-page.
+- [x] Migrate hardcoded locale strings in AuditsPageClient, TaskListClient, CreateTaskClient, ApiKeysClient, track-report-page to workspace-copy contract.
+- [x] Scaffold Playwright E2E test infrastructure: config, fixtures, smoke/auth/navigation/a11y specs, CI job.
+- [x] Add e2e test scripts (test:e2e, test:e2e:ui, test:e2e:chromium, test:all) to both root and web package.json.
+- [x] Cross-review fix: remove dead E2E page objects fixture.
+- [x] Fix contextual-tip, scroll-to-top, metric-tooltip locale bypasses — all use WORKSPACE_COPY now.
+- [x] Fix RiskFindingsClient empty state, ModelAssetsClient toast messages.
+- [x] Create project-level skill: .agents/skills/platform-dev/SKILL.md.
+- [x] Migrate start/page.tsx labels object → copy (22 keys), audit cards → copy.startCards, ROC title → copy.
+- [x] Migrate risk-findings/page.tsx, model-assets/page.tsx inline copy objects → WORKSPACE_COPY.
+- [x] Migrate ReportAuditView.tsx ~59-line `t` object → reportAuditView (24 keys).
+- [x] Migrate printable-audit-report.tsx 5 inline ternaries → printableReport (6 keys).
+- [x] Migrate risk-report.ts hardcoded locale functions → riskReport section (16 keys).
+- [x] PM: add demo banner to start page, migrate baseline AUC label, fix ROC title.
+- [x] ESLint: ignore playwright-report/ and test-results/.
+- [x] Add E2E user-flows.spec.ts — navigation, login, interaction tests.
+- [x] Migrate RiskFindingsClient COPY + FindingDetailPanel DETAIL_COPY + report-export-utils → WORKSPACE_COPY.
+- [x] All inline locale copy objects eliminated from the codebase (19 files migrated, ~600 lines of duplicate copy removed).
+- [x] E2E: 41/41 passing — smoke, user-flows, report-flow (16 tests), i18n-navigation, job detail.
+- [x] Fix React 19 infinite loop in workspace-global-search (useSyncExternalStore stable refs).
+- [x] All cross-review P0/P1 issues resolved.
+- [ ] Merge dev → main, tag v0.2.0.
 
 ## Review Gates
 

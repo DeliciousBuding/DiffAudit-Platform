@@ -1,6 +1,40 @@
 import { type Locale } from "@/components/language-picker";
 import type { WorkspaceNavKey } from "@/lib/workspace-registry";
 
+/** Compose "Recon / Black-box" style display label from the copy contract. */
+export function getTrackDisplayLabel(track: string | null | undefined, locale: Locale): string {
+  if (!track) return "--";
+  const copy = WORKSPACE_COPY[locale].reports;
+  const method = copy.trackMethods[track];
+  const label = copy.trackLabels[track];
+  if (method && label) return `${method} / ${label}`;
+  return "--";
+}
+
+/** Shared risk note translations — backend-provided English notes mapped to zh-CN. */
+export const RISK_NOTE_ZH: Record<string, string> = {
+  "Photoreal face generations show stronger memorization on member portraits.":
+    "人脸生成模型对成员肖像表现出更强的记忆效应。",
+  "White-box gradients expose memorized waveform fragments without mitigation.":
+    "白盒梯度暴露了未缓解的记忆波形片段。",
+  "Black-box membership inference via loss deviation. High AUC indicates significant leakage.":
+    "基于损失偏差的黑盒成员推断攻击。高 AUC 表明存在显著泄露。",
+  "Gray-box posterior deviation attack. High ASR shows gradient leakage is exploitable.":
+    "灰盒后验偏差攻击。高 ASR 表明梯度泄露可被利用。",
+  "Rare-class lesion samples remain highly vulnerable to posterior attacks.":
+    "罕见类病变样本对后验攻击仍然高度脆弱。",
+  "Stochastic dropout at all steps reduces ASR by ~15pp with moderate overhead.":
+    "全步骤随机丢弃将 ASR 降低约 15 个百分点，开销适中。",
+  "Lower AUC on PixelArt suggests stronger baseline privacy.":
+    "PixelArt 上较低的 AUC 表明基线隐私保护更强。",
+  "Gradient leakage present but lower magnitude than SD v1.4.":
+    "存在梯度泄露但幅度低于 SD v1.4。",
+  "SMP-LoRA shows stronger mitigation under gray-box attack.":
+    "SMP-LoRA 在灰盒攻击下表现出更强的缓解效果。",
+  "Clip-guided sanitization lowers leakage while keeping prompt fidelity acceptable.":
+    "Clip 引导的净化降低了泄露，同时保持提示保真度在可接受水平。",
+};
+
 export const WORKSPACE_COPY: Record<
   Locale,
   {
@@ -37,6 +71,8 @@ export const WORKSPACE_COPY: Record<
       notificationTitle: string;
       collapseSidebar: string;
       expandSidebar: string;
+      dismissTip: string;
+      scrollToTop: string;
     };
     commandPalette: {
       placeholder: string;
@@ -132,7 +168,38 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: string;
         chartDimensions: string[];
         suggestedNextSteps: string;
+        riskTitle: string;
+        reviewRisk: string;
+        highRiskModels: string;
+        defenseCoverage: string;
+        reportReady: string;
+        coverageHint: string;
+        undefended: string;
+        defended: string;
+        reportable: string;
+        priorityTitle: string;
+        analysisTitle: string;
+        priorityEmpty: string;
+        inspect: string;
+        kpiCompleted: string;
+        progressTitle: string;
+        completed: string;
+        recommendations: string;
+        recentTasks: string;
+        vsYesterday: string;
+        riskSubtitle: (high: number, medium: number) => string;
+        riskNote: (model: string) => string;
+        exportReport: string;
         partialDataWarning: string;
+        chartTotalLabel: string;
+        viewAllResults: string;
+        viewAllSuggestions: string;
+        runningBadge: string;
+        failedBadge: string;
+        otherLabel: string;
+        baselineAucPrefix: string;
+        demoBannerText: string;
+        attackComparisonDimensions: string[];
         radarLabels: {
           auc: string;
           asr: string;
@@ -148,6 +215,15 @@ export const WORKSPACE_COPY: Record<
         createAudit: string;
       };
       riskBadgeLabels: { high: string; medium: string; low: string; critical: string };
+      startCards: Array<{
+        track: string;
+        title: string;
+        desc: string;
+        tag: string;
+        tagTone: string;
+        detail: string;
+        auc: string;
+      }>;
       coverageBar: {
         title: string; summaryText: (defended: number, total: number, contracts: number) => string;
         tracks: Record<string, string>; trackCountSuffix: string;
@@ -221,6 +297,15 @@ export const WORKSPACE_COPY: Record<
         searchPlaceholder: string;
         activeFilters: string;
       };
+      toastTaskCompleted: (id: string) => string;
+      toastTaskFailed: (id: string) => string;
+      toastRetryFailed: (status: number) => string;
+      toastServerUnreachable: string;
+      paginationTotal: (count: number) => string;
+      paginationPerPage: string;
+      runningLabel: (pct: number) => string;
+      remainingMinutes: (m: number, s: number) => string;
+      remainingSeconds: (s: number) => string;
     };
     createTask: {
       eyebrow: string;
@@ -281,6 +366,10 @@ export const WORKSPACE_COPY: Record<
         availabilityPartial: string;
         availabilityDisabled: string;
         dismissError: string;
+        selectModelHint: string;
+        routeCount: (count: number) => string;
+        selectedRoutesTitle: string;
+        selectedRoutesDescription: string;
       };
       recommendedConfig: {
         blackBoxTitle: string; blackBoxRounds: string; blackBoxBatch: string; blackBoxAdaptive: string;
@@ -304,6 +393,67 @@ export const WORKSPACE_COPY: Record<
         stateHistory: string; stateTimestamp: string; noStateHistory: string;
         executionProgress: string; metricAucNote: string; metricAsrNote: string; metricTprNote: string; jobIdLabel: string;
       };
+    };
+    modelAssets: {
+      toastAdded: (name: string) => string;
+      toastUpdated: (name: string) => string;
+      toastDeleted: string;
+    };
+    modelAssetsPage: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      tabModels: string;
+      nav: string;
+      bestEvidence: string;
+      emptyNav: string;
+      emptyTimeline: string;
+      emptyDetail: string;
+      emptyEvidence: string;
+      noSearchResults: string;
+      clearSearch: string;
+      addModelDisabled: string;
+      attack: string;
+      defense: string;
+      auc: string;
+      asr: string;
+      tpr: string;
+      source: string;
+      runtime: string;
+      evidenceLevel: string;
+      workspace: string;
+      systemGap: string;
+      addModel: string;
+      searchModels: string;
+      modelsCount: string;
+      categoriesCount: string;
+      tabTimeline: string;
+      tabEvidence: string;
+      trackBlackBox: string;
+      trackGrayBox: string;
+      trackWhiteBox: string;
+      availabilityLabels: Record<string, string>;
+      evidenceLevelLabels: Record<string, string>;
+      addModelTitle: string;
+      editModelTitle: string;
+      modelName: string;
+      modelNamePlaceholder: string;
+      modelTrack: string;
+      modelTrackPlaceholder: string;
+      modelDescription: string;
+      modelDescriptionPlaceholder: string;
+      cancel: string;
+      submit: string;
+      edit: string;
+      delete: string;
+      deleteModelTitle: string;
+      deleteModelConfirm: string;
+      deleteModelAction: string;
+      demoModeNote: string;
+      uploadFile: string;
+      uploadDragDrop: string;
+      uploadComplete: string;
+      uploadProgress: string;
     };
     emptyWorkspace: {
       title: string; description: string; cta: string;
@@ -356,6 +506,14 @@ export const WORKSPACE_COPY: Record<
       exportSummary: string;
       emptyResults: string;
       emptyGaps: string;
+      taskReportsTitle: string;
+      taskReportsDescription: string;
+      taskReportsTableAriaLabel: string;
+      exportList: string;
+      loadErrorTitle: string;
+      loadErrorDescription: string;
+      loadErrorRetry: string;
+      emptyReportsDescription: string;
       jobContext: {
         title: string;
         matched: (count: number) => string;
@@ -368,6 +526,9 @@ export const WORKSPACE_COPY: Record<
       };
       chartDimensions: string[];
       tableHeaders: {
+        task: string;
+        completed: string;
+        actions: string;
         attack: string;
         defense: string;
         model: string;
@@ -396,6 +557,10 @@ export const WORKSPACE_COPY: Record<
       trackDescs: Record<string, string>;
       trackReportTitles: Record<string, string>;
       reportGeneration: string;
+      reportDetailsSuffix: string;
+      toggleDisplayView: string;
+      toggleAuditView: string;
+      historyPlaceholder: string;
       generateByTrack: string;
       generateReport: string;
       generatedReports: string;
@@ -407,6 +572,7 @@ export const WORKSPACE_COPY: Record<
       noFinding: string;
       date: string;
       view: string;
+      viewTask: string;
       download: string;
       downloadComingSoon: string;
       popupBlocked: string;
@@ -419,6 +585,121 @@ export const WORKSPACE_COPY: Record<
       docxComingSoon: string;
       pptxComingSoon: string;
       defenseStrategies: Array<{ name: string; desc: string; tag: string }>;
+      reportAuditView: {
+        summaryTitle: string;
+        resultRows: string;
+        defendedRows: string;
+        undefendedRows: string;
+        provenanceTitle: string;
+        runDirectory: string;
+        seed: string;
+        schedule: string;
+        fixtureVersion: string;
+        summaryPath: string;
+        evidenceLevel: string;
+        admissionStatus: string;
+        admissionLevel: string;
+        provenanceStatus: string;
+        intakeManifest: string;
+        historyTitle: string;
+        historyPlaceholder: string;
+        producerTitle: string;
+        producerStatus: string;
+        producerUpdated: string;
+        outputTail: string;
+        producerUnavailableTitle: string;
+        producerUnavailableBody: string;
+        stateHistory: string;
+        noProvenanceData: string;
+      };
+      printableReport: {
+        summarySectionTitle: string;
+        comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) => string;
+        comparisonSummaryIneffective: (avgAucReduction: string) => string;
+        coverageGapsHighRisk: (count: number) => string;
+        coverageGapsNone: string;
+        riskDistributionDetail: (high: number, medium: number, low: number, defended: number) => string;
+      };
+    };
+    riskReport: {
+      riskLabels: Record<string, string>;
+      defenseRecommendation: (attack: string, defense: string) => string;
+      reportTitle: string;
+      summaryTitle: string;
+      coverageTitle: string;
+      findingsTitle: string;
+      dateLabel: string;
+      sourceLabel: string;
+      pageLabel: string;
+      noData: string;
+      totalLabel: string;
+      avgAucLabel: string;
+      conclusionLabel: string;
+      riskColLabel: string;
+      footerLabel: string;
+    };
+    riskFindings: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      viewReport: string;
+      totalFindings: string;
+      highRisk: string;
+      hasDefense: string;
+      defenseRate: string;
+      na: string;
+      allSeverities: string;
+      allCategories: string;
+      allModels: string;
+      allStatuses: string;
+      riskDescription: string;
+      severity: string;
+      category: string;
+      sourceModel: string;
+      status: string;
+      detected: string;
+      estimated: string;
+      noDataYet: string;
+      high: string;
+      medium: string;
+      low: string;
+      hasDefenseStatus: string;
+      monitoring: string;
+      investigating: string;
+      previous: string;
+      next: string;
+      emptyNoData: string;
+      emptyNoResults: string;
+      findingsTable: string;
+      catBlackBox: string;
+      catGrayBox: string;
+      catWhiteBox: string;
+      catOther: string;
+      clearFilters: string;
+      clearSearch: string;
+      searchPlaceholder: string;
+      createAuditTask: string;
+      presetAll: string;
+      presetHighUnmitigated: string;
+      presetMitigated: string;
+      presetHighSeverity: string;
+      priority: string;
+      findingDetail: string;
+      attackVector: string;
+      defense: string;
+      aucLabel: string;
+      asrLabel: string;
+      tprLabel: string;
+      qualityCost: string;
+      evidenceLevel: string;
+      boundary: string;
+      close: string;
+      noDefense: string;
+      relatedAudit: string;
+      copyLink: string;
+      linkCopied: string;
+      sourcePath: string;
+      reAudit: string;
     };
     apiKeys: {
       eyebrow: string;
@@ -459,6 +740,7 @@ export const WORKSPACE_COPY: Record<
       noScopeError: string;
       usageExample: string;
       codeComment: string;
+      securityTip: string;
     };
     settings: {
       eyebrow: string;
@@ -478,6 +760,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      shortDescription: string;
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
@@ -496,6 +779,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
+      shortDescription: string;
       formEyebrow: string;
       formTitle: string;
       oauthDivider: string;
@@ -572,6 +856,12 @@ export const WORKSPACE_COPY: Record<
       csv: string;
       popupBlocked: string;
     };
+    reportExport: {
+      reportLabel: string;
+      reportTitle: string;
+      dateLabel: string;
+      totalRowsLabel: string;
+    };
     liveJobsPanel: {
       justUpdated: string;
       noSummary: string;
@@ -583,6 +873,7 @@ export const WORKSPACE_COPY: Record<
       fpr: string;
       defenseRate: string;
       priority: string;
+      direction: string;
     };
     emptyState: {
       selectModel: { title: string; description: string };
@@ -627,6 +918,8 @@ export const WORKSPACE_COPY: Record<
       notificationTitle: "Notifications",
       collapseSidebar: "Collapse sidebar",
       expandSidebar: "Expand sidebar",
+      dismissTip: "Got it",
+      scrollToTop: "Scroll to top",
     },
     commandPalette: {
       placeholder: "Type a command...",
@@ -727,7 +1020,38 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: "dimensions",
         chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
         suggestedNextSteps: "Suggested next steps",
+        riskTitle: "Open Risks",
+        riskSubtitle: (high: number, medium: number) => `${high} high · ${medium} medium`,
+        riskNote: (model: string) => `${model} needs review first; prioritize high-AUC audit results.`,
+        reviewRisk: "Review risks",
+        exportReport: "Export report",
+        highRiskModels: "High-risk models",
+        defenseCoverage: "Defense coverage",
+        reportReady: "Report ready",
+        coverageHint: "Black / gray / white-box coverage",
+        undefended: "Undefended",
+        defended: "Defended",
+        reportable: "Reportable",
+        priorityTitle: "Priority Queue",
+        analysisTitle: "AUC Risk Distribution",
+        priorityEmpty: "No medium or high-risk audit results.",
+        inspect: "Inspect",
+        kpiCompleted: "Completed audits",
+        progressTitle: "Audit progress",
+        completed: "complete",
+        recommendations: "Recommendations",
+        recentTasks: "Recent tasks",
+        vsYesterday: "vs yesterday",
         partialDataWarning: "Some data sources failed to load. The information below may be incomplete.",
+        chartTotalLabel: "Total",
+        viewAllResults: "View all results",
+        viewAllSuggestions: "View all advice",
+        runningBadge: "Running",
+        failedBadge: "Failed",
+        otherLabel: "Other",
+        baselineAucPrefix: "Baseline AUC",
+        demoBannerText: "This dashboard shows demo snapshot data. Create an audit task to see real results.",
+        attackComparisonDimensions: ["Recall", "Stealth", "Coverage", "Detectability", "Speed"],
         radarLabels: {
           auc: "AUC",
           asr: "ASR",
@@ -743,6 +1067,11 @@ export const WORKSPACE_COPY: Record<
         createAudit: "Create audit",
       },
       riskBadgeLabels: { high: "High risk", medium: "Medium risk", low: "Low risk", critical: "Critical risk" },
+      startCards: [
+        { track: "black-box", title: "Recon Member Inference Audit", desc: "Quantifies membership inference attack risk and evaluates model sensitivity to member data leakage.", tag: "High risk", tagTone: "high", detail: "AUC drops to 0.510 under W-1 defense", auc: "0.849" },
+        { track: "gray-box", title: "PIA Privacy Attack Audit", desc: "Evaluates attribute-level privacy attack risk, quantifying leakage and defense effectiveness.", tag: "High risk", tagTone: "high", detail: "Quantifies risk intensity + evaluates defense", auc: "0.828" },
+        { track: "white-box", title: "GSA Gradient Signature Audit", desc: "Defense evaluation against gradient signature attacks, measuring model gradient information leakage risk.", tag: "Lower risk", tagTone: "low", detail: "AUC drops to 0.210 under W-1 defense", auc: "0.489" },
+      ],
       coverageBar: {
         title: "Audit Coverage",
         summaryText: (defended: number, total: number, contracts: number) => `${defended} / ${total} defended · ${contracts} contracts registered`,
@@ -828,6 +1157,15 @@ export const WORKSPACE_COPY: Record<
         searchPlaceholder: "Search contract key or job ID",
         activeFilters: "active",
       },
+      toastTaskCompleted: (id: string) => `Task completed: ${id}`,
+      toastTaskFailed: (id: string) => `Task failed: ${id}`,
+      toastRetryFailed: (status: number) => `Retry failed (HTTP ${status})`,
+      toastServerUnreachable: "Could not reach the server",
+      paginationTotal: (count: number) => `${count} total`,
+      paginationPerPage: "10 / page",
+      runningLabel: (pct: number) => `Running ${pct}%`,
+      remainingMinutes: (m: number, s: number) => `~${m}m ${s}s left`,
+      remainingSeconds: (s: number) => `~${s}s left`,
     },
     createTask: {
       eyebrow: "New task",
@@ -888,6 +1226,10 @@ export const WORKSPACE_COPY: Record<
         availabilityPartial: "Partial",
         availabilityDisabled: "Disabled",
         dismissError: "Dismiss error",
+        selectModelHint: "Select a target model first. You can choose multiple audit routes for the same model next.",
+        routeCount: (count: number) => `${count} routes`,
+        selectedRoutesTitle: "Selected audit routes",
+        selectedRoutesDescription: "Choose the audit routes to create for this model. Each route creates one task and one report row.",
       },
       recommendedConfig: {
         blackBoxTitle: "Recommended: Black-box Attack",
@@ -970,6 +1312,67 @@ export const WORKSPACE_COPY: Record<
         ],
       },
     },
+    modelAssets: {
+      toastAdded: (name: string) => `Model "${name}" added`,
+      toastUpdated: (name: string) => `Model "${name}" updated`,
+      toastDeleted: "Model deleted",
+    },
+    modelAssetsPage: {
+      eyebrow: "Model Assets",
+      title: "Model Assets",
+      description: "Manage auditable models, datasets, and runtime versions with traceable safety context.",
+      tabModels: "Models",
+      nav: "Model Navigation",
+      bestEvidence: "Best Evidence",
+      emptyNav: "No model assets available.",
+      emptyTimeline: "Select a model",
+      emptyDetail: "Select a model from the list to view details and audit evidence.",
+      emptyEvidence: "No evidence data available.",
+      noSearchResults: "No matching models found.",
+      clearSearch: "Clear search",
+      addModelDisabled: "This feature is not yet available",
+      attack: "Attack",
+      defense: "Defense",
+      auc: "AUC",
+      asr: "ASR",
+      tpr: "TPR@1%",
+      source: "Source",
+      runtime: "Runtime",
+      evidenceLevel: "Evidence level",
+      workspace: "Workspace",
+      systemGap: "System gap",
+      addModel: "Add Model",
+      searchModels: "Search models...",
+      modelsCount: "models",
+      categoriesCount: "Access modes",
+      tabTimeline: "Version History",
+      tabEvidence: "Audit Evidence",
+      trackBlackBox: "Black-box audit / Recon",
+      trackGrayBox: "Gray-box audit / PIA",
+      trackWhiteBox: "White-box audit / GSA",
+      availabilityLabels: { ready: "Ready", partial: "Partial", planned: "Planned" } as Record<string, string>,
+      evidenceLevelLabels: { mainline: "Mainline", catalog: "Catalog", challenger: "Challenger" } as Record<string, string>,
+      addModelTitle: "Add Model",
+      editModelTitle: "Edit Model",
+      modelName: "Model Name",
+      modelNamePlaceholder: "Enter model name",
+      modelTrack: "Access mode",
+      modelTrackPlaceholder: "Select access mode",
+      modelDescription: "Description",
+      modelDescriptionPlaceholder: "Enter description (optional)",
+      cancel: "Cancel",
+      submit: "Confirm",
+      edit: "Edit",
+      delete: "Delete",
+      deleteModelTitle: "Delete Model",
+      deleteModelConfirm: "Are you sure you want to delete this model? This action cannot be undone.",
+      deleteModelAction: "Confirm Delete",
+      demoModeNote: "Demo mode: all changes are local.",
+      uploadFile: "Upload file",
+      uploadDragDrop: "Click or drag file here to upload",
+      uploadComplete: "Upload complete",
+      uploadProgress: "Uploading...",
+    },
     emptyWorkspace: {
       title: "No audit results yet",
       description: "Discover privacy risks in diffusion models through black-box, gray-box, and white-box audit tracks",
@@ -1028,6 +1431,14 @@ export const WORKSPACE_COPY: Record<
       exportSummary: "Export report",
       emptyResults: "No audit results yet",
       emptyGaps: "No coverage gap data",
+      taskReportsTitle: "Task reports",
+      taskReportsDescription: "Reports are grouped by completed task. Recon, PIA, and GSA runs for the same model remain separate rows.",
+      taskReportsTableAriaLabel: "Task reports table",
+      exportList: "Export list",
+      loadErrorTitle: "Could not load reports",
+      loadErrorDescription: "The task endpoint is not available. Try again.",
+      loadErrorRetry: "Retry",
+      emptyReportsDescription: "Completed task reports will appear here as rows.",
       jobContext: {
         title: "Reviewing completed job",
         matched: (count: number) => `${count} matching admitted result row${count === 1 ? "" : "s"} found in this snapshot.`,
@@ -1039,6 +1450,9 @@ export const WORKSPACE_COPY: Record<
         matchedRow: "Matched job",
       },
       tableHeaders: {
+        task: "Task",
+        completed: "Completed",
+        actions: "Actions",
         attack: "Attack",
         defense: "Defense",
         model: "Model",
@@ -1083,6 +1497,10 @@ export const WORKSPACE_COPY: Record<
         "white-box": "GSA Assessment Report",
       },
       reportGeneration: "Report Generation",
+      reportDetailsSuffix: "report details",
+      toggleDisplayView: "Display view",
+      toggleAuditView: "Audit view",
+      historyPlaceholder: "Historical comparison for this track will be available in a future release. This area is reserved.",
       generateByTrack: "Generate by Audit Mode",
       generateReport: "View Full Report",
       generatedReports: "Generated Reports",
@@ -1094,6 +1512,7 @@ export const WORKSPACE_COPY: Record<
       noFinding: "No audit results available for analysis.",
       date: "Date",
       view: "View Report",
+      viewTask: "Task",
       download: "Download",
       downloadComingSoon: "Download coming soon",
       popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
@@ -1123,6 +1542,134 @@ export const WORKSPACE_COPY: Record<
           tag: "Effective",
         },
       ],
+      reportAuditView: {
+        summaryTitle: "Audit view summary",
+        resultRows: "Result rows",
+        defendedRows: "Defended",
+        undefendedRows: "Undefended",
+        provenanceTitle: "Experiment provenance",
+        runDirectory: "Run directory",
+        seed: "Seed",
+        schedule: "Schedule",
+        fixtureVersion: "Fixture version",
+        summaryPath: "summary.json",
+        evidenceLevel: "Evidence level",
+        admissionStatus: "Admission status",
+        admissionLevel: "Admission level",
+        provenanceStatus: "Provenance status",
+        intakeManifest: "Intake manifest",
+        historyTitle: "History comparison",
+        historyPlaceholder: "Historical comparison data will be available in a future release.",
+        producerTitle: "Producer context",
+        producerStatus: "Status",
+        producerUpdated: "Updated",
+        outputTail: "Runtime output tail",
+        producerUnavailableTitle: "Runtime disconnected",
+        producerUnavailableBody: "Job detail is temporarily unavailable; the report remains based on the current public snapshot.",
+        stateHistory: "State history",
+        noProvenanceData: "No provenance data available.",
+      },
+      printableReport: {
+        summarySectionTitle: "Summary",
+        comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) =>
+          `${effectivePairs} / ${totalPairs} defense pairs show a meaningful AUC reduction, and the average AUC change is ${avgAucReduction}.`,
+        comparisonSummaryIneffective: (avgAucReduction: string) =>
+          `No defense pair currently shows a strong AUC reduction. The average AUC change is ${avgAucReduction}.`,
+        coverageGapsHighRisk: (count: number) =>
+          `${count} high-risk gaps remain above the configured threshold. Prioritize the highest-AUC attack and defense pairs first.`,
+        coverageGapsNone: "No high-risk coverage gaps were detected in the current snapshot.",
+        riskDistributionDetail: (high: number, medium: number, low: number, defended: number) =>
+          `High risk: ${high} · Medium risk: ${medium} · Low risk: ${low} · Defended rows: ${defended}`,
+      },
+    },
+    riskReport: {
+      riskLabels: {
+        high: "High",
+        medium: "Medium",
+        low: "Low",
+      },
+      defenseRecommendation: (attack: string, _defense: string) =>
+        attack === "GSA"
+          ? "Differential Privacy (DP) training is recommended. Experiments show DP reduces the strongest attack (GSA) AUC from 0.998 to 0.489, near random guessing."
+          : attack === "PIA"
+            ? "Stochastic Dropout defense is recommended. Experiments show Dropout reduces gray-box attack (PIA) AUC from 0.841 to 0.828 while preserving generation quality."
+            : "Current model has good privacy protection. Regular re-testing is recommended to monitor potential risks.",
+      reportTitle: "Diffusion Model Privacy Audit Report",
+      summaryTitle: "Summary",
+      coverageTitle: "Risk Overview",
+      findingsTitle: "Detailed Results",
+      dateLabel: "Date",
+      sourceLabel: "Source: DiffAudit Platform",
+      pageLabel: "Page",
+      noData: "No data",
+      totalLabel: "Total Results",
+      avgAucLabel: "Avg. Attack AUC",
+      conclusionLabel: "Conclusions & Recommendations",
+      riskColLabel: "Risk",
+      footerLabel: "Generated by DiffAudit Platform — Diffusion Model Privacy Risk Audit System",
+    },
+    riskFindings: {
+      eyebrow: "Risk Findings",
+      title: "Risk Findings",
+      description: "Track privacy leakage risks, evidence chains, and mitigation recommendations.",
+      viewReport: "View full report",
+      totalFindings: "Total Findings",
+      highRisk: "High Risk",
+      hasDefense: "Has Defense",
+      defenseRate: "Defense Rate",
+      na: "N/A",
+      allSeverities: "All Severities",
+      allCategories: "All Categories",
+      allModels: "All Models",
+      allStatuses: "All Statuses",
+      riskDescription: "Risk Description",
+      severity: "Severity",
+      category: "Category",
+      sourceModel: "Source Model",
+      status: "Status",
+      detected: "Detected",
+      estimated: "Est.",
+      noDataYet: "no data yet",
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+      hasDefenseStatus: "Has Defense",
+      monitoring: "Monitoring",
+      investigating: "Investigating",
+      previous: "Previous",
+      next: "Next",
+      emptyNoData: "No risk findings available.",
+      emptyNoResults: "No findings match the current filters.",
+      findingsTable: "Findings",
+      catBlackBox: "Privacy Leakage",
+      catGrayBox: "Data Exposure",
+      catWhiteBox: "Prompt Security",
+      catOther: "Safety Bypass",
+      clearFilters: "Clear filters",
+      clearSearch: "Clear search",
+      searchPlaceholder: "Search by description or model...",
+      createAuditTask: "Create audit task",
+      presetAll: "All",
+      presetHighUnmitigated: "High Risk Unmitigated",
+      presetMitigated: "Mitigated",
+      presetHighSeverity: "High Severity",
+      priority: "Priority",
+      findingDetail: "Finding Detail",
+      attackVector: "Attack Vector",
+      defense: "Defense",
+      aucLabel: "AUC",
+      asrLabel: "ASR",
+      tprLabel: "TPR",
+      qualityCost: "Quality Cost",
+      evidenceLevel: "Evidence Level",
+      boundary: "Boundary",
+      close: "Close",
+      noDefense: "None",
+      relatedAudit: "Related Audit",
+      copyLink: "Copy Link",
+      linkCopied: "Copied!",
+      sourcePath: "Source Path",
+      reAudit: "Re-audit",
     },
     apiKeys: {
       eyebrow: "API Management",
@@ -1163,6 +1710,7 @@ export const WORKSPACE_COPY: Record<
       noScopeError: "Select at least one permission scope.",
       usageExample: "API usage example",
       codeComment: "Demo preview only: send an audit request via the API",
+      securityTip: "API keys are shown only once at creation — copy and save immediately. Revoked keys cannot be recovered.",
     },
     settings: {
       eyebrow: "Settings",
@@ -1361,6 +1909,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "Sign in",
       title: "Sign in to the DiffAudit workspace",
       description: "Use your account and password by default. You can also continue with Google or GitHub.",
+      shortDescription: "Welcome back to your workspace.",
       formEyebrow: "Workspace access",
       formTitle: "Sign in to continue",
       oauthDivider: "Or continue with",
@@ -1379,6 +1928,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "Local account",
       title: "Create a local account",
       description: "Use this page only when you explicitly need an independent local account/password entry. It fits recovery access, controlled demos, or environments without OAuth.",
+      shortDescription: "Get started with DiffAudit workspace.",
       formEyebrow: "Local account setup",
       formTitle: "Create a DiffAudit account",
       oauthDivider: "Prefer OAuth?",
@@ -1455,6 +2005,12 @@ export const WORKSPACE_COPY: Record<
       csv: "Export as CSV",
       popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
     },
+    reportExport: {
+      reportLabel: "Report",
+      reportTitle: "DiffAudit Privacy Audit Report",
+      dateLabel: "Generated",
+      totalRowsLabel: "Total rows",
+    },
     liveJobsPanel: {
       justUpdated: "Just updated",
       noSummary: "Summary path will appear after the run completes.",
@@ -1466,6 +2022,7 @@ export const WORKSPACE_COPY: Record<
       fpr: "False Positive Rate — proportion of non-member samples incorrectly flagged as members by the attacker's classifier.",
       defenseRate: "Proportion of audit results that have an active defense comparison. Higher coverage means more results are evaluated against defenses.",
       priority: "Composite risk score: AUC × 0.4 + ASR × 0.3 + no-defense penalty × 0.3. Higher values indicate more urgent findings requiring immediate attention.",
+      direction: "Direction",
     },
     emptyState: {
       selectModel: { title: "Select a model", description: "Select a model from the list to view details and audit evidence." },
@@ -1509,6 +2066,8 @@ export const WORKSPACE_COPY: Record<
       notificationTitle: "通知",
       collapseSidebar: "收起侧边栏",
       expandSidebar: "展开侧边栏",
+      dismissTip: "知道了",
+      scrollToTop: "回到顶部",
     },
     commandPalette: {
       placeholder: "输入命令...",
@@ -1609,7 +2168,38 @@ export const WORKSPACE_COPY: Record<
         radarDimensionsLabel: "维度",
         chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
         suggestedNextSteps: "建议的下一步",
+        riskTitle: "待处理风险",
+        riskSubtitle: (high: number, medium: number) => `${high} 高风险 · ${medium} 中风险`,
+        riskNote: (model: string) => `${model} 是当前最需要复核的模型，优先处理高 AUC 审计结果。`,
+        reviewRisk: "查看风险",
+        exportReport: "导出报告",
+        highRiskModels: "高风险模型",
+        defenseCoverage: "防御覆盖率",
+        reportReady: "可生成报告",
+        coverageHint: "黑盒 / 灰盒 / 白盒覆盖情况",
+        undefended: "未防御",
+        defended: "已防御",
+        reportable: "可报告",
+        priorityTitle: "优先处理队列",
+        analysisTitle: "AUC 风险分布",
+        priorityEmpty: "暂无中高风险审计结果。",
+        inspect: "查看证据",
+        kpiCompleted: "已完成审计",
+        progressTitle: "审计进度",
+        completed: "完成",
+        recommendations: "建议与洞察",
+        recentTasks: "近期任务",
+        vsYesterday: "较昨日",
         partialDataWarning: "部分数据源加载失败，以下信息可能不完整。",
+        chartTotalLabel: "总结果",
+        viewAllResults: "查看全部结果",
+        viewAllSuggestions: "查看全部建议",
+        runningBadge: "运行中",
+        failedBadge: "失败",
+        otherLabel: "其他",
+        baselineAucPrefix: "基线 AUC",
+        demoBannerText: "当前展示的是演示快照数据。创建审计任务后将显示真实结果。",
+        attackComparisonDimensions: ["检索率", "隐蔽性", "覆盖范围", "可探测性", "速度"],
         radarLabels: {
           auc: "AUC",
           asr: "ASR",
@@ -1625,6 +2215,11 @@ export const WORKSPACE_COPY: Record<
         createAudit: "创建审计",
       },
       riskBadgeLabels: { high: "高风险", medium: "中风险", low: "低风险", critical: "极高风险" },
+      startCards: [
+        { track: "black-box", title: "Recon 成员推断审计", desc: "量化成员推断攻击风险，评估模型对成员身份泄露的敏感性。", tag: "高风险", tagTone: "high", detail: "W-1 强防御后降至 0.510", auc: "0.849" },
+        { track: "gray-box", title: "PIA 隐私攻击审计", desc: "评估属性级隐私攻击风险，量化隐私泄露与防御效果。", tag: "高风险", tagTone: "high", detail: "量化风险强度 + 评估防御效果", auc: "0.828" },
+        { track: "white-box", title: "GSA 梯度签名审计", desc: "针对梯度签名攻击的防御评估，衡量模型梯度信息泄露风险。", tag: "较低风险", tagTone: "low", detail: "W-1 强防御后降至 0.210", auc: "0.489" },
+      ],
       coverageBar: {
         title: "审计覆盖度",
         summaryText: (defended: number, total: number, contracts: number) => `${defended} / ${total} 条已防御 · ${contracts} 个合约已注册`,
@@ -1710,6 +2305,15 @@ export const WORKSPACE_COPY: Record<
         searchPlaceholder: "搜索合约或任务 ID",
         activeFilters: "个筛选",
       },
+      toastTaskCompleted: (id: string) => `任务完成: ${id}`,
+      toastTaskFailed: (id: string) => `任务失败: ${id}`,
+      toastRetryFailed: (status: number) => `重试失败 (HTTP ${status})`,
+      toastServerUnreachable: "无法连接到服务器",
+      paginationTotal: (count: number) => `共 ${count} 条`,
+      paginationPerPage: "10 条/页",
+      runningLabel: (pct: number) => `正在运行 ${pct}%`,
+      remainingMinutes: (m: number, s: number) => `预计剩余 ${m} 分 ${String(s).padStart(2, "0")} 秒`,
+      remainingSeconds: (s: number) => `预计剩余 ${s} 秒`,
     },
     createTask: {
       eyebrow: "新建任务",
@@ -1770,6 +2374,10 @@ export const WORKSPACE_COPY: Record<
         availabilityPartial: "部分可用",
         availabilityDisabled: "已禁用",
         dismissError: "关闭错误提示",
+        selectModelHint: "先选择目标模型；下一步可为同一个模型勾选多条审计路线。",
+        routeCount: (count: number) => `${count} 条路线`,
+        selectedRoutesTitle: "已选择审计路线",
+        selectedRoutesDescription: "为该模型选择要同时创建的审计路线。每条路线会生成一个独立任务，报告中心会按任务逐行展示。",
       },
       recommendedConfig: {
         blackBoxTitle: "黑盒攻击推荐配置",
@@ -1852,6 +2460,67 @@ export const WORKSPACE_COPY: Record<
         ],
       },
     },
+    modelAssets: {
+      toastAdded: (name: string) => `模型「${name}」已添加`,
+      toastUpdated: (name: string) => `模型「${name}」已更新`,
+      toastDeleted: "模型已删除",
+    },
+    modelAssetsPage: {
+      eyebrow: "模型资产",
+      title: "模型资产",
+      description: "集中管理已纳入审计的模型、数据集与环境版本，保留资产安全与合规可追溯。",
+      tabModels: "模型",
+      nav: "模型导航",
+      bestEvidence: "最佳证据",
+      emptyNav: "暂无模型资产。",
+      emptyTimeline: "选择一个模型",
+      emptyDetail: "从左侧列表中选择一个模型查看详细信息和审计证据。",
+      emptyEvidence: "暂无证据数据。",
+      noSearchResults: "未找到匹配的模型。",
+      clearSearch: "清除搜索",
+      addModelDisabled: "该功能暂不可用",
+      attack: "攻击",
+      defense: "防御",
+      auc: "AUC",
+      asr: "ASR",
+      tpr: "TPR@1%",
+      source: "来源",
+      runtime: "运行时",
+      evidenceLevel: "证据等级",
+      workspace: "工作区",
+      systemGap: "系统差距",
+      addModel: "新增模型",
+      searchModels: "搜索模型...",
+      modelsCount: "个模型",
+      categoriesCount: "访问模式",
+      tabTimeline: "版本历史",
+      tabEvidence: "审计证据",
+      trackBlackBox: "黑盒审计 / Recon",
+      trackGrayBox: "灰盒审计 / PIA",
+      trackWhiteBox: "白盒审计 / GSA",
+      availabilityLabels: { ready: "就绪", partial: "部分可用", planned: "规划中" } as Record<string, string>,
+      evidenceLevelLabels: { mainline: "主线", catalog: "目录", challenger: "挑战者" } as Record<string, string>,
+      addModelTitle: "新增模型",
+      editModelTitle: "编辑模型",
+      modelName: "模型名称",
+      modelNamePlaceholder: "输入模型名称",
+      modelTrack: "访问模式",
+      modelTrackPlaceholder: "选择访问模式",
+      modelDescription: "描述",
+      modelDescriptionPlaceholder: "输入模型描述（可选）",
+      cancel: "取消",
+      submit: "确认",
+      edit: "编辑",
+      delete: "删除",
+      deleteModelTitle: "删除模型",
+      deleteModelConfirm: "确定要删除该模型吗？此操作不可撤销。",
+      deleteModelAction: "确认删除",
+      demoModeNote: "演示模式：所有变更仅保存在本地。",
+      uploadFile: "上传文件",
+      uploadDragDrop: "点击或拖拽文件到此处上传",
+      uploadComplete: "上传完成",
+      uploadProgress: "上传中...",
+    },
     emptyWorkspace: {
       title: "还没有审计结果",
       description: "通过黑盒、灰盒、白盒三条审计线路，发现扩散模型的隐私泄露风险",
@@ -1910,6 +2579,14 @@ export const WORKSPACE_COPY: Record<
       exportSummary: "导出报告",
       emptyResults: "还没有审计结果",
       emptyGaps: "暂无覆盖缺口数据",
+      taskReportsTitle: "任务报告",
+      taskReportsDescription: "按完成任务汇总报告；同一模型的 Recon、PIA、GSA 会分别成行，方便统一查看和导出。",
+      taskReportsTableAriaLabel: "任务报告表",
+      exportList: "导出列表",
+      loadErrorTitle: "报告列表加载失败",
+      loadErrorDescription: "任务接口暂时不可用，请重试。",
+      loadErrorRetry: "重试",
+      emptyReportsDescription: "完成任务后，每条任务报告会在这里按行显示。",
       jobContext: {
         title: "正在审阅已完成任务",
         matched: (count: number) => `当前快照中找到 ${count} 条匹配的已公开结果行`,
@@ -1921,6 +2598,9 @@ export const WORKSPACE_COPY: Record<
         matchedRow: "匹配任务",
       },
       tableHeaders: {
+        task: "任务",
+        completed: "完成时间",
+        actions: "操作",
         attack: "攻击方法",
         defense: "防御方法",
         model: "目标模型",
@@ -1965,6 +2645,10 @@ export const WORKSPACE_COPY: Record<
         "white-box": "GSA 评估报告",
       },
       reportGeneration: "报告生成",
+      reportDetailsSuffix: "报告详情",
+      toggleDisplayView: "展示视图",
+      toggleAuditView: "审计视图",
+      historyPlaceholder: "该审计线路的历史对比功能将在后续版本接入，当前为占位区域。",
       generateByTrack: "按审计模式生成",
       generateReport: "查看完整报告",
       generatedReports: "已生成报告",
@@ -1976,6 +2660,7 @@ export const WORKSPACE_COPY: Record<
       noFinding: "暂无审计结果可用于分析。",
       date: "日期",
       view: "查看审计报告",
+      viewTask: "任务详情",
       download: "下载",
       downloadComingSoon: "下载功能即将推出",
       popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
@@ -2005,6 +2690,134 @@ export const WORKSPACE_COPY: Record<
           tag: "有效",
         },
       ],
+      reportAuditView: {
+        summaryTitle: "审计视图摘要",
+        resultRows: "结果行数",
+        defendedRows: "已防御",
+        undefendedRows: "无防御",
+        provenanceTitle: "实验溯源",
+        runDirectory: "Run 目录",
+        seed: "Seed",
+        schedule: "调度",
+        fixtureVersion: "Fixture 版本",
+        summaryPath: "summary.json",
+        evidenceLevel: "证据等级",
+        admissionStatus: "准入状态",
+        admissionLevel: "准入层级",
+        provenanceStatus: "溯源状态",
+        intakeManifest: "导入清单",
+        historyTitle: "历史对照",
+        historyPlaceholder: "历史对照数据将在后续版本接入，敬请期待。",
+        producerTitle: "生产者上下文",
+        producerStatus: "状态",
+        producerUpdated: "更新时间",
+        outputTail: "Runtime 输出尾部",
+        producerUnavailableTitle: "Runtime 未连接",
+        producerUnavailableBody: "任务详情暂时不可用；报告仍基于当前公开快照展示。",
+        stateHistory: "状态历史",
+        noProvenanceData: "暂无溯源数据。",
+      },
+      printableReport: {
+        summarySectionTitle: "摘要",
+        comparisonSummaryEffective: (effectivePairs: number, totalPairs: number, avgAucReduction: string) =>
+          `${effectivePairs} / ${totalPairs} 个防御配对显示出显著的 AUC 降低，平均 AUC 变化为 ${avgAucReduction}。`,
+        comparisonSummaryIneffective: (avgAucReduction: string) =>
+          `目前没有防御配对显示出显著的 AUC 降低。平均 AUC 变化为 ${avgAucReduction}。`,
+        coverageGapsHighRisk: (count: number) =>
+          `${count} 个高风险缺口仍高于配置阈值。请优先处理 AUC 最高的攻击和防御配对。`,
+        coverageGapsNone: "当前快照中未检测到高风险覆盖缺口。",
+        riskDistributionDetail: (high: number, medium: number, low: number, defended: number) =>
+          `高风险: ${high} · 中风险: ${medium} · 低风险: ${low} · 已防御行数: ${defended}`,
+      },
+    },
+    riskReport: {
+      riskLabels: {
+        high: "高风险",
+        medium: "中风险",
+        low: "低风险",
+      },
+      defenseRecommendation: (attack: string, _defense: string) =>
+        attack === "GSA"
+          ? "建议采用差分隐私(DP)训练。实验表明 DP 可将最强攻击(GSA)的 AUC 从 0.998 降至 0.489，接近随机猜测水平。"
+          : attack === "PIA"
+            ? "建议采用随机 Dropout 防御策略。实验表明 Dropout 可将灰盒攻击(PIA)的 AUC 从 0.841 降至 0.828，同时保持生成质量。"
+            : "当前模型隐私保护良好，建议定期复测以监控潜在风险。",
+      reportTitle: "扩散模型隐私审计报告",
+      summaryTitle: "摘要",
+      coverageTitle: "风险概览",
+      findingsTitle: "详细结果",
+      dateLabel: "生成日期",
+      sourceLabel: "来源: DiffAudit Platform",
+      pageLabel: "页",
+      noData: "暂无数据",
+      totalLabel: "审计结果总数",
+      avgAucLabel: "平均攻击 AUC",
+      conclusionLabel: "结论与建议",
+      riskColLabel: "风险等级",
+      footerLabel: "由 DiffAudit Platform 生成 — 扩散模型隐私风险审计系统",
+    },
+    riskFindings: {
+      eyebrow: "风险发现",
+      title: "风险发现",
+      description: "追踪隐私泄露风险，查看证据链与缓解建议，降低模型安全风险。",
+      viewReport: "查看完整报告",
+      totalFindings: "发现总数",
+      highRisk: "高危",
+      hasDefense: "已有防御",
+      defenseRate: "防御率",
+      na: "暂无",
+      allSeverities: "全部严重度",
+      allCategories: "全部类别",
+      allModels: "全部模型",
+      allStatuses: "全部状态",
+      riskDescription: "风险描述",
+      severity: "严重度",
+      category: "类别",
+      sourceModel: "来源模型",
+      status: "状态",
+      detected: "发现时间",
+      estimated: "估",
+      noDataYet: "暂无数据",
+      high: "高",
+      medium: "中",
+      low: "低",
+      hasDefenseStatus: "已有防御",
+      monitoring: "监控中",
+      investigating: "调查中",
+      previous: "上一页",
+      next: "下一页",
+      emptyNoData: "暂无风险发现。",
+      emptyNoResults: "没有符合当前筛选条件的发现。",
+      findingsTable: "发现列表",
+      catBlackBox: "隐私泄露",
+      catGrayBox: "数据暴露",
+      catWhiteBox: "提示安全",
+      catOther: "安全绕过",
+      clearFilters: "清除筛选",
+      clearSearch: "清除搜索",
+      searchPlaceholder: "搜索描述或模型...",
+      createAuditTask: "创建审计任务",
+      presetAll: "全部",
+      presetHighUnmitigated: "高危未防御",
+      presetMitigated: "已有防御",
+      presetHighSeverity: "高严重度",
+      priority: "优先级",
+      findingDetail: "发现详情",
+      attackVector: "攻击向量",
+      defense: "防御措施",
+      aucLabel: "AUC",
+      asrLabel: "ASR",
+      tprLabel: "TPR",
+      qualityCost: "质量代价",
+      evidenceLevel: "证据等级",
+      boundary: "边界",
+      close: "关闭",
+      noDefense: "无",
+      relatedAudit: "相关审计",
+      copyLink: "复制链接",
+      linkCopied: "已复制！",
+      sourcePath: "来源路径",
+      reAudit: "重新审计",
     },
     apiKeys: {
       eyebrow: "API 管理",
@@ -2045,6 +2858,7 @@ export const WORKSPACE_COPY: Record<
       noScopeError: "请至少选择一项权限范围。",
       usageExample: "API 调用示例",
       codeComment: "演示预览：通过 API 发送审计请求",
+      securityTip: "API 密钥创建后仅显示一次，请立即复制保存。已停用的密钥无法恢复。",
     },
     settings: {
       eyebrow: "设置",
@@ -2243,6 +3057,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "登录",
       title: "登录 DiffAudit 工作区",
       description: "默认使用账号密码登录。也支持通过 Google 或 GitHub 快速继续",
+      shortDescription: "默认使用账号密码登录",
       formEyebrow: "工作台访问",
       formTitle: "登录工作台",
       oauthDivider: "或使用以下方式继续",
@@ -2261,6 +3076,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: "本地账号",
       title: "创建本地账户",
       description: "只有在你明确需要独立的本地账号/密码入口时，才使用这个页面。它更适合恢复访问、内部演示或没有 OAuth 的场景",
+      shortDescription: "只有在你明确需要独立的本地账号/密码入口时，才使用这个页面",
       formEyebrow: "本地账号设置",
       formTitle: "创建 DiffAudit 账号",
       oauthDivider: "更倾向 OAuth？",
@@ -2337,6 +3153,12 @@ export const WORKSPACE_COPY: Record<
       csv: "导出为 CSV",
       popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
     },
+    reportExport: {
+      reportLabel: "报告",
+      reportTitle: "DiffAudit 隐私审计报告",
+      dateLabel: "生成日期",
+      totalRowsLabel: "结果总数",
+    },
     liveJobsPanel: {
       justUpdated: "刚刚更新",
       noSummary: "运行完成后会显示结果摘要",
@@ -2348,6 +3170,7 @@ export const WORKSPACE_COPY: Record<
       fpr: "假阳性率 — 攻击者分类器将非成员数据误判为成员数据的比例。",
       defenseRate: "已有防御对照的审计结果占全部结果的比例。覆盖率越高，说明越多结果经过了防御评估。",
       priority: "综合风险评分：AUC × 0.4 + ASR × 0.3 + 无防御惩罚 × 0.3。数值越高表示发现越紧急，需要优先处理。",
+      direction: "方向",
     },
     emptyState: {
       selectModel: { title: "选择一个模型", description: "从左侧列表中选择一个模型查看详细信息和审计证据。" },

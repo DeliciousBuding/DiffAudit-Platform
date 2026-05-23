@@ -58,9 +58,7 @@ export default async function LoginPage({
               {copy.loginPage.formTitle}
             </h2>
             <p className="text-[15px] 2xl:text-[17px] text-muted-foreground">
-              {locale === "zh-CN"
-                ? String(copy.loginPage.description).split("。")[0]
-                : "Welcome back to your workspace."}
+              {copy.loginPage.shortDescription}
             </p>
           </div>
           <LoginForm

@@ -52,9 +52,9 @@ export function AuditsPageClient({
             const prevStatus = prevJobStatuses.current.get(job.job_id);
             if (prevStatus && (prevStatus === "running" || prevStatus === "queued")) {
               if (job.status === "completed") {
-                toast({ type: "success", title: locale === "zh-CN" ? `任务完成: ${job.job_id}` : `Task completed: ${job.job_id}` });
+                toast({ type: "success", title: copy.toastTaskCompleted(job.job_id) });
               } else if (job.status === "failed") {
-                toast({ type: "error", title: locale === "zh-CN" ? `任务失败: ${job.job_id}` : `Task failed: ${job.job_id}` });
+                toast({ type: "error", title: copy.toastTaskFailed(job.job_id) });
               }
             }
             prevJobStatuses.current.set(job.job_id, job.status);
@@ -97,7 +97,8 @@ export function AuditsPageClient({
     urlSyncSource.current = "url";
     setFilter(urlFilter);
     setSearch(urlQ);
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- searchParams is an unstable object reference; key on the serialized string values instead
+  }, [searchParams.get("filter"), searchParams.get("q")]);
 
   function refreshJobs() {
     setRefreshToken((v) => v + 1);

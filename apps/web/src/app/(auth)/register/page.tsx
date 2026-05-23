@@ -54,9 +54,7 @@ export default async function RegisterPage({
               {copy.registerPage.formTitle}
             </h2>
             <p className="text-[15px] 2xl:text-[17px] text-muted-foreground">
-              {locale === "zh-CN"
-                ? String(copy.registerPage.description).split("。")[0]
-                : "Get started with DiffAudit workspace."}
+              {copy.registerPage.shortDescription}
             </p>
           </div>
           <RegisterForm

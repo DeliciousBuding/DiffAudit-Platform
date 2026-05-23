@@ -35,9 +35,27 @@ function getRecentPages(): string[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(RECENT_KEY);
-    return raw ? JSON.parse(raw) : [];
+    return raw ? (JSON.parse(raw) as string[]) : EMPTY_RECENT;
   } catch {
-    return [];
+    return EMPTY_RECENT;
+  }
+}
+
+/** Cached snapshot for useSyncExternalStore — must return stable refs when data is unchanged. */
+let recentPagesCache: { raw: string | null; value: string[] } | null = null;
+
+function getRecentPagesSnapshot(): string[] {
+  if (typeof window === "undefined") return EMPTY_RECENT;
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    if (recentPagesCache && recentPagesCache.raw === raw) {
+      return recentPagesCache.value;
+    }
+    const value: string[] = raw ? JSON.parse(raw) : [];
+    recentPagesCache = { raw, value };
+    return value;
+  } catch {
+    return EMPTY_RECENT;
   }
 }
 
@@ -57,6 +75,7 @@ function addRecentPage(href: string) {
     recent.unshift(href);
     const nextRecent = recent.slice(0, MAX_RECENT);
     localStorage.setItem(RECENT_KEY, JSON.stringify(nextRecent));
+    recentPagesCache = null; // invalidate cache after write
     window.dispatchEvent(new Event(RECENT_EVENT));
   } catch {
     // localStorage may be unavailable
@@ -96,7 +115,7 @@ export function WorkspaceGlobalSearch({ locale }: { locale: Locale }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const recentHrefs = useSyncExternalStore(subscribeRecentPages, getRecentPages, () => EMPTY_RECENT);
+  const recentHrefs = useSyncExternalStore(subscribeRecentPages, getRecentPagesSnapshot, () => EMPTY_RECENT);
 
   const items = useMemo(() => getWorkspaceSearchItems(locale), [locale]);
 

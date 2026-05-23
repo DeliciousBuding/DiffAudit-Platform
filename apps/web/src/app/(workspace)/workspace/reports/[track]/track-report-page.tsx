@@ -15,6 +15,7 @@ import { type EvidenceSummaryPayload } from "@/lib/audit-client";
 import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { ReportAuditView, type ReportProducerContext, type ReportProvenance } from "./ReportAuditView";
 import { ReportDisplayView } from "./ReportDisplayView";
 
@@ -68,44 +69,6 @@ function inferAttackFamily(value?: string) {
   }
   return undefined;
 }
-
-function trackLabel(locale: Locale, track: CatalogTrack) {
-  if (locale === "zh-CN") {
-    if (track === "black-box") {
-      return "黑盒";
-    }
-    if (track === "gray-box") {
-      return "灰盒";
-    }
-    return "白盒";
-  }
-
-  if (track === "black-box") {
-    return "Black-box";
-  }
-  if (track === "gray-box") {
-    return "Gray-box";
-  }
-  return "White-box";
-}
-
-function pageTitle(locale: Locale, label: string) {
-  return locale === "zh-CN" ? `${label}报告详情` : `${label} report details`;
-}
-
-function toggleLabel(locale: Locale, view: ViewMode) {
-  if (locale === "zh-CN") {
-    return view === "display" ? "展示视图" : "审计视图";
-  }
-  return view === "display" ? "Display view" : "Audit view";
-}
-
-function historyPlaceholder(locale: Locale) {
-  return locale === "zh-CN"
-    ? "该审计线路的历史对比功能将在后续版本接入，当前为占位区域。"
-    : "Historical comparison for this track will be available in a future release. This area is reserved.";
-}
-
 function sanitizePath(value?: string | null) {
   if (!value || value.startsWith("pending ")) {
     return undefined;
@@ -307,15 +270,16 @@ export async function renderTrackReportPage({
     fetchTrackProvenance(pickPrimaryEntry(catalogEntries)),
     fetchProducerContext(jobContext),
   ]);
-  const label = trackLabel(resolvedLocale, track);
+  const copy = WORKSPACE_COPY[resolvedLocale].reports;
+  const navCopy = WORKSPACE_COPY[resolvedLocale].nav;
+  const label = copy.trackReportTitles[track];
   const displayHref = `/workspace/reports/${track}?view=display`;
   const auditHref = `/workspace/reports/${track}?view=audit`;
 
-  const isZh = resolvedLocale === "zh-CN";
   const breadcrumbItems = [
-    { label: isZh ? "工作台" : "Dashboard", href: "/workspace/start" },
-    { label: isZh ? "报告中心" : "Reports", href: "/workspace/reports" },
-    { label: pageTitle(resolvedLocale, label) },
+    { label: navCopy.workspace.title, href: "/workspace/start" },
+    { label: navCopy.reportCenter.title, href: "/workspace/reports" },
+    { label: `${label} ${copy.reportDetailsSuffix}` },
   ];
 
   return (
@@ -324,7 +288,7 @@ export async function renderTrackReportPage({
 
       <div className="flex items-start justify-between gap-4 border-b border-border pb-3">
         <div>
-          <h1 className="text-xl font-semibold">{pageTitle(resolvedLocale, label)}</h1>
+          <h1 className="text-xl font-semibold">{`${label} ${copy.reportDetailsSuffix}`}</h1>
         </div>
 
         <div className="inline-flex items-center rounded-2xl border border-border bg-card p-1 text-xs">
@@ -334,7 +298,7 @@ export async function renderTrackReportPage({
               currentView === "display" ? "bg-muted text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {toggleLabel(resolvedLocale, "display")}
+            {copy.toggleDisplayView}
           </Link>
           <Link
             href={auditHref}
@@ -342,7 +306,7 @@ export async function renderTrackReportPage({
               currentView === "audit" ? "bg-muted text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {toggleLabel(resolvedLocale, "audit")}
+            {copy.toggleAuditView}
           </Link>
         </div>
       </div>
@@ -352,7 +316,7 @@ export async function renderTrackReportPage({
           locale={resolvedLocale}
           rows={rows}
           provenance={provenance}
-          historyPlaceholder={historyPlaceholder(resolvedLocale)}
+          historyPlaceholder={copy.historyPlaceholder}
           jobContext={jobContext}
           producerContext={producerContext}
           highlightedRowKeys={highlightedRowKeys}

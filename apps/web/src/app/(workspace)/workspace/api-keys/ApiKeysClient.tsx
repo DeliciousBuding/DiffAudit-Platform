@@ -339,14 +339,14 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       {keys.length === 0 && !showCreate && !createdKey ? (
         <EmptyState
           icon={Key}
-          title={locale === "zh-CN" ? "暂无 API 密钥" : "No API keys"}
-          description={locale === "zh-CN" ? "创建 API 密钥以通过 API 访问审计功能。" : "Create an API key to access audit features via API."}
-          action={{ label: locale === "zh-CN" ? "创建密钥" : "Create key", onClick: () => setShowCreate(true) }}
+          title={WORKSPACE_COPY[locale].emptyState.noApiKeys.title}
+          description={WORKSPACE_COPY[locale].emptyState.noApiKeys.description}
+          action={{ label: WORKSPACE_COPY[locale].emptyState.noApiKeys.action, onClick: () => setShowCreate(true) }}
         />
       ) : (
       <>
       <ContextualTip id="api-keys-security" locale={locale} className="mb-3 w-full">
-        {locale === "zh-CN" ? "API 密钥创建后仅显示一次，请立即复制保存。已停用的密钥无法恢复。" : "API keys are shown only once at creation — copy and save immediately. Revoked keys cannot be recovered."}
+        {copy.securityTip}
       </ContextualTip>
       <h3 className="mb-3 text-sm font-semibold text-foreground">{copy.activeKeys}</h3>
       <div

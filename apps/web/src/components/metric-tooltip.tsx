@@ -204,7 +204,7 @@ export function MetricTooltip({
         {/* Good direction indicator */}
         <div className="flex items-center gap-1.5 rounded-lg bg-muted/30 px-2.5 py-1.5">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {locale === "zh-CN" ? "方向" : "Direction"}
+                        {WORKSPACE_COPY[locale].tooltips.direction}
           </span>
           <span className="text-[11px] font-medium text-foreground">{text.goodDirection}</span>
         </div>
