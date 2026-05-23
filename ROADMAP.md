@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 08:42 Asia/Hong_Kong
+Last updated: 2026-05-23 08:52 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -50,6 +50,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Derive workspace navigation shortcuts from the workspace navigation registry.
 - [x] Guard workspace navigation registry uniqueness and shortcut format.
 - [x] Derive command palette navigation ids from workspace navigation keys.
+- [x] Remove public workspace redesign progress diary and guard docs hygiene.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates
