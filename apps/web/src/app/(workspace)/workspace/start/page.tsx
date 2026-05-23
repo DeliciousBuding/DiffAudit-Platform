@@ -122,16 +122,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </div>
 
           <div className="workspace-audit-cards">
-            {[
-              { title: "Recon 成员推断审计", auc: "0.849", tag: "高风险", track: "black-box", desc: "量化成员推断攻击风险，评估模型对成员身份泄露的敏感性。", detail: "W-1 强防御后降至 0.510" },
-              { title: "PIA 隐私攻击审计", auc: "0.828", tag: "高风险", track: "gray-box", desc: "评估属性级隐私攻击风险，量化隐私泄露与防御效果。", detail: "量化风险强度 + 评估防御效果" },
-              { title: "GSA 梯度签名审计", auc: "0.489", tag: "较低风险", track: "white-box", desc: "针对梯度签名攻击的防御评估，衡量模型梯度信息泄露风险。", detail: "W-1 强防御后降至 0.210" },
-            ].map((card, index) => (
-              <section key={card.title} className="workspace-audit-card">
+            {copy.startCards.map((card, index) => (
+              <section key={card.track} className="workspace-audit-card">
                 <div className="workspace-audit-card-head">
                   <span>{index + 1}</span>
                   <strong>{card.title}</strong>
-                  <em className={card.tag === "较低风险" ? "is-low" : "is-high"}>{card.tag}</em>
+                  <em className={card.tagTone === "low" ? "is-low" : "is-high"}>{card.tag}</em>
                 </div>
                 <p>{card.desc}</p>
                 <div className="workspace-audit-card-meta">
@@ -152,7 +148,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <ChartAucDistribution data={aucDistData} height={170} />
               </div>
             </WorkspaceSectionCard>
-            <WorkspaceSectionCard title="ROC 曲线">
+            <WorkspaceSectionCard title={copy.sections.chartTitles.rocCurve}>
               <div className="workspace-ref-chart">
                 <ChartRocCurve data={rocData} height={170} />
               </div>

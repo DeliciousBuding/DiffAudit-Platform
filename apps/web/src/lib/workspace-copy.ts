@@ -957,6 +957,11 @@ export const WORKSPACE_COPY: Record<
         createAudit: "Create audit",
       },
       riskBadgeLabels: { high: "High risk", medium: "Medium risk", low: "Low risk", critical: "Critical risk" },
+      startCards: [
+        { track: "black-box", title: "Recon Member Inference Audit", desc: "Quantifies membership inference attack risk and evaluates model sensitivity to member data leakage.", tag: "High risk", tagTone: "high", detail: "AUC drops to 0.510 under W-1 defense", auc: "0.849" },
+        { track: "gray-box", title: "PIA Privacy Attack Audit", desc: "Evaluates attribute-level privacy attack risk, quantifying leakage and defense effectiveness.", tag: "High risk", tagTone: "high", detail: "Quantifies risk intensity + evaluates defense", auc: "0.828" },
+        { track: "white-box", title: "GSA Gradient Signature Audit", desc: "Defense evaluation against gradient signature attacks, measuring model gradient information leakage risk.", tag: "Lower risk", tagTone: "low", detail: "AUC drops to 0.210 under W-1 defense", auc: "0.489" },
+      ],
       coverageBar: {
         title: "Audit Coverage",
         summaryText: (defended: number, total: number, contracts: number) => `${defended} / ${total} defended · ${contracts} contracts registered`,
@@ -2007,6 +2012,11 @@ export const WORKSPACE_COPY: Record<
         createAudit: "创建审计",
       },
       riskBadgeLabels: { high: "高风险", medium: "中风险", low: "低风险", critical: "极高风险" },
+      startCards: [
+        { track: "black-box", title: "Recon 成员推断审计", desc: "量化成员推断攻击风险，评估模型对成员身份泄露的敏感性。", tag: "高风险", tagTone: "high", detail: "W-1 强防御后降至 0.510", auc: "0.849" },
+        { track: "gray-box", title: "PIA 隐私攻击审计", desc: "评估属性级隐私攻击风险，量化隐私泄露与防御效果。", tag: "高风险", tagTone: "high", detail: "量化风险强度 + 评估防御效果", auc: "0.828" },
+        { track: "white-box", title: "GSA 梯度签名审计", desc: "针对梯度签名攻击的防御评估，衡量模型梯度信息泄露风险。", tag: "较低风险", tagTone: "low", detail: "W-1 强防御后降至 0.210", auc: "0.489" },
+      ],
       coverageBar: {
         title: "审计覆盖度",
         summaryText: (defended: number, total: number, contracts: number) => `${defended} / ${total} 条已防御 · ${contracts} 个合约已注册`,
