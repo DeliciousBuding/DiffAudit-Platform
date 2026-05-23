@@ -30,6 +30,7 @@ Tooling hardened, CI in place, cross-repo dispatch configured. Next: accessibili
 - [x] Demo mode: audit the demo experience end-to-end for first-time user quality (no critical issues found).
 - [x] CI readiness: GitHub Actions workflow for Platform CI (lint, test, build, E2E).
 - [x] Cross-repo CI trigger: snapshot-publish.yml dispatch workflow for Research bundle updates.
+- [x] Accessibility: skip-to-content link, toast dismiss button i18n, modal focus trap verified.
 
 ## Backlog
 
