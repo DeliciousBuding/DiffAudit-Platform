@@ -70,7 +70,11 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Add E2E user-flows.spec.ts — navigation, login, interaction tests.
 - [x] Migrate RiskFindingsClient COPY + FindingDetailPanel DETAIL_COPY + report-export-utils → WORKSPACE_COPY.
 - [x] All inline locale copy objects eliminated from the codebase (19 files migrated, ~600 lines of duplicate copy removed).
-- [ ] PM/UX: unify loading states, fix decoy pagination, tune E2E user-flows selectors.
+- [x] E2E: add report-flow.spec.ts (11 tests: track pages, CSV export, audit/display toggle, error resilience).
+- [x] Cross-review P0: fix start page remaining inline strings (otherLabel, runningBadge, failedBadge).
+- [x] Settings: add gatewayHealthLoading state for future skeleton.
+- [x] Implement real pagination in TaskListClient (replaces decoy prev/next).
+- [ ] PM/UX: add Settings loading skeleton, unify empty states, RISK_NOTE_ZH dedup.
 
 ## Review Gates
 
