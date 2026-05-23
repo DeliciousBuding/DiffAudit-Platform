@@ -6,7 +6,6 @@ import {
   formatShortcutForDisplay,
   getWorkspaceNavHrefForShortcutKey,
   getWorkspaceShortcutGroups,
-  WORKSPACE_NAV_SHORTCUTS,
 } from "./workspace-shortcuts";
 
 describe("workspace shortcuts", () => {
@@ -30,7 +29,7 @@ describe("workspace shortcuts", () => {
 
     expect(navShortcuts.map((shortcut) => shortcut.label)).toEqual(navItems.map((item) => item.title));
     expect(navShortcuts.map((shortcut) => shortcut.keys)).toEqual(
-      navItems.map((item) => formatShortcutForDisplay(WORKSPACE_NAV_SHORTCUTS[item.key] ?? "")),
+      navItems.map((item) => formatShortcutForDisplay(item.shortcut)),
     );
   });
 
@@ -41,7 +40,7 @@ describe("workspace shortcuts", () => {
 
     expect(navShortcuts.map((shortcut) => shortcut.label)).toEqual(navItems.map((item) => item.title));
     expect(navShortcuts.map((shortcut) => shortcut.keys)).toEqual(
-      navItems.map((item) => formatShortcutForDisplay(WORKSPACE_NAV_SHORTCUTS[item.key] ?? "")),
+      navItems.map((item) => formatShortcutForDisplay(item.shortcut)),
     );
   });
 });

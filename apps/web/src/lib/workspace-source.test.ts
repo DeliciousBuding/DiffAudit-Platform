@@ -27,11 +27,14 @@ describe("workspace source-of-truth boundaries", () => {
   it("derives every localized workspace nav item from the registry order", () => {
     const registryKeys = WORKSPACE_NAV_REGISTRY.map((entry) => entry.key);
     const registryGroups = WORKSPACE_NAV_REGISTRY.map((entry) => entry.group);
+    const registryShortcuts = WORKSPACE_NAV_REGISTRY.map((entry) => entry.shortcut);
 
     expect(getNavItems("en-US").map((item) => item.key)).toEqual(registryKeys);
     expect(getNavItems("zh-CN").map((item) => item.key)).toEqual(registryKeys);
     expect(getNavItems("en-US").map((item) => item.group)).toEqual(registryGroups);
     expect(getNavItems("zh-CN").map((item) => item.group)).toEqual(registryGroups);
+    expect(getNavItems("en-US").map((item) => item.shortcut)).toEqual(registryShortcuts);
+    expect(getNavItems("zh-CN").map((item) => item.shortcut)).toEqual(registryShortcuts);
     expect(Object.keys(WORKSPACE_COPY["en-US"].nav)).toEqual(registryKeys);
     expect(Object.keys(WORKSPACE_COPY["zh-CN"].nav)).toEqual(registryKeys);
   });

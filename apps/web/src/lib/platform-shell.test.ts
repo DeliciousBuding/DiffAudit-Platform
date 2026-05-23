@@ -32,6 +32,19 @@ describe("platform shell helpers", () => {
     ]);
   });
 
+  it("exposes keyboard shortcut metadata from the navigation registry", () => {
+    expect(navItems.map((item) => item.shortcut)).toEqual([
+      "Ctrl+1",
+      "Ctrl+2",
+      "Ctrl+3",
+      "Ctrl+4",
+      "Ctrl+5",
+      "Ctrl+6",
+      "Ctrl+7",
+      "Ctrl+,",
+    ]);
+  });
+
   it("returns the matching nav item for an exact route", () => {
     expect(findActiveNavItem("/workspace", navItems)).toEqual(navItems[0]);
     expect(findActiveNavItem("/workspace/audits", navItems)).toEqual(navItems[1]);

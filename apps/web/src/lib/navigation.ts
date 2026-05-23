@@ -10,6 +10,7 @@ export type NavItem = {
   badge?: string;
   icon: WorkspaceNavIcon;
   group: WorkspaceNavGroup;
+  shortcut: string;
   shortLabel: string;
 };
 
@@ -20,6 +21,7 @@ export function getNavItems(locale: Locale): NavItem[] {
     href: entry.href,
     icon: entry.icon,
     group: entry.group,
+    shortcut: entry.shortcut,
     ...localized[entry.key],
   }));
 }

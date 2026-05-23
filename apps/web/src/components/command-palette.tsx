@@ -24,7 +24,6 @@ import { type Locale } from "@/components/language-picker";
 import { useToast } from "@/components/toast-provider";
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { WORKSPACE_NAV_SHORTCUTS } from "@/lib/workspace-shortcuts";
 import { type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
 
 /* -------------------------------------------------------------------------- */
@@ -79,7 +78,7 @@ export function getCommandItems(locale: Locale): CommandItem[] {
     category: "navigation",
     icon: NAV_ICON_COMPONENTS[item.icon],
     href: item.href,
-    shortcut: WORKSPACE_NAV_SHORTCUTS[item.key],
+    shortcut: item.shortcut,
     searchText: `${item.title} ${item.shortLabel} ${item.subtitle} ${item.href}`,
     action: (router) => router.push(item.href),
   }));
