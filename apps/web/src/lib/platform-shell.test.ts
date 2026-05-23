@@ -19,6 +19,19 @@ describe("platform shell helpers", () => {
     ]);
   });
 
+  it("exposes sidebar grouping metadata from the navigation registry", () => {
+    expect(navItems.map((item) => item.group)).toEqual([
+      "primary",
+      "primary",
+      "primary",
+      "primary",
+      "primary",
+      "account",
+      "account",
+      "account",
+    ]);
+  });
+
   it("returns the matching nav item for an exact route", () => {
     expect(findActiveNavItem("/workspace", navItems)).toEqual(navItems[0]);
     expect(findActiveNavItem("/workspace/audits", navItems)).toEqual(navItems[1]);

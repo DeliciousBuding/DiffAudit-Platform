@@ -1,6 +1,6 @@
 # DiffAudit Platform Roadmap
 
-Last updated: 2026-05-23 08:03 Asia/Hong_Kong
+Last updated: 2026-05-23 08:10 Asia/Hong_Kong
 
 ## Current Goal
 
@@ -46,6 +46,7 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Derive workspace global search aliases from navigation keys instead of route strings.
 - [x] Source desktop and mobile workspace navigation accessibility labels from workspace copy.
 - [x] Keep workspace page inventory aligned with the workspace navigation registry.
+- [x] Derive workspace sidebar grouping from the workspace navigation registry.
 - [ ] Continue polishing workspace IA and deep-page consistency through small, reviewable slices.
 
 ## Review Gates

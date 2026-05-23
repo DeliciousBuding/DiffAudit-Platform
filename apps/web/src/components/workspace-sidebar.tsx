@@ -15,9 +15,6 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 const STORAGE_KEY = "diffaudit-sidebar-collapsed";
 const STORAGE_EVENT = "diffaudit:sidebar-collapsed";
 
-// Account-related entries get visually grouped at the bottom of the sidebar.
-const ACCOUNT_GROUP_KEYS: ReadonlySet<string> = new Set(["apiKeys", "account", "settings"]);
-
 function getCollapsedFromStorage(): boolean {
   if (typeof window === "undefined") return false;
   try {
@@ -97,8 +94,7 @@ export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
         {items.map((item, index) => {
           const active = current.href === item.href;
           const prevItem = index > 0 ? items[index - 1] : null;
-          const startsAccountGroup =
-            ACCOUNT_GROUP_KEYS.has(item.key) && (!prevItem || !ACCOUNT_GROUP_KEYS.has(prevItem.key));
+          const startsAccountGroup = item.group === "account" && prevItem?.group !== item.group;
           return (
             <div key={item.href}>
               {startsAccountGroup ? (

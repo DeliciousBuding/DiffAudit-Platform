@@ -26,9 +26,12 @@ function walkFiles(dir: string): string[] {
 describe("workspace source-of-truth boundaries", () => {
   it("derives every localized workspace nav item from the registry order", () => {
     const registryKeys = WORKSPACE_NAV_REGISTRY.map((entry) => entry.key);
+    const registryGroups = WORKSPACE_NAV_REGISTRY.map((entry) => entry.group);
 
     expect(getNavItems("en-US").map((item) => item.key)).toEqual(registryKeys);
     expect(getNavItems("zh-CN").map((item) => item.key)).toEqual(registryKeys);
+    expect(getNavItems("en-US").map((item) => item.group)).toEqual(registryGroups);
+    expect(getNavItems("zh-CN").map((item) => item.group)).toEqual(registryGroups);
     expect(Object.keys(WORKSPACE_COPY["en-US"].nav)).toEqual(registryKeys);
     expect(Object.keys(WORKSPACE_COPY["zh-CN"].nav)).toEqual(registryKeys);
   });

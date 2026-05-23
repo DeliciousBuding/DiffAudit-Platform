@@ -1,6 +1,6 @@
 import { type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { WORKSPACE_NAV_REGISTRY, type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
+import { WORKSPACE_NAV_REGISTRY, type WorkspaceNavGroup, type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
 
 export type NavItem = {
   key: WorkspaceNavKey;
@@ -9,6 +9,7 @@ export type NavItem = {
   subtitle: string;
   badge?: string;
   icon: WorkspaceNavIcon;
+  group: WorkspaceNavGroup;
   shortLabel: string;
 };
 
@@ -18,6 +19,7 @@ export function getNavItems(locale: Locale): NavItem[] {
     key: entry.key,
     href: entry.href,
     icon: entry.icon,
+    group: entry.group,
     ...localized[entry.key],
   }));
 }
