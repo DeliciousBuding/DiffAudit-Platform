@@ -70,13 +70,13 @@ const copy = WORKSPACE_COPY[locale].reports;
 - `main` — 稳定发布
 - `dev` — 持续开发集成
 
-### 4. Git 约定
+### 5. Git 约定
 
 - 小范围 commit，每个独立变更一个 commit
 - Commit message: `type: what changed` (refactor/test/feat/fix/chore)
 - 不用 `--force`、`--no-verify`
 
-### 5. UI 规则 (来自 AGENTS.md)
+### 6. UI 规则 (来自 AGENTS.md)
 
 - Card containers: `rounded-2xl`，内部元素: `rounded-xl`
 - Typography: `text-[13px]` body, `text-[11px]` secondary, `text-[10px]` badges
@@ -84,7 +84,7 @@ const copy = WORKSPACE_COPY[locale].reports;
 - 颜色: `text-[var(--accent-blue)]` 等 CSS custom properties
 - Button text on colored bg: `text-white`
 
-### 6. 页面清单
+### 7. 页面清单
 
 | Route | 权限 | Key |
 |---|---|---|

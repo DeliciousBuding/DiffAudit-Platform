@@ -660,6 +660,22 @@ export const WORKSPACE_COPY: Record<
       presetMitigated: string;
       presetHighSeverity: string;
       priority: string;
+      findingDetail: string;
+      attackVector: string;
+      defense: string;
+      aucLabel: string;
+      asrLabel: string;
+      tprLabel: string;
+      qualityCost: string;
+      evidenceLevel: string;
+      boundary: string;
+      close: string;
+      noDefense: string;
+      relatedAudit: string;
+      copyLink: string;
+      linkCopied: string;
+      sourcePath: string;
+      reAudit: string;
     };
     apiKeys: {
       eyebrow: string;
@@ -813,6 +829,12 @@ export const WORKSPACE_COPY: Record<
       pdf: string;
       csv: string;
       popupBlocked: string;
+    };
+    reportExport: {
+      reportLabel: string;
+      reportTitle: string;
+      dateLabel: string;
+      totalRowsLabel: string;
     };
     liveJobsPanel: {
       justUpdated: string;
@@ -1606,6 +1628,22 @@ export const WORKSPACE_COPY: Record<
       presetMitigated: "Mitigated",
       presetHighSeverity: "High Severity",
       priority: "Priority",
+      findingDetail: "Finding Detail",
+      attackVector: "Attack Vector",
+      defense: "Defense",
+      aucLabel: "AUC",
+      asrLabel: "ASR",
+      tprLabel: "TPR",
+      qualityCost: "Quality Cost",
+      evidenceLevel: "Evidence Level",
+      boundary: "Boundary",
+      close: "Close",
+      noDefense: "None",
+      relatedAudit: "Related Audit",
+      copyLink: "Copy Link",
+      linkCopied: "Copied!",
+      sourcePath: "Source Path",
+      reAudit: "Re-audit",
     },
     apiKeys: {
       eyebrow: "API Management",
@@ -1938,6 +1976,12 @@ export const WORKSPACE_COPY: Record<
       pdf: "Export as PDF",
       csv: "Export as CSV",
       popupBlocked: "Browser blocked the PDF popup. Please allow popups for this site and try again.",
+    },
+    reportExport: {
+      reportLabel: "Report",
+      reportTitle: "DiffAudit Privacy Audit Report",
+      dateLabel: "Generated",
+      totalRowsLabel: "Total rows",
     },
     liveJobsPanel: {
       justUpdated: "Just updated",
@@ -2730,6 +2774,22 @@ export const WORKSPACE_COPY: Record<
       presetMitigated: "已有防御",
       presetHighSeverity: "高严重度",
       priority: "优先级",
+      findingDetail: "发现详情",
+      attackVector: "攻击向量",
+      defense: "防御措施",
+      aucLabel: "AUC",
+      asrLabel: "ASR",
+      tprLabel: "TPR",
+      qualityCost: "质量代价",
+      evidenceLevel: "证据等级",
+      boundary: "边界",
+      close: "关闭",
+      noDefense: "无",
+      relatedAudit: "相关审计",
+      copyLink: "复制链接",
+      linkCopied: "已复制！",
+      sourcePath: "来源路径",
+      reAudit: "重新审计",
     },
     apiKeys: {
       eyebrow: "API 管理",
@@ -3062,6 +3122,12 @@ export const WORKSPACE_COPY: Record<
       pdf: "导出为 PDF",
       csv: "导出为 CSV",
       popupBlocked: "浏览器拦截了 PDF 弹窗。请允许此网站的弹窗后重试。",
+    },
+    reportExport: {
+      reportLabel: "报告",
+      reportTitle: "DiffAudit 隐私审计报告",
+      dateLabel: "生成日期",
+      totalRowsLabel: "结果总数",
     },
     liveJobsPanel: {
       justUpdated: "刚刚更新",
