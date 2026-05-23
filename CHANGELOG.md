@@ -3,6 +3,10 @@
 ## Unreleased (dev)
 
 ### Added
+- Research handoff: `--bundle-path` flag for snapshot publisher (decouples sibling-directory assumption)
+- Research handoff: publisher now prefers curated `admitted-evidence-bundle.json` over raw unified table
+- Publisher tests: 2 new tests for curated bundle + explicit `--bundle-path` (4/4 pass)
+- Onboarding: empty start page shows 3-step guide + CTA button (was single gray text line)
 - Playwright E2E test infrastructure: 41 tests (smoke, user-flows, report-flow, i18n-navigation, job detail)
 - E2E CI job with chromium, artifact upload on failure
 - `getTrackDisplayLabel()` shared function in workspace-copy
