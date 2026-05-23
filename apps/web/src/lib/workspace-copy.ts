@@ -619,6 +619,47 @@ export const WORKSPACE_COPY: Record<
       title: string;
       description: string;
       viewReport: string;
+      totalFindings: string;
+      highRisk: string;
+      hasDefense: string;
+      defenseRate: string;
+      na: string;
+      allSeverities: string;
+      allCategories: string;
+      allModels: string;
+      allStatuses: string;
+      riskDescription: string;
+      severity: string;
+      category: string;
+      sourceModel: string;
+      status: string;
+      detected: string;
+      estimated: string;
+      noDataYet: string;
+      high: string;
+      medium: string;
+      low: string;
+      hasDefenseStatus: string;
+      monitoring: string;
+      investigating: string;
+      previous: string;
+      next: string;
+      emptyNoData: string;
+      emptyNoResults: string;
+      findingsTable: string;
+      catBlackBox: string;
+      catGrayBox: string;
+      catWhiteBox: string;
+      catOther: string;
+      clearFilters: string;
+      clearSearch: string;
+      searchPlaceholder: string;
+      createAuditTask: string;
+      presetAll: string;
+      presetHighUnmitigated: string;
+      presetMitigated: string;
+      presetHighSeverity: string;
+      priority: string;
     };
     apiKeys: {
       eyebrow: string;
@@ -1524,6 +1565,47 @@ export const WORKSPACE_COPY: Record<
       title: "Risk Findings",
       description: "Track privacy leakage risks, evidence chains, and mitigation recommendations.",
       viewReport: "View full report",
+      totalFindings: "Total Findings",
+      highRisk: "High Risk",
+      hasDefense: "Has Defense",
+      defenseRate: "Defense Rate",
+      na: "N/A",
+      allSeverities: "All Severities",
+      allCategories: "All Categories",
+      allModels: "All Models",
+      allStatuses: "All Statuses",
+      riskDescription: "Risk Description",
+      severity: "Severity",
+      category: "Category",
+      sourceModel: "Source Model",
+      status: "Status",
+      detected: "Detected",
+      estimated: "Est.",
+      noDataYet: "no data yet",
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+      hasDefenseStatus: "Has Defense",
+      monitoring: "Monitoring",
+      investigating: "Investigating",
+      previous: "Previous",
+      next: "Next",
+      emptyNoData: "No risk findings available.",
+      emptyNoResults: "No findings match the current filters.",
+      findingsTable: "Findings",
+      catBlackBox: "Privacy Leakage",
+      catGrayBox: "Data Exposure",
+      catWhiteBox: "Prompt Security",
+      catOther: "Safety Bypass",
+      clearFilters: "Clear filters",
+      clearSearch: "Clear search",
+      searchPlaceholder: "Search by description or model...",
+      createAuditTask: "Create audit task",
+      presetAll: "All",
+      presetHighUnmitigated: "High Risk Unmitigated",
+      presetMitigated: "Mitigated",
+      presetHighSeverity: "High Severity",
+      priority: "Priority",
     },
     apiKeys: {
       eyebrow: "API Management",
@@ -2607,6 +2689,47 @@ export const WORKSPACE_COPY: Record<
       title: "风险发现",
       description: "追踪隐私泄露风险，查看证据链与缓解建议，降低模型安全风险。",
       viewReport: "查看完整报告",
+      totalFindings: "发现总数",
+      highRisk: "高危",
+      hasDefense: "已有防御",
+      defenseRate: "防御率",
+      na: "暂无",
+      allSeverities: "全部严重度",
+      allCategories: "全部类别",
+      allModels: "全部模型",
+      allStatuses: "全部状态",
+      riskDescription: "风险描述",
+      severity: "严重度",
+      category: "类别",
+      sourceModel: "来源模型",
+      status: "状态",
+      detected: "发现时间",
+      estimated: "估",
+      noDataYet: "暂无数据",
+      high: "高",
+      medium: "中",
+      low: "低",
+      hasDefenseStatus: "已有防御",
+      monitoring: "监控中",
+      investigating: "调查中",
+      previous: "上一页",
+      next: "下一页",
+      emptyNoData: "暂无风险发现。",
+      emptyNoResults: "没有符合当前筛选条件的发现。",
+      findingsTable: "发现列表",
+      catBlackBox: "隐私泄露",
+      catGrayBox: "数据暴露",
+      catWhiteBox: "提示安全",
+      catOther: "安全绕过",
+      clearFilters: "清除筛选",
+      clearSearch: "清除搜索",
+      searchPlaceholder: "搜索描述或模型...",
+      createAuditTask: "创建审计任务",
+      presetAll: "全部",
+      presetHighUnmitigated: "高危未防御",
+      presetMitigated: "已有防御",
+      presetHighSeverity: "高严重度",
+      priority: "优先级",
     },
     apiKeys: {
       eyebrow: "API 管理",
