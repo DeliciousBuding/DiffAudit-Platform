@@ -494,6 +494,7 @@ export const WORKSPACE_COPY: Record<
       noScopeError: string;
       usageExample: string;
       codeComment: string;
+      securityTip: string;
     };
     settings: {
       eyebrow: string;
@@ -1223,6 +1224,7 @@ export const WORKSPACE_COPY: Record<
       noScopeError: "Select at least one permission scope.",
       usageExample: "API usage example",
       codeComment: "Demo preview only: send an audit request via the API",
+      securityTip: "API keys are shown only once at creation — copy and save immediately. Revoked keys cannot be recovered.",
     },
     settings: {
       eyebrow: "Settings",
@@ -2130,6 +2132,7 @@ export const WORKSPACE_COPY: Record<
       noScopeError: "请至少选择一项权限范围。",
       usageExample: "API 调用示例",
       codeComment: "演示预览：通过 API 发送审计请求",
+      securityTip: "API 密钥创建后仅显示一次，请立即复制保存。已停用的密钥无法恢复。",
     },
     settings: {
       eyebrow: "设置",
