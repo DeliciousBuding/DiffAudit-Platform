@@ -43,17 +43,12 @@ test.describe("Login page user flows", () => {
 
 test.describe("Audits page user flows", () => {
   test("create-task button navigates to /workspace/audits/new", async ({ page }) => {
-    await page.goto("/workspace/audits");
-
-    // The create button is a Link — wait for it and click with navigation promise
-    const createBtn = page.locator(".audits-create-btn").first();
-    await expect(createBtn).toBeVisible({ timeout: PAGE_TIMEOUT });
-
-    // Use Promise.all to handle the client-side navigation properly
-    await Promise.all([
-      page.waitForURL(/\/workspace\/audits\/new/, { timeout: PAGE_TIMEOUT }),
-      createBtn.click(),
-    ]);
+    await page.goto("/workspace/audits", { waitUntil: "networkidle" });
+    // The button is inside a Suspense boundary — wait for it to resolve
+    const createBtn = page.locator("a[href='/workspace/audits/new']");
+    await expect(createBtn).toBeVisible({ timeout: 15000 });
+    await createBtn.click();
+    await page.waitForURL(/\/workspace\/audits\/new/, { timeout: 10000 });
   });
 
   test("audits/new page shows the create-task interface", async ({ page }) => {

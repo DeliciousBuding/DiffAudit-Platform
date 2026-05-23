@@ -124,6 +124,10 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
   const tableCopy = copy.taskTable;
   const { toast } = useToast();
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 10;
+  const totalPages = Math.max(1, Math.ceil(jobs.length / PAGE_SIZE));
+  const pageJobs = jobs.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   async function handleRetry(job: JobRecord) {
     setRetryingJobId(job.job_id);
@@ -197,7 +201,7 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
           </tr>
         </thead>
         <tbody>
-          {jobs.map((job) => {
+          {pageJobs.map((job) => {
             const tone = trackTone(job);
             const reportHref = buildCompletedJobReportHref(job);
             return (
@@ -261,11 +265,13 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
       </table>
       <footer className="audits-history-footer">
         <span>{copy.paginationTotal(jobs.length)}</span>
+        {totalPages > 1 ? (
         <div className="audits-pagination">
-          <button type="button" disabled aria-label="prev">‹</button>
-          <span className="is-active">1</span>
-          <button type="button" disabled aria-label="next">›</button>
+          <button type="button" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} aria-label="prev">‹</button>
+          <span className="is-active">{page + 1} / {totalPages}</span>
+          <button type="button" onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} aria-label="next">›</button>
         </div>
+        ) : null}
         <span>{copy.paginationPerPage}</span>
       </footer>
     </div>
