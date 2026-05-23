@@ -22,7 +22,7 @@ export default async function WorkspaceLayout({
         <CommandPalette locale={locale} />
         <WorkspaceKeyboardShortcuts locale={locale} />
         <NavigationProgress />
-        <ScrollToTop />
+        <ScrollToTop locale={locale} />
         {children}
       </PlatformShell>
     </Providers>
