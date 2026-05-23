@@ -72,21 +72,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
     { key: "medium", label: copy.sections.riskLabels.medium, count: riskCounts.medium },
     { key: "low", label: copy.sections.riskLabels.low, count: riskCounts.low },
   ];
-  const attackComparisonData = locale === "zh-CN"
-    ? [
-        { dimension: "检索率", GSA: 0.62, PIA: 0.78, Recon: 0.85 },
-        { dimension: "隐蔽性", GSA: 0.55, PIA: 0.74, Recon: 0.68 },
-        { dimension: "覆盖范围", GSA: 0.58, PIA: 0.82, Recon: 0.79 },
-        { dimension: "可探测性", GSA: 0.71, PIA: 0.66, Recon: 0.61 },
-        { dimension: "速度", GSA: 0.83, PIA: 0.59, Recon: 0.72 },
-      ]
-    : [
-        { dimension: "Recall", GSA: 0.62, PIA: 0.78, Recon: 0.85 },
-        { dimension: "Stealth", GSA: 0.55, PIA: 0.74, Recon: 0.68 },
-        { dimension: "Coverage", GSA: 0.58, PIA: 0.82, Recon: 0.79 },
-        { dimension: "Detectability", GSA: 0.71, PIA: 0.66, Recon: 0.61 },
-        { dimension: "Speed", GSA: 0.83, PIA: 0.59, Recon: 0.72 },
-      ];
+  const attackComparisonData = copy.sections.attackComparisonDimensions.map((dim, i) => ({
+    dimension: dim,
+    GSA: [0.62, 0.55, 0.58, 0.71, 0.83][i] ?? 0,
+    PIA: [0.78, 0.74, 0.82, 0.66, 0.59][i] ?? 0,
+    Recon: [0.85, 0.68, 0.79, 0.61, 0.72][i] ?? 0,
+  }));
 
   const primaryModel = allRows
     .filter((row) => row.riskLevel !== "low")
@@ -244,7 +235,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             </WorkspaceSectionCard>
             <WorkspaceSectionCard title={labels.chartRisk}>
               <div className="workspace-ref-chart">
-                <ChartRiskDonut data={riskDistData} totalLabel={locale === "zh-CN" ? "总结果" : "Total"} height={170} />
+                <ChartRiskDonut data={riskDistData} totalLabel={copy.sections.chartTotalLabel} height={170} />
               </div>
             </WorkspaceSectionCard>
             <WorkspaceSectionCard title={labels.chartAttack}>

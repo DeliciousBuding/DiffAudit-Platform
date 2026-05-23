@@ -143,6 +143,13 @@ export const WORKSPACE_COPY: Record<
         chartDimensions: string[];
         suggestedNextSteps: string;
         partialDataWarning: string;
+        chartTotalLabel: string;
+        viewAllResults: string;
+        viewAllSuggestions: string;
+        runningBadge: string;
+        failedBadge: string;
+        otherLabel: string;
+        attackComparisonDimensions: string[];
         radarLabels: {
           auc: string;
           asr: string;
@@ -430,6 +437,10 @@ export const WORKSPACE_COPY: Record<
       trackDescs: Record<string, string>;
       trackReportTitles: Record<string, string>;
       reportGeneration: string;
+      reportDetailsSuffix: string;
+      toggleDisplayView: string;
+      toggleAuditView: string;
+      historyPlaceholder: string;
       generateByTrack: string;
       generateReport: string;
       generatedReports: string;
@@ -764,6 +775,13 @@ export const WORKSPACE_COPY: Record<
         chartDimensions: ["Detection Rate", "Stealth", "Coverage", "Reproducibility", "Speed"],
         suggestedNextSteps: "Suggested next steps",
         partialDataWarning: "Some data sources failed to load. The information below may be incomplete.",
+        chartTotalLabel: "Total",
+        viewAllResults: "View all results",
+        viewAllSuggestions: "View all advice",
+        runningBadge: "Running",
+        failedBadge: "Failed",
+        otherLabel: "Other",
+        attackComparisonDimensions: ["Recall", "Stealth", "Coverage", "Detectability", "Speed"],
         radarLabels: {
           auc: "AUC",
           asr: "ASR",
@@ -1143,6 +1161,10 @@ export const WORKSPACE_COPY: Record<
         "white-box": "GSA Assessment Report",
       },
       reportGeneration: "Report Generation",
+      reportDetailsSuffix: "report details",
+      toggleDisplayView: "Display view",
+      toggleAuditView: "Audit view",
+      historyPlaceholder: "Historical comparison for this track will be available in a future release. This area is reserved.",
       generateByTrack: "Generate by Audit Mode",
       generateReport: "View Full Report",
       generatedReports: "Generated Reports",
@@ -1672,6 +1694,13 @@ export const WORKSPACE_COPY: Record<
         chartDimensions: ["检测率", "隐蔽性", "覆盖范围", "可复现性", "速度"],
         suggestedNextSteps: "建议的下一步",
         partialDataWarning: "部分数据源加载失败，以下信息可能不完整。",
+        chartTotalLabel: "总结果",
+        viewAllResults: "查看全部结果",
+        viewAllSuggestions: "查看全部建议",
+        runningBadge: "运行中",
+        failedBadge: "失败",
+        otherLabel: "其他",
+        attackComparisonDimensions: ["检索率", "隐蔽性", "覆盖范围", "可探测性", "速度"],
         radarLabels: {
           auc: "AUC",
           asr: "ASR",
@@ -2051,6 +2080,10 @@ export const WORKSPACE_COPY: Record<
         "white-box": "GSA 评估报告",
       },
       reportGeneration: "报告生成",
+      reportDetailsSuffix: "报告详情",
+      toggleDisplayView: "展示视图",
+      toggleAuditView: "审计视图",
+      historyPlaceholder: "该审计线路的历史对比功能将在后续版本接入，当前为占位区域。",
       generateByTrack: "按审计模式生成",
       generateReport: "查看完整报告",
       generatedReports: "已生成报告",
