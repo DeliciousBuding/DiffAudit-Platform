@@ -24,7 +24,7 @@ import { type Locale } from "@/components/language-picker";
 import { useToast } from "@/components/toast-provider";
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { type WorkspaceNavIcon, type WorkspaceNavKey } from "@/lib/workspace-registry";
+import { type WorkspaceNavIcon } from "@/lib/workspace-registry";
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
@@ -48,17 +48,6 @@ export interface CommandItem {
 /*  Command definitions                                                       */
 /* -------------------------------------------------------------------------- */
 
-const NAV_COMMAND_IDS: Record<WorkspaceNavKey, string> = {
-  workspace: "nav-dashboard",
-  audits: "nav-audits",
-  modelAssets: "nav-model-assets",
-  riskFindings: "nav-risk-findings",
-  reportCenter: "nav-reports",
-  apiKeys: "nav-api-keys",
-  account: "nav-account",
-  settings: "nav-settings",
-};
-
 const NAV_ICON_COMPONENTS: Record<WorkspaceNavIcon, LucideIcon> = {
   dashboard: LayoutDashboard,
   spark: ClipboardList,
@@ -70,10 +59,14 @@ const NAV_ICON_COMPONENTS: Record<WorkspaceNavIcon, LucideIcon> = {
   settings: Settings,
 };
 
+export function getNavigationCommandId(key: string): string {
+  return `nav-${key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()}`;
+}
+
 export function getCommandItems(locale: Locale): CommandItem[] {
   const copy = WORKSPACE_COPY[locale].commandPalette;
   const navigationCommands = getNavItems(locale).map((item): CommandItem => ({
-    id: NAV_COMMAND_IDS[item.key],
+    id: getNavigationCommandId(item.key),
     label: item.title,
     category: "navigation",
     icon: NAV_ICON_COMPONENTS[item.icon],

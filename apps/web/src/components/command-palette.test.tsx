@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-import { getCommandItems } from "./command-palette";
+import { getCommandItems, getNavigationCommandId } from "./command-palette";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -17,6 +17,7 @@ describe("command palette commands", () => {
     const commands = getCommandItems("en-US").filter((command) => command.category === "navigation");
 
     expect(commands).toHaveLength(navItems.length);
+    expect(commands.map((command) => command.id)).toEqual(navItems.map((item) => getNavigationCommandId(item.key)));
     expect(commands.map((command) => command.label)).toEqual(navItems.map((item) => item.title));
     expect(commands.map((command) => command.href)).toEqual(navItems.map((item) => item.href));
     expect(commands.map((command) => command.shortcut)).toEqual(navItems.map((item) => item.shortcut));
@@ -40,5 +41,11 @@ describe("command palette commands", () => {
     expect(commands.find((command) => command.id === "action-export-report")?.label).toBe(copy.actionExportReport);
     expect(commands.find((command) => command.id === "info-shortcuts")?.label).toBe(copy.infoShortcuts);
     expect(commands.find((command) => command.id === "info-docs")?.label).toBe(copy.infoDocs);
+  });
+
+  it("keeps command ids unique", () => {
+    const ids = getCommandItems("en-US").map((command) => command.id);
+
+    expect(new Set(ids)).toHaveLength(ids.length);
   });
 });
