@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Info } from "lucide-react";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 /* ------------------------------------------------------------------ */
 /*  Metric term definitions (bilingual)                                */

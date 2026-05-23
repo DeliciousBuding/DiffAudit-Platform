@@ -33,7 +33,7 @@ function getStatus(defense: string, riskLevel: string): string {
   return "monitoring";
 }
 
-function getCategory(track: string, copy: ReturnType<typeof WORKSPACE_COPY[Locale]["riskFindings"]>): string {
+function getCategory(track: string, copy: { catBlackBox: string; catGrayBox: string; catWhiteBox: string; catOther: string }): string {
   const map: Record<string, string> = {
     "black-box": copy.catBlackBox,
     "gray-box": copy.catGrayBox,
