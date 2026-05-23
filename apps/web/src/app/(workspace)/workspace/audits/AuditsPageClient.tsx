@@ -97,7 +97,8 @@ export function AuditsPageClient({
     urlSyncSource.current = "url";
     setFilter(urlFilter);
     setSearch(urlQ);
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- searchParams is an unstable object reference; key on the serialized string values instead
+  }, [searchParams.get("filter"), searchParams.get("q")]);
 
   function refreshJobs() {
     setRefreshToken((v) => v + 1);

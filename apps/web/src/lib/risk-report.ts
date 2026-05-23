@@ -1,3 +1,5 @@
+import { WORKSPACE_COPY } from "./workspace-copy";
+
 export type RiskLevel = "high" | "medium" | "low";
 
 /** AUC threshold at or above which a result is classified as high risk. */
@@ -13,25 +15,13 @@ export function classifyRisk(auc: number): RiskLevel {
 }
 
 export function riskLabel(level: RiskLevel, locale: string): string {
-  if (locale === "zh-CN") {
-    return level === "high" ? "高风险" : level === "medium" ? "中风险" : "低风险";
-  }
-  return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
+  return WORKSPACE_COPY[locale as "en-US" | "zh-CN"].riskReport.riskLabels[level] ?? level;
 }
 
 export function defenseRecommendation(level: RiskLevel, locale: string): string {
-  if (locale === "zh-CN") {
-    if (level === "high")
-      return "建议采用差分隐私(DP)训练。实验表明 DP 可将最强攻击(GSA)的 AUC 从 0.998 降至 0.489，接近随机猜测水平。";
-    if (level === "medium")
-      return "建议采用随机 Dropout 防御策略。实验表明 Dropout 可将灰盒攻击(PIA)的 AUC 从 0.841 降至 0.828，同时保持生成质量。";
-    return "当前模型隐私保护良好，建议定期复测以监控潜在风险。";
-  }
-  if (level === "high")
-    return "Differential Privacy (DP) training is recommended. Experiments show DP reduces the strongest attack (GSA) AUC from 0.998 to 0.489, near random guessing.";
-  if (level === "medium")
-    return "Stochastic Dropout defense is recommended. Experiments show Dropout reduces gray-box attack (PIA) AUC from 0.841 to 0.828 while preserving generation quality.";
-  return "Current model has good privacy protection. Regular re-testing is recommended to monitor potential risks.";
+  // Map risk level to a representative attack for contract lookup
+  const attack = level === "high" ? "GSA" : level === "medium" ? "PIA" : "other";
+  return WORKSPACE_COPY[locale as "en-US" | "zh-CN"].riskReport.defenseRecommendation(attack, "");
 }
 
 export interface ReportExportRow {
@@ -55,17 +45,9 @@ export function generateReportHTML(
   rows: ReportExportRow[],
   locale: string,
 ): string {
+  const copy = WORKSPACE_COPY[locale as "en-US" | "zh-CN"].riskReport;
   const isZh = locale === "zh-CN";
   const now = new Date().toLocaleDateString(isZh ? "zh-CN" : "en-US");
-
-  const title = isZh ? "扩散模型隐私审计报告" : "Diffusion Model Privacy Audit Report";
-  const dateLabel = isZh ? "生成日期" : "Date";
-  const totalLabel = isZh ? "审计结果总数" : "Total Results";
-  const avgAucLabel = isZh ? "平均攻击 AUC" : "Avg. Attack AUC";
-  const riskOverviewLabel = isZh ? "风险概览" : "Risk Overview";
-  const detailLabel = isZh ? "详细结果" : "Detailed Results";
-  const conclusionLabel = isZh ? "结论与建议" : "Conclusions & Recommendations";
-  const riskColLabel = isZh ? "风险等级" : "Risk";
 
   const aucValues = rows
     .map((r) => parseFloat(r.aucLabel))
@@ -98,7 +80,7 @@ export function generateReportHTML(
       const auc = parseFloat(row.aucLabel);
       const level = Number.isNaN(auc) ? "low" : classifyRisk(auc);
       const color = riskColor(level as RiskLevel);
-      const label = riskLabel(level as RiskLevel, locale);
+      const label = copy.riskLabels[level] ?? level;
       return `<tr>
         <td style="${tdStyle}">${row.attack}</td>
         <td style="${tdStyle}">${row.defense}</td>
@@ -116,7 +98,7 @@ export function generateReportHTML(
 <html lang="${isZh ? "zh-CN" : "en"}">
 <head>
 <meta charset="utf-8">
-<title>${title}</title>
+<title>${copy.reportTitle}</title>
 <style>
   body{font-family:-apple-system,"Microsoft YaHei","Segoe UI",sans-serif;max-width:960px;margin:0 auto;padding:40px 24px;color:#1a1a2e;background:#fff}
   h1{font-size:24px;font-weight:600;border-bottom:3px solid #e94560;padding-bottom:12px;margin-bottom:24px}
@@ -140,28 +122,28 @@ export function generateReportHTML(
 </style>
 </head>
 <body>
-<h1>${title}</h1>
-<div class="meta">${dateLabel}: ${now} &mdash; DiffAudit Platform</div>
+<h1>${copy.reportTitle}</h1>
+<div class="meta">${copy.dateLabel}: ${now} &mdash; DiffAudit Platform</div>
 
 <div class="summary">
   <div class="summary-item">
     <div class="value">${rows.length}</div>
-    <div class="label">${totalLabel}</div>
+    <div class="label">${copy.totalLabel}</div>
   </div>
   <div class="summary-item">
     <div class="value">${avgAuc}</div>
-    <div class="label">${avgAucLabel}</div>
+    <div class="label">${copy.avgAucLabel}</div>
   </div>
 </div>
 
-<h2>${riskOverviewLabel}</h2>
+<h2>${copy.coverageTitle}</h2>
 <div class="risk-overview">
-  <div class="risk-card risk-high"><div class="count">${riskCounts.high}</div><div class="label">${riskLabel("high", locale)}</div></div>
-  <div class="risk-card risk-medium"><div class="count">${riskCounts.medium}</div><div class="label">${riskLabel("medium", locale)}</div></div>
-  <div class="risk-card risk-low"><div class="count">${riskCounts.low}</div><div class="label">${riskLabel("low", locale)}</div></div>
+  <div class="risk-card risk-high"><div class="count">${riskCounts.high}</div><div class="label">${copy.riskLabels.high}</div></div>
+  <div class="risk-card risk-medium"><div class="count">${riskCounts.medium}</div><div class="label">${copy.riskLabels.medium}</div></div>
+  <div class="risk-card risk-low"><div class="count">${riskCounts.low}</div><div class="label">${copy.riskLabels.low}</div></div>
 </div>
 
-<h2>${detailLabel}</h2>
+<h2>${copy.findingsTitle}</h2>
 <table>
 <thead><tr>
   <th style="${thStyle}">Attack</th>
@@ -171,17 +153,17 @@ export function generateReportHTML(
   <th style="${thStyle}">AUC</th>
   <th style="${thStyle}">ASR</th>
   <th style="${thStyle}">TPR@1%FPR</th>
-  <th style="${thStyle}">${riskColLabel}</th>
+  <th style="${thStyle}">${copy.riskColLabel}</th>
 </tr></thead>
 <tbody>${rowsHtml}</tbody>
 </table>
 
-<h2>${conclusionLabel}</h2>
+<h2>${copy.conclusionLabel}</h2>
 <div class="conclusion">
   <p>${overallRec}</p>
 </div>
 
-<footer>Generated by DiffAudit Platform &mdash; Diffusion Model Privacy Risk Audit System</footer>
+<footer>${copy.footerLabel}</footer>
 </body>
 </html>`;
 }

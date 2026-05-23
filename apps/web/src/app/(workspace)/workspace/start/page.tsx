@@ -99,6 +99,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <div className="mb-4 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.04] px-4 py-2.5 text-[12px] leading-5 text-muted-foreground">
+        {copy.sections.demoBannerText}
+      </div>
       <div className="workspace-reference-layout">
         <div className="workspace-reference-main">
           <div className="workspace-reference-kpis">
@@ -131,7 +134,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 </div>
                 <p>{card.desc}</p>
                 <div className="workspace-audit-card-meta">
-                  <small>基线 AUC {card.auc}</small>
+                  <small>{copy.sections.baselineAucPrefix} {card.auc}</small>
                   <small>{card.detail}</small>
                 </div>
                 <Link href={`/workspace/audits/new?track=${card.track}`}>
