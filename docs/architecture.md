@@ -64,7 +64,14 @@ These objects should degrade gracefully when optional fields are missing. Public
 
 ## Publish-Time Fallback
 
-The snapshot publisher may use a checked-out research repository while preparing a public bundle. That is a publish-time concern only. Request handlers should continue to read the generated snapshot bundle.
+The snapshot publisher (`apps/api-go/scripts/publish_public_snapshot.py`) generates the public snapshot through a tiered fallback chain:
+
+1. **Runtime HTTP** (primary): Fetches catalog, models, and attack-defense table from the live Runtime control plane.
+2. **Curated bundle** (preferred fallback): Reads `admitted-evidence-bundle.json` from Research — this is the Research-blessed contract with boundary metadata.
+3. **Unified table** (legacy fallback): Reads `unified-attack-defense-table.json` from Research if the curated bundle is absent.
+4. **Existing snapshot** (last resort): Reuses previously written Platform snapshot files.
+
+The `--bundle-path` flag accepts an explicit path to a curated bundle, decoupling the sibling-directory assumption for CI/Docker deployments. All data is sanitized (local paths → `research://` logical identifiers, text replacements) before writing to `apps/api-go/data/public/`. Request handlers never access Research files at request time.
 
 ## Public Data Boundary Contract
 
