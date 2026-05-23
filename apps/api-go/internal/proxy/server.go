@@ -321,7 +321,9 @@ func (s *Server) handleControlDelete(writer http.ResponseWriter, request *http.R
 
 func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Request, body []byte) {
 	if s.config.RuntimeBaseURL == "" {
-		writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": "runtime base url is not configured"})
+		writeJSON(writer, http.StatusBadGateway, map[string]any{
+			"detail": "runtime service is not configured — connect a Runtime to enable live audit execution",
+		})
 		return
 	}
 
