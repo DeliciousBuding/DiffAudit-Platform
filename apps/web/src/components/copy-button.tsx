@@ -1,19 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Copy, Check } from "lucide-react";
 
 import { useToast } from "@/components/toast-provider";
+import { getStoredLocale, type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export function CopyButton({ text, label }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const locale = useSyncExternalStore<Locale>(
+    () => () => undefined,
+    () => getStoredLocale(),
+    () => "en-US",
+  );
+  const copy = WORKSPACE_COPY[locale].shell;
 
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      const isZh = typeof navigator !== "undefined" && navigator.language.startsWith("zh");
-      toast({ type: "success", title: isZh ? "已复制" : "Copied" });
+      toast({ type: "success", title: copy.copiedLabel });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for non-HTTPS
@@ -24,8 +31,7 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
       document.execCommand("copy");
       document.body.removeChild(textarea);
       setCopied(true);
-      const isZh = typeof navigator !== "undefined" && navigator.language.startsWith("zh");
-      toast({ type: "success", title: isZh ? "已复制" : "Copied" });
+      toast({ type: "success", title: copy.copiedLabel });
       setTimeout(() => setCopied(false), 2000);
     }
   }
@@ -35,7 +41,7 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
       type="button"
       onClick={handleCopy}
       className="inline-flex items-center gap-1 text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-      aria-label={copied ? "Copied" : `Copy ${label ?? text}`}
+      aria-label={copied ? copy.copiedLabel : `${copy.copyLabel} ${label ?? text}`}
     >
       {copied ? (
         <Check size={12} strokeWidth={1.5} className="text-[var(--success)]" />

@@ -4,6 +4,13 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
+)
+
+const (
+	maxContractKeyLen   = 256
+	maxWorkspaceNameLen = 256
+	maxJobTypeLen       = 128
 )
 
 // CatalogEntry represents a single audit contract in the catalog.
@@ -221,8 +228,14 @@ func (ds *DemoJobStore) Find(jobID string) *AuditJob {
 	return nil
 }
 
-// Create adds a new demo job to the store.
+// Create adds a new demo job to the store. Returns nil if inputs are invalid.
 func (ds *DemoJobStore) Create(contractKey, workspaceName, jobType string) *AuditJob {
+	if !isValidDemoInput(contractKey, maxContractKeyLen) ||
+		!isValidDemoInput(workspaceName, maxWorkspaceNameLen) ||
+		!isValidDemoInput(jobType, maxJobTypeLen) {
+		return nil
+	}
+
 	ds.mu.Lock()
 	defer ds.mu.Unlock()
 
@@ -303,4 +316,21 @@ func contains(s, substr string) bool {
 
 func intPtr(v int) *int {
 	return &v
+}
+
+// isValidDemoInput checks that a string is non-empty, within length limits,
+// and contains only printable characters (no control chars, null bytes).
+func isValidDemoInput(s string, maxLen int) bool {
+	if s == "" || len(s) > maxLen {
+		return false
+	}
+	for _, r := range s {
+		if r < ' ' && r != '\t' && r != '\n' {
+			return false
+		}
+		if !utf8.ValidRune(r) {
+			return false
+		}
+	}
+	return true
 }
