@@ -43,13 +43,29 @@ const copy = WORKSPACE_COPY[locale].reports;
 | Unit | Vitest | 工具函数、数据转换、组件逻辑 |
 | E2E | Playwright | 页面加载、用户流程、i18n、a11y |
 
-- `npm run test` — Vitest (当前 65 files / 232 tests)
-- `npm run test:e2e` — Playwright (当前 19 tests)
+- `npm test` — Vitest unit tests
+- `npm run test:e2e` — Playwright E2E (smoke + user-flows)
 - `npm run test:all` — 全部
 
-新建 lib 工具必须写 test。E2E 测试至少覆盖每个 workspace 页面的加载。
+从 Platform 根目录运行: `npm run lint:web`, `npm run test:web`, `npm run build:web`.
+新建 lib 工具必须写 test。E2E 测试至少覆盖每个 workspace 页面的加载和核心用户流程。
 
-### 3. 分支策略
+### 3. 工作台 Copy Contract 速查
+
+| Section | 用途 | 文件数 |
+|---|---|---|
+| `workspace` | 工作台总览、KPI、图表、审计路线卡片 | start/page.tsx |
+| `audits` | 审计任务列表、筛选、分页、状态标签 | AuditsPageClient, TaskListClient |
+| `createTask` | 创建任务向导 | CreateTaskClient |
+| `reports` | 报告中心、对比视图、审计视图、打印报告 | ReportsPageClient, ReportAuditView, printable-audit-report |
+| `apiKeys` | API 密钥管理 | ApiKeysClient |
+| `settings` | 系统设置、账户、偏好 | SettingsClient |
+| `riskFindings` | 风险发现列表、详情面板 | RiskFindingsClient, FindingDetailPanel |
+| `modelAssets` | 模型 toast 消息 | ModelAssetsClient |
+| `modelAssetsPage` | 模型资产页面 | model-assets/page.tsx |
+| `riskReport` | 风险报告生成 | risk-report.ts |
+
+### 4. 分支策略
 
 - `main` — 稳定发布
 - `dev` — 持续开发集成

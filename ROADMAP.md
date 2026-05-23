@@ -57,17 +57,19 @@ Keep the public Platform repository product-ready while advancing workspace UX, 
 - [x] Scaffold Playwright E2E test infrastructure: config, fixtures, smoke/auth/navigation/a11y specs, CI job.
 - [x] Add e2e test scripts (test:e2e, test:e2e:ui, test:e2e:chromium, test:all) to both root and web package.json.
 - [x] Cross-review fix: remove dead E2E page objects fixture.
-- [x] Fix contextual-tip dismiss label locale bypass — use WORKSPACE_COPY.shell.dismissTip.
-- [x] Fix scroll-to-top locale bypass — accept locale prop, use WORKSPACE_COPY.shell.scrollToTop.
-- [x] Fix metric-tooltip direction label — use WORKSPACE_COPY.tooltips.direction.
-- [x] Fix RiskFindingsClient empty state description — use emptyState.noRiskFindings from copy.
-- [x] Fix ModelAssetsClient toast messages — add modelAssets section to copy contract.
-- [x] Create project-level skill: .agents/skills/platform-dev/SKILL.md documenting i18n, testing, and dev workflow SOPs.
-- [x] Migrate start/page.tsx ~40-key labels object to workspace-copy contract (22 new keys added, 14 refs migrated).
-- [x] Migrate risk-findings/page.tsx inline copy object to WORKSPACE_COPY riskFindings section.
-- [x] Migrate ReportAuditView.tsx ~59-line inline `t` object to reportAuditView subsection (24 keys).
-- [ ] Migrate printable-audit-report.tsx inline strings.
-- [ ] PM/UX: add demo mode indicator on start page, unify empty states, add loading skeletons.
+- [x] Fix contextual-tip, scroll-to-top, metric-tooltip locale bypasses — all use WORKSPACE_COPY now.
+- [x] Fix RiskFindingsClient empty state, ModelAssetsClient toast messages.
+- [x] Create project-level skill: .agents/skills/platform-dev/SKILL.md.
+- [x] Migrate start/page.tsx labels object → copy (22 keys), audit cards → copy.startCards, ROC title → copy.
+- [x] Migrate risk-findings/page.tsx, model-assets/page.tsx inline copy objects → WORKSPACE_COPY.
+- [x] Migrate ReportAuditView.tsx ~59-line `t` object → reportAuditView (24 keys).
+- [x] Migrate printable-audit-report.tsx 5 inline ternaries → printableReport (6 keys).
+- [x] Migrate risk-report.ts hardcoded locale functions → riskReport section (16 keys).
+- [x] PM: add demo banner to start page, migrate baseline AUC label, fix ROC title.
+- [x] ESLint: ignore playwright-report/ and test-results/.
+- [x] Add E2E user-flows.spec.ts — navigation, login, interaction tests.
+- [ ] Migrate RiskFindingsClient 40-key COPY shadow contract → WORKSPACE_COPY.riskFindings.
+- [ ] PM/UX: unify loading states, fix decoy pagination, add onboarding hints.
 
 ## Review Gates
 
