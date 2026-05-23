@@ -47,6 +47,7 @@ export const WORKSPACE_COPY: Record<
       notificationTitle: string;
       collapseSidebar: string;
       expandSidebar: string;
+      dismissTip: string;
     };
     commandPalette: {
       placeholder: string;
@@ -334,6 +335,11 @@ export const WORKSPACE_COPY: Record<
         stateHistory: string; stateTimestamp: string; noStateHistory: string;
         executionProgress: string; metricAucNote: string; metricAsrNote: string; metricTprNote: string; jobIdLabel: string;
       };
+    };
+    modelAssets: {
+      toastAdded: (name: string) => string;
+      toastUpdated: (name: string) => string;
+      toastDeleted: string;
     };
     emptyWorkspace: {
       title: string; description: string; cta: string;
@@ -674,6 +680,7 @@ export const WORKSPACE_COPY: Record<
       notificationTitle: "Notifications",
       collapseSidebar: "Collapse sidebar",
       expandSidebar: "Expand sidebar",
+      dismissTip: "Got it",
     },
     commandPalette: {
       placeholder: "Type a command...",
@@ -1036,6 +1043,11 @@ export const WORKSPACE_COPY: Record<
           "Consider reducing the attack rounds if you cancelled due to time constraints.",
         ],
       },
+    },
+    modelAssets: {
+      toastAdded: (name: string) => `Model "${name}" added`,
+      toastUpdated: (name: string) => `Model "${name}" updated`,
+      toastDeleted: "Model deleted",
     },
     emptyWorkspace: {
       title: "No audit results yet",
@@ -1593,6 +1605,7 @@ export const WORKSPACE_COPY: Record<
       notificationTitle: "通知",
       collapseSidebar: "收起侧边栏",
       expandSidebar: "展开侧边栏",
+      dismissTip: "知道了",
     },
     commandPalette: {
       placeholder: "输入命令...",
@@ -1955,6 +1968,11 @@ export const WORKSPACE_COPY: Record<
           "如果是因为时间原因取消的，可以考虑减少攻击轮次。",
         ],
       },
+    },
+    modelAssets: {
+      toastAdded: (name: string) => `模型「${name}」已添加`,
+      toastUpdated: (name: string) => `模型「${name}」已更新`,
+      toastDeleted: "模型已删除",
     },
     emptyWorkspace: {
       title: "还没有审计结果",

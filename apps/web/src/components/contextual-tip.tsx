@@ -3,6 +3,9 @@
 import { useSyncExternalStore } from "react";
 import { Lightbulb } from "lucide-react";
 
+import { type Locale } from "@/components/language-picker";
+import { WORKSPACE_COPY } from "@/lib/workspace-copy";
+
 const DISMISSED_KEY = "diffaudit-dismissed-tips";
 const DISMISSED_EVENT = "diffaudit-dismissed-tips-change";
 
@@ -47,7 +50,7 @@ export function ContextualTip({
 }: {
   id: string;
   children: React.ReactNode;
-  locale?: string;
+  locale: Locale;
   className?: string;
 }) {
   const visible = useSyncExternalStore(
@@ -58,7 +61,7 @@ export function ContextualTip({
 
   if (!visible) return null;
 
-  const dismissLabel = locale === "zh-CN" ? "知道了" : "Got it";
+  const dismissLabel = WORKSPACE_COPY[locale].shell.dismissTip;
 
   return (
     <div className={`contextual-tip-enter flex items-start gap-2.5 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.04] px-4 py-3 text-[13px] leading-5 text-muted-foreground sm:items-center ${className}`.trim()}>

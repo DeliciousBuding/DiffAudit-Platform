@@ -695,7 +695,7 @@ export function RiskFindingsClient({ rows, locale }: Props) {
             <EmptyState
               icon={ShieldCheck}
               title={copy.emptyNoData}
-              description={locale === "zh-CN" ? "完成审计任务后，风险发现将显示在此处。" : "Risk findings will appear here after completing audit tasks."}
+              description={WORKSPACE_COPY[locale].emptyState.noRiskFindings.description}
               action={{ label: copy.createAuditTask, href: "/workspace/audits/new" }}
             />
           )
