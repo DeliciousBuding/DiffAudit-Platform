@@ -67,10 +67,8 @@ function formatRemaining(progressPct: number, createdAt: string, locale: Locale,
   const remainingSec = Math.round(remainingMs / 1000);
   const m = Math.floor(remainingSec / 60);
   const s = remainingSec % 60;
-  if (locale === "zh-CN") {
-    return m > 0 ? `预计剩余 ${m} 分 ${String(s).padStart(2, "0")} 秒` : `预计剩余 ${s} 秒`;
-  }
-  return m > 0 ? `~${m}m ${s}s left` : `~${s}s left`;
+  const copy = WORKSPACE_COPY[locale].audits;
+  return m > 0 ? copy.remainingMinutes(m, s) : copy.remainingSeconds(s);
 }
 
 export function RunningCard({ job, locale }: { job: JobRecord; locale: Locale }) {
@@ -85,7 +83,7 @@ export function RunningCard({ job, locale }: { job: JobRecord; locale: Locale })
   }, []);
 
   const remaining = formatRemaining(pct, job.created_at, locale, now);
-  const runningLabel = locale === "zh-CN" ? `正在运行 ${pct}%` : `Running ${pct}%`;
+  const runningLabel = copy.runningLabel(pct);
 
   return (
     <Link
@@ -142,10 +140,10 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
       if (res.ok) {
         onRefresh();
       } else {
-        toast({ type: "error", title: locale === "zh-CN" ? `重试失败 (HTTP ${res.status})` : `Retry failed (HTTP ${res.status})` });
+        toast({ type: "error", title: copy.toastRetryFailed(res.status) });
       }
     } catch {
-      toast({ type: "error", title: locale === "zh-CN" ? "无法连接到服务器" : "Could not reach the server" });
+      toast({ type: "error", title: copy.toastServerUnreachable });
     } finally {
       setRetryingJobId(null);
     }
@@ -262,13 +260,13 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
         </tbody>
       </table>
       <footer className="audits-history-footer">
-        <span>{locale === "zh-CN" ? `共 ${jobs.length} 条` : `${jobs.length} total`}</span>
+        <span>{copy.paginationTotal(jobs.length)}</span>
         <div className="audits-pagination">
           <button type="button" disabled aria-label="prev">‹</button>
           <span className="is-active">1</span>
           <button type="button" disabled aria-label="next">›</button>
         </div>
-        <span>{locale === "zh-CN" ? "10 条/页" : "10 / page"}</span>
+        <span>{copy.paginationPerPage}</span>
       </footer>
     </div>
   );

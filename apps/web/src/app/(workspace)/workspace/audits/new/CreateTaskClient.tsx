@@ -278,7 +278,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
           {form.step === 1 && (
             <div className="space-y-3">
               <div className="text-[13px] text-muted-foreground mb-3">
-                {locale === "zh-CN" ? "先选择目标模型；下一步可为同一个模型勾选多条审计路线。" : "Select a target model first. You can choose multiple audit routes for the same model next."}
+                {labels.selectModelHint}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {modelGroups.map((group) => {
@@ -299,7 +299,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[13px] font-bold">{group.label}</span>
                         <StatusBadge tone="info" compact>
-                          {routeCount} {locale === "zh-CN" ? "条路线" : "routes"}
+                                                    {labels.routeCount(routeCount)}
                         </StatusBadge>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1.5">
@@ -327,7 +327,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                     <Info size={16} strokeWidth={1.5} className="shrink-0 text-[var(--accent-blue)] mt-0.5" />
                     <div className="space-y-1">
                       <div className="text-[13px] font-bold text-[var(--accent-blue)]">
-                        {locale === "zh-CN" ? "已选择审计路线" : "Selected audit routes"}
+                        {labels.selectedRoutesTitle}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {form.selectedAttackTypes.map((type) => (
@@ -341,7 +341,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                 </div>
               )}
               <div className="text-[13px] text-muted-foreground mb-3">
-                {locale === "zh-CN" ? "为该模型选择要同时创建的审计路线。每条路线会生成一个独立任务，报告中心会按任务逐行展示。" : "Choose the audit routes to create for this model. Each route creates one task and one report row."}
+                {labels.selectedRoutesDescription}
               </div>
               {!selectedModelGroup ? (
                 <div className="text-[13px] text-muted-foreground text-center py-6 border border-dashed border-border rounded-2xl">

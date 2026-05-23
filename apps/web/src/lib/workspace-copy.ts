@@ -231,6 +231,15 @@ export const WORKSPACE_COPY: Record<
         searchPlaceholder: string;
         activeFilters: string;
       };
+      toastTaskCompleted: (id: string) => string;
+      toastTaskFailed: (id: string) => string;
+      toastRetryFailed: (status: number) => string;
+      toastServerUnreachable: string;
+      paginationTotal: (count: number) => string;
+      paginationPerPage: string;
+      runningLabel: (pct: number) => string;
+      remainingMinutes: (m: number, s: number) => string;
+      remainingSeconds: (s: number) => string;
     };
     createTask: {
       eyebrow: string;
@@ -291,6 +300,10 @@ export const WORKSPACE_COPY: Record<
         availabilityPartial: string;
         availabilityDisabled: string;
         dismissError: string;
+        selectModelHint: string;
+        routeCount: (count: number) => string;
+        selectedRoutesTitle: string;
+        selectedRoutesDescription: string;
       };
       recommendedConfig: {
         blackBoxTitle: string; blackBoxRounds: string; blackBoxBatch: string; blackBoxAdaptive: string;
@@ -850,6 +863,15 @@ export const WORKSPACE_COPY: Record<
         searchPlaceholder: "Search contract key or job ID",
         activeFilters: "active",
       },
+      toastTaskCompleted: (id: string) => `Task completed: ${id}`,
+      toastTaskFailed: (id: string) => `Task failed: ${id}`,
+      toastRetryFailed: (status: number) => `Retry failed (HTTP ${status})`,
+      toastServerUnreachable: "Could not reach the server",
+      paginationTotal: (count: number) => `${count} total`,
+      paginationPerPage: "10 / page",
+      runningLabel: (pct: number) => `Running ${pct}%`,
+      remainingMinutes: (m: number, s: number) => `~${m}m ${s}s left`,
+      remainingSeconds: (s: number) => `~${s}s left`,
     },
     createTask: {
       eyebrow: "New task",
@@ -910,6 +932,10 @@ export const WORKSPACE_COPY: Record<
         availabilityPartial: "Partial",
         availabilityDisabled: "Disabled",
         dismissError: "Dismiss error",
+        selectModelHint: "Select a target model first. You can choose multiple audit routes for the same model next.",
+        routeCount: (count: number) => `${count} routes`,
+        selectedRoutesTitle: "Selected audit routes",
+        selectedRoutesDescription: "Choose the audit routes to create for this model. Each route creates one task and one report row.",
       },
       recommendedConfig: {
         blackBoxTitle: "Recommended: Black-box Attack",
@@ -1744,6 +1770,15 @@ export const WORKSPACE_COPY: Record<
         searchPlaceholder: "搜索合约或任务 ID",
         activeFilters: "个筛选",
       },
+      toastTaskCompleted: (id: string) => `任务完成: ${id}`,
+      toastTaskFailed: (id: string) => `任务失败: ${id}`,
+      toastRetryFailed: (status: number) => `重试失败 (HTTP ${status})`,
+      toastServerUnreachable: "无法连接到服务器",
+      paginationTotal: (count: number) => `共 ${count} 条`,
+      paginationPerPage: "10 条/页",
+      runningLabel: (pct: number) => `正在运行 ${pct}%`,
+      remainingMinutes: (m: number, s: number) => `预计剩余 ${m} 分 ${String(s).padStart(2, "0")} 秒`,
+      remainingSeconds: (s: number) => `预计剩余 ${s} 秒`,
     },
     createTask: {
       eyebrow: "新建任务",
@@ -1804,6 +1839,10 @@ export const WORKSPACE_COPY: Record<
         availabilityPartial: "部分可用",
         availabilityDisabled: "已禁用",
         dismissError: "关闭错误提示",
+        selectModelHint: "先选择目标模型；下一步可为同一个模型勾选多条审计路线。",
+        routeCount: (count: number) => `${count} 条路线`,
+        selectedRoutesTitle: "已选择审计路线",
+        selectedRoutesDescription: "为该模型选择要同时创建的审计路线。每条路线会生成一个独立任务，报告中心会按任务逐行展示。",
       },
       recommendedConfig: {
         blackBoxTitle: "黑盒攻击推荐配置",
