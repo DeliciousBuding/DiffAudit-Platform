@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   DEFAULT_REDIRECT_PATH,
@@ -13,6 +13,7 @@ import {
   googleOAuthConfigured,
   protectedApiPath,
   protectedPagePath,
+  resolveConfiguredPlatformUrl,
   resolvePlatformUrl,
   sanitizeRedirectPath,
   verifyCredentials,
@@ -36,6 +37,7 @@ afterEach(() => {
   delete process.env.DIFFAUDIT_SHARED_USERNAME;
   delete process.env.DIFFAUDIT_SHARED_PASSWORD;
   delete process.env.DIFFAUDIT_PLATFORM_URL;
+  vi.unstubAllEnvs();
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
@@ -64,6 +66,19 @@ describe("auth route helpers", () => {
   it("rejects absolute and protocol-relative redirect targets", () => {
     expect(sanitizeRedirectPath("https://evil.example/path")).toBe(DEFAULT_REDIRECT_PATH);
     expect(sanitizeRedirectPath("//evil.example/path")).toBe(DEFAULT_REDIRECT_PATH);
+  });
+
+  it("rejects redirect targets that can be normalized into external origins", () => {
+    expect(sanitizeRedirectPath("/\\\\evil.example/path")).toBe(DEFAULT_REDIRECT_PATH);
+    expect(sanitizeRedirectPath("/%5C%5Cevil.example/path")).toBe(DEFAULT_REDIRECT_PATH);
+    expect(sanitizeRedirectPath("/%5c%5cevil.example/path")).toBe(DEFAULT_REDIRECT_PATH);
+  });
+
+  it("rejects redirect targets with whitespace or control characters", () => {
+    expect(sanitizeRedirectPath(" /workspace")).toBe(DEFAULT_REDIRECT_PATH);
+    expect(sanitizeRedirectPath("/workspace ")).toBe(DEFAULT_REDIRECT_PATH);
+    expect(sanitizeRedirectPath("/\t/evil.example")).toBe(DEFAULT_REDIRECT_PATH);
+    expect(sanitizeRedirectPath("/%09/evil.example")).toBe(DEFAULT_REDIRECT_PATH);
   });
 
   it("protects only the workspace routes and not the marketing pages", () => {
@@ -95,17 +110,49 @@ describe("auth route helpers", () => {
     ).toBe(true);
   });
 
-  it("resolves oauth public URL from the request when configured URL is bind-only", () => {
+  it("rejects bind-only configured platform URLs in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
     process.env.DIFFAUDIT_PLATFORM_URL = "http://0.0.0.0:3000";
 
     const request = new Request("http://127.0.0.1:3000/api/auth/google", {
       headers: {
-        host: "diffaudit.example.test",
+        host: "attacker.example.test",
+        "x-forwarded-host": "attacker.example.test",
         "x-forwarded-proto": "https",
       },
     });
 
-    expect(resolvePlatformUrl(request)).toBe("https://diffaudit.example.test");
+    expect(resolvePlatformUrl(request)).toBeNull();
+    expect(resolveConfiguredPlatformUrl()).toBeNull();
+  });
+
+  it("rejects unconfigured production platform URLs instead of trusting forwarded hosts", () => {
+    vi.stubEnv("NODE_ENV", "production");
+
+    const request = new Request("https://internal.invalid/api/auth/google", {
+      headers: {
+        host: "attacker.example.test",
+        "x-forwarded-host": "attacker.example.test",
+        "x-forwarded-proto": "https",
+      },
+    });
+
+    expect(resolvePlatformUrl(request)).toBeNull();
+  });
+
+  it("keeps localhost origin fallback for local development only", () => {
+    vi.stubEnv("NODE_ENV", "development");
+
+    const request = new Request("http://127.0.0.1:3000/api/auth/google", {
+      headers: {
+        host: "attacker.example.test",
+        "x-forwarded-host": "attacker.example.test",
+        "x-forwarded-proto": "https",
+      },
+    });
+
+    expect(resolvePlatformUrl(request)).toBe("http://127.0.0.1:3000");
+    expect(resolveConfiguredPlatformUrl()).toBe("http://localhost:3000");
   });
 
   it("prefers a valid configured public platform URL for oauth redirects", () => {

@@ -70,6 +70,10 @@ export async function GET(request: Request) {
   const clientSecret = process.env.GITHUB_CLIENT_SECRET;
   const platformUrl = resolvePlatformUrl(request);
 
+  if (!platformUrl) {
+    return NextResponse.json({ message: "Platform public URL is not configured." }, { status: 500 });
+  }
+
   const cookieStore = await cookies();
   const storedState = readStoredState(cookieStore.get(STATE_COOKIE)?.value);
   cookieStore.delete(STATE_COOKIE);

@@ -26,7 +26,10 @@ export function sanitizeRedirectPath(
 ): string {
   if (!redirectPath) return fallbackPath;
   const p = redirectPath.trim();
+  if (p !== redirectPath) return fallbackPath;
   if (!p.startsWith("/") || p.startsWith("//")) return fallbackPath;
+  if (/[\u0000-\u001F\u007F\s\\]/.test(p)) return fallbackPath;
+  if (/%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)/i.test(p)) return fallbackPath;
   return p;
 }
 
@@ -72,21 +75,29 @@ function validConfiguredPlatformUrl(value: string | undefined): string | null {
   }
 }
 
-export function resolvePlatformUrl(request: Request): string {
+function localDevelopmentOrigin(request: Request): string | null {
+  if (process.env.NODE_ENV === "production") return null;
+
+  const url = new URL(request.url);
+  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+  if (url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "::1") {
+    return url.origin;
+  }
+  return null;
+}
+
+export function resolvePlatformUrl(request: Request): string | null {
   const configured = validConfiguredPlatformUrl(process.env.DIFFAUDIT_PLATFORM_URL);
   if (configured) return configured;
 
-  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
-  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
-  const host = forwardedHost || request.headers.get("host");
-  if (host) {
-    const proto = forwardedProto === "http" || forwardedProto === "https"
-      ? forwardedProto
-      : new URL(request.url).protocol.replace(":", "");
-    return `${proto}://${host}`;
-  }
+  return localDevelopmentOrigin(request);
+}
 
-  return new URL(request.url).origin;
+export function resolveConfiguredPlatformUrl(env: NodeJS.ProcessEnv = process.env): string | null {
+  const configured = validConfiguredPlatformUrl(env.DIFFAUDIT_PLATFORM_URL);
+  if (configured) return configured;
+  if (env.NODE_ENV !== "production") return "http://localhost:3000";
+  return null;
 }
 
 type LegacySharedAuthEnv = {

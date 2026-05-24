@@ -21,13 +21,17 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "GitHub OAuth is not configured." }, { status: 500 });
   }
 
+  if (!platformUrl) {
+    return NextResponse.json({ message: "Platform public URL is not configured." }, { status: 500 });
+  }
+
   const state = crypto.randomBytes(16).toString("hex");
   const cookieStore = await cookies();
   const currentUser = getCurrentUserProfile(cookieStore.get(SESSION_COOKIE_NAME)?.value);
   const mode = intent === "connect" && currentUser ? "connect" : "login";
 
   if (intent === "connect" && !currentUser) {
-    return NextResponse.redirect(new URL(`/login?redirectTo=${encodeURIComponent(redirectTo)}`, request.url));
+    return NextResponse.redirect(new URL(`/login?redirectTo=${encodeURIComponent(redirectTo)}`, platformUrl));
   }
 
   const payload = Buffer.from(JSON.stringify({
