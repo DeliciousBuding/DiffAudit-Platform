@@ -20,7 +20,7 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - run: npm ci --include=optional
       - run: npm run lint:web
         name: ESLint
       - run: cd apps/web && npx tsc --noEmit
@@ -73,7 +73,7 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - run: npm ci --include=optional
       - run: cd apps/web && npx playwright install --with-deps chromium
         name: Install Playwright browsers
       - run: npm run test:e2e:chromium
