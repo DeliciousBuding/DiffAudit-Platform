@@ -227,7 +227,7 @@ export function SettingsClient({
   // Load from localStorage
   useEffect(() => {
     if (demoModeLocked) {
-      setDemoMode(true);
+      setDemoMode(initialDemoMode);
       return;
     }
     try {
@@ -249,7 +249,7 @@ export function SettingsClient({
         if (Array.isArray(parsed)) setTemplates(parsed);
       }
     } catch {}
-  }, [demoModeLocked]);
+  }, [demoModeLocked, initialDemoMode]);
 
   // Fetch current user
   useEffect(() => {

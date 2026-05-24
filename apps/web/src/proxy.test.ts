@@ -43,6 +43,26 @@ describe("platform proxy", () => {
     expect(payload).toEqual({ message: "Authentication required." });
   });
 
+  it("treats DIFFAUDIT_DEMO_MODE=0 as an explicit live-mode API boundary", async () => {
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
+
+    const response = proxy(createRequest("/api/v1/audit/jobs"));
+    const payload = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(payload).toEqual({ message: "Authentication required." });
+  });
+
+  it("lets DIFFAUDIT_FORCE_DEMO_MODE=1 override DIFFAUDIT_DEMO_MODE=0", () => {
+    process.env.DIFFAUDIT_FORCE_DEMO_MODE = "1";
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
+
+    const response = proxy(createRequest("/api/v1/audit/jobs"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+  });
+
   it("allows protected routes when a session-shaped cookie is present", () => {
     const session = "diffaudit_session=12345678901234567890123456789012";
     const response = proxy(createRequest("/workspace/settings", `${session}; platform-demo-mode=0`));

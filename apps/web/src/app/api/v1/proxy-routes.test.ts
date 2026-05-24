@@ -97,10 +97,11 @@ describe("platform api proxy routes", () => {
   });
 
   it("proxies audit job list requests to the backend", async () => {
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
     const route = await import("./audit/jobs/route");
 
     await route.GET(new Request("http://localhost", {
-      headers: { cookie: "platform-demo-mode=0; diffaudit_session=session-token" },
+      headers: { cookie: "diffaudit_session=session-token" },
     }));
 
     expect(proxyJsonToBackend).toHaveBeenCalledWith(
@@ -111,12 +112,13 @@ describe("platform api proxy routes", () => {
   });
 
   it("rejects session-shaped fake cookies before proxying live audit job requests", async () => {
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
     validateSession.mockReturnValue(null);
     const route = await import("./audit/jobs/route");
 
     const response = await route.GET(new Request("http://localhost/api/v1/audit/jobs", {
       headers: {
-        cookie: "platform-demo-mode=0; diffaudit_session=12345678901234567890123456789012",
+        cookie: "diffaudit_session=12345678901234567890123456789012",
       },
     }));
     const payload = await response.json();
@@ -127,12 +129,27 @@ describe("platform api proxy routes", () => {
     expect(proxyJsonToBackend).not.toHaveBeenCalled();
   });
 
+  it("rejects unauthenticated audit job requests when DIFFAUDIT_DEMO_MODE=0", async () => {
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
+    validateSession.mockReturnValue(null);
+    const route = await import("./audit/jobs/route");
+
+    const response = await route.GET(new Request("http://localhost/api/v1/audit/jobs"));
+    const payload = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(payload).toEqual({ message: "Authentication required." });
+    expect(validateSession).toHaveBeenCalledWith(undefined);
+    expect(proxyJsonToBackend).not.toHaveBeenCalled();
+  });
+
   it("allows live audit job creation when the session cookie validates", async () => {
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
     const route = await import("./audit/jobs/route");
 
     await route.POST(new Request("http://localhost/api/v1/audit/jobs", {
       method: "POST",
-      headers: { cookie: "platform-demo-mode=0; diffaudit_session=session-token" },
+      headers: { cookie: "diffaudit_session=session-token" },
       body: JSON.stringify({ contract_key: "black-box/recon/demo" }),
     }));
 
@@ -159,6 +176,7 @@ describe("platform api proxy routes", () => {
 
   it("returns demo runtime status without proxying when demo is forced", async () => {
     process.env.DIFFAUDIT_FORCE_DEMO_MODE = "1";
+    process.env.DIFFAUDIT_DEMO_MODE = "0";
     const route = await import("./control/runtime/route");
 
     const response = await route.GET(new Request("http://localhost"));

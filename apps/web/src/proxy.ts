@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { DEMO_MODE_COOKIE } from "@/lib/demo-mode-constants";
+import { readDemoModeEnv } from "@/lib/demo-mode-flags";
+
 const SESSION_COOKIE = "diffaudit_session";
 const LOCALE_COOKIE = "platform-locale-v2";
 const LOCALE_HEADER = "x-platform-locale";
 
-const DEMO_MODE_COOKIE = "platform-demo-mode";
-
 function isDemoMode(request: NextRequest): boolean {
-  const envDemo =
-    process.env.DIFFAUDIT_DEMO_MODE?.trim().toLowerCase() ||
-    process.env.DIFFAUDIT_FORCE_DEMO_MODE?.trim().toLowerCase() ||
-    "";
-  if (["1", "true", "yes", "on", "demo"].includes(envDemo)) return true;
+  const envMode = readDemoModeEnv();
+  if (envMode !== undefined) return envMode;
 
   const cookie = request.cookies.get(DEMO_MODE_COOKIE)?.value;
   if (cookie === "0") return false;

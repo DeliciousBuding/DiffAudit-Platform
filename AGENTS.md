@@ -96,7 +96,7 @@ Running demo jobs progress 2% per second until completion, then receive syntheti
 
 ### Frontend Demo Mode (Independent Layer)
 
-The frontend has its own demo mode in `apps/web/src/lib/demo-snapshot.ts` and `demo-jobs-store.ts`. When `DIFFAUDIT_DEMO_MODE=1`, the Next.js API routes serve hardcoded TypeScript demo data without calling the Go backend.
+The frontend has its own demo mode in `apps/web/src/lib/demo-snapshot.ts` and `demo-jobs-store.ts`. When `DIFFAUDIT_DEMO_MODE=1`, the Next.js API routes serve hardcoded TypeScript demo data without calling the Go backend. Values `0`, `false`, `no`, and `off` explicitly disable frontend demo mode; unset or unknown values keep the default demo-friendly local behavior. `DIFFAUDIT_FORCE_DEMO_MODE=1` takes priority and always forces frontend demo mode on.
 
 To use Go backend demo data instead, disable frontend demo mode by setting `DIFFAUDIT_DEMO_MODE=0` and ensure the Go binary is running with `--demo-mode=true`.
 

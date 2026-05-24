@@ -13,7 +13,7 @@ import {
   type CatalogTrack,
 } from "@/lib/catalog";
 import { listDemoJobs } from "@/lib/demo-jobs-store";
-import { isDemoModeEnabledServer, isDemoModeForcedServer } from "@/lib/demo-mode";
+import { isDemoModeConfiguredServer, isDemoModeEnabledServer } from "@/lib/demo-mode";
 
 export type {
   AttackDefenseRowViewModel,
@@ -39,7 +39,7 @@ export async function getWorkspaceModeState(): Promise<WorkspaceModeState> {
   return {
     mode: demoModeEnabled ? "demo" : "live",
     demoModeEnabled,
-    demoModeLocked: isDemoModeForcedServer(),
+    demoModeLocked: isDemoModeConfiguredServer(),
   };
 }
 

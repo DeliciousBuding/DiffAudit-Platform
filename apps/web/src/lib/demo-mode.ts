@@ -1,23 +1,20 @@
 import { cookies } from "next/headers";
 
 import { DEMO_MODE_COOKIE } from "@/lib/demo-mode-constants";
-
-const ENABLED_VALUES = new Set(["1", "true", "yes", "on", "demo"]);
-
-function normalizeFlag(value: string | undefined) {
-  return value?.trim().toLowerCase() ?? "";
-}
+import { isDemoModeEnvConfigured, readDemoModeEnv } from "@/lib/demo-mode-flags";
 
 export function isDemoModeForcedServer(env: NodeJS.ProcessEnv = process.env): boolean {
-  return (
-    ENABLED_VALUES.has(normalizeFlag(env.DIFFAUDIT_FORCE_DEMO_MODE))
-    || ENABLED_VALUES.has(normalizeFlag(env.DIFFAUDIT_DEMO_MODE))
-  );
+  return readDemoModeEnv(env) === true;
+}
+
+export function isDemoModeConfiguredServer(env: NodeJS.ProcessEnv = process.env): boolean {
+  return isDemoModeEnvConfigured(env);
 }
 
 export async function isDemoModeEnabledServer(request?: Request): Promise<boolean> {
-  if (isDemoModeForcedServer()) {
-    return true;
+  const envMode = readDemoModeEnv();
+  if (envMode !== undefined) {
+    return envMode;
   }
 
   const headerCookie = request?.headers.get("cookie");
