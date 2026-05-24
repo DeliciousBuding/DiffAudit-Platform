@@ -44,6 +44,9 @@ LABEL org.opencontainers.image.title="DiffAudit Platform Web" \
 COPY --from=builder /repo/apps/web/public ./public
 COPY --from=builder /repo/apps/web/.next/standalone /app
 COPY --from=builder /repo/apps/web/.next/static ./.next/static
+# Next standalone tracing can miss the OAuth proxy transport package in this
+# monorepo layout. Keep it available at /app/node_modules for callback routes.
+COPY --from=builder /repo/node_modules/undici /app/node_modules/undici
 
 EXPOSE 3000
 CMD ["node", "server.js"]
