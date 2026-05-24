@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const proxyToBackend = vi.fn();
 const proxyJsonToBackend = vi.fn();
 const cookiesMock = vi.fn();
+const validateSession = vi.fn();
 
 vi.mock("next/headers", () => ({
   cookies: cookiesMock,
@@ -11,6 +12,11 @@ vi.mock("next/headers", () => ({
 vi.mock("@/lib/api-proxy", () => ({
   proxyToBackend,
   proxyJsonToBackend,
+}));
+
+vi.mock("@/lib/auth", () => ({
+  SESSION_COOKIE_NAME: "diffaudit_session",
+  validateSession,
 }));
 
 describe("platform api proxy routes", () => {
@@ -23,6 +29,12 @@ describe("platform api proxy routes", () => {
     cookiesMock.mockReset();
     cookiesMock.mockResolvedValue({
       get: () => undefined,
+    });
+    validateSession.mockReset();
+    validateSession.mockReturnValue({
+      userId: "user-1",
+      username: "demo-reviewer",
+      avatarUrl: null,
     });
     delete process.env.DIFFAUDIT_FORCE_DEMO_MODE;
     delete process.env.DIFFAUDIT_DEMO_MODE;
@@ -57,7 +69,7 @@ describe("platform api proxy routes", () => {
   it("proxies catalog requests to the backend", async () => {
     const route = await import("./catalog/route");
 
-    await route.GET();
+    await route.GET(new Request("http://localhost/api/v1/catalog"));
 
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/catalog");
   });
@@ -65,7 +77,7 @@ describe("platform api proxy routes", () => {
   it("proxies attack-defense table requests to the backend", async () => {
     const route = await import("./evidence/attack-defense-table/route");
 
-    await route.GET();
+    await route.GET(new Request("http://localhost/api/v1/evidence/attack-defense-table"));
 
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/evidence/attack-defense-table");
   });
@@ -88,7 +100,7 @@ describe("platform api proxy routes", () => {
     const route = await import("./audit/jobs/route");
 
     await route.GET(new Request("http://localhost", {
-      headers: { cookie: "platform-demo-mode=0" },
+      headers: { cookie: "platform-demo-mode=0; diffaudit_session=session-token" },
     }));
 
     expect(proxyJsonToBackend).toHaveBeenCalledWith(
@@ -98,11 +110,48 @@ describe("platform api proxy routes", () => {
     );
   });
 
+  it("rejects session-shaped fake cookies before proxying live audit job requests", async () => {
+    validateSession.mockReturnValue(null);
+    const route = await import("./audit/jobs/route");
+
+    const response = await route.GET(new Request("http://localhost/api/v1/audit/jobs", {
+      headers: {
+        cookie: "platform-demo-mode=0; diffaudit_session=12345678901234567890123456789012",
+      },
+    }));
+    const payload = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(payload).toEqual({ message: "Authentication required." });
+    expect(validateSession).toHaveBeenCalledWith("12345678901234567890123456789012");
+    expect(proxyJsonToBackend).not.toHaveBeenCalled();
+  });
+
+  it("allows live audit job creation when the session cookie validates", async () => {
+    const route = await import("./audit/jobs/route");
+
+    await route.POST(new Request("http://localhost/api/v1/audit/jobs", {
+      method: "POST",
+      headers: { cookie: "platform-demo-mode=0; diffaudit_session=session-token" },
+      body: JSON.stringify({ contract_key: "black-box/recon/demo" }),
+    }));
+
+    expect(validateSession).toHaveBeenCalledWith("session-token");
+    expect(proxyJsonToBackend).toHaveBeenCalledWith(
+      "/api/v1/audit/jobs",
+      {
+        method: "POST",
+        body: JSON.stringify({ contract_key: "black-box/recon/demo" }),
+      },
+      expect.any(Function),
+    );
+  });
+
   it("proxies runtime control health requests to the backend", async () => {
     const route = await import("./control/runtime/route");
 
     await route.GET(new Request("http://localhost", {
-      headers: { cookie: "platform-demo-mode=0" },
+      headers: { cookie: "platform-demo-mode=0; diffaudit_session=session-token" },
     }));
 
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/control/runtime");

@@ -755,9 +755,9 @@ export const WORKSPACE_COPY: Record<
       description: string;
       systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string; gatewayError: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string; roundsClamped: string; batchClamped: string };
-      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; signInGoogle: string; signInGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; createLocalAccount: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; twoFactor: string; twoFactorHint: string; twoFactorEnabled: string; twoFactorDisabled: string; twoFactorEnable: string; twoFactorDisable: string; twoFactorSaving: string; twoFactorSavedOn: string; twoFactorSavedOff: string; twoFactorSaveFailed: string; twoFactorNetworkFailed: string; notSignedIn: string; chooseSignInMethod: string; githubAvatarPriority: string; logout: string };
+      account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; signInGoogle: string; signInGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; createLocalAccount: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; twoFactor: string; twoFactorHint: string; twoFactorUnavailable: string; twoFactorUnavailableHint: string; notSignedIn: string; chooseSignInMethod: string; githubAvatarPriority: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
-      runtimeConfig: { title: string; host: string; hostPlaceholder: string; port: string; testConnection: string; testing: string; connected: string; disconnected: string; saved: string };
+      runtimeConfig: { title: string; description: string; testConnection: string; testing: string; connected: string; disconnected: string };
       auditTemplates: { title: string; description: string; saveCurrent: string; saved: string; noTemplates: string; loadTemplate: string; deleteTemplate: string; templateLoaded: string; templateDeleted: string; savedTemplatesTitle: string; deleteTemplateTitle: string; deleteTemplateBody: string; deleteTemplateCancel: string; deleteTemplateAction: string };
       aboutSystem: { title: string; useCases: string; useCaseItems: { title: string; desc: string }[]; systemBoundary: string; boundaryNote: string; framework: string; frameworkItems: { tier: string; desc: string }[] };
       errorPage: { title: string; description: string; retry: string; goHome: string; errorId: string; errorDetails: string; runtimeTitle: string; runtimeDescription: string; quickFixes: string; quickFixCheckRuntime: string; quickFixVerifyNetwork: string; quickFixEnableDemo: string };
@@ -1841,16 +1841,9 @@ export const WORKSPACE_COPY: Record<
         passwordRequired: "Password and confirmation are required.",
         passwordUnauthorized: "Sign in again before changing your password.",
         twoFactor: "Two-factor auth",
-        twoFactorHint: "Local account security switch. It is saved to the current user and can be wired to TOTP verification later.",
-        twoFactorEnabled: "Enabled",
-        twoFactorDisabled: "Off",
-        twoFactorEnable: "Enable two-factor auth",
-        twoFactorDisable: "Disable two-factor auth",
-        twoFactorSaving: "Saving...",
-        twoFactorSavedOn: "Two-factor auth is enabled.",
-        twoFactorSavedOff: "Two-factor auth is disabled.",
-        twoFactorSaveFailed: "Could not save two-factor status. Sign in again and retry.",
-        twoFactorNetworkFailed: "Could not save two-factor status. Check the local service.",
+        twoFactorHint: "TOTP setup and sign-in challenges are not implemented yet.",
+        twoFactorUnavailable: "Not available",
+        twoFactorUnavailableHint: "Two-factor auth is disabled until setup, verification, and recovery-code flows are available.",
         notSignedIn: "Not signed in",
         chooseSignInMethod: "Choose a sign-in method",
         githubAvatarPriority: "After GitHub sign-in, the GitHub name and avatar are used first.",
@@ -1866,15 +1859,12 @@ export const WORKSPACE_COPY: Record<
         themeSystem: "System",
       },
       runtimeConfig: {
-        title: "Runtime Connection",
-        host: "Host",
-        hostPlaceholder: "http://127.0.0.1",
-        port: "Port",
+        title: "Runtime health",
+        description: "Checks the Runtime endpoint configured on the server. Browser-provided hosts are not accepted.",
         testConnection: "Test",
         testing: "Testing...",
         connected: "Connected",
         disconnected: "Disconnected",
-        saved: "Saved",
       },
       auditTemplates: {
         title: "Audit Templates",
@@ -3007,16 +2997,9 @@ export const WORKSPACE_COPY: Record<
         passwordRequired: "密码和确认密码不能为空。",
         passwordUnauthorized: "请重新登录后再修改密码。",
         twoFactor: "两步验证",
-        twoFactorHint: "本地账户安全开关。启用后会记录到当前用户，后续可接入 TOTP 校验。",
-        twoFactorEnabled: "已启用",
-        twoFactorDisabled: "未启用",
-        twoFactorEnable: "启用两步验证",
-        twoFactorDisable: "关闭两步验证",
-        twoFactorSaving: "保存中...",
-        twoFactorSavedOn: "两步验证已启用。",
-        twoFactorSavedOff: "两步验证已关闭。",
-        twoFactorSaveFailed: "两步验证状态保存失败，请重新登录后再试。",
-        twoFactorNetworkFailed: "两步验证状态保存失败，请检查本地服务。",
+        twoFactorHint: "TOTP 设置和登录二次校验尚未实现。",
+        twoFactorUnavailable: "不可用",
+        twoFactorUnavailableHint: "两步验证会保持关闭，直到设置、校验和恢复码流程完整可用。",
         notSignedIn: "未登录",
         chooseSignInMethod: "选择一种登录方式",
         githubAvatarPriority: "连接 GitHub 后会优先显示 GitHub 名称和头像。",
@@ -3032,15 +3015,12 @@ export const WORKSPACE_COPY: Record<
         themeSystem: "跟随系统",
       },
       runtimeConfig: {
-        title: "Runtime 连接",
-        host: "主机地址",
-        hostPlaceholder: "http://127.0.0.1",
-        port: "端口",
+        title: "Runtime 健康检查",
+        description: "只检查服务端配置的 Runtime endpoint，不接受浏览器传入的主机地址。",
         testConnection: "测试连接",
         testing: "测试中...",
         connected: "已连接",
         disconnected: "未连接",
-        saved: "已保存",
       },
       auditTemplates: {
         title: "审计模板",

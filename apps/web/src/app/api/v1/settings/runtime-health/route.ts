@@ -1,29 +1,17 @@
-const TIMEOUT_MS = 5_000;
+import { proxyToBackend } from "@/lib/api-proxy";
+import { authorizeApiV1Request } from "@/lib/api-route-auth";
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const host = url.searchParams.get("host");
-  const port = url.searchParams.get("port");
+  const auth = await authorizeApiV1Request(request);
+  if (!auth.ok) return auth.response;
 
-  if (!host || !port) {
-    return Response.json(
-      { connected: false, error: "Missing host or port parameter." },
-      { status: 400 },
-    );
-  }
-
-  const target = `${host}:${port}/health`;
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    const res = await fetch(target, {
-      signal: controller.signal,
-      cache: "no-store",
+  if (auth.demoMode) {
+    return Response.json({
+      connected: true,
+      demo_mode: true,
+      detail: "demo snapshot mode",
     });
-    clearTimeout(timeout);
-    return Response.json({ connected: res.ok });
-  } catch {
-    return Response.json({ connected: false });
   }
+
+  return proxyToBackend("/api/v1/control/runtime");
 }

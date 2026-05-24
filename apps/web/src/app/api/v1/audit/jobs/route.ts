@@ -1,10 +1,13 @@
 import { proxyJsonToBackend } from "@/lib/api-proxy";
+import { authorizeApiV1Request } from "@/lib/api-route-auth";
 import { sanitizeAuditJobPayload } from "@/lib/audit-job-payload";
-import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 import { createDemoJob, listDemoJobs } from "@/lib/demo-jobs-store";
 
 export async function GET(request: Request) {
-  if (await isDemoModeEnabledServer(request)) {
+  const auth = await authorizeApiV1Request(request);
+  if (!auth.ok) return auth.response;
+
+  if (auth.demoMode) {
     return Response.json(sanitizeAuditJobPayload({ jobs: listDemoJobs() }));
   }
   return proxyJsonToBackend(
@@ -15,7 +18,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (await isDemoModeEnabledServer(request)) {
+  const auth = await authorizeApiV1Request(request);
+  if (!auth.ok) return auth.response;
+
+  if (auth.demoMode) {
     const payload = (await request.json().catch(() => null)) as Record<string, unknown> | null;
     const job = createDemoJob({
       contract_key: typeof payload?.contract_key === "string" ? payload.contract_key : undefined,

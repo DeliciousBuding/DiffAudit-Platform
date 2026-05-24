@@ -20,6 +20,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: "enabled_required" }, { status: 400 });
   }
 
+  if (payload.enabled) {
+    return NextResponse.json(
+      { code: "two_factor_unavailable", enabled: false },
+      { status: 501 },
+    );
+  }
+
   setTwoFactorEnabled(profile.id, payload.enabled);
 
   return NextResponse.json({ ok: true, enabled: payload.enabled });

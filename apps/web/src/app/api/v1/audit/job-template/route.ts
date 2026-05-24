@@ -1,5 +1,6 @@
 import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 import { proxyToBackend } from "@/lib/api-proxy";
+import { authorizeApiV1Request } from "@/lib/api-route-auth";
 
 function inferDemoJobType(contractKey: string) {
   const normalized = contractKey.toLowerCase();
@@ -31,6 +32,9 @@ export async function GET(request: Request) {
       demo_mode: true,
     });
   }
+
+  const auth = await authorizeApiV1Request(request);
+  if (!auth.ok) return auth.response;
 
   const path = `/api/v1/audit/job-template?contract_key=${encodeURIComponent(contractKey)}`;
   return proxyToBackend(path);

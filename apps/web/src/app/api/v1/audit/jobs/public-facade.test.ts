@@ -1,5 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("@/lib/api-route-auth", () => ({
+  authorizeApiV1Request: vi.fn().mockResolvedValue({
+    ok: true,
+    demoMode: false,
+    session: {
+      userId: "user-1",
+      username: "demo-reviewer",
+      avatarUrl: null,
+    },
+  }),
+}));
+
 describe("audit job public facade routes", () => {
   afterEach(() => {
     vi.unstubAllGlobals();

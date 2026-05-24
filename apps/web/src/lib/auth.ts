@@ -689,12 +689,6 @@ export function getCurrentUserProfile(token: string | undefined): CurrentUserPro
     .map((entry) => entry.provider)
     .sort();
 
-  const twoFactor = db
-    .select({ enabled: schema.twoFactorSettings.enabled })
-    .from(schema.twoFactorSettings)
-    .where(eq(schema.twoFactorSettings.userId, user.id))
-    .get();
-
   return {
     id: user.id,
     username: user.username,
@@ -706,11 +700,15 @@ export function getCurrentUserProfile(token: string | undefined): CurrentUserPro
     bio: user.bio,
     providers,
     hasPassword: Boolean(user.passwordHash),
-    twoFactorEnabled: Boolean(twoFactor?.enabled),
+    twoFactorEnabled: false,
   };
 }
 
 export function setTwoFactorEnabled(userId: string, enabled: boolean): void {
+  if (enabled) {
+    throw new Error("Two-factor authentication is not available.");
+  }
+
   const db = getDb();
   const now = new Date();
   const existing = db

@@ -9,15 +9,19 @@ import {
   authPagePath,
   ensureLegacySharedUser,
   buildLoginPath,
+  createSession,
+  createUser,
+  getCurrentUserProfile,
   githubOAuthConfigured,
   googleOAuthConfigured,
   protectedApiPath,
   protectedPagePath,
   resolvePlatformUrl,
   sanitizeRedirectPath,
+  setTwoFactorEnabled,
   verifyCredentials,
 } from "./auth";
-import { resetDbForTests } from "./db";
+import { getDb, resetDbForTests, schema } from "./db";
 
 let tempDir = "";
 
@@ -145,5 +149,32 @@ describe("auth route helpers", () => {
     await expect(
       verifyCredentials("example-reviewer", "ExamplePassword!2027"),
     ).resolves.toMatchObject({ username: "example-reviewer" });
+  });
+
+  it("does not expose stale enabled two-factor rows as active authentication", async () => {
+    const user = await createUser("demo-reviewer", "review@diffaudit.test", "ExamplePassword!2026");
+    const now = new Date();
+    getDb().insert(schema.twoFactorSettings).values({
+      userId: user.id,
+      totpSecret: null,
+      recoveryCodes: null,
+      enabled: true,
+      createdAt: now,
+      updatedAt: now,
+    }).run();
+
+    const token = createSession(user.id);
+
+    expect(getCurrentUserProfile(token)?.twoFactorEnabled).toBe(false);
+  });
+
+  it("rejects attempts to persist enabled two-factor state", async () => {
+    const user = await createUser("demo-reviewer", "review@diffaudit.test", "ExamplePassword!2026");
+
+    expect(() => setTwoFactorEnabled(user.id, true)).toThrow("Two-factor authentication is not available.");
+
+    setTwoFactorEnabled(user.id, false);
+    const token = createSession(user.id);
+    expect(getCurrentUserProfile(token)?.twoFactorEnabled).toBe(false);
   });
 });

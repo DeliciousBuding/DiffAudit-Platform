@@ -136,7 +136,7 @@ describe("SettingsClient account verification", () => {
           bio: null,
           providers: ["github", "google"],
           hasPassword: true,
-          twoFactorEnabled: true,
+          twoFactorEnabled: false,
         }}
       />,
     ));
@@ -150,6 +150,49 @@ describe("SettingsClient account verification", () => {
     expect(markup).toContain("data-account-state-key=\"password\"");
     expect(markup).toContain("Configured");
     expect(markup).toContain("data-account-state-key=\"two-factor\"");
-    expect(markup).toContain("Enabled");
+    expect(markup).toContain("Not available");
+  });
+
+  it("does not render editable runtime host or port fields for server-side health checks", () => {
+    const markup = renderToStaticMarkup(withToast(
+      <SettingsClient
+        locale="en-US"
+        mode="settings"
+        oauthEnabled={{ google: true, github: true }}
+        initialProfile={null}
+      />,
+    ));
+
+    expect(markup).not.toContain("settings-runtime-host");
+    expect(markup).not.toContain("settings-runtime-port");
+    expect(markup).toContain("Runtime health");
+  });
+
+  it("renders two-factor auth as unavailable instead of an enabled security control", () => {
+    const markup = renderToStaticMarkup(withToast(
+      <SettingsClient
+        locale="en-US"
+        mode="account"
+        oauthEnabled={{ google: true, github: true }}
+        initialProfile={{
+          id: "user-1",
+          username: "demo-reviewer",
+          displayName: "Demo Reviewer",
+          email: "review@diffaudit.test",
+          pendingEmail: null,
+          emailVerified: true,
+          avatarUrl: null,
+          bio: null,
+          providers: ["github"],
+          hasPassword: true,
+          twoFactorEnabled: true,
+        }}
+      />,
+    ));
+
+    expect(markup).toContain("Not available");
+    expect(markup).toContain("TOTP setup and sign-in challenges are not implemented yet.");
+    expect(markup).not.toContain("Enable two-factor auth");
+    expect(markup).not.toContain(">Enabled<");
   });
 });

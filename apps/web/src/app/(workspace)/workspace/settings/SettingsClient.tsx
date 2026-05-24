@@ -24,8 +24,6 @@ const STORAGE_KEYS = {
   DEMO_MODE: "platform-demo-mode-v1",
   DEFAULT_ROUNDS: "platform-default-rounds-v1",
   DEFAULT_BATCH_SIZE: "platform-default-batch-size-v1",
-  RUNTIME_HOST: "platform-runtime-host-v1",
-  RUNTIME_PORT: "platform-runtime-port-v1",
 } as const;
 
 const TEMPLATES_STORAGE_KEY = "platform-audit-templates-v1";
@@ -200,9 +198,6 @@ export function SettingsClient({
   const [showPasswordEditor, setShowPasswordEditor] = useState(false);
   const [passwordSaveNotice, setPasswordSaveNotice] = useState<string | null>(null);
   const passwordNoticeTimerRef = useRef<number | null>(null);
-  const [twoFactorPending, setTwoFactorPending] = useState(false);
-  const [twoFactorNotice, setTwoFactorNotice] = useState<string | null>(null);
-  const [twoFactorError, setTwoFactorError] = useState<string | null>(null);
   const [emailInput, setEmailInput] = useState(initialProfile?.pendingEmail ?? initialProfile?.email ?? "");
   const [emailPending, setEmailPending] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -219,8 +214,6 @@ export function SettingsClient({
   const [themeMounted, setThemeMounted] = useState(false);
 
   // Runtime config
-  const [runtimeHost, setRuntimeHost] = useState("http://127.0.0.1");
-  const [runtimePort, setRuntimePort] = useState("8765");
   const [runtimeTesting, setRuntimeTesting] = useState(false);
   const [runtimeConnected, setRuntimeConnected] = useState<boolean | null>(null);
   const [gatewayHealth, setGatewayHealth] = useState<GatewayHealth | null>(null);
@@ -248,14 +241,6 @@ export function SettingsClient({
     try {
       const batch = window.localStorage.getItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE);
       if (batch) setDefaultBatchSize(batch);
-    } catch {}
-    try {
-      const host = window.localStorage.getItem(STORAGE_KEYS.RUNTIME_HOST);
-      if (host) setRuntimeHost(host);
-    } catch {}
-    try {
-      const port = window.localStorage.getItem(STORAGE_KEYS.RUNTIME_PORT);
-      if (port) setRuntimePort(port);
     } catch {}
     try {
       const stored = window.localStorage.getItem(TEMPLATES_STORAGE_KEY);
@@ -382,8 +367,7 @@ export function SettingsClient({
     setRuntimeTesting(true);
     setRuntimeConnected(null);
     try {
-      const params = new URLSearchParams({ host: runtimeHost, port: runtimePort });
-      const res = await fetch(`/api/v1/settings/runtime-health?${params}`, {
+      const res = await fetch("/api/v1/settings/runtime-health", {
         signal: AbortSignal.timeout(8000),
       });
       const payload = (await res.json().catch(() => null)) as { connected?: boolean } | null;
@@ -393,28 +377,6 @@ export function SettingsClient({
     } finally {
       setRuntimeTesting(false);
     }
-  }
-
-  function handleRuntimeHostChange(value: string) {
-    setRuntimeHost(value);
-  }
-
-  function commitRuntimeHost() {
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, runtimeHost);
-    } catch {}
-    toast({ type: "success", title: copy.runtimeConfig.saved });
-  }
-
-  function handleRuntimePortChange(value: string) {
-    setRuntimePort(value);
-  }
-
-  function commitRuntimePort() {
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, runtimePort);
-    } catch {}
-    toast({ type: "success", title: copy.runtimeConfig.saved });
   }
 
   function persistTemplates(next: SavedTemplate[]) {
@@ -514,37 +476,6 @@ export function SettingsClient({
       setPasswordError(copy.account.passwordSaveFailed);
     } finally {
       setPasswordPending(false);
-    }
-  }
-
-  async function handleTwoFactorToggle(enabled: boolean) {
-    setTwoFactorPending(true);
-    setTwoFactorNotice(null);
-    setTwoFactorError(null);
-
-    try {
-      const response = await fetch("/api/auth/two-factor", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ enabled }),
-      });
-
-      if (!response.ok) {
-        setTwoFactorError(copy.account.twoFactorSaveFailed);
-        return;
-      }
-
-      setProfile((prev) => (prev ? { ...prev, twoFactorEnabled: enabled } : prev));
-      setTwoFactorNotice(
-        enabled
-          ? copy.account.twoFactorSavedOn
-          : copy.account.twoFactorSavedOff,
-      );
-    } catch {
-      setTwoFactorError(copy.account.twoFactorNetworkFailed);
-    } finally {
-      setTwoFactorPending(false);
     }
   }
 
@@ -682,9 +613,9 @@ export function SettingsClient({
     {
       key: "two-factor",
       label: copy.account.twoFactor,
-      value: profile?.twoFactorEnabled ? copy.account.twoFactorEnabled : copy.account.twoFactorDisabled,
-      status: profile?.twoFactorEnabled ? copy.account.twoFactorEnabled : copy.account.twoFactorDisabled,
-      tone: profile?.twoFactorEnabled ? "success" : "neutral",
+      value: copy.account.twoFactorUnavailable,
+      status: copy.account.twoFactorUnavailable,
+      tone: "neutral",
     },
   ] as const;
   const templatePendingDelete = templates.find((template) => template.id === templatePendingDeleteId) ?? null;
@@ -891,38 +822,9 @@ export function SettingsClient({
             </h2>
           </div>
           <div className="p-4 space-y-3">
-            {/* Host */}
-            <div className="space-y-1">
-              <label htmlFor="settings-runtime-host" className="text-xs text-muted-foreground">
-                {copy.runtimeConfig.host}
-              </label>
-              <input
-                id="settings-runtime-host"
-                type="text"
-                value={runtimeHost}
-                onChange={(e) => handleRuntimeHostChange(e.target.value)}
-                onBlur={commitRuntimeHost}
-                placeholder={copy.runtimeConfig.hostPlaceholder}
-                className="settings-input mono"
-              />
-            </div>
-
-            {/* Port */}
-            <div className="space-y-1">
-              <label htmlFor="settings-runtime-port" className="text-xs text-muted-foreground">
-                {copy.runtimeConfig.port}
-              </label>
-              <input
-                id="settings-runtime-port"
-                type="text"
-                value={runtimePort}
-                onChange={(e) => handleRuntimePortChange(e.target.value)}
-                onBlur={commitRuntimePort}
-                className="settings-input mono"
-              />
-            </div>
-
-            {/* Test connection */}
+            <p className="text-[11px] leading-5 text-muted-foreground">
+              {copy.runtimeConfig.description}
+            </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleTestRuntime}
@@ -1509,32 +1411,13 @@ export function SettingsClient({
                       {copy.account.twoFactorHint}
                     </p>
                   </div>
-                  <StatusBadge tone={profile?.twoFactorEnabled ? "success" : "neutral"} compact>
-                    {profile?.twoFactorEnabled ? copy.account.twoFactorEnabled : copy.account.twoFactorDisabled}
+                  <StatusBadge tone="neutral" compact>
+                    {copy.account.twoFactorUnavailable}
                   </StatusBadge>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleTwoFactorToggle(!profile?.twoFactorEnabled)}
-                  disabled={twoFactorPending || !profile}
-                  className="workspace-btn-secondary w-full px-3 py-3 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {twoFactorPending
-                    ? copy.account.twoFactorSaving
-                    : profile?.twoFactorEnabled
-                      ? copy.account.twoFactorDisable
-                      : copy.account.twoFactorEnable}
-                </button>
-                {twoFactorNotice ? (
-                  <div className="rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--success)]">
-                    {twoFactorNotice}
-                  </div>
-                ) : null}
-                {twoFactorError ? (
-                  <div className="rounded-xl border border-[var(--error)]/20 bg-[var(--error)]/8 px-3 py-2 text-[11px] leading-5 text-[var(--error)]">
-                    {twoFactorError}
-                  </div>
-                ) : null}
+                <p className="rounded-xl border border-border bg-card px-3 py-2 text-[11px] leading-5 text-muted-foreground">
+                  {copy.account.twoFactorUnavailableHint}
+                </p>
               </div>
 
               {profile ? (

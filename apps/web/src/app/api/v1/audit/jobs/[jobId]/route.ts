@@ -1,6 +1,6 @@
 import { proxyJsonToBackend } from "@/lib/api-proxy";
+import { authorizeApiV1Request } from "@/lib/api-route-auth";
 import { sanitizeAuditJobPayload } from "@/lib/audit-job-payload";
-import { isDemoModeEnabledServer } from "@/lib/demo-mode";
 import { cancelDemoJob, findDemoJob } from "@/lib/demo-jobs-store";
 import { isValidPathSegment } from "@/lib/path-validation";
 
@@ -12,7 +12,10 @@ export async function GET(
   if (!isValidPathSegment(jobId)) {
     return Response.json({ detail: "Invalid job ID." }, { status: 400 });
   }
-  if (await isDemoModeEnabledServer(request)) {
+  const auth = await authorizeApiV1Request(request);
+  if (!auth.ok) return auth.response;
+
+  if (auth.demoMode) {
     const job = findDemoJob(jobId);
     return job
       ? Response.json(sanitizeAuditJobPayload({ job }))
@@ -33,7 +36,10 @@ export async function DELETE(
   if (!isValidPathSegment(jobId)) {
     return Response.json({ detail: "Invalid job ID." }, { status: 400 });
   }
-  if (await isDemoModeEnabledServer(request)) {
+  const auth = await authorizeApiV1Request(request);
+  if (!auth.ok) return auth.response;
+
+  if (auth.demoMode) {
     const job = cancelDemoJob(jobId);
     return job
       ? Response.json(sanitizeAuditJobPayload({ ok: true, job }))
