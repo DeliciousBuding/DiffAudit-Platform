@@ -753,7 +753,7 @@ export const WORKSPACE_COPY: Record<
       eyebrow: string;
       title: string;
       description: string;
-      systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string; gatewayError: string };
+      systemStatus: { title: string; runtime: string; snapshot: string; snapshotReady: string; snapshotMissing: string; build: string; unknown: string; demoMode: string; demoOn: string; demoOff: string; demoHintOn: string; demoHintOff: string; gatewayError: string; runnerBoundary: string; runnerBoundaryReady: string; runnerBoundaryUnavailable: string; runnerBoundaryWatch: string; runnerBoundaryAdmitted: string; runnerBoundaryPolicy: string; runnerBoundaryError: string; runnerBoundaryUnknown: string };
       auditConfig: { title: string; defaultRounds: string; defaultBatchSize: string; saved: string; roundsClamped: string; batchClamped: string };
       account: { title: string; username: string; email: string; pendingEmail: string; pendingEmailNote: string; addEmail: string; changeEmail: string; emailPlaceholder: string; saveEmail: string; savingEmail: string; cancelEmailEdit: string; emailSaved: string; emailInvalid: string; emailInUse: string; generateVerificationLink: string; generatingVerificationLink: string; verificationWorkspaceMode: string; verificationLinkReady: string; openVerificationLink: string; copyVerificationLink: string; showVerificationDetails: string; hideVerificationDetails: string; verificationLinkCopied: string; verificationRequestFailed: string; passwordSaveFailed: string; verificationSuccess: string; verificationMissing: string; verificationInvalid: string; verificationExpired: string; verificationMissingPending: string; providers: string; connectGoogle: string; connectGithub: string; signInGoogle: string; signInGithub: string; providerLinkedGoogle: string; providerLinkedGithub: string; providerAlreadyLinkedGoogle: string; providerAlreadyLinkedGithub: string; providerInUseGoogle: string; providerInUseGithub: string; accessSummary: string; accessSummaryPrefix: string; accessSummaryPasswordOn: string; accessSummaryPasswordOff: string; accessSummaryPendingEmail: string; accessSummaryNoProvider: string; connectAnotherProvider: string; password: string; passwordManage: string; passwordSet: string; passwordUnset: string; loginId: string; loginIdPending: string; verified: string; unverified: string; noEmail: string; securityNote: string; privacy: string; terms: string; currentPassword: string; currentPasswordPlaceholder: string; currentPasswordRequired: string; currentPasswordIncorrect: string; newPassword: string; newPasswordPlaceholder: string; confirmPassword: string; confirmPasswordPlaceholder: string; passwordHintNew: string; passwordHintExisting: string; openPasswordCreate: string; openPasswordChange: string; closePasswordEditor: string; createLocalAccount: string; savePassword: string; savingPassword: string; passwordSaved: string; passwordMismatch: string; passwordTooShort: string; passwordRequired: string; passwordUnauthorized: string; twoFactor: string; twoFactorHint: string; twoFactorEnabled: string; twoFactorDisabled: string; twoFactorEnable: string; twoFactorDisable: string; twoFactorSaving: string; twoFactorSavedOn: string; twoFactorSavedOff: string; twoFactorSaveFailed: string; twoFactorNetworkFailed: string; notSignedIn: string; chooseSignInMethod: string; githubAvatarPriority: string; logout: string };
       preferences: { title: string; language: string; languageNote: string; theme: string; themeLight: string; themeDark: string; themeSystem: string };
@@ -1749,6 +1749,14 @@ export const WORKSPACE_COPY: Record<
         demoHintOn: "Using snapshot contracts, jobs, and reports across the workspace.",
         demoHintOff: "Using live Runtime and API responses instead of snapshot data.",
         gatewayError: "Gateway health check failed. Some status information may be unavailable.",
+        runnerBoundary: "Runner admission gates",
+        runnerBoundaryReady: "Synced",
+        runnerBoundaryUnavailable: "Unavailable",
+        runnerBoundaryWatch: "Watch-only",
+        runnerBoundaryAdmitted: "Admitted",
+        runnerBoundaryPolicy: "Research candidates stay outside live jobs until Runtime exposes an admitted contract.",
+        runnerBoundaryError: "Research boundary status is unavailable. Live job admission remains conservative.",
+        runnerBoundaryUnknown: "Unnamed boundary",
       },
       auditConfig: {
         title: "Audit defaults",
@@ -2915,6 +2923,14 @@ export const WORKSPACE_COPY: Record<
         demoHintOn: "当前工作台统一使用演示快照：合约、任务、报告都会显示模拟数据",
         demoHintOff: "当前使用实时 Runtime / API 数据，不再显示演示快照。",
         gatewayError: "网关健康检查失败，部分状态信息可能不可用。",
+        runnerBoundary: "Runner 准入边界",
+        runnerBoundaryReady: "已同步",
+        runnerBoundaryUnavailable: "不可用",
+        runnerBoundaryWatch: "观察中",
+        runnerBoundaryAdmitted: "已准入",
+        runnerBoundaryPolicy: "Research 候选结果在 Runtime 暴露已准入合约前，不会进入实时任务。",
+        runnerBoundaryError: "Research 边界状态不可用。实时任务准入仍保持保守策略。",
+        runnerBoundaryUnknown: "未命名边界",
       },
       auditConfig: {
         title: "审计默认值",

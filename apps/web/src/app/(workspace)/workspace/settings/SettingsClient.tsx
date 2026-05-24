@@ -18,6 +18,10 @@ import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
 import type { CurrentUserProfile } from "@/lib/auth";
 import { setDemoModeClient } from "@/lib/demo-mode-client";
+import {
+  getResearchBoundarySummary,
+  type ResearchBoundariesPayload,
+} from "@/lib/research-boundaries";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const STORAGE_KEYS = {
@@ -58,7 +62,6 @@ type GatewayHealth = {
     date?: string;
   };
 };
-
 function formatProviderName(provider: string) {
   if (provider === "google") return "Google";
   if (provider === "github") return "GitHub";
@@ -167,6 +170,7 @@ interface SettingsClientProps {
   initialProviderLinkStatus?: ProviderLinkStatus | null;
   oauthEnabled: { google: boolean; github: boolean };
   mode?: SettingsMode;
+  initialResearchBoundaries?: ResearchBoundariesPayload | null;
 }
 
 export function SettingsClient({
@@ -178,6 +182,7 @@ export function SettingsClient({
   initialProviderLinkStatus,
   oauthEnabled,
   mode = "settings",
+  initialResearchBoundaries,
 }: SettingsClientProps) {
   const localeCopy = WORKSPACE_COPY[locale];
   const copy = localeCopy.settings;
@@ -226,6 +231,13 @@ export function SettingsClient({
   const [gatewayHealth, setGatewayHealth] = useState<GatewayHealth | null>(null);
   const [gatewayHealthError, setGatewayHealthError] = useState(false);
   const [gatewayHealthLoading, setGatewayHealthLoading] = useState(true);
+  const [researchBoundaries, setResearchBoundaries] = useState<ResearchBoundariesPayload | null>(
+    initialResearchBoundaries ?? null,
+  );
+  const [researchBoundariesError, setResearchBoundariesError] = useState(false);
+  const [researchBoundariesLoading, setResearchBoundariesLoading] = useState(
+    initialResearchBoundaries === undefined,
+  );
 
   // Audit templates
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
@@ -330,6 +342,42 @@ export function SettingsClient({
       controller.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (initialResearchBoundaries !== undefined) return;
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 3000);
+
+    async function loadResearchBoundaries() {
+      try {
+        const response = await fetch("/api/v1/research-boundaries", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          setResearchBoundariesError(true);
+          return;
+        }
+        const payload = (await response.json().catch(() => null)) as ResearchBoundariesPayload | null;
+        setResearchBoundaries(payload);
+        setResearchBoundariesError(false);
+      } catch {
+        setResearchBoundaries(null);
+        setResearchBoundariesError(true);
+      } finally {
+        window.clearTimeout(timeoutId);
+        setResearchBoundariesLoading(false);
+      }
+    }
+
+    void loadResearchBoundaries();
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [initialResearchBoundaries]);
 
   useEffect(() => {
     setThemeMounted(true);
@@ -653,6 +701,10 @@ export function SettingsClient({
     { key: "google", label: profile ? copy.account.connectGoogle : copy.account.signInGoogle },
   ] as const).filter((provider) => oauthEnabled[provider.key] && (profile ? !connectedProviders.includes(provider.key) : true));
   const accessSummary = getAccessSummary(profile, copy.account);
+  const researchBoundarySummary = getResearchBoundarySummary(
+    researchBoundaries,
+    copy.systemStatus.runnerBoundaryUnknown,
+  );
   const accountStateItems = [
     {
       key: "email",
@@ -788,6 +840,59 @@ export function SettingsClient({
             {gatewayHealthError ? (
               <div className="rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--warning)]">
                 {copy.systemStatus.gatewayError}
+              </div>
+            ) : null}
+
+            <div className="rounded-2xl border border-border bg-muted/10 p-4" data-runner-boundary-panel>
+              {researchBoundariesLoading ? (
+                <div className="space-y-3">
+                  <div className="animate-pulse rounded-xl bg-muted/30 h-4 w-2/3" />
+                  <div className="animate-pulse rounded-xl bg-muted/30 h-4 w-1/2" />
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-muted-foreground">{copy.systemStatus.runnerBoundary}</span>
+                    <StatusBadge tone={researchBoundarySummary.ready ? "info" : "neutral"} compact>
+                      {researchBoundarySummary.ready ? copy.systemStatus.runnerBoundaryReady : copy.systemStatus.runnerBoundaryUnavailable}
+                    </StatusBadge>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="rounded-xl border border-border bg-background/40 px-2.5 py-2">
+                      <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                        {copy.systemStatus.runnerBoundaryWatch}
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-foreground">
+                        {researchBoundarySummary.watchOnlyBoundaryCount}
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-border bg-background/40 px-2.5 py-2">
+                      <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                        {copy.systemStatus.runnerBoundaryAdmitted}
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-foreground">
+                        {researchBoundarySummary.admittedBoundaryCount}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
+                    {copy.systemStatus.runnerBoundaryPolicy}
+                  </p>
+                  {researchBoundarySummary.previewLabels.length > 0 ? (
+                    <div className="mt-3 space-y-1.5">
+                      {researchBoundarySummary.previewLabels.map((label) => (
+                        <div key={label} className="truncate rounded-lg bg-muted/20 px-2 py-1 font-mono text-[10px] text-muted-foreground">
+                          {label}
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </div>
+            {researchBoundariesError ? (
+              <div className="rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-3 py-2 text-[11px] leading-5 text-[var(--warning)]">
+                {copy.systemStatus.runnerBoundaryError}
               </div>
             ) : null}
 

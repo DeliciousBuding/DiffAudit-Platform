@@ -13,6 +13,43 @@ function withToast(ui: React.ReactElement) {
 }
 
 describe("SettingsClient account verification", () => {
+  it("renders Runner admission gates from research boundaries without promoting watch items", () => {
+    const markup = renderToStaticMarkup(withToast(
+      <SettingsClient
+        locale="en-US"
+        oauthEnabled={{ google: true, github: true }}
+        initialResearchBoundaries={{
+          status: "ok",
+          source: "registry",
+          candidate_policy: "not-exposed-as-live-jobs",
+          boundaries: [
+            {
+              key: "h2-output-cloud-geometry-candidate-no-runtime-job",
+              title: "H2 output-cloud geometry candidate",
+              admission_status: "watch",
+            },
+            {
+              key: "rediffuse-stl10-bounded-scout-and-score-norm-completed-weak-results-no-runtime-job",
+              title: "ReDiffuse STL-10 weak scout",
+              admission_status: "watch",
+            },
+          ],
+          source_readiness: { ready: true },
+        }}
+      />,
+    ));
+
+    expect(markup).toContain("data-runner-boundary-panel");
+    expect(markup).toContain("Runner admission gates");
+    expect(markup).toContain("Watch-only");
+    expect(markup).toContain(">2<");
+    expect(markup).toContain("Admitted");
+    expect(markup).toContain(">0<");
+    expect(markup).toContain("Research candidates stay outside live jobs");
+    expect(markup).toContain("H2 output-cloud geometry candidate");
+    expect(markup).toContain("ReDiffuse STL-10 weak scout");
+  });
+
   it("renders a verification entry point for pending email addresses", () => {
     const markup = renderToStaticMarkup(withToast(
       <SettingsClient
