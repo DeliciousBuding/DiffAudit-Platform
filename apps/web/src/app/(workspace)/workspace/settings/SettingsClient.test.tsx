@@ -24,14 +24,18 @@ describe("SettingsClient account verification", () => {
           candidate_policy: "not-exposed-as-live-jobs",
           boundaries: [
             {
-              key: "h2-output-cloud-geometry-candidate-no-runtime-job",
-              title: "H2 output-cloud geometry candidate",
-              admission_status: "watch",
+              boundary_key: "h2-output-cloud-geometry-candidate-no-runtime-job",
+              description: "H2 output-cloud geometry candidate",
+              status: "watch-only",
+              signal_strength: "strong-controlled-seed-stable",
+              admission_blocker: "research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
             },
             {
-              key: "rediffuse-stl10-bounded-scout-and-score-norm-completed-weak-results-no-runtime-job",
-              title: "ReDiffuse STL-10 weak scout",
-              admission_status: "watch",
+              boundary_key: "rediffuse-stl10-bounded-scout-and-score-norm-completed-weak-results-no-runtime-job",
+              description: "ReDiffuse STL-10 weak scout",
+              status: "watch-only",
+              signal_strength: "weak-random-level",
+              admission_blocker: "bounded-scout-and-score-norm-failed-membership-signal",
             },
           ],
           source_readiness: { ready: true },
@@ -47,7 +51,9 @@ describe("SettingsClient account verification", () => {
     expect(markup).toContain(">0<");
     expect(markup).toContain("Research candidates stay outside live jobs");
     expect(markup).toContain("H2 output-cloud geometry candidate");
+    expect(markup).toContain("strong-controlled-seed-stable / research-side-response-cache-geometry-not-second-public-asset-or-product-contract");
     expect(markup).toContain("ReDiffuse STL-10 weak scout");
+    expect(markup).toContain("weak-random-level / bounded-scout-and-score-norm-failed-membership-signal");
   });
 
   it("renders a verification entry point for pending email addresses", () => {

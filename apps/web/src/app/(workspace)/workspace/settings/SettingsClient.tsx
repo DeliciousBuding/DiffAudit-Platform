@@ -880,9 +880,12 @@ export function SettingsClient({
                   </p>
                   {researchBoundarySummary.previewLabels.length > 0 ? (
                     <div className="mt-3 space-y-1.5">
-                      {researchBoundarySummary.previewLabels.map((label) => (
-                        <div key={label} className="truncate rounded-lg bg-muted/20 px-2 py-1 font-mono text-[10px] text-muted-foreground">
-                          {label}
+                      {researchBoundarySummary.previewLabels.map((label, index) => (
+                        <div key={label} className="rounded-lg bg-muted/20 px-2 py-1 font-mono text-[10px] text-muted-foreground">
+                          <div className="truncate">{label}</div>
+                          {researchBoundarySummary.previewDetails[index] ? (
+                            <div className="mt-0.5 truncate opacity-75">{researchBoundarySummary.previewDetails[index]}</div>
+                          ) : null}
                         </div>
                       ))}
                     </div>

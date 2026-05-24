@@ -8,9 +8,11 @@ describe("getResearchBoundarySummary", () => {
       status: "ok",
       boundaries: [
         {
-          key: "h2-output-cloud-geometry-candidate-no-runtime-job",
-          title: "H2 output-cloud geometry candidate",
-          admission_status: "watch",
+          boundary_key: "h2-output-cloud-geometry-candidate-no-runtime-job",
+          description: "H2 output-cloud geometry candidate",
+          status: "watch-only",
+          signal_strength: "strong-controlled-seed-stable",
+          admission_blocker: "research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
         },
         {
           key: "rediffuse-stl10-bounded-scout-and-score-norm-completed-weak-results-no-runtime-job",
@@ -30,6 +32,10 @@ describe("getResearchBoundarySummary", () => {
     expect(summary.previewLabels).toEqual([
       "H2 output-cloud geometry candidate",
       "ReDiffuse STL-10 weak scout",
+    ]);
+    expect(summary.previewDetails).toEqual([
+      "strong-controlled-seed-stable / research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
+      "watch",
     ]);
   });
 

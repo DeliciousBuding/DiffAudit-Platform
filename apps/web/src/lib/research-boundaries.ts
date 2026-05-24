@@ -1,11 +1,16 @@
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
 
 export type ResearchBoundary = {
+  boundary_key?: string;
   key?: string;
   title?: string;
   label?: string;
+  description?: string;
   status?: string;
   admission_status?: string;
+  signal_strength?: string;
+  admission_blocker?: string;
+  promotion_required?: string;
 };
 
 export type ResearchBoundariesPayload = {
@@ -27,6 +32,7 @@ export type ResearchBoundarySummary = {
   admittedBoundaryCount: number;
   ready: boolean;
   previewLabels: string[];
+  previewDetails: string[];
 };
 
 export function getResearchBoundarySummary(
@@ -43,9 +49,15 @@ export function getResearchBoundarySummary(
     admittedBoundaryCount: boundaryItems.filter(isAdmittedBoundary).length,
     ready: payload?.status === "ok" || payload?.source_readiness?.ready === true,
     previewLabels: boundaryItems.slice(0, 3).map((boundary) => (
-      sanitizeRuntimeText(boundary.title ?? boundary.label ?? boundary.key ?? fallbackLabel)
+      sanitizeRuntimeText(boundary.title ?? boundary.label ?? boundary.description ?? boundary.key ?? boundary.boundary_key ?? fallbackLabel)
         ?? fallbackLabel
     )),
+    previewDetails: boundaryItems.slice(0, 3).map((boundary) => {
+      const signal = sanitizeRuntimeText(boundary.signal_strength ?? "");
+      const blocker = sanitizeRuntimeText(boundary.admission_blocker ?? "");
+      if (signal && blocker) return `${signal} / ${blocker}`;
+      return signal || blocker || sanitizeRuntimeText(boundary.admission_status ?? boundary.status ?? "") || fallbackLabel;
+    }),
   };
 }
 
