@@ -1607,7 +1607,7 @@ export const WORKSPACE_COPY: Record<
         medium: "Medium",
         low: "Low",
       },
-      defenseRecommendation: (attack: string, _defense: string) =>
+      defenseRecommendation: (attack: string) =>
         attack === "GSA"
           ? "Differential Privacy (DP) training is recommended. Experiments show DP reduces the strongest attack (GSA) AUC from 0.998 to 0.489, near random guessing."
           : attack === "PIA"
@@ -2773,7 +2773,7 @@ export const WORKSPACE_COPY: Record<
         medium: "中风险",
         low: "低风险",
       },
-      defenseRecommendation: (attack: string, _defense: string) =>
+      defenseRecommendation: (attack: string) =>
         attack === "GSA"
           ? "建议采用差分隐私(DP)训练。实验表明 DP 可将最强攻击(GSA)的 AUC 从 0.998 降至 0.489，接近随机猜测水平。"
           : attack === "PIA"

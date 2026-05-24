@@ -77,7 +77,7 @@ export function AuditsPageClient({
       controller.abort();
       clearInterval(interval);
     };
-  }, [refreshToken, pollInterval, locale, toast]);
+  }, [refreshToken, pollInterval, locale, copy, toast]);
 
   useEffect(() => {
     if (urlSyncSource.current === "url") {
