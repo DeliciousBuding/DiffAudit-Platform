@@ -8,7 +8,7 @@ import (
 
 func TestCORSMiddlewareSetsHeadersOnNormalRequest(t *testing.T) {
 	cfg := CORSConfig{
-		AllowedOrigins: []string{},
+		AllowedOrigins: []string{"http://localhost:3000"},
 		Methods:        []string{"GET", "POST", "DELETE", "OPTIONS"},
 		Headers:        []string{"Content-Type", "Authorization", "X-Request-ID"},
 	}
@@ -36,6 +36,9 @@ func TestCORSMiddlewareSetsHeadersOnNormalRequest(t *testing.T) {
 	if recorder.Header().Get("Access-Control-Allow-Origin") != "http://localhost:3000" {
 		t.Fatalf("expected Allow-Origin to be http://localhost:3000, got %s", recorder.Header().Get("Access-Control-Allow-Origin"))
 	}
+	if recorder.Header().Get("Vary") != "Origin" {
+		t.Fatalf("expected Vary: Origin, got %s", recorder.Header().Get("Vary"))
+	}
 	if recorder.Header().Get("Access-Control-Allow-Methods") != "GET, POST, DELETE, OPTIONS" {
 		t.Fatalf("unexpected Allow-Methods: %s", recorder.Header().Get("Access-Control-Allow-Methods"))
 	}
@@ -49,7 +52,7 @@ func TestCORSMiddlewareSetsHeadersOnNormalRequest(t *testing.T) {
 
 func TestCORSMiddlewareHandlesOptionsPreflight(t *testing.T) {
 	cfg := CORSConfig{
-		AllowedOrigins: []string{},
+		AllowedOrigins: []string{"http://localhost:3000"},
 		Methods:        []string{"GET", "POST", "DELETE", "OPTIONS"},
 		Headers:        []string{"Content-Type", "Authorization", "X-Request-ID"},
 	}
@@ -71,6 +74,39 @@ func TestCORSMiddlewareHandlesOptionsPreflight(t *testing.T) {
 	}
 	if recorder.Header().Get("Access-Control-Allow-Origin") != "http://localhost:3000" {
 		t.Fatalf("expected Allow-Origin to be http://localhost:3000, got %s", recorder.Header().Get("Access-Control-Allow-Origin"))
+	}
+}
+
+func TestCORSMiddlewareDoesNotReflectUnconfiguredOrigins(t *testing.T) {
+	cfg := CORSConfig{
+		AllowedOrigins: []string{},
+		Methods:        []string{"GET", "POST", "DELETE", "OPTIONS"},
+		Headers:        []string{"Content-Type", "Authorization", "X-Request-ID"},
+	}
+
+	nextHandler := http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusOK)
+	})
+
+	handler := CORSMiddleware(cfg)(nextHandler)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	request.Header.Set("Origin", "https://untrusted.example")
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	if recorder.Header().Get("Access-Control-Allow-Origin") != "" {
+		t.Fatalf("expected no Allow-Origin header for unconfigured CORS, got %s", recorder.Header().Get("Access-Control-Allow-Origin"))
+	}
+	if recorder.Header().Get("Access-Control-Allow-Methods") != "" {
+		t.Fatalf("expected no Allow-Methods header for unconfigured CORS, got %s", recorder.Header().Get("Access-Control-Allow-Methods"))
+	}
+	if recorder.Header().Get("Access-Control-Allow-Headers") != "" {
+		t.Fatalf("expected no Allow-Headers header for unconfigured CORS, got %s", recorder.Header().Get("Access-Control-Allow-Headers"))
 	}
 }
 
@@ -113,12 +149,12 @@ func TestIsAllowedOriginEmptyList(t *testing.T) {
 		t.Fatal("expected empty origin to be disallowed")
 	}
 
-	// Empty AllowedOrigins list = allow all (development default)
-	if !cfg.isAllowedOrigin("http://any-origin.example.com") {
-		t.Fatal("expected any origin allowed when list is empty")
+	// Empty AllowedOrigins list disables browser cross-origin access.
+	if cfg.isAllowedOrigin("http://any-origin.example.com") {
+		t.Fatal("expected origin to be disallowed when list is empty")
 	}
-	if !cfg.isAllowedOrigin("https://other.example.com:8443") {
-		t.Fatal("expected any origin allowed when list is empty")
+	if cfg.isAllowedOrigin("https://other.example.com:8443") {
+		t.Fatal("expected origin to be disallowed when list is empty")
 	}
 }
 

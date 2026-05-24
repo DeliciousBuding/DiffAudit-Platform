@@ -22,6 +22,11 @@ powershell -ExecutionPolicy Bypass -File .\apps\api-go\run-platform-api.ps1 `
 
 The default listen port is `8780`.
 
+Browser CORS is disabled by default. If a browser-hosted web app must call the
+gateway directly from another origin, set `DIFFAUDIT_CORS_ALLOWED_ORIGINS` or
+`--cors-allowed-origins` to an exact comma-separated origin allowlist, for
+example `http://localhost:3000`.
+
 ## Refresh Snapshot Data
 
 ```powershell

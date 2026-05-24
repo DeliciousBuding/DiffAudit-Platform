@@ -61,7 +61,7 @@ func parseConfig(args []string) (runtimeConfig, error) {
 	corsOrigins := flagSet.String(
 		"cors-allowed-origins",
 		envOrDefault("", "DIFFAUDIT_CORS_ALLOWED_ORIGINS"),
-		"comma-separated list of allowed CORS origins (empty = allow all)",
+		"comma-separated list of allowed CORS origins (empty = disable browser CORS)",
 	)
 	buildRevision := flagSet.String(
 		"build-revision",

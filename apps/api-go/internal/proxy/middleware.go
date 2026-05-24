@@ -9,17 +9,18 @@ import (
 	"time"
 )
 
-// CORSMiddleware wraps an http.Handler with CORS headers.
+// CORSMiddleware wraps an http.Handler with explicit CORS headers.
 func CORSMiddleware(cfg CORSConfig) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			origin := r.Header.Get("Origin")
 			if cfg.isAllowedOrigin(origin) {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Add("Vary", "Origin")
+				w.Header().Set("Access-Control-Allow-Methods", strings.Join(cfg.Methods, ", "))
+				w.Header().Set("Access-Control-Allow-Headers", strings.Join(cfg.Headers, ", "))
+				w.Header().Set("Access-Control-Max-Age", "86400")
 			}
-			w.Header().Set("Access-Control-Allow-Methods", strings.Join(cfg.Methods, ", "))
-			w.Header().Set("Access-Control-Allow-Headers", strings.Join(cfg.Headers, ", "))
-			w.Header().Set("Access-Control-Max-Age", "86400")
 
 			if r.Method == http.MethodOptions {
 				w.WriteHeader(http.StatusNoContent)
@@ -33,7 +34,7 @@ func CORSMiddleware(cfg CORSConfig) func(http.Handler) http.Handler {
 
 // CORSConfig holds CORS configuration.
 type CORSConfig struct {
-	AllowedOrigins []string // exact origins to allow; empty = allow all
+	AllowedOrigins []string // exact origins to allow; empty = disable browser CORS
 	Methods        []string
 	Headers        []string
 }
@@ -41,9 +42,6 @@ type CORSConfig struct {
 func (c *CORSConfig) isAllowedOrigin(origin string) bool {
 	if origin == "" {
 		return false
-	}
-	if len(c.AllowedOrigins) == 0 {
-		return true // allow all when empty (development default)
 	}
 	for _, allowed := range c.AllowedOrigins {
 		if allowed == origin {
