@@ -8,6 +8,7 @@ export const users = sqliteTable("users", {
   pendingEmail: text("pending_email"),
   emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
   passwordHash: text("password_hash"),
+  legacySharedAccount: integer("legacy_shared_account", { mode: "boolean" }).notNull().default(false),
   avatarUrl: text("avatar_url"),
   bio: text("bio"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),

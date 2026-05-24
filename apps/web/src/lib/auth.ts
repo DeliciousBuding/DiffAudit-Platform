@@ -124,11 +124,19 @@ export async function ensureLegacySharedUser(
       pendingEmail: null,
       emailVerified: false,
       passwordHash,
+      legacySharedAccount: true,
       avatarUrl: null,
       bio: null,
       createdAt: now,
     }).run();
     return { id, username };
+  }
+
+  if (!existing.legacySharedAccount) {
+    console.warn(
+      `[auth] Refusing to bootstrap legacy shared user "${username}" because an existing account already owns that username.`,
+    );
+    return null;
   }
 
   if (existing.passwordHash && await bcrypt.compare(password, existing.passwordHash)) {

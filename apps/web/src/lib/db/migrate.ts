@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
   pending_email TEXT,
   email_verified INTEGER NOT NULL DEFAULT 0,
   password_hash TEXT,
+  legacy_shared_account INTEGER NOT NULL DEFAULT 0,
   avatar_url TEXT,
   bio TEXT,
   created_at INTEGER NOT NULL
@@ -89,6 +90,7 @@ function migrate() {
   ensureColumn(db, "users", "display_name", "display_name TEXT");
   ensureColumn(db, "users", "pending_email", "pending_email TEXT");
   ensureColumn(db, "users", "email_verified", "email_verified INTEGER NOT NULL DEFAULT 0");
+  ensureColumn(db, "users", "legacy_shared_account", "legacy_shared_account INTEGER NOT NULL DEFAULT 0");
   ensureColumn(db, "users", "bio", "bio TEXT");
   db.close();
 

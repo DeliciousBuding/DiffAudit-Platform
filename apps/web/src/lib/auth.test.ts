@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   DEFAULT_REDIRECT_PATH,
   authPagePath,
+  createUser,
   ensureLegacySharedUser,
   buildLoginPath,
   githubOAuthConfigured,
@@ -129,6 +130,21 @@ describe("auth route helpers", () => {
     await expect(
       verifyCredentials("example-reviewer", "ExamplePassword!2026"),
     ).resolves.toMatchObject({ username: "example-reviewer" });
+  });
+
+  it("does not overwrite an existing normal user when legacy shared username collides", async () => {
+    await createUser("example-reviewer", null, "PersonalPassword!2026");
+    process.env.DIFFAUDIT_SHARED_USERNAME = "example-reviewer";
+    process.env.DIFFAUDIT_SHARED_PASSWORD = "SharedPassword!2026";
+
+    await expect(ensureLegacySharedUser()).resolves.toBeNull();
+
+    await expect(
+      verifyCredentials("example-reviewer", "PersonalPassword!2026"),
+    ).resolves.toMatchObject({ username: "example-reviewer" });
+    await expect(
+      verifyCredentials("example-reviewer", "SharedPassword!2026"),
+    ).resolves.toBeNull();
   });
 
   it("updates the bootstrapped shared account when the env password changes", async () => {
