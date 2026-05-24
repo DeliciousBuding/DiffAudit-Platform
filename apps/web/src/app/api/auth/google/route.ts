@@ -2,13 +2,14 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { getCurrentUserProfile, sanitizeRedirectPath, SESSION_COOKIE_NAME } from "@/lib/auth";
+import { getCurrentUserProfile, resolvePlatformUrl, sanitizeRedirectPath, SESSION_COOKIE_NAME } from "@/lib/auth";
 
 const STATE_COOKIE = "diffaudit_google_oauth_state";
 
 export async function GET(request: Request) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const platformUrl = process.env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000";
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const platformUrl = resolvePlatformUrl(request);
   const requestUrl = new URL(request.url);
   const intent = requestUrl.searchParams.get("intent");
   const redirectTo = sanitizeRedirectPath(
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
     intent === "connect" ? "/workspace/account" : undefined,
   );
 
-  if (!clientId) {
+  if (!clientId || !clientSecret) {
     return NextResponse.json({ message: "Google OAuth is not configured." }, { status: 500 });
   }
 

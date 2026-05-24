@@ -6,6 +6,7 @@ import {
   findOrCreateOAuthUser,
   getCurrentUserProfile,
   linkOAuthAccount,
+  resolvePlatformUrl,
   sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
@@ -52,13 +53,21 @@ function buildPlatformRedirect(path: string, platformUrl: string) {
   return new URL(path, platformUrl);
 }
 
+async function readGitHubTokenPayload(response: Response): Promise<GitHubTokenResponse | null> {
+  try {
+    return (await response.json()) as GitHubTokenResponse;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
   const clientId = process.env.GITHUB_CLIENT_ID;
   const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-  const platformUrl = process.env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000";
+  const platformUrl = resolvePlatformUrl(request);
 
   const cookieStore = await cookies();
   const storedState = readStoredState(cookieStore.get(STATE_COOKIE)?.value);
@@ -92,8 +101,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_github", platformUrl));
   }
 
-  const tokenPayload = (await tokenRes.json()) as GitHubTokenResponse;
-  if (!tokenPayload.access_token) {
+  const tokenPayload = await readGitHubTokenPayload(tokenRes);
+  if (!tokenPayload?.access_token) {
     return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_token", platformUrl));
   }
 

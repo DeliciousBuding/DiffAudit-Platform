@@ -10,8 +10,10 @@ import {
   ensureLegacySharedUser,
   buildLoginPath,
   githubOAuthConfigured,
+  googleOAuthConfigured,
   protectedApiPath,
   protectedPagePath,
+  resolvePlatformUrl,
   sanitizeRedirectPath,
   verifyCredentials,
 } from "./auth";
@@ -24,6 +26,7 @@ beforeEach(() => {
   process.env.DIFFAUDIT_DB_PATH = path.join(tempDir, "diffaudit.db");
   delete process.env.DIFFAUDIT_SHARED_USERNAME;
   delete process.env.DIFFAUDIT_SHARED_PASSWORD;
+  delete process.env.DIFFAUDIT_PLATFORM_URL;
   resetDbForTests();
 });
 
@@ -32,6 +35,7 @@ afterEach(() => {
   delete process.env.DIFFAUDIT_DB_PATH;
   delete process.env.DIFFAUDIT_SHARED_USERNAME;
   delete process.env.DIFFAUDIT_SHARED_PASSWORD;
+  delete process.env.DIFFAUDIT_PLATFORM_URL;
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
@@ -78,6 +82,42 @@ describe("auth route helpers", () => {
         GITHUB_CLIENT_SECRET: "client-secret",
       }),
     ).toBe(true);
+  });
+
+  it("only enables google oauth when both credentials are present", () => {
+    expect(googleOAuthConfigured({})).toBe(false);
+    expect(googleOAuthConfigured({ GOOGLE_CLIENT_ID: "client-only" })).toBe(false);
+    expect(
+      googleOAuthConfigured({
+        GOOGLE_CLIENT_ID: "client-id",
+        GOOGLE_CLIENT_SECRET: "client-secret",
+      }),
+    ).toBe(true);
+  });
+
+  it("resolves oauth public URL from the request when configured URL is bind-only", () => {
+    process.env.DIFFAUDIT_PLATFORM_URL = "http://0.0.0.0:3000";
+
+    const request = new Request("http://127.0.0.1:3000/api/auth/google", {
+      headers: {
+        host: "diffaudit.example.test",
+        "x-forwarded-proto": "https",
+      },
+    });
+
+    expect(resolvePlatformUrl(request)).toBe("https://diffaudit.example.test");
+  });
+
+  it("prefers a valid configured public platform URL for oauth redirects", () => {
+    process.env.DIFFAUDIT_PLATFORM_URL = "https://diffaudit.example.test";
+
+    const request = new Request("http://127.0.0.1:3000/api/auth/google", {
+      headers: {
+        host: "127.0.0.1:3000",
+      },
+    });
+
+    expect(resolvePlatformUrl(request)).toBe("https://diffaudit.example.test");
   });
 
   it("bootstraps the legacy shared account into the sqlite user store", async () => {

@@ -6,6 +6,7 @@ import {
   findOrCreateOAuthUser,
   getCurrentUserProfile,
   linkOAuthAccount,
+  resolvePlatformUrl,
   sanitizeRedirectPath,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
@@ -68,13 +69,21 @@ function buildPlatformRedirect(path: string, platformUrl: string) {
   return new URL(path, platformUrl);
 }
 
+async function readGoogleTokenPayload(response: Response): Promise<GoogleTokenResponse | null> {
+  try {
+    return (await response.json()) as GoogleTokenResponse;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const returnedState = url.searchParams.get("state");
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const platformUrl = process.env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000";
+  const platformUrl = resolvePlatformUrl(request);
 
   const cookieStore = await cookies();
   const storedState = readStoredState(cookieStore.get(STATE_COOKIE)?.value);
@@ -107,8 +116,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_network_google", platformUrl));
   }
 
-  const tokenPayload = (await tokenRes.json()) as GoogleTokenResponse;
-  if (!tokenPayload.access_token) {
+  const tokenPayload = await readGoogleTokenPayload(tokenRes);
+  if (!tokenPayload?.access_token) {
     return NextResponse.redirect(buildPlatformRedirect("/login?error=oauth_token", platformUrl));
   }
 

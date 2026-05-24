@@ -59,6 +59,36 @@ export function googleOAuthConfigured(
   return Boolean(env.GOOGLE_CLIENT_ID?.trim() && env.GOOGLE_CLIENT_SECRET?.trim());
 }
 
+function validConfiguredPlatformUrl(value: string | undefined): string | null {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (!["http:", "https:"].includes(url.protocol)) return null;
+    if (url.hostname === "0.0.0.0") return null;
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
+export function resolvePlatformUrl(request: Request): string {
+  const configured = validConfiguredPlatformUrl(process.env.DIFFAUDIT_PLATFORM_URL);
+  if (configured) return configured;
+
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const host = forwardedHost || request.headers.get("host");
+  if (host) {
+    const proto = forwardedProto === "http" || forwardedProto === "https"
+      ? forwardedProto
+      : new URL(request.url).protocol.replace(":", "");
+    return `${proto}://${host}`;
+  }
+
+  return new URL(request.url).origin;
+}
+
 type LegacySharedAuthEnv = {
   DIFFAUDIT_SHARED_USERNAME?: string;
   DIFFAUDIT_SHARED_PASSWORD?: string;
