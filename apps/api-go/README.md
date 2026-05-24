@@ -48,6 +48,7 @@ Snapshot-backed read routes:
 
 Optional live control-plane routes:
 
+- `GET /api/v1/research-boundaries`
 - `GET /api/v1/audit/jobs`
 - `POST /api/v1/audit/jobs`
 - `GET /api/v1/audit/jobs/{job_id}`
@@ -61,4 +62,4 @@ This service is a gateway only:
 - it does not run research jobs directly;
 - it does not shell out to Python during public requests;
 - it serves workspace read models from the configured snapshot bundle;
-- it forwards only audit control-plane calls to Runtime, and only when that upstream is configured.
+- it forwards only audit control-plane calls and read-only research admission boundaries to Runtime, and only when that upstream is configured.

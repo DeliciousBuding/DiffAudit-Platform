@@ -429,6 +429,104 @@ func TestSnapshotBackedRouteReturns503WhenSnapshotMissing(t *testing.T) {
 	}
 }
 
+func TestResearchBoundariesEndpointProxiesRuntimeBoundaryRegistry(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/v1/research-boundaries" {
+			t.Fatalf("unexpected path %s", request.URL.Path)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{
+			"status":           "ok",
+			"source":           "registry",
+			"candidate_policy": "not-exposed-as-live-jobs",
+			"boundaries": []map[string]any{
+				{
+					"key":              "h2-output-cloud-geometry-candidate-no-runtime-job",
+					"admission_status": "watch",
+				},
+			},
+			"source_readiness": map[string]any{"ready": true},
+		})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/research-boundaries", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["source"] != "registry" {
+		t.Fatalf("expected runtime registry payload, got %v", payload)
+	}
+	if payload["candidate_policy"] != "not-exposed-as-live-jobs" {
+		t.Fatalf("unexpected candidate policy %v", payload["candidate_policy"])
+	}
+	if payload["job_type"] != nil {
+		t.Fatalf("research boundary payload must not expose live job_type: %v", payload)
+	}
+}
+
+func TestResearchBoundariesEndpointReturnsStableUnavailablePayloadWithoutRuntime(t *testing.T) {
+	server := NewServer(Config{})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/research-boundaries", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["status"] != "unavailable" {
+		t.Fatalf("expected unavailable status, got %v", payload["status"])
+	}
+	if payload["candidate_policy"] != "not-exposed-as-live-jobs" {
+		t.Fatalf("unexpected candidate policy %v", payload["candidate_policy"])
+	}
+	if payload["runtime_configured"] != false {
+		t.Fatalf("expected runtime_configured=false, got %v", payload["runtime_configured"])
+	}
+}
+
+func TestResearchBoundariesEndpointDoesNotExposeRuntimeErrors(t *testing.T) {
+	server := NewServer(Config{
+		RuntimeBaseURL: "http://192.0.2.10:8765",
+		RuntimeTimeout: 10 * time.Millisecond,
+	})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/research-boundaries", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", recorder.Code)
+	}
+	raw := recorder.Body.String()
+	if strings.Contains(raw, "192.0.2.10") || strings.Contains(raw, "connection refused") || strings.Contains(raw, "deadline") {
+		t.Fatalf("research boundaries leaked upstream details: %s", raw)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal([]byte(raw), &payload); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if payload["status"] != "unavailable" {
+		t.Fatalf("expected unavailable status, got %v", payload["status"])
+	}
+	if payload["runtime_configured"] != true {
+		t.Fatalf("expected runtime_configured=true, got %v", payload["runtime_configured"])
+	}
+}
+
 func TestJobsListEndpointIsProxied(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/api/v1/audit/jobs" {

@@ -47,9 +47,9 @@ type Server struct {
 func NewServer(config Config) *Server {
 	mux := http.NewServeMux()
 	server := &Server{
-		config:    config,
-		mux:       mux,
-		client:    &http.Client{
+		config: config,
+		mux:    mux,
+		client: &http.Client{
 			Timeout: config.timeout(),
 		},
 		cacheDir:  config.PublicDataDir,
@@ -60,6 +60,7 @@ func NewServer(config Config) *Server {
 	mux.HandleFunc("GET /api/v1/catalog", server.handleSnapshotFile("catalog.json"))
 	mux.HandleFunc("GET /api/v1/evidence/attack-defense-table", server.handleSnapshotFile("attack-defense-table.json"))
 	mux.HandleFunc("GET /api/v1/models", server.handleSnapshotFile("models.json"))
+	mux.HandleFunc("GET /api/v1/research-boundaries", server.handleResearchBoundaries)
 	mux.HandleFunc("GET /api/v1/experiments/recon/best", server.handleBestSummaryByContract)
 	mux.HandleFunc("GET /api/v1/experiments/best", server.handleBestSummaryByContract)
 	mux.HandleFunc("GET /api/v1/experiments/{workspace}/summary", server.handleWorkspaceSummary)
@@ -201,6 +202,62 @@ func (s *Server) handleBestSummaryByContract(writer http.ResponseWriter, request
 	}
 
 	writeJSON(writer, http.StatusServiceUnavailable, map[string]any{"detail": "snapshot unavailable: best summary for contract"})
+}
+
+func (s *Server) handleResearchBoundaries(writer http.ResponseWriter, request *http.Request) {
+	if s.config.DemoMode || s.config.RuntimeBaseURL == "" {
+		writeJSON(writer, http.StatusOK, researchBoundariesUnavailablePayload(s.config.DemoMode, s.config.RuntimeBaseURL != ""))
+		return
+	}
+
+	upstreamURL, err := url.JoinPath(s.config.RuntimeBaseURL, request.URL.Path)
+	if err != nil {
+		writeJSON(writer, http.StatusOK, researchBoundariesUnavailablePayload(false, true))
+		return
+	}
+
+	upstreamRequest, err := http.NewRequest(http.MethodGet, upstreamURL, nil)
+	if err != nil {
+		writeJSON(writer, http.StatusOK, researchBoundariesUnavailablePayload(false, true))
+		return
+	}
+
+	response, err := s.doWithRetry(upstreamRequest, maxRetries)
+	if err != nil {
+		writeJSON(writer, http.StatusOK, researchBoundariesUnavailablePayload(false, true))
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+		writeJSON(writer, http.StatusOK, researchBoundariesUnavailablePayload(false, true))
+		return
+	}
+
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil || !json.Valid(responseBody) {
+		writeJSON(writer, http.StatusOK, researchBoundariesUnavailablePayload(false, true))
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+	_, _ = writer.Write(responseBody)
+}
+
+func researchBoundariesUnavailablePayload(demoMode bool, runtimeConfigured bool) map[string]any {
+	return map[string]any{
+		"status":             "unavailable",
+		"source":             "runtime",
+		"candidate_policy":   "not-exposed-as-live-jobs",
+		"boundaries":         []any{},
+		"demo_mode":          demoMode,
+		"runtime_configured": runtimeConfigured,
+		"source_readiness": map[string]any{
+			"configured": runtimeConfigured,
+			"ready":      false,
+		},
+	}
 }
 
 func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Request) {

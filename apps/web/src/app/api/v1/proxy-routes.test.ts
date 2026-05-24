@@ -70,6 +70,14 @@ describe("platform api proxy routes", () => {
     expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/evidence/attack-defense-table");
   });
 
+  it("proxies research boundary requests to the backend", async () => {
+    const route = await import("./research-boundaries/route");
+
+    await route.GET();
+
+    expect(proxyToBackend).toHaveBeenCalledWith("/api/v1/research-boundaries");
+  });
+
   it("proxies workspace summary requests to the backend", async () => {
     const route = await import("./experiments/[workspace]/summary/route");
 
