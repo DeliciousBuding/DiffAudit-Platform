@@ -11,6 +11,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/auth";
+import { oauthFetch } from "@/lib/oauth-fetch";
 import { timingSafeStateEqual } from "@/lib/timing-safe";
 
 const STATE_COOKIE = "diffaudit_google_oauth_state";
@@ -99,7 +100,7 @@ export async function GET(request: Request) {
 
   let tokenRes: Response;
   try {
-    tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+    tokenRes = await oauthFetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -123,7 +124,7 @@ export async function GET(request: Request) {
 
   let userRes: Response;
   try {
-    userRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+    userRes = await oauthFetch("https://openidconnect.googleapis.com/v1/userinfo", {
       headers: {
         Authorization: `Bearer ${tokenPayload.access_token}`,
       },

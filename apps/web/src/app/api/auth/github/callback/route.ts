@@ -11,6 +11,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/auth";
+import { oauthFetch } from "@/lib/oauth-fetch";
 import { timingSafeStateEqual } from "@/lib/timing-safe";
 
 const STATE_COOKIE = "diffaudit_oauth_state";
@@ -83,7 +84,7 @@ export async function GET(request: Request) {
 
   let tokenRes: Response;
   try {
-    tokenRes = await fetch("https://github.com/login/oauth/access_token", {
+    tokenRes = await oauthFetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -108,7 +109,7 @@ export async function GET(request: Request) {
 
   let userRes: Response;
   try {
-    userRes = await fetch("https://api.github.com/user", {
+    userRes = await oauthFetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${tokenPayload.access_token}`,
         Accept: "application/vnd.github+json",
@@ -130,7 +131,7 @@ export async function GET(request: Request) {
   if (!email) {
     let emailRes: Response;
     try {
-      emailRes = await fetch("https://api.github.com/user/emails", {
+      emailRes = await oauthFetch("https://api.github.com/user/emails", {
         headers: {
           Authorization: `Bearer ${tokenPayload.access_token}`,
           Accept: "application/vnd.github+json",
