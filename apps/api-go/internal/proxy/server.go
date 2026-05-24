@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -17,6 +18,9 @@ const (
 	defaultRuntimeTimeout = 15000 * time.Millisecond
 	maxRetries            = 3
 	retryDelay            = 1 * time.Second
+
+	maxAuditControlRequestBodyBytes = 1 << 20
+	maxRuntimeResponseBodyBytes     = 8 << 20
 )
 
 type Config struct {
@@ -47,9 +51,9 @@ type Server struct {
 func NewServer(config Config) *Server {
 	mux := http.NewServeMux()
 	server := &Server{
-		config:    config,
-		mux:       mux,
-		client:    &http.Client{
+		config: config,
+		mux:    mux,
+		client: &http.Client{
 			Timeout: config.timeout(),
 		},
 		cacheDir:  config.PublicDataDir,
@@ -212,8 +216,12 @@ func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Requ
 }
 
 func (s *Server) handleControlPost(writer http.ResponseWriter, request *http.Request) {
-	body, err := io.ReadAll(request.Body)
+	body, err := readBoundedRequestBody(writer, request, maxAuditControlRequestBodyBytes)
 	if err != nil {
+		if errors.Is(err, errRequestBodyTooLarge) {
+			writeJSON(writer, http.StatusRequestEntityTooLarge, map[string]any{"detail": "request body too large"})
+			return
+		}
 		writePublicGatewayError(writer, "request body unavailable")
 		return
 	}
@@ -348,7 +356,7 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 	if query := request.URL.RawQuery; query != "" {
 		upstreamURL = upstreamURL + "?" + query
 	}
-	upstreamRequest, err := http.NewRequest(request.Method, upstreamURL, strings.NewReader(string(body)))
+	upstreamRequest, err := http.NewRequest(request.Method, upstreamURL, bytes.NewReader(body))
 	if err != nil {
 		writePublicGatewayError(writer, "runtime proxy request is misconfigured")
 		return
@@ -366,8 +374,12 @@ func (s *Server) forwardControl(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 	defer response.Body.Close()
-	responseBody, err := io.ReadAll(response.Body)
+	responseBody, err := readBoundedRuntimeResponseBody(response.Body)
 	if err != nil {
+		if errors.Is(err, errRuntimeResponseTooLarge) {
+			writePublicGatewayError(writer, "runtime response too large")
+			return
+		}
 		writePublicGatewayError(writer, "runtime response unavailable")
 		return
 	}
@@ -405,8 +417,12 @@ func (s *Server) forwardControlWithMethod(writer http.ResponseWriter, request *h
 		return
 	}
 	defer response.Body.Close()
-	responseBody, err := io.ReadAll(response.Body)
+	responseBody, err := readBoundedRuntimeResponseBody(response.Body)
 	if err != nil {
+		if errors.Is(err, errRuntimeResponseTooLarge) {
+			writePublicGatewayError(writer, "runtime response too large")
+			return
+		}
 		writePublicGatewayError(writer, "runtime response unavailable")
 		return
 	}
@@ -425,7 +441,39 @@ func writePublicGatewayError(writer http.ResponseWriter, detail string) {
 	writeJSON(writer, http.StatusBadGateway, map[string]any{"detail": detail})
 }
 
-var errSnapshotUnavailable = errors.New("snapshot unavailable")
+var (
+	errRequestBodyTooLarge     = errors.New("request body too large")
+	errRuntimeResponseTooLarge = errors.New("runtime response too large")
+	errSnapshotUnavailable     = errors.New("snapshot unavailable")
+)
+
+func readBoundedRequestBody(writer http.ResponseWriter, request *http.Request, maxBytes int64) ([]byte, error) {
+	if request.ContentLength > maxBytes {
+		return nil, errRequestBodyTooLarge
+	}
+
+	request.Body = http.MaxBytesReader(writer, request.Body, maxBytes)
+	body, err := io.ReadAll(request.Body)
+	if err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			return nil, errRequestBodyTooLarge
+		}
+		return nil, err
+	}
+	return body, nil
+}
+
+func readBoundedRuntimeResponseBody(reader io.Reader) ([]byte, error) {
+	body, err := io.ReadAll(io.LimitReader(reader, maxRuntimeResponseBodyBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(body)) > maxRuntimeResponseBodyBytes {
+		return nil, errRuntimeResponseTooLarge
+	}
+	return body, nil
+}
 
 func (s *Server) doWithRetry(request *http.Request, maxAttempts int) (*http.Response, error) {
 	// Only retry safe, idempotent methods (GET, HEAD).

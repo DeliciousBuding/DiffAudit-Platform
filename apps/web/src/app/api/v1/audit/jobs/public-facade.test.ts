@@ -96,6 +96,50 @@ describe("audit job public facade routes", () => {
     });
   });
 
+  it("rejects live audit job creation when content-length exceeds the facade body limit", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const route = await import("./route");
+    const response = await route.POST(new Request("http://localhost/api/v1/audit/jobs", {
+      method: "POST",
+      headers: {
+        cookie: "platform-demo-mode=0",
+        "content-length": String((1 << 20) + 1),
+      },
+      body: "{}",
+    }));
+    const payload = await response.json();
+
+    expect(response.status).toBe(413);
+    expect(payload).toEqual({ detail: "request body too large" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects live audit job creation when streamed body exceeds the facade body limit", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const route = await import("./route");
+    const response = await route.POST(new Request("http://localhost/api/v1/audit/jobs", {
+      method: "POST",
+      headers: { cookie: "platform-demo-mode=0" },
+      body: new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new Uint8Array(1 << 20));
+          controller.enqueue(new Uint8Array(1));
+          controller.close();
+        },
+      }),
+      duplex: "half",
+    } as RequestInit));
+    const payload = await response.json();
+
+    expect(response.status).toBe(413);
+    expect(payload).toEqual({ detail: "request body too large" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("sanitizes live audit job cancellation responses before returning them", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({
       ok: true,

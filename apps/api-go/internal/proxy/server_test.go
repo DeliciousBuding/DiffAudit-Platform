@@ -539,6 +539,33 @@ func TestCreateJobEndpointIsProxied(t *testing.T) {
 	}
 }
 
+func TestCreateJobRejectsOversizedBodyBeforeProxy(t *testing.T) {
+	upstreamCalled := false
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		upstreamCalled = true
+		writeJSON(writer, http.StatusAccepted, map[string]any{"job_id": "should-not-run"})
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	body := bytes.Repeat([]byte("a"), maxAuditControlRequestBodyBytes+1)
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/audit/jobs", bytes.NewReader(body))
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusRequestEntityTooLarge {
+		t.Fatalf("expected 413, got %d: %s", recorder.Code, recorder.Body.String())
+	}
+	if upstreamCalled {
+		t.Fatal("oversized request body was forwarded to runtime")
+	}
+	if !strings.Contains(recorder.Body.String(), "request body too large") {
+		t.Fatalf("expected generic oversized-body detail, got %s", recorder.Body.String())
+	}
+}
+
 func TestCreateGrayBoxJobEndpointIsProxied(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodPost {
@@ -940,6 +967,29 @@ func TestBadGatewayResponseIsSafe(t *testing.T) {
 	raw := recorder.Body.String()
 	if !strings.Contains(raw, "runtime") || strings.Contains(raw, "runtime_base_url") {
 		t.Fatalf("502 response should mention runtime and must not leak internal config: %s", raw)
+	}
+}
+
+func TestRuntimeResponseTooLargeIsRejected(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(bytes.Repeat([]byte("a"), maxRuntimeResponseBodyBytes+1))
+	}))
+	defer upstream.Close()
+
+	server := NewServer(Config{RuntimeBaseURL: upstream.URL})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/audit/jobs", nil)
+	recorder := httptest.NewRecorder()
+
+	server.Handler().ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusBadGateway {
+		t.Fatalf("expected 502, got %d", recorder.Code)
+	}
+	raw := recorder.Body.String()
+	if !strings.Contains(raw, "runtime response too large") {
+		t.Fatalf("expected bounded runtime response detail, got %s", raw)
 	}
 }
 

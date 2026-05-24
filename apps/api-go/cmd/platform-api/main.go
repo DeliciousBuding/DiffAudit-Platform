@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"diffaudit/platform-api-go/internal/proxy"
 )
@@ -25,6 +26,12 @@ type runtimeConfig struct {
 const (
 	defaultHost = "127.0.0.1"
 	defaultPort = "8780"
+
+	defaultReadHeaderTimeout = 5 * time.Second
+	defaultReadTimeout       = 15 * time.Second
+	defaultWriteTimeout      = 30 * time.Second
+	defaultIdleTimeout       = 60 * time.Second
+	defaultMaxHeaderBytes    = 1 << 20
 )
 
 func parseConfig(args []string) (runtimeConfig, error) {
@@ -113,7 +120,7 @@ func main() {
 		}
 	}
 
-	server := proxy.NewServer(proxy.Config{
+	gateway := proxy.NewServer(proxy.Config{
 		PublicDataDir:  config.PublicDataDir,
 		RuntimeBaseURL: config.RuntimeBaseURL,
 		BuildRevision:  config.BuildRevision,
@@ -126,14 +133,27 @@ func main() {
 		},
 	})
 
-	handler := server.Handler()
-	handler = proxy.CORSMiddleware(server.GetConfig().CORS)(handler)
+	handler := gateway.Handler()
+	handler = proxy.CORSMiddleware(gateway.GetConfig().CORS)(handler)
 	handler = proxy.NewStructuredLogger()(handler)
 
 	address := fmt.Sprintf("%s:%s", config.Host, config.Port)
-	if err := http.ListenAndServe(address, handler); err != nil {
+	server := newHTTPServer(address, handler)
+	if err := server.ListenAndServe(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+}
+
+func newHTTPServer(address string, handler http.Handler) *http.Server {
+	return &http.Server{
+		Addr:              address,
+		Handler:           handler,
+		ReadHeaderTimeout: defaultReadHeaderTimeout,
+		ReadTimeout:       defaultReadTimeout,
+		WriteTimeout:      defaultWriteTimeout,
+		IdleTimeout:       defaultIdleTimeout,
+		MaxHeaderBytes:    defaultMaxHeaderBytes,
 	}
 }
 

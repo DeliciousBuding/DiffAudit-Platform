@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"net/http"
+	"testing"
+)
 
 func TestParseConfigUsesDefaults(t *testing.T) {
 	config, err := parseConfig([]string{})
@@ -80,5 +83,32 @@ func TestParseConfigAcceptsLegacyResearchAPIFlag(t *testing.T) {
 	}
 	if config.RuntimeBaseURL != "http://127.0.0.1:7777" {
 		t.Fatalf("expected legacy alias to override runtime upstream, got %s", config.RuntimeBaseURL)
+	}
+}
+
+func TestNewHTTPServerUsesExplicitResourceLimits(t *testing.T) {
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {})
+	server := newHTTPServer("127.0.0.1:8780", handler)
+
+	if server.Addr != "127.0.0.1:8780" {
+		t.Fatalf("unexpected address: %s", server.Addr)
+	}
+	if server.Handler == nil {
+		t.Fatal("expected handler to be configured")
+	}
+	if server.ReadHeaderTimeout != defaultReadHeaderTimeout {
+		t.Fatalf("unexpected ReadHeaderTimeout: %v", server.ReadHeaderTimeout)
+	}
+	if server.ReadTimeout != defaultReadTimeout {
+		t.Fatalf("unexpected ReadTimeout: %v", server.ReadTimeout)
+	}
+	if server.WriteTimeout != defaultWriteTimeout {
+		t.Fatalf("unexpected WriteTimeout: %v", server.WriteTimeout)
+	}
+	if server.IdleTimeout != defaultIdleTimeout {
+		t.Fatalf("unexpected IdleTimeout: %v", server.IdleTimeout)
+	}
+	if server.MaxHeaderBytes != defaultMaxHeaderBytes {
+		t.Fatalf("unexpected MaxHeaderBytes: %d", server.MaxHeaderBytes)
 	}
 }
