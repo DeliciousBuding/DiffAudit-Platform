@@ -31,6 +31,13 @@ describe("SettingsClient account verification", () => {
               admission_blocker: "research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
             },
             {
+              boundary_key: "h2-img2img-output-cloud-portability-weak-no-runtime-job",
+              description: "H2 img2img output-cloud portability weak gate",
+              status: "watch-only",
+              signal_strength: "weak-or-unstable-not-distinct-from-simple-distance",
+              admission_blocker: "img2img-portability-failed-admission-cache-and-simple-distance-distinctness",
+            },
+            {
               boundary_key: "rediffuse-stl10-bounded-scout-and-score-norm-completed-weak-results-no-runtime-job",
               description: "ReDiffuse STL-10 weak scout",
               status: "watch-only",
@@ -46,12 +53,14 @@ describe("SettingsClient account verification", () => {
     expect(markup).toContain("data-runner-boundary-panel");
     expect(markup).toContain("Runner admission gates");
     expect(markup).toContain("Watch-only");
-    expect(markup).toContain(">2<");
+    expect(markup).toContain(">3<");
     expect(markup).toContain("Admitted");
     expect(markup).toContain(">0<");
     expect(markup).toContain("Research candidates stay outside live jobs");
     expect(markup).toContain("H2 output-cloud geometry candidate");
     expect(markup).toContain("strong-controlled-seed-stable-cross-cache-transfer / research-side-response-cache-geometry-not-second-public-asset-or-product-contract");
+    expect(markup).toContain("H2 img2img output-cloud portability weak gate");
+    expect(markup).toContain("weak-or-unstable-not-distinct-from-simple-distance / img2img-portability-failed-admission-cache-and-simple-distance-distinctness");
     expect(markup).toContain("ReDiffuse STL-10 weak scout");
     expect(markup).toContain("weak-random-level / bounded-scout-and-score-norm-failed-membership-signal");
   });

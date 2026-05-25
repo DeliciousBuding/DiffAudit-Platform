@@ -15,6 +15,13 @@ describe("getResearchBoundarySummary", () => {
           admission_blocker: "research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
         },
         {
+          boundary_key: "h2-img2img-output-cloud-portability-weak-no-runtime-job",
+          description: "H2 img2img output-cloud portability weak gate",
+          status: "watch-only",
+          signal_strength: "weak-or-unstable-not-distinct-from-simple-distance",
+          admission_blocker: "img2img-portability-failed-admission-cache-and-simple-distance-distinctness",
+        },
+        {
           key: "rediffuse-stl10-bounded-scout-and-score-norm-completed-weak-results-no-runtime-job",
           title: "ReDiffuse STL-10 weak scout",
           admission_status: "watch",
@@ -24,17 +31,19 @@ describe("getResearchBoundarySummary", () => {
     }, "Unnamed boundary");
 
     expect(summary).toMatchObject({
-      boundaryCount: 2,
-      watchOnlyBoundaryCount: 2,
+      boundaryCount: 3,
+      watchOnlyBoundaryCount: 3,
       admittedBoundaryCount: 0,
       ready: true,
     });
     expect(summary.previewLabels).toEqual([
       "H2 output-cloud geometry candidate",
+      "H2 img2img output-cloud portability weak gate",
       "ReDiffuse STL-10 weak scout",
     ]);
     expect(summary.previewDetails).toEqual([
       "strong-controlled-seed-stable-cross-cache-transfer / research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
+      "weak-or-unstable-not-distinct-from-simple-distance / img2img-portability-failed-admission-cache-and-simple-distance-distinctness",
       "watch",
     ]);
   });
