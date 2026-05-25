@@ -27,7 +27,7 @@ describe("SettingsClient account verification", () => {
               boundary_key: "h2-output-cloud-geometry-candidate-no-runtime-job",
               description: "H2 output-cloud geometry candidate",
               status: "watch-only",
-              signal_strength: "strong-controlled-seed-stable",
+              signal_strength: "strong-controlled-seed-stable-cross-cache-transfer",
               admission_blocker: "research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
             },
             {
@@ -51,7 +51,7 @@ describe("SettingsClient account verification", () => {
     expect(markup).toContain(">0<");
     expect(markup).toContain("Research candidates stay outside live jobs");
     expect(markup).toContain("H2 output-cloud geometry candidate");
-    expect(markup).toContain("strong-controlled-seed-stable / research-side-response-cache-geometry-not-second-public-asset-or-product-contract");
+    expect(markup).toContain("strong-controlled-seed-stable-cross-cache-transfer / research-side-response-cache-geometry-not-second-public-asset-or-product-contract");
     expect(markup).toContain("ReDiffuse STL-10 weak scout");
     expect(markup).toContain("weak-random-level / bounded-scout-and-score-norm-failed-membership-signal");
   });

@@ -11,7 +11,7 @@ describe("getResearchBoundarySummary", () => {
           boundary_key: "h2-output-cloud-geometry-candidate-no-runtime-job",
           description: "H2 output-cloud geometry candidate",
           status: "watch-only",
-          signal_strength: "strong-controlled-seed-stable",
+          signal_strength: "strong-controlled-seed-stable-cross-cache-transfer",
           admission_blocker: "research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
         },
         {
@@ -34,7 +34,7 @@ describe("getResearchBoundarySummary", () => {
       "ReDiffuse STL-10 weak scout",
     ]);
     expect(summary.previewDetails).toEqual([
-      "strong-controlled-seed-stable / research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
+      "strong-controlled-seed-stable-cross-cache-transfer / research-side-response-cache-geometry-not-second-public-asset-or-product-contract",
       "watch",
     ]);
   });
