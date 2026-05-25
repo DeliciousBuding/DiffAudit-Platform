@@ -87,6 +87,8 @@ The `--bundle-path` flag accepts an explicit path to a curated bundle, decouplin
 
 Public examples should use placeholders for credentials, host-specific settings, and deployment-specific configuration. Runtime URLs, OAuth secrets, data paths, and API keys should be supplied through environment variables or a deployment secret store.
 
+Local account sign-in applies application-level failed-attempt throttling before password verification. Deployments should still add edge or reverse-proxy rate limits for broader abuse control.
+
 Snapshot files are treated as distributable demo data. Review them before publishing to ensure they contain logical artifact identifiers rather than machine-local paths or credentials.
 
 ## Deployment Boundary
