@@ -29,6 +29,7 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+.env.production
 *.pem
 *.key
 *.p12
@@ -42,12 +43,18 @@ secrets/
 
 # Build artifacts
 *.exe
+quality-gates/*.exe
 coverage/
 htmlcov/
 tmp/
+*.tgz
+
+# Docker
+.docker/
 
 # Local runtime state
 apps/web/data/
+apps/web/screenshots/
 *.db
 *.db-shm
 *.db-wal

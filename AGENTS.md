@@ -1,15 +1,93 @@
 # DiffAudit Platform Agent Rules
 
-This repository is public and product-facing. Treat every committed file as material that may be read by users, reviewers, downstream integrators, and security scanners.
+This repository is public and product-facing. This file is the **single agent entry point** for Platform work. All agent-facing rules live here; do not create per-directory AGENTS.md files in `apps/`, `docs/`, or subdirectories.
 
-## Public Baseline
+## 0. Project Identity
+
+**DiffAudit Platform** is an open-source privacy-risk audit workspace for diffusion models. It turns research evidence into a reviewable product experience — contracts, metrics, reports, exports — so that security teams, model developers, and compliance reviewers can inspect training-data membership risks without digging through experiment logs.
+
+- **License**: Apache-2.0 (see `REPO_RELEASE_POLICY.md` in repo root)
+- **Repository**: `github.com/DeliciousBuding/DiffAudit-Platform`
+- **Root governance**: `D:\Code\DiffAudit\AGENTS.md` (Section 1 directory boundaries, Section 3 Leader checklist, Section 5 anti-bloat rules, Section 6 knowledge hygiene, Section 7 language policy)
+- **Repo release policy**: `D:\Code\DiffAudit\REPO_RELEASE_POLICY.md` (mandatory push for Platform, Apache-2.0 publishing, dev/prod config isolation)
+
+## 1. S.U.P.E.R Principles
+
+These five principles govern every Platform design decision:
+
+| Principle | Meaning | Enforced by |
+|-----------|---------|-------------|
+| **S**napshot-first | Read plane always snapshot-backed. Runtime is optional. No page breaks when Runtime is down. | Go gateway `--public-data-dir`, snapshot publisher tiered fallback |
+| **U**nified facades | Data mode selection behind `workspace-source.ts`. Pages consume view models, never raw adapters. | `apps/web/src/lib/workspace-source.ts`, `getWorkspaceModeState()` |
+| **P**ublic boundary | Every commit must be safe for a public GitHub product page. No secrets, no private topology, no local paths. | `scripts/check_public_boundary.py` (13 rule categories), `CONTRIBUTING.md` guardrails |
+| **E**xplicit SSOT | One source of truth per concern. Extend existing authority docs; never duplicate. | `docs/project-structure.md`, `apps/web/DESIGN.md`, `deploy/README.md` |
+| **R**eproducible provenance | Immutable image tags, OCI labels, Git revision traceability. Container images must map to a Git revision. | `scripts/verify_image_provenance.py`, `sha-<short-sha>` tags, OCI labels in Dockerfiles |
+
+## 2. Repository Structure
+
+| Area | Owns | Source of truth |
+|------|------|-----------------|
+| `apps/web` | Next.js product surface: marketing, auth, workspace, reports, account, settings | `apps/web/DESIGN.md` (design), `apps/web/README.md` (dev) |
+| `apps/api-go` | Go gateway, snapshot read plane, optional Runtime proxy, snapshot publisher | `apps/api-go/README.md` (dev onboarding), this file (backend API rules) |
+| `packages/shared` | Public contracts, schema notes, example payloads | `packages/shared/contracts/README.md` |
+| `deploy` | Public-safe Docker/compose templates with placeholder config | `deploy/README.md` |
+| `docs` | Public architecture, roadmap, API contracts, engineering governance | `docs/README.md` (index only — docs are for humans, not agents) |
+| `scripts` | Repository validation and local helper commands | This file (validation section) |
+| `.agents/skills/` | Agent SOPs reusable across sessions | `platform-dev/SKILL.md` |
+
+**Do NOT create**: `apps/web/AGENTS.md`, `apps/api-go/AGENTS.md`, or `docs/AGENTS.md`. This file is the single agent entry point. Rules specific to a layer belong in this file under the appropriate section.
+
+## 3. Naming Conventions
+
+- **Directories**: semantic English `kebab-case` (e.g., `model-assets`, `risk-findings`, `api-go`)
+- **Files**: `kebab-case` for all new files; legacy PascalCase/camelCase files migrate on touch
+- **Components**: PascalCase `.tsx` files (React convention); hooks `use-kebab-case.ts`
+- **Go packages**: lowercase single-word or abbreviations (`proxy`, `cmd`)
+- **Routes**: `/kebab-case` segments (e.g., `/workspace/audits/new`, `/workspace/model-assets`)
+- **Environment variables**: `UPPER_SNAKE_CASE` prefixed `DIFFAUDIT_` (e.g., `DIFFAUDIT_DEMO_MODE`, `DIFFAUDIT_RUNTIME_BASE_URL`)
+- **Git branches**: `kebab-case` feature branches (e.g., `fix-retry-safety`, `add-reports-page`)
+- **OCI image tags**: `sha-<short-sha>` for immutable, `main` for current, `latest` for convenience
+
+## 4. Git Rules
+
+1. **Small commits**: commit each independently coherent change. Do not accumulate unrelated changes in the working tree.
+2. **Branch from main**: start feature branches from the latest `main`.
+3. **Squash merge**: after review, squash merge to keep history clean.
+4. **No force push**: do not rewrite public history unless the maintainer explicitly requests a sanitized baseline rewrite.
+5. **Commit messages**: imperative mood, English, describe what changed and why. Prefix with area when clear (e.g., `api-go: add retry safety for POST bodies`, `web: migrate error boundary to WORKSPACE_COPY`).
+6. **Worktrees**: use `.worktrees/<branch-name>/` for larger isolated work.
+7. **Pre-commit**: run relevant validation gates (see Section 12).
+8. **Push mandatory**: Platform must be pushed per `REPO_RELEASE_POLICY.md`.
+
+## 5. Boundary Enforcement Matrix
+
+Every architectural boundary in Platform has an explicit enforcement mechanism:
+
+| Boundary | Mechanism | Detail |
+|----------|-----------|--------|
+| **Web frontend vs Go API** | `apps/web/src/lib/api-proxy.ts` facade | 15s timeout; all frontend→backend calls go through this single facade |
+| **Read plane vs Control plane** | Route-level separation in Go server | Snapshot-backed `GET` routes never proxy; only `/api/v1/audit/*` routes forward to Runtime |
+| **Publish-time vs Request-time** | Snapshot publisher (Python) writes public JSON; Go server reads only from `data/public/` | Request handlers never discover Research workspaces; publisher sanitizes paths to `research://...` |
+| **Public vs Private** | `scripts/check_public_boundary.py` | 13 rule categories: secrets, IPs, hostnames, paths, emails, SSH, tokens, private keys, certificates, connection strings, system paths, user names, private datasets |
+| **Demo mode vs Live mode** | Cookie + env cascade | `DIFFAUDIT_DEMO_MODE=1` → frontend uses TypeScript demo data; `DIFFAUDIT_DEMO_MODE=0` → frontend calls Go gateway; Go `--demo-mode=true` → Go uses `DemoJobStore` without Runtime |
+| **Platform vs Runtime** | Explicit proxy routes with 3x retry | `doWithRetry` only retries GET/HEAD; POST body not re-consumed; cache fallback when Runtime unavailable |
+
+### Demo Data Layer Independence
+
+Each layer's demo mode is built **self-contained** — either can run standalone. This is intentional architectural debt, not a bug:
+
+- **Frontend demo**: `apps/web/src/lib/demo-snapshot.ts` + `demo-jobs-store.ts`. When `DIFFAUDIT_DEMO_MODE=1`, Next.js API routes serve hardcoded TypeScript demo data without calling the Go backend.
+- **Go backend demo**: `DemoJobStore` in `internal/proxy/models.go`. When `--demo-mode=true`, Go serves 6 pre-seeded jobs with time-based state progression.
+- **To use Go demo data in the browser**: set `DIFFAUDIT_DEMO_MODE=0` (frontend) and ensure Go runs with `--demo-mode=true`.
+
+## 6. Public Baseline
 
 - Keep the repository suitable for a public GitHub product page.
 - Keep README, docs, examples, and comments product-facing; do not write cleanup diaries, operator handoff notes, agent prompts, or private deployment notes into public files.
 - Keep the license model Apache-2.0. Do not add restrictive commercial-use terms or approval-gated usage terms unless the maintainer explicitly changes the license.
 - Do not introduce invented security gates, marketplace copy, analytics claims, or unrelated compliance claims unless the feature actually exists in this repository and the maintainer explicitly asks for it.
 
-## Sensitive Information
+## 7. Sensitive Information
 
 Never commit:
 
@@ -20,14 +98,14 @@ Never commit:
 
 Use placeholders in examples. OAuth and local account examples must be obviously fake.
 
-## Snapshot And Research Data
+## 8. Snapshot and Research Data
 
 - Public snapshot paths must use logical artifact identifiers such as `research://...`, not machine-local paths.
 - Public snapshot warnings must be generic, for example `runtime unavailable; reused existing snapshot`, not raw exception traces.
 - If `apps/api-go/scripts/publish_public_snapshot.py` changes, preserve its public sanitization behavior and update its tests.
 - Snapshot files must remain distributable demo/review data. Do not commit raw research workspaces, private datasets, model checkpoints, or unsanitized generated artifacts.
 
-## Product Packaging
+## 9. Product Packaging
 
 - Keep public docs focused on product behavior, architecture, setup, verification, and integration contracts.
 - Keep `docs/portability.md` as the source of truth for productization, migration, environment groups, snapshot portability, and public-ready checklists.
@@ -35,7 +113,7 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - Avoid personal test identities. Prefer `demo-reviewer`, `example-user`, `review@diffaudit.test`, and similar neutral fixtures.
 - Keep `DiffAudit-Research` references as external research/evidence integration points; do not copy private research workspace structure into public docs.
 
-## Structural Governance
+## 10. Structural Governance
 
 - Treat `docs/project-structure.md` as the source of truth for repository area ownership, web route ownership, and legacy route policy.
 - Do not create duplicate sources of truth for workspace navigation, labels, status mapping, risk mapping, data mode selection, or report field interpretation.
@@ -44,7 +122,18 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - Legacy redirect routes must not gain new product logic. Before deleting them, scan internal links and tests; after deletion, route recovery should point users to current routes.
 - Do not add new broad global CSS selectors such as `button:not(...)` for product interaction behavior. Prefer explicit primitives or scoped classes.
 
-## UI and Design Rules
+### Documentation Authority
+
+| Document | Role | Extend when |
+|----------|------|-------------|
+| This file (`AGENTS.md`) | Single agent entry point | New structural rules emerge (e.g., new boundary type, new layer convention) |
+| `apps/web/DESIGN.md` | Design authority | 3+ new component patterns appear that need codification |
+| `deploy/README.md` | Deployment authority | Compose/container patterns change (new service, new volume mount strategy) |
+| `apps/api-go/README.md` | Go gateway dev onboarding | Route inventory, config, or test commands change |
+| `packages/shared/contracts/README.md` | Contract structure guide | Contract format or addition process changes |
+| `docs/` | Human-facing documentation | Product behavior, architecture, or setup changes |
+
+## 11. UI and Design Rules
 
 - All card containers use `rounded-2xl`. Inner elements (inputs, nested cards) use `rounded-xl`.
 - Typography: `text-[13px]` body, `text-[11px]` secondary/captions, `text-[10px]` badges only.
@@ -55,10 +144,12 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 - Shared hooks live in `apps/web/src/hooks/`. Reusable patterns across 2+ pages should be extracted into hooks.
 - Server components cannot use event handlers (onClick, onKeyDown). Extract interactive elements into `"use client"` components.
 
-## Workspace Page Inventory
+Full design contract: `apps/web/DESIGN.md`.
+
+## 12. Workspace Page Inventory
 
 | Route | Component | Description |
-| --- | --- | --- |
+|-------|-----------|-------------|
 | `/workspace/start` | `start/page.tsx` | Dashboard with Health Score, KPIs, charts, risk cards, recent results |
 | `/workspace/audits` | `audits/page.tsx` + `AuditsPageClient.tsx` | Task list with adaptive polling, progress shimmer, ETA |
 | `/workspace/audits/new` | `audits/new/CreateTaskClient.tsx` | 4-step task creation wizard |
@@ -70,9 +161,11 @@ Use placeholders in examples. OAuth and local account examples must be obviously
 | `/workspace/settings` | `settings/SettingsClient.tsx` | System config, templates, runtime status |
 | `/workspace/account` | `account/page.tsx` | User profile, providers, security |
 
-## Backend API (apps/api-go)
+## 13. Backend API (apps/api-go)
 
 The Go gateway serves snapshot-backed read endpoints and proxies audit control-plane calls to Runtime.
+
+Full developer onboarding: `apps/api-go/README.md`.
 
 ### Typed Models (internal/proxy/models.go)
 
@@ -100,15 +193,16 @@ The frontend has its own demo mode in `apps/web/src/lib/demo-snapshot.ts` and `d
 
 To use Go backend demo data instead, disable frontend demo mode by setting `DIFFAUDIT_DEMO_MODE=0` and ensure the Go binary is running with `--demo-mode=true`.
 
-## Knowledge Hygiene
+## 14. Knowledge Hygiene
 
 - Treat README, docs, and AGENTS as edited contracts, not append-only logs.
 - When code changes affect setup, routes, environment variables, data boundaries, or UI primitives, update the existing authoritative doc section in the same PR.
 - Prefer deletion or replacement of stale guidance over adding contradictory notes.
 - Use absolute calendar dates if a date is necessary. Do not write vague timeline phrases in durable docs.
 - Do not write agent operation diaries, private handoff chatter, or maintainer instructions into product-facing docs.
+- Docs in `docs/` are for humans, not agents. Do not write agent instructions into `docs/`.
 
-## Deployment Boundary
+## 15. Deployment Boundary
 
 - Public deployment material may include Dockerfiles, compose templates, environment examples, and generic validation commands.
 - Do not commit real deployment files. Keep copied compose `.env`, runtime env files, host bind addresses, domains, TLS/proxy details, certificates, SSH aliases, and server-local notes outside Git.
@@ -117,7 +211,9 @@ To use Go backend demo data instead, disable frontend demo mode by setting `DIFF
 - Public compose templates must mount sanitized snapshot bundles only. They must not encode private server paths or runtime topology.
 - If deployment helpers change, keep them generic and run `python scripts/check_public_boundary.py`.
 
-## Local Artifacts
+Full deployment authority: `deploy/README.md`.
+
+## 16. Local Artifacts
 
 Do not commit generated local state:
 
@@ -128,7 +224,7 @@ Do not commit generated local state:
 
 Use `.worktrees/<branch-name>/` for local worktrees when larger isolated work is needed.
 
-## Validation Before Commit
+## 17. Validation Before Commit
 
 For code changes, run the relevant gates:
 
@@ -147,6 +243,23 @@ For snapshot publisher changes, also run:
 py -3 -m unittest apps.api-go.scripts.test_publish_public_snapshot
 ```
 
+The combined fast check:
+
+```powershell
+python scripts/run_local_checks.py --fast
+```
+
 Before publishing a public baseline, scan for sensitive or off-brand strings and confirm the working tree contains no tracked secrets or generated local artifacts.
 
 Do not rewrite public history or force-push unless the maintainer explicitly asks for a sanitized baseline rewrite.
+
+## 18. Anti-Proliferation Rules
+
+These paths must **never** contain agent instruction files:
+
+- `apps/web/AGENTS.md` — root `AGENTS.md` already covers web rules adequately
+- `apps/api-go/AGENTS.md` — root `AGENTS.md` already covers gateway rules adequately
+- `docs/AGENTS.md` — docs are for humans, not agents; no agent instructions belong in `docs/`
+- Any subdirectory `AGENTS.md` — this file is the single agent entry point
+
+If a rule only applies to one layer, add it to the appropriate section in this file. Do not fragment agent rules across multiple files.

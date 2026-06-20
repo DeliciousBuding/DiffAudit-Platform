@@ -39,8 +39,6 @@ This roadmap tracks product-facing Platform work. It avoids private deployment d
 | --- | --- |
 | Release management | Signed/provenance-aware images after the GHCR baseline is stable |
 | Data source facade | Normalize demo/live response shapes and sanitize Runtime text before rendering |
-| Accessibility | Menu roles, chart text summaries, and stronger focus handling in shared primitives |
-| Deployment | Optional image provenance verification helpers for GHCR and local archive deployments |
 
 ## Guardrails
 
