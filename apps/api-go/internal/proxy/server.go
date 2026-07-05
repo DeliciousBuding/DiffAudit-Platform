@@ -17,6 +17,7 @@ const (
 	defaultRuntimeTimeout = 15000 * time.Millisecond
 	maxRetries            = 3
 	retryDelay            = 1 * time.Second
+	maxRequestBodySize    = 1 << 20 // 1 MB
 )
 
 type Config struct {
@@ -269,7 +270,7 @@ func (s *Server) handleControlGet(writer http.ResponseWriter, request *http.Requ
 }
 
 func (s *Server) handleControlPost(writer http.ResponseWriter, request *http.Request) {
-	body, err := io.ReadAll(request.Body)
+	body, err := io.ReadAll(http.MaxBytesReader(writer, request.Body, maxRequestBodySize))
 	if err != nil {
 		writePublicGatewayError(writer, "request body unavailable")
 		return

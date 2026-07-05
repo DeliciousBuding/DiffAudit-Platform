@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -16,6 +17,7 @@ func CORSMiddleware(cfg CORSConfig) func(http.Handler) http.Handler {
 			origin := r.Header.Get("Origin")
 			if cfg.isAllowedOrigin(origin) {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Vary", "Origin")
 			}
 			w.Header().Set("Access-Control-Allow-Methods", strings.Join(cfg.Methods, ", "))
 			w.Header().Set("Access-Control-Allow-Headers", strings.Join(cfg.Headers, ", "))
@@ -26,6 +28,28 @@ func CORSMiddleware(cfg CORSConfig) func(http.Handler) http.Handler {
 				return
 			}
 
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// RecoveryMiddleware catches panics in downstream handlers, logs them,
+// and returns a JSON 500 instead of crashing the connection.
+func RecoveryMiddleware() func(http.Handler) http.Handler {
+	logger := log.New(os.Stderr, "", 0)
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if rec := recover(); rec != nil {
+					logger.Printf(
+						`{"level":"panic","method":"%s","path":"%s","panic":"%v","stack":"%s"}`,
+						r.Method, r.URL.Path, rec, string(debug.Stack()),
+					)
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusInternalServerError)
+					w.Write([]byte(`{"error":"internal server error"}`))
+				}
+			}()
 			next.ServeHTTP(w, r)
 		})
 	}

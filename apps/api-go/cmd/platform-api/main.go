@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"syscall"
+	"time"
 
 	"diffaudit/platform-api-go/internal/proxy"
 )
@@ -23,8 +28,12 @@ type runtimeConfig struct {
 }
 
 const (
-	defaultHost = "127.0.0.1"
-	defaultPort = "8780"
+	defaultHost          = "127.0.0.1"
+	defaultPort          = "8780"
+	defaultReadTimeout   = 10 * time.Second
+	defaultWriteTimeout  = 30 * time.Second
+	defaultIdleTimeout   = 120 * time.Second
+	defaultShutdownGrace = 15 * time.Second
 )
 
 func parseConfig(args []string) (runtimeConfig, error) {
@@ -55,7 +64,7 @@ func parseConfig(args []string) (runtimeConfig, error) {
 	)
 	demoMode := flagSet.Bool(
 		"demo-mode",
-		envOrDefault("true", "DIFFAUDIT_DEMO_MODE") == "true",
+		parseDemoModeEnv(),
 		"enable demo mode (use snapshot data, simulate job creation)",
 	)
 	corsOrigins := flagSet.String(
@@ -74,6 +83,10 @@ func parseConfig(args []string) (runtimeConfig, error) {
 		"public build timestamp",
 	)
 	if err := flagSet.Parse(args); err != nil {
+		if err == flag.ErrHelp {
+			os.Exit(0)
+		}
+		fmt.Fprintf(os.Stderr, "flag parse error: %v\n", err)
 		return runtimeConfig{}, err
 	}
 
@@ -128,11 +141,38 @@ func main() {
 
 	handler := server.Handler()
 	handler = proxy.CORSMiddleware(server.GetConfig().CORS)(handler)
+	handler = proxy.RecoveryMiddleware()(handler)
 	handler = proxy.NewStructuredLogger()(handler)
 
 	address := fmt.Sprintf("%s:%s", config.Host, config.Port)
-	if err := http.ListenAndServe(address, handler); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	httpServer := &http.Server{
+		Addr:              address,
+		Handler:           handler,
+		ReadTimeout:       defaultReadTimeout,
+		ReadHeaderTimeout: defaultReadTimeout,
+		WriteTimeout:      defaultWriteTimeout,
+		IdleTimeout:       defaultIdleTimeout,
+		MaxHeaderBytes:    1 << 20, // 1 MB
+	}
+
+	// Graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		fmt.Fprintf(os.Stderr, "platform-api listening on %s (demo=%v)\n", address, config.DemoMode)
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}()
+
+	<-stop
+	fmt.Fprintln(os.Stderr, "shutting down...")
+	ctx, cancel := context.WithTimeout(context.Background(), defaultShutdownGrace)
+	defer cancel()
+	if err := httpServer.Shutdown(ctx); err != nil {
+		fmt.Fprintln(os.Stderr, "shutdown error:", err)
 		os.Exit(1)
 	}
 }
@@ -145,6 +185,21 @@ func envOrDefault(fallback string, names ...string) string {
 	}
 
 	return fallback
+}
+
+func parseDemoModeEnv() bool {
+	raw := os.Getenv("DIFFAUDIT_DEMO_MODE")
+	if raw == "" {
+		raw = os.Getenv("DIFFAUDIT_FORCE_DEMO_MODE")
+	}
+	if raw == "" {
+		return true // safe default: demo mode on
+	}
+	parsed, err := strconv.ParseBool(raw)
+	if err != nil {
+		return true // unparseable → safe default
+	}
+	return parsed
 }
 
 func defaultPublicDataDir() string {

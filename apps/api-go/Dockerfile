@@ -1,13 +1,17 @@
 FROM golang:1.26.1-bookworm AS builder
 WORKDIR /src
 
-COPY apps/api-go/go.mod apps/api-go/go.sum ./
+COPY apps/api-go/go.mod ./
+# Note: go.sum not needed — module has zero external dependencies
 RUN go mod download
 
 COPY apps/api-go ./
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /out/platform-api ./cmd/platform-api
 
 FROM debian:bookworm-slim AS runner
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r diffaudit && useradd -r -g diffaudit diffaudit
 WORKDIR /app
 ARG BUILD_DATE=unknown
