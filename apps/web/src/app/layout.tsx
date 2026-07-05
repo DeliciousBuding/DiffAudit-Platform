@@ -2,18 +2,51 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Inter } from "next/font/google";
 import { RouteRecovery } from "@/components/route-recovery";
+import { JsonLd } from "@/components/json-ld";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "DiffAudit Platform",
-  description: "Membership inference audit platform for diffusion models.",
+  title: {
+    default: "DiffAudit — Membership Inference Audit for Diffusion Models",
+    template: "%s | DiffAudit",
+  },
+  description:
+    "Open-source privacy-risk audit workspace for diffusion models. Inspect training-data membership signals with evidence-gated metrics, contract-level reports, and reproducible attack/defense benchmarks.",
+  metadataBase: new URL(
+    process.env.DIFFAUDIT_PLATFORM_URL ?? "http://localhost:3000",
+  ),
   icons: {
     icon: [
       { url: "/brand/diffaudit-logo-black-no-text.svg", type: "image/svg+xml" },
     ],
+  },
+  openGraph: {
+    title: "DiffAudit — Membership Inference Audit for Diffusion Models",
+    description:
+      "Open-source privacy-risk audit workspace for diffusion models. Evidence-gated metrics, contract-level reports, reproducible benchmarks.",
+    type: "website",
+    siteName: "DiffAudit Platform",
+    images: [
+      {
+        url: "/brand/og-default.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DiffAudit — Membership Inference Audit for Diffusion Models",
+    description:
+      "Open-source privacy-risk audit workspace for diffusion models.",
+    images: ["/brand/og-default.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -37,6 +70,7 @@ export default async function RootLayout({
         </a>
         <div id="main-content" tabIndex={-1} />
         <RouteRecovery />
+        <JsonLd />
         {children}
       </body>
     </html>
