@@ -49,4 +49,5 @@ COPY --from=builder /repo/apps/web/.next/static ./.next/static
 COPY --from=builder /repo/node_modules/undici /app/node_modules/undici
 
 EXPOSE 3000
+USER node
 CMD ["node", "server.js"]

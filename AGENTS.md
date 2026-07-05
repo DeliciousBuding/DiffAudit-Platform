@@ -6,10 +6,10 @@ This repository is public and product-facing. This file is the **single agent en
 
 **DiffAudit Platform** is an open-source privacy-risk audit workspace for diffusion models. It turns research evidence into a reviewable product experience — contracts, metrics, reports, exports — so that security teams, model developers, and compliance reviewers can inspect training-data membership risks without digging through experiment logs.
 
-- **License**: Apache-2.0 (see `REPO_RELEASE_POLICY.md` in repo root)
+- **License**: Apache-2.0 (see root `AGENTS.md` Section 六 for push/release rules)
 - **Repository**: `github.com/DeliciousBuding/DiffAudit-Platform`
-- **Root governance**: `D:\Code\DiffAudit\AGENTS.md` (Section 1 directory boundaries, Section 3 Leader checklist, Section 5 anti-bloat rules, Section 6 knowledge hygiene, Section 7 language policy)
-- **Repo release policy**: `D:\Code\DiffAudit\REPO_RELEASE_POLICY.md` (mandatory push for Platform, Apache-2.0 publishing, dev/prod config isolation)
+- **Root governance**: `../AGENTS.md` (root governance — Section 1 directory boundaries, Section 3 Leader checklist, Section 5 anti-bloat rules, Section 6 knowledge hygiene, Section 7 language policy)
+- **Repo release policy**: `../AGENTS.md` (root governance — Section 六: mandatory push for Platform, Apache-2.0 publishing, dev/prod config isolation)
 
 ## 1. S.U.P.E.R Principles
 
@@ -39,6 +39,9 @@ These five principles govern every Platform design decision:
 
 ## 3. Naming Conventions
 
+Naming rules follow the canonical `../Docs/NAMING_CONVENTIONS.md`. This section
+repeats Platform-specific highlights; the canonical file is the SSOT for naming.
+
 - **Directories**: semantic English `kebab-case` (e.g., `model-assets`, `risk-findings`, `api-go`)
 - **Files**: `kebab-case` for all new files; legacy PascalCase/camelCase files migrate on touch
 - **Components**: PascalCase `.tsx` files (React convention); hooks `use-kebab-case.ts`
@@ -57,7 +60,7 @@ These five principles govern every Platform design decision:
 5. **Commit messages**: imperative mood, English, describe what changed and why. Prefix with area when clear (e.g., `api-go: add retry safety for POST bodies`, `web: migrate error boundary to WORKSPACE_COPY`).
 6. **Worktrees**: use `.worktrees/<branch-name>/` for larger isolated work.
 7. **Pre-commit**: run relevant validation gates (see Section 12).
-8. **Push mandatory**: Platform must be pushed per `REPO_RELEASE_POLICY.md`.
+8. **Push mandatory**: Platform must be pushed per root `AGENTS.md` Section 六.
 
 ## 5. Boundary Enforcement Matrix
 

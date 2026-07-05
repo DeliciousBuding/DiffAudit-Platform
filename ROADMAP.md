@@ -35,6 +35,7 @@ Tooling hardened, CI in place, cross-repo dispatch configured. Next: accessibili
 
 ## Backlog
 
-- [x] 国创阶段 — 已结束。
-- [ ] 大创申报 — 申报中，待后续需求明确。
-- [ ] 计算机设计大赛省赛 — 等待省赛结果，如有展示/部署需求提前准备。
+### Academic Milestones [INTERNAL]
+- [x] Previous program phase — completed.
+- [ ] Active program application — in progress, awaiting requirement clarification.
+- [ ] Exhibition/demo preparation — awaiting results; prepare showcase if needed.

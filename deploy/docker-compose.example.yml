@@ -18,6 +18,12 @@ services:
     ports:
       - "${DIFFAUDIT_API_BIND:-127.0.0.1:8780}:8780"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8780/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     volumes:
       - "${DIFFAUDIT_PUBLIC_SNAPSHOT_DIR:-../apps/api-go/data/public}:/app/data/public:ro"
 
@@ -30,7 +36,8 @@ services:
         BUILD_DATE: ${DIFFAUDIT_BUILD_DATE:-unknown}
         VCS_REF: ${DIFFAUDIT_VCS_REF:-unknown}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     env_file:
       - path: ./runtime.env
         required: false
@@ -39,6 +46,12 @@ services:
     ports:
       - "${DIFFAUDIT_WEB_BIND:-127.0.0.1:3000}:3000"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     volumes:
       - web-data:/app/data
 

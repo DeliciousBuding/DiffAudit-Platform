@@ -1,13 +1,14 @@
 FROM golang:1.26.1-bookworm AS builder
 WORKDIR /src
 
-COPY apps/api-go/go.mod ./
+COPY apps/api-go/go.mod apps/api-go/go.sum ./
 RUN go mod download
 
 COPY apps/api-go ./
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/platform-api ./cmd/platform-api
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /out/platform-api ./cmd/platform-api
 
 FROM debian:bookworm-slim AS runner
+RUN groupadd -r diffaudit && useradd -r -g diffaudit diffaudit
 WORKDIR /app
 ARG BUILD_DATE=unknown
 ARG IMAGE_SOURCE=https://github.com/DeliciousBuding/DiffAudit-Platform
@@ -24,5 +25,6 @@ ENV DIFFAUDIT_BUILD_DATE="${BUILD_DATE}"
 COPY --from=builder /out/platform-api /usr/local/bin/platform-api
 
 EXPOSE 8780
+USER diffaudit
 ENTRYPOINT ["/usr/local/bin/platform-api"]
-CMD ["--host", "127.0.0.1", "--port", "8780"]
+CMD ["--host", "0.0.0.0", "--port", "8780"]
