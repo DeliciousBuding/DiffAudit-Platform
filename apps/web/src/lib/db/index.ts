@@ -93,6 +93,10 @@ export function getDb() {
     const sqlite = new Database(dbPath);
     sqlite.pragma(`journal_mode = ${getJournalMode()}`);
     sqlite.pragma("foreign_keys = ON");
+    sqlite.pragma("busy_timeout = 5000");
+    if (getJournalMode() === "WAL") {
+      sqlite.pragma("synchronous = NORMAL");
+    }
     sqlite.exec(INIT_SQL);
     ensureColumn(sqlite, "users", "display_name", "display_name TEXT");
     ensureColumn(sqlite, "users", "pending_email", "pending_email TEXT");
