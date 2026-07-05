@@ -1,5 +1,33 @@
 # Changelog
 
+## [2026-07-05] — Security Hardening & Docker Audit
+
+### Added
+- Health checks for web and API services in docker-compose (`curl` + `node fetch()`)
+- `condition: service_healthy` dependency between web → API
+- Non-root USER in both Dockerfiles (`node` for web, `diffaudit` for API)
+- Graceful shutdown with `server.Shutdown()` + signal handling in Go API
+- Server timeouts (Read/Write/Idle: 10s/30s/120s) + `MaxHeaderBytes`
+- Request body size limit (1 MB, `http.MaxBytesReader`) on POST endpoints
+- Panic recovery middleware with JSON 500 + stack log
+- `ldflags="-w -s"` for smaller Go binary
+- `strconv.ParseBool` for DIFFAUDIT_DEMO_MODE (TRUE/1/yes now parse correctly)
+- `Vary: Origin` + `Access-Control-Max-Age` headers for CORS correctness
+- OCI provenance labels with revision tracking on both Docker images
+- SEO foundation: OG/Twitter metadata, `sitemap.ts`, `robots.ts`, JSON-LD `SoftwareApplication`
+- `verify_image_provenance.py` helper for deployment verification
+
+### Fixed
+- Docker build: removed non-existent `go.sum` COPY (zero external deps)
+- `flag.ErrHelp` exit code (2 → 0)
+- `curl` installed in Go runner, `node fetch()` for web healthcheck (no curl in slim images)
+- npm audit: 5 vulnerabilities resolved (js-yaml, undici, vite) → 0 open
+- Pre-push safety: all `D:/Code` paths replaced with relative refs or `<DIFFAUDIT_ROOT>`
+
+### Changed
+- Go API CMD binds `0.0.0.0` (was `127.0.0.1`) for container networking
+- Enhanced root metadata: title template, 160-char description, `metadataBase`
+
 ## Unreleased (dev)
 
 ### Added
