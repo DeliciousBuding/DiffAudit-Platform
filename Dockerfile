@@ -43,7 +43,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 # ── Stage 3: Runner ──
 FROM alpine:3.21
 
-RUN apk add --no-cache ca-certificates curl tini
+RUN apk add --no-cache ca-certificates curl tini nodejs
 
 RUN addgroup -S diffaudit && adduser -S diffaudit -G diffaudit
 
