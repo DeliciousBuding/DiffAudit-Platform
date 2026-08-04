@@ -9,7 +9,7 @@
 go -C ./apps/api-go run ./cmd/platform-api
 
 # Or use the helper script
-powershell -ExecutionPolicy Bypass -File .\apps\api-go\run-platform-api.ps1
+python .\apps\api-go\run-platform-api.py
 
 # Explicit configuration
 go -C ./apps/api-go run ./cmd/platform-api \

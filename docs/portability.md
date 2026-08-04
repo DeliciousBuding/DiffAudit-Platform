@@ -79,7 +79,7 @@ Use one of two deployment paths:
 
 | Path | Use when | Contract |
 | --- | --- | --- |
-| Local build | The target host builds from source | Run `scripts/build_docker_images.ps1` from a clean Git revision and deploy revision-labeled local images |
+| Local build | The target host builds from source | Run `scripts/build_docker_images.py` from a clean Git revision and deploy revision-labeled local images |
 | GHCR pull | The target host can pull registry images | Pin `DIFFAUDIT_IMAGE_TAG` to an immutable `sha-<short-sha>` tag and verify OCI revision labels |
 
 The public compose files are templates only. They should not encode public domains, TLS/proxy rules, private host paths, or server-local process-manager details.

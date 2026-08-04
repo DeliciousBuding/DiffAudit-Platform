@@ -20,7 +20,7 @@ For the full productization and migration contract, see [../docs/portability.md]
 From the repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\build_docker_images.ps1
+python .\scripts\build_docker_images.py
 ```
 
 The script tags images with the current Git revision and writes OCI labels including `org.opencontainers.image.revision`.
@@ -104,7 +104,7 @@ curl http://127.0.0.1:8780/health
 You can automate the revision-label check with the repository helper:
 
 ```powershell
-# Verify local images built by scripts/build_docker_images.ps1 with its default tag.
+# Verify local images built by scripts/build_docker_images.py with its default tag.
 python .\scripts\verify_image_provenance.py --local-tag (git rev-parse --short=12 HEAD)
 
 # Verify pulled GHCR images pinned to an immutable tag.
