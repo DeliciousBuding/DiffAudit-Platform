@@ -10,7 +10,7 @@ import { Modal } from "@/components/modal";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { MetricTooltip } from "@/components/metric-tooltip";
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import type { CatalogDashboardViewModel, CatalogEntryViewModel, AttackDefenseTableViewModel } from "@/lib/workspace-source";
 
 const TRACK_DOT_COLORS: Record<string, string> = {
@@ -103,7 +103,6 @@ type ModelAssetsClientProps = {
 };
 
 export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-US" }: ModelAssetsClientProps) {
-  const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -372,7 +371,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     setActiveTab("timeline");
     setEvidencePage(1);
     setShowAddModal(false);
-    toast({ type: "success", title: WORKSPACE_COPY[locale].modelAssets.toastAdded(name) });
+    toast.success(WORKSPACE_COPY[locale].modelAssets.toastAdded(name));
   }
 
   // --- Edit Model ---
@@ -402,7 +401,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
         : prev,
     );
     setShowEditModal(false);
-    toast({ type: "success", title: WORKSPACE_COPY[locale].modelAssets.toastUpdated(name) });
+    toast.success(WORKSPACE_COPY[locale].modelAssets.toastUpdated(name));
   }
 
   // --- Delete Model ---
@@ -424,7 +423,7 @@ export function ModelAssetsClient({ catalog, attackDefense, copy, locale = "en-U
     setActiveTab("timeline");
     setEvidencePage(1);
     setShowDeleteConfirm(false);
-    toast({ type: "success", title: WORKSPACE_COPY[locale].modelAssets.toastDeleted });
+    toast.success(WORKSPACE_COPY[locale].modelAssets.toastDeleted);
   }
 
   // [issue 1] Filter entries by search — also match track display name

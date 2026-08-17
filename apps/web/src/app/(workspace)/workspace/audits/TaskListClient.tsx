@@ -6,7 +6,7 @@ import { Activity, Eye, Search, Shield, ClipboardList, RefreshCw } from "lucide-
 
 import { type Locale } from "@/components/language-picker";
 import { EmptyState } from "@/components/empty-state";
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -122,7 +122,6 @@ interface HistoryTableProps {
 export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: HistoryTableProps) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tableCopy = copy.taskTable;
-  const { toast } = useToast();
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 10;
@@ -144,10 +143,10 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
       if (res.ok) {
         onRefresh();
       } else {
-        toast({ type: "error", title: copy.toastRetryFailed(res.status) });
+        toast.error(copy.toastRetryFailed(res.status));
       }
     } catch {
-      toast({ type: "error", title: copy.toastServerUnreachable });
+      toast.error(copy.toastServerUnreachable);
     } finally {
       setRetryingJobId(null);
     }

@@ -1,14 +1,19 @@
 "use client";
 
 import { RefreshCw, FileText, ChevronDown } from "lucide-react";
-import { useCallback, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useCallback, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 
 import type { CatalogEntryViewModel } from "@/lib/catalog";
 import type { AttackDefenseRowViewModel } from "@/lib/attack-defense-table";
 import { PrintableAuditReport } from "@/components/printable-audit-report";
-import { useFloatingMenu } from "@/hooks/use-floating-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type Locale } from "@/components/language-picker";
 import {
@@ -64,21 +69,20 @@ export function buildReportCsv(rows: AttackDefenseRowViewModel[], locale: Locale
   ].join("\n");
 }
 
+/**
+ * ExportReportButton — report export control (PDF / CSV).
+ *
+ * Migrated from the hand-rolled `useFloatingMenu` menu (with manual
+ * ArrowDown/Enter key handling on the trigger) to the Base UI-backed
+ * `DropdownMenu`. Base UI now owns trigger→menu focus, ArrowDown-to-open, the
+ * roving item list, Escape, and outside-click — the bespoke keyboard handler
+ * is gone. The trigger keeps the legacy `workspace-btn-primary` class for
+ * visual consistency with the report page until that page migrates fully.
+ */
 export function ExportReportButton({ rows, contracts, label, locale }: ExportReportButtonProps) {
   const copy = WORKSPACE_COPY[locale].exportButton;
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
-  const {
-    closeMenu,
-    handleMenuKeyDown,
-    menuId,
-    menuRef,
-    open,
-    openMenu,
-    rootRef,
-    toggleMenu,
-    triggerRef,
-  } = useFloatingMenu<HTMLButtonElement>({ itemSelector: "button:not([disabled])" });
 
   const exportAsPdf = useCallback(async () => {
     setIsExporting(true);
@@ -128,7 +132,6 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
         printWindow = null;
       };
 
-      // Timeout cleanup: if onafterprint never fires, force-close
       cleanupTimer = setTimeout(cleanup, PDF_CLEANUP_TIMEOUT_MS);
 
       printWindow.onafterprint = cleanup;
@@ -171,83 +174,45 @@ export function ExportReportButton({ rows, contracts, label, locale }: ExportRep
     }
   }, [locale, rows]);
 
-  const handleTriggerKeyDown = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      openMenu("first");
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      openMenu("last");
-    } else if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openMenu("first");
-    }
-  }, [openMenu]);
-
   return (
-    <div className="relative" ref={rootRef}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="workspace-btn-primary px-3 py-1.5 text-xs font-medium"
-        onClick={toggleMenu}
-        onKeyDown={handleTriggerKeyDown}
-        disabled={isExporting}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        aria-controls={menuId}
-      >
-        {isExporting ? (
-          <span className="inline-flex items-center gap-1.5">
-            <RefreshCw size={12} strokeWidth={2} className="animate-spin" />
-            {copy.exporting}
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5">
-            <FileText size={14} strokeWidth={1.5} />
-            {label}
-            <ChevronDown size={12} strokeWidth={2} />
-          </span>
-        )}
-      </button>
-
-      {open && !isExporting ? (
-        <div
-          ref={menuRef}
-          id={menuId}
-          className="header-floating-panel absolute right-0 top-full z-50 mt-2 min-w-[180px] rounded-2xl p-1.5"
-          role="menu"
-          aria-label={label}
-          onKeyDown={handleMenuKeyDown}
+    <div className="relative">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <button
+              type="button"
+              className="workspace-btn-primary px-3 py-1.5 text-xs font-medium"
+              disabled={isExporting}
+              aria-label={label}
+            />
+          }
         >
-          <button
-            type="button"
-            className="flex w-full items-center rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
-            role="menuitem"
-            tabIndex={-1}
-            onClick={() => {
-              closeMenu(false);
-              void exportAsPdf();
-            }}
-          >
+          {isExporting ? (
+            <span className="inline-flex items-center gap-1.5">
+              <RefreshCw size={12} strokeWidth={2} className="animate-spin" />
+              {copy.exporting}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5">
+              <FileText size={14} strokeWidth={1.5} />
+              {label}
+              <ChevronDown size={12} strokeWidth={2} />
+            </span>
+          )}
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="min-w-[180px]">
+          <DropdownMenuItem onClick={() => void exportAsPdf()}>
             {copy.pdf}
-          </button>
-          <button
-            type="button"
-            className="flex w-full items-center rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
-            role="menuitem"
-            tabIndex={-1}
-            onClick={() => {
-              closeMenu(false);
-              exportAsCsv();
-            }}
-          >
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => exportAsCsv()}>
             {copy.csv}
-          </button>
-        </div>
-      ) : null}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       {exportError ? (
-        <p className="absolute right-0 top-full mt-1 text-[10px] text-[var(--warning)] whitespace-nowrap" role="alert">
+        <p className="absolute right-0 top-full mt-1 whitespace-nowrap text-[10px] text-[var(--warning)]" role="alert">
           {exportError}
         </p>
       ) : null}

@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { ToastProvider } from "@/components/toast-provider";
 import { SettingsClient } from "./SettingsClient";
 
 vi.mock("next/navigation", () => ({
@@ -9,7 +8,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 function withToast(ui: React.ReactElement) {
-  return <ToastProvider>{ui}</ToastProvider>;
+  return ui;
 }
 
 describe("SettingsClient account verification", () => {

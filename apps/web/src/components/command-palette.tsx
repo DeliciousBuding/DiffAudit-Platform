@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
-import { useToast } from "@/components/toast-provider";
 import { getNavItems } from "@/lib/navigation";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type WorkspaceNavIcon } from "@/lib/workspace-registry";
@@ -41,7 +40,7 @@ export interface CommandItem {
   href?: string;
   shortcut?: string;
   searchText?: string;
-  action: (router: ReturnType<typeof useRouter>, toast: ReturnType<typeof useToast>["toast"], locale: Locale) => void;
+  action: (router: ReturnType<typeof useRouter>, locale: Locale) => void;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -152,7 +151,6 @@ function addRecentCommand(id: string) {
 
 export function CommandPalette({ locale }: { locale: Locale }) {
   const router = useRouter();
-  const { toast } = useToast();
   const copy = WORKSPACE_COPY[locale].commandPalette;
   const commands = useMemo(() => getCommandItems(locale), [locale]);
   const categoryLabels: Record<CommandGroupCategory, string> = useMemo(() => ({
@@ -284,7 +282,7 @@ export function CommandPalette({ locale }: { locale: Locale }) {
   function execute(cmd: CommandItem) {
     addRecentCommand(cmd.id);
     closePalette();
-    cmd.action(router, toast, locale);
+    cmd.action(router, locale);
   }
 
   /* ---- Keyboard navigation inside palette ---- */

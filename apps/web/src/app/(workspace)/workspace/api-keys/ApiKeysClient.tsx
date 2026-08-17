@@ -9,7 +9,7 @@ import { CopyButton } from "@/components/copy-button";
 import { EmptyState } from "@/components/empty-state";
 import { Modal } from "@/components/modal";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import { formatDateOnly } from "@/lib/format";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
@@ -125,7 +125,6 @@ export function ApiKeyRevokeModal({
 
 export function ApiKeysClient({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].apiKeys;
-  const { toast } = useToast();
   const [keys, setKeys] = useState<ApiKey[]>(MOCK_KEYS);
   const [showCreate, setShowCreate] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
@@ -184,7 +183,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
     setCreatedKey(fakeKey);
     setNewKeyName("");
     setShowCreate(false);
-    toast({ type: "success", title: copy.createdTitle });
+    toast.success(copy.createdTitle);
   }
 
   function handleCopy() {
@@ -207,7 +206,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       prev.map((k) => (k.id === keyId ? { ...k, status: "revoked" as const } : k)),
     );
     setPendingRevokeId(null);
-    toast({ type: "success", title: copy.revokeSuccess });
+    toast.success(copy.revokeSuccess);
   }
 
   function resetCreateForm() {

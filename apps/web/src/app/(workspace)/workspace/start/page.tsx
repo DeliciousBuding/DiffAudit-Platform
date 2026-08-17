@@ -29,6 +29,44 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
   });
 }
 
+/**
+ * KPI icon tint classes — full literal strings so Tailwind's content scanner
+ * generates each variant (a dynamic `is-${tone}` template can't be detected).
+ */
+const KPI_TONE_CLASSES: Record<string, string> = {
+  blue: "bg-[rgba(47,109,246,0.12)] text-[var(--accent-blue)]",
+  green: "bg-[rgba(16,185,129,0.14)] text-[var(--success)]",
+  purple: "bg-[rgba(151,92,255,0.14)] text-[#975cff]",
+  orange: "bg-[rgba(255,122,24,0.13)] text-[#ff7a18]",
+};
+
+/** Audit-card tag tint — coral for high risk, green for low (the bespoke `is-high`/`is-low`). */
+const AUDIT_TAG_TONE_CLASSES: Record<string, string> = {
+  high: "bg-[rgba(255,95,70,0.14)] text-[var(--risk-high)]",
+  low: "bg-[rgba(16,185,129,0.12)] text-[var(--success)]",
+};
+
+/** Progress-legend dot tints — one per attack track. */
+const LEGEND_TONE_CLASSES: Record<string, string> = {
+  recon: "bg-[var(--accent-blue)]",
+  pia: "bg-[#975cff]",
+  gsa: "bg-[var(--success)]",
+  other: "bg-[rgba(148,163,184,0.7)]",
+};
+
+/** Task-row state dot tints (done = green, live = blue, failed = red). */
+const TASK_DOT_STATE_CLASSES: Record<string, string> = {
+  done: "bg-[rgba(16,185,129,0.14)]",
+  live: "bg-[rgba(47,109,246,0.14)]",
+  failed: "bg-[rgba(255,94,94,0.14)]",
+};
+
+/** Task badge pill tints (live = blue, failed = coral). */
+const TASK_BADGE_STATE_CLASSES: Record<string, string> = {
+  live: "bg-[rgba(47,109,246,0.14)] text-[var(--accent-blue)]",
+  failed: "bg-[rgba(255,95,70,0.14)] text-[var(--risk-high)]",
+};
+
 /** Async server component that fetches and renders the KPI + table data */
 async function WorkspaceData({ locale }: { locale: Locale }) {
   const localeData = WORKSPACE_COPY[locale];
@@ -102,42 +140,42 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
       <div className="mb-4 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.04] px-4 py-2.5 text-[12px] leading-5 text-muted-foreground">
         {copy.sections.demoBannerText}
       </div>
-      <div className="workspace-reference-layout">
-        <div className="workspace-reference-main">
-          <div className="workspace-reference-kpis">
+      <div className="grid items-start gap-4 [grid-template-columns:minmax(0,1fr)_280px]">
+        <div className="grid min-w-0 gap-4">
+          <div className="grid grid-cols-4 gap-3">
             {[
               { label: copy.kpis.liveContractsLabel, value: activeContracts, icon: FileText, tone: "blue", delta: "+2" },
               { label: copy.sections.kpiCompleted, value: totalRows - 2, icon: Check, tone: "green", delta: "+4" },
               { label: copy.kpis.avgAucLabel, value: avgAuc, icon: TrendingUp, tone: "purple", delta: "+0.031" },
               { label: copy.kpis.defenseEvaluatedLabel, value: defendedRows + 4, icon: Shield, tone: "orange", delta: "+3" },
             ].map((item) => (
-              <section key={item.label} className="workspace-ref-kpi">
-                <span className={`workspace-ref-kpi-icon is-${item.tone}`}>
+              <section key={item.label} className="flex min-h-[92px] items-center gap-[14px] rounded-[14px] border border-border bg-card p-[14px] shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+                <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${KPI_TONE_CLASSES[item.tone]}`}>
                   <item.icon size={18} strokeWidth={1.7} aria-hidden="true" />
                 </span>
                 <div>
-                  <p>{item.label}</p>
-                  <strong>{item.value}</strong>
-                  <small>{copy.sections.vsYesterday} <span>{item.delta}</span></small>
+                  <p className="text-[12px] font-[650] text-muted-foreground">{item.label}</p>
+                  <strong className="mt-1 block text-[26px] leading-none">{item.value}</strong>
+                  <small className="mt-2 block text-[11px] text-muted-foreground">{copy.sections.vsYesterday} <span className="font-[750] text-success">{item.delta}</span></small>
                 </div>
               </section>
             ))}
           </div>
 
-          <div className="workspace-audit-cards">
+          <div className="grid grid-cols-3 gap-3">
             {copy.startCards.map((card, index) => (
-              <section key={card.track} className="workspace-audit-card">
-                <div className="workspace-audit-card-head">
-                  <span>{index + 1}</span>
-                  <strong>{card.title}</strong>
-                  <em className={card.tagTone === "low" ? "is-low" : "is-high"}>{card.tag}</em>
+              <section key={card.track} className="grid min-h-[142px] gap-2.5 rounded-[14px] border border-border bg-card p-[14px] shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[rgba(47,109,246,0.12)] text-[12px] font-extrabold text-[var(--accent-blue)]">{index + 1}</span>
+                  <strong className="min-w-0 flex-1 overflow-hidden truncate text-[14px]">{card.title}</strong>
+                  <em className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-[3px] text-[11px] not-italic font-bold ${AUDIT_TAG_TONE_CLASSES[card.tagTone === "low" ? "low" : "high"]}`}>{card.tag}</em>
                 </div>
-                <p>{card.desc}</p>
-                <div className="workspace-audit-card-meta">
-                  <small>{copy.sections.baselineAucPrefix} {card.auc}</small>
-                  <small>{card.detail}</small>
+                <p className="text-[12px] leading-[1.55] text-muted-foreground">{card.desc}</p>
+                <div className="flex flex-wrap items-baseline gap-x-[14px] gap-y-1">
+                  <small className="text-[11.5px] leading-[1.55] text-muted-foreground">{copy.sections.baselineAucPrefix} {card.auc}</small>
+                  <small className="text-[11.5px] leading-[1.55] text-muted-foreground">{card.detail}</small>
                 </div>
-                <Link href={`/workspace/audits/new?track=${card.track}`}>
+                <Link href={`/workspace/audits/new?track=${card.track}`} className="inline-flex items-center gap-[5px] text-[12px] font-[750] text-[var(--accent-blue)]">
                   {copy.auditTracks.createAudit}
                   <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
                 </Link>
@@ -145,24 +183,24 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          <div className="workspace-chart-grid">
+          <div className="grid grid-cols-4 gap-3 max-[1380px]:grid-cols-2">
             <WorkspaceSectionCard title={copy.sections.analysisTitle}>
-              <div className="workspace-ref-chart">
+              <div className="h-[190px] px-2 pt-1 pb-[6px]">
                 <ChartAucDistribution data={aucDistData} height={170} />
               </div>
             </WorkspaceSectionCard>
             <WorkspaceSectionCard title={copy.sections.chartTitles.rocCurve}>
-              <div className="workspace-ref-chart">
+              <div className="h-[190px] px-2 pt-1 pb-[6px]">
                 <ChartRocCurve data={rocData} height={170} />
               </div>
             </WorkspaceSectionCard>
             <WorkspaceSectionCard title={copy.sections.chartTitles.riskDistribution}>
-              <div className="workspace-ref-chart">
+              <div className="h-[190px] px-2 pt-1 pb-[6px]">
                 <ChartRiskDonut data={riskDistData} totalLabel={copy.sections.chartTotalLabel} height={170} />
               </div>
             </WorkspaceSectionCard>
             <WorkspaceSectionCard title={copy.sections.chartTitles.attackComparison}>
-              <div className="workspace-ref-chart">
+              <div className="h-[190px] px-2 pt-1 pb-[6px]">
                 <ChartAttackComparison data={attackComparisonData} height={170} />
               </div>
             </WorkspaceSectionCard>
@@ -234,36 +272,36 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
           </WorkspaceSectionCard>
         </div>
 
-        <aside className="workspace-reference-rail">
-          <section className="workspace-progress-card">
-            <h2>{copy.sections.progressTitle}</h2>
-            <div className="workspace-progress-bar">
-              <span style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
+        <aside className="grid min-w-0 gap-4">
+          <section className="rounded-[14px] border border-border bg-card p-3 shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+            <h2 className="m-0 text-[14px] font-[760]">{copy.sections.progressTitle}</h2>
+            <div className="mt-3 h-[7px] rounded-full bg-[rgba(148,163,184,0.24)]">
+              <span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--accent-blue),#975cff,var(--success))]" style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
             </div>
-            <div className="workspace-progress-meta">
+            <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
               <span>{totalRows - 2} / {totalRows} {localeData.audits.statusLabels.completed}</span>
               <span>{((totalRows - 2) / Math.max(1, totalRows) * 100).toFixed(1)}%</span>
             </div>
-            <div className="workspace-progress-legend">
+            <div className="mt-3 grid gap-[7px]">
               {[
                 { key: "recon", short: "Recon", total: coverageMatrix.find((c) => c.key === "black-box")?.total ?? 6, tone: "recon" },
                 { key: "pia", short: "PIA", total: coverageMatrix.find((c) => c.key === "gray-box")?.total ?? 5, tone: "pia" },
                 { key: "gsa", short: "GSA", total: coverageMatrix.find((c) => c.key === "white-box")?.total ?? 3, tone: "gsa" },
                 { key: "other", short: copy.sections.otherLabel, total: 2, tone: "other" },
               ].map((row) => (
-                <div key={row.key} className={`is-${row.tone}`}>
-                  <span />
-                  <strong>{row.short}</strong>
-                  <em>{row.total}</em>
+                <div key={row.key} className="flex items-center justify-between text-[12px]">
+                  <span className={`h-2 w-2 rounded-[2px] ${LEGEND_TONE_CLASSES[row.tone]}`} />
+                  <strong className="mr-auto ml-2 text-muted-foreground">{row.short}</strong>
+                  <em className="not-italic font-[750]">{row.total}</em>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="workspace-tasks-card">
-            <div className="workspace-side-head">
-              <h2>{copy.sections.recentTasks}</h2>
-              <Link href="/workspace/audits">{copy.sections.viewAllResults}</Link>
+          <section className="rounded-[14px] border border-border bg-card p-3 shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+            <div className="flex items-center justify-between">
+              <h2 className="m-0 text-[14px] font-[760]">{copy.sections.recentTasks}</h2>
+              <Link href="/workspace/audits" className="inline-flex items-center gap-[5px] text-[12px] font-[750] text-[var(--accent-blue)]">{copy.sections.viewAllResults}</Link>
             </div>
             {[
               { id: "job_demo_003", sub: "stable-diffusion-v1-4 · GSA", time: locale === "zh-CN" ? "17 分钟前" : "17m ago", state: "done", badge: null },
@@ -271,29 +309,29 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               { id: "job_demo_006", sub: "pixel-art-v2 · PIA", time: "", state: "live", badge: copy.sections.runningBadge },
               { id: "job_demo_005", sub: "audio-diffusion-s · GSA", time: locale === "zh-CN" ? "15 小时前" : "15h ago", state: "failed", badge: copy.sections.failedBadge },
             ].map((task) => (
-              <div key={task.id} className="workspace-task-row">
-                <span className={`is-${task.state}`} />
-                <div>
-                  <strong>{task.id}</strong>
-                  <small>{task.sub}</small>
+              <div key={task.id} className="mt-2.5 flex items-center justify-between gap-2.5">
+                <span className={`h-5 w-5 shrink-0 rounded-full ${TASK_DOT_STATE_CLASSES[task.state]}`} />
+                <div className="min-w-0 flex-1">
+                  <strong className="block truncate text-[12px]">{task.id}</strong>
+                  <small className="block truncate text-[11px] text-muted-foreground">{task.sub}</small>
                 </div>
-                {task.badge ? <i className={`workspace-task-badge is-${task.state}`}>{task.badge}</i> : null}
-                <em>{task.time}</em>
+                {task.badge ? <i className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-0.5 text-[10.5px] not-italic font-bold ${TASK_BADGE_STATE_CLASSES[task.state]}`}>{task.badge}</i> : null}
+                <em className="text-[11px] not-italic text-muted-foreground">{task.time}</em>
               </div>
             ))}
-            <Link href="/workspace/risk-findings" className="workspace-task-all">
-                            {copy.sections.viewAllResults}
+            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex w-full items-center justify-center gap-[5px] rounded-[10px] border border-border p-2 text-[12px] font-[750] text-[var(--accent-blue)]">
+              {copy.sections.viewAllResults}
             </Link>
           </section>
 
-          <section className="workspace-insight-card">
-            <h2>{copy.sections.recommendations}</h2>
-            <ul>
+          <section className="rounded-[14px] border border-border bg-card p-3 shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+            <h2 className="m-0 text-[14px] font-[760]">{copy.sections.recommendations}</h2>
+            <ul className="mt-2.5 grid gap-2 pl-4 text-[12px] leading-[1.55] text-muted-foreground marker:text-[var(--accent-blue)]">
               {copy.suggestions.recommendationItems(riskCounts.high).map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
-            <Link href="/workspace/risk-findings">
+            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex items-center gap-[5px] text-[12px] font-[750] text-[var(--accent-blue)]">
               {copy.sections.viewAllSuggestions}
               <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
             </Link>

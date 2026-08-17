@@ -4,6 +4,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD,ROND@40..48,300,0..1,0,50&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --font-sans-fallback: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
   --font-mono-fallback: "Cascadia Mono", "Cascadia Code", "Fira Code", "JetBrains Mono", "SF Mono", Consolas, monospace;
@@ -34,7 +36,7 @@
   --foreground: var(--palette-grey-1200);
   --card: rgba(255, 255, 255, 0.82);
   --card-foreground: var(--palette-grey-1200);
-  --primary: var(--palette-grey-1200);
+  --primary: var(--accent-blue);
   --primary-foreground: var(--palette-grey-0);
   --secondary: var(--palette-grey-10);
   --secondary-foreground: var(--palette-grey-1200);
@@ -45,7 +47,27 @@
   --border: rgba(33, 34, 38, 0.12);
   --input: rgba(33, 34, 38, 0.12);
   --ring: rgba(47, 109, 246, 0.24);
+  --popover: var(--palette-grey-0);
+  --popover-foreground: var(--palette-grey-1200);
+  --destructive: var(--accent-coral);
+  --destructive-foreground: var(--palette-grey-0);
+  --chart-1: var(--accent-blue);
+  --chart-2: var(--accent-coral);
+  --chart-3: var(--warning);
+  --chart-4: var(--success);
+  --chart-5: var(--info);
+  --sidebar: var(--palette-grey-0);
+  --sidebar-foreground: var(--palette-grey-1200);
+  --sidebar-primary: var(--accent-blue);
+  --sidebar-primary-foreground: var(--palette-grey-0);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--palette-grey-1200);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
   --success: #157a52;
+  --success-foreground: var(--palette-grey-0);
+  --warning-foreground: var(--palette-grey-0);
+  --info-foreground: var(--palette-grey-0);
   --success-soft: rgba(21, 122, 82, 0.12);
   --success-soft-strong: rgba(21, 122, 82, 0.22);
   --warning: #b67619;
@@ -118,6 +140,103 @@
   }
 }
 
+/*
+ * Dark theme — token-level overrides.
+ *
+ * The legacy stylesheet handled dark mode via ~374 scattered
+ * `html.dark <component>` overrides, leaving the semantic tokens light-only.
+ * That broke token-based utilities (`bg-card`, `text-foreground`, …) in dark
+ * mode. This block consolidates the dark palette at the token layer so every
+ * utility + primitive adapts automatically. Brand accents are brightened
+ * (same hue, higher lightness) for visibility on dark surfaces.
+ */
+.dark {
+  --palette-grey-0: #0d0f13;
+  --palette-grey-10: #14171c;
+  --palette-grey-20: #1b1f26;
+  --palette-grey-50: #e6eaf0;
+  --palette-grey-800: #9aa0ab;
+  --palette-grey-900: #6b7280;
+  --palette-grey-1200: #0d0f13;
+
+  --accent-blue: #4a8ef9;
+  --accent-blue-hover: #5b9cff;
+  --accent-coral: #ff7a64;
+  --accent-green: #2db27a;
+
+  --background: #0d0f13;
+  --foreground: #e6eaf0;
+
+  --card: #171a21;
+  --card-foreground: #e6eaf0;
+
+  --popover: #1c1f27;
+  --popover-foreground: #e6eaf0;
+
+  --primary: var(--accent-blue);
+  --primary-foreground: #ffffff;
+
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #e6eaf0;
+
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: #8b9099;
+
+  --accent: rgba(47, 109, 246, 0.18);
+  --accent-foreground: #e6eaf0;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.10);
+  --ring: rgba(74, 142, 249, 0.45);
+
+  --destructive: var(--accent-coral);
+  --destructive-foreground: #ffffff;
+
+  --chart-1: var(--accent-blue);
+  --chart-2: var(--accent-coral);
+  --chart-3: var(--warning);
+  --chart-4: var(--success);
+  --chart-5: var(--info);
+
+  --sidebar: #0d0f13;
+  --sidebar-foreground: #e6eaf0;
+  --sidebar-primary: var(--accent-blue);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
+  --sidebar-accent-foreground: #e6eaf0;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: var(--ring);
+
+  --success: #2db27a;
+  --success-foreground: #0d0f13;
+  --warning: #d9941f;
+  --warning-foreground: #0d0f13;
+  --info: #4a8ef9;
+  --info-foreground: #0d0f13;
+  --error: #e54545;
+  --error-foreground: #ffffff;
+
+  --success-soft: rgba(45, 178, 124, 0.16);
+  --success-soft-strong: rgba(45, 178, 124, 0.26);
+  --warning-soft: rgba(217, 148, 31, 0.16);
+  --warning-soft-strong: rgba(217, 148, 31, 0.26);
+  --info-soft: rgba(74, 142, 249, 0.16);
+  --info-soft-strong: rgba(74, 142, 249, 0.26);
+  --error-soft: rgba(229, 69, 69, 0.16);
+  --error-soft-strong: rgba(229, 69, 69, 0.26);
+
+  --risk-high: var(--accent-coral);
+  --risk-high-bg: rgba(255, 122, 100, 0.16);
+  --risk-medium: var(--warning);
+  --risk-medium-bg: rgba(217, 148, 31, 0.16);
+  --risk-low: var(--success);
+  --risk-low-bg: rgba(45, 178, 124, 0.16);
+
+  --track-black: #60a5fa;
+  --track-gray: #fb923c;
+  --track-white: #4ade80;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -133,7 +252,42 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
-  --font-sans: "Google Sans Flex", sans-serif;
+  --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-risk-high: var(--risk-high);
+  --color-risk-medium: var(--risk-medium);
+  --color-risk-low: var(--risk-low);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+  --font-sans: "Google Sans Flex", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Cascadia Mono", "Cascadia Code", "Fira Code", "JetBrains Mono", "SF Mono", Consolas, monospace;
 }
 
@@ -4181,7 +4335,7 @@ html.dark {
   --foreground: var(--palette-grey-1200);
   --card: rgba(42, 42, 45, 0.82);
   --card-foreground: var(--palette-grey-1200);
-  --primary: var(--palette-grey-1200);
+  --primary: var(--accent-blue);
   --primary-foreground: var(--palette-grey-0);
   --secondary: var(--palette-grey-10);
   --secondary-foreground: var(--palette-grey-1200);
@@ -4192,7 +4346,27 @@ html.dark {
   --border: rgba(255, 255, 255, 0.08);
   --input: rgba(255, 255, 255, 0.12);
   --ring: rgba(91, 142, 249, 0.3);
+  --popover: var(--palette-grey-10);
+  --popover-foreground: var(--palette-grey-1200);
+  --destructive: var(--accent-coral);
+  --destructive-foreground: var(--palette-grey-1200);
+  --chart-1: var(--accent-blue);
+  --chart-2: var(--accent-coral);
+  --chart-3: var(--warning);
+  --chart-4: var(--success);
+  --chart-5: var(--info);
+  --sidebar: var(--palette-grey-10);
+  --sidebar-foreground: var(--palette-grey-1200);
+  --sidebar-primary: var(--accent-blue);
+  --sidebar-primary-foreground: var(--palette-grey-0);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--palette-grey-1200);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
   --success: #3dd59a;
+  --success-foreground: var(--palette-grey-1200);
+  --warning-foreground: var(--palette-grey-1200);
+  --info-foreground: var(--palette-grey-1200);
   --success-soft: rgba(61, 213, 154, 0.15);
   --success-soft-strong: rgba(61, 213, 154, 0.28);
   --warning: #e8a84c;

@@ -13,7 +13,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { StatusBadge } from "@/components/status-badge";
 import { type Locale, LanguagePicker, setStoredLocale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
 import type { CurrentUserProfile } from "@/lib/auth";
@@ -189,7 +189,6 @@ export function SettingsClient({
   const shellCopy = localeCopy.shell;
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
   const isAccountMode = mode === "account";
   const pageTitle = isAccountMode ? copy.account.title : copy.title;
 
@@ -408,7 +407,7 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_ROUNDS, value);
     } catch {}
-    toast({ type: "success", title: copy.auditConfig.saved });
+    toast.success(copy.auditConfig.saved);
   }
 
   function handleBatchSizeChange(value: string) {
@@ -423,7 +422,7 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, value);
     } catch {}
-    toast({ type: "success", title: copy.auditConfig.saved });
+    toast.success(copy.auditConfig.saved);
   }
 
   async function handleTestRuntime() {
@@ -451,7 +450,7 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_HOST, runtimeHost);
     } catch {}
-    toast({ type: "success", title: copy.runtimeConfig.saved });
+    toast.success(copy.runtimeConfig.saved);
   }
 
   function handleRuntimePortChange(value: string) {
@@ -462,7 +461,7 @@ export function SettingsClient({
     try {
       window.localStorage.setItem(STORAGE_KEYS.RUNTIME_PORT, runtimePort);
     } catch {}
-    toast({ type: "success", title: copy.runtimeConfig.saved });
+    toast.success(copy.runtimeConfig.saved);
   }
 
   function persistTemplates(next: SavedTemplate[]) {
@@ -486,7 +485,7 @@ export function SettingsClient({
       createdAt: new Date().toISOString(),
     };
     persistTemplates([...templates, template]);
-    toast({ type: "success", title: copy.auditTemplates.saved });
+    toast.success(copy.auditTemplates.saved);
   }
 
   function handleLoadTemplate(template: SavedTemplate) {
@@ -496,7 +495,7 @@ export function SettingsClient({
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_ROUNDS, template.rounds);
       window.localStorage.setItem(STORAGE_KEYS.DEFAULT_BATCH_SIZE, template.batchSize);
     } catch {}
-    toast({ type: "success", title: copy.auditTemplates.saved });
+    toast.success(copy.auditTemplates.saved);
   }
 
   function handleDeleteTemplate(id: string) {
@@ -511,7 +510,7 @@ export function SettingsClient({
     if (!templatePendingDeleteId) return;
     persistTemplates(templates.filter((t) => t.id !== templatePendingDeleteId));
     setTemplatePendingDeleteId(null);
-    toast({ type: "success", title: copy.auditTemplates.templateDeleted });
+    toast.success(copy.auditTemplates.templateDeleted);
   }
 
   async function handlePasswordSave() {
@@ -551,7 +550,7 @@ export function SettingsClient({
       setNewPassword("");
       setConfirmPassword("");
       setShowPasswordEditor(false);
-      toast({ type: "success", title: copy.account.passwordSaved });
+      toast.success(copy.account.passwordSaved);
       setPasswordSaveNotice(copy.account.passwordSaved);
       if (passwordNoticeTimerRef.current) clearTimeout(passwordNoticeTimerRef.current);
       passwordNoticeTimerRef.current = window.setTimeout(() => {

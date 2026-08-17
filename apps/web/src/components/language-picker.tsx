@@ -2,9 +2,14 @@
 
 import { startTransition, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Languages } from "lucide-react";
+import { Check, Languages } from "lucide-react";
 
-import { useFloatingMenu } from "@/hooks/use-floating-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const LOCALE_STORAGE_KEY = "platform-locale-v2";
 
@@ -64,6 +69,15 @@ function persistLocale(locale: Locale) {
   }
 }
 
+/**
+ * LanguagePicker — workspace locale control.
+ *
+ * Migrated from the hand-rolled `useFloatingMenu` menu to the Base UI-backed
+ * `DropdownMenu`. The trigger keeps the legacy `language-trigger` class so it
+ * stays visually consistent with the (still legacy) shell. Base UI now owns
+ * the roving-tabindex/Escape/outside-click/portal placement; `Check` marks the
+ * active locale.
+ */
 export function LanguagePicker({
   value,
   onChange,
@@ -76,16 +90,6 @@ export function LanguagePicker({
   const router = useRouter();
   const [internalLocale, setInternalLocale] = useState<Locale>("en-US");
   const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
-  const {
-    closeMenu,
-    handleMenuKeyDown,
-    menuId,
-    menuRef,
-    open: isOpen,
-    rootRef,
-    toggleMenu,
-    triggerRef,
-  } = useFloatingMenu<HTMLButtonElement>({ itemSelector: "button:not([disabled])" });
   const locale = resolveActiveLocale({ value, internalLocale, pendingLocale });
 
   useEffect(() => {
@@ -110,7 +114,6 @@ export function LanguagePicker({
 
   function handleSelect(nextLocale: Locale) {
     if (nextLocale === locale) {
-      closeMenu(true);
       return;
     }
 
@@ -121,8 +124,6 @@ export function LanguagePicker({
     setPendingLocale(nextLocale);
     onChange?.(nextLocale);
     persistLocale(nextLocale);
-
-    closeMenu(true);
 
     if (reloadOnChange) {
       startTransition(() => {
@@ -135,57 +136,31 @@ export function LanguagePicker({
   }
 
   return (
-    <div ref={rootRef} className={`language-picker ${isOpen ? "is-open" : ""}`}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="language-trigger"
-        onClick={toggleMenu}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        aria-controls={menuId}
-        aria-label={`Change language, current language: ${currentOption.label}`}
-        title={currentOption.label}
-      >
-        <Languages aria-hidden="true" />
-      </button>
-
-      {isOpen && (
-        <>
-          <div
-            className="language-picker-backdrop"
-            onClick={() => closeMenu(false)}
-            aria-hidden="true"
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className="language-trigger"
+            aria-label={`Change language, current language: ${currentOption.label}`}
+            title={currentOption.label}
           />
-          <div
-            ref={menuRef}
-            id={menuId}
-            className="language-menu"
-            role="menu"
-            onKeyDown={handleMenuKeyDown}
-          >
-            {LOCALE_OPTIONS.map((option) => {
-              const selected = option.value === locale;
+        }
+      >
+        <Languages strokeWidth={1.5} aria-hidden="true" />
+      </DropdownMenuTrigger>
 
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={selected}
-                  className={`language-option ${selected ? "is-selected" : ""}`}
-                  onClick={() => handleSelect(option.value)}
-                >
-                  <div className="language-option-copy">
-                    <span className="language-option-label">{option.label}</span>
-                  </div>
-                  {selected && <span className="language-option-check">✓</span>}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
-    </div>
+      <DropdownMenuContent align="end" className="min-w-[200px]">
+        {LOCALE_OPTIONS.map((option) => {
+          const selected = option.value === locale;
+          return (
+            <DropdownMenuItem key={option.value} onClick={() => handleSelect(option.value)}>
+              <span>{option.label}</span>
+              {selected ? <Check strokeWidth={2} className="ml-auto text-primary" /> : null}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
