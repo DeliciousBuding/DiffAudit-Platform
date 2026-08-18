@@ -1,5 +1,3 @@
-import Script from "next/script";
-
 /**
  * JSON-LD structured data for the DiffAudit Platform homepage.
  * Uses SoftwareApplication schema for research tool discoverability.
@@ -21,7 +19,7 @@ export function JsonLd() {
   };
 
   return (
-    <Script
+    <script
       id="json-ld-software-app"
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
