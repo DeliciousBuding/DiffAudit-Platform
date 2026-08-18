@@ -36,7 +36,7 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
 const KPI_TONE_CLASSES: Record<string, string> = {
   blue: "bg-[var(--info-soft)] text-[var(--accent-blue)]",
   green: "bg-[var(--success-soft)] text-[var(--success)]",
-  purple: "bg-[rgba(151,92,255,0.14)] text-[var(--accent-purple)]",
+  purple: "bg-[var(--accent-purple-soft)] text-[var(--accent-purple)]",
   orange: "bg-[var(--warning-soft)] text-[var(--warning)]",
 };
 
@@ -133,7 +133,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <div className="mb-4 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.04] px-4 py-2.5 text-[12px] leading-5 text-muted-foreground">
+      <div className="mb-4 rounded-2xl border border-[var(--accent-blue)]/20 bg-[var(--accent-blue)]/[0.04] px-4 py-2.5 text-[11px] leading-5 text-muted-foreground">
         {copy.sections.demoBannerText}
       </div>
       <div className="grid items-start gap-4 [grid-template-columns:minmax(0,1fr)_280px]">
@@ -145,12 +145,12 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               { label: copy.kpis.avgAucLabel, value: avgAuc, icon: TrendingUp, tone: "purple", delta: "+0.031" },
               { label: copy.kpis.defenseEvaluatedLabel, value: defendedRows + 4, icon: Shield, tone: "orange", delta: "+3" },
             ].map((item) => (
-              <section key={item.label} className="flex min-h-[92px] items-center gap-[14px] rounded-2xl border border-border bg-card p-[14px]">
+              <section key={item.label} className="flex min-h-[92px] items-center gap-4 rounded-2xl border border-border bg-card p-4">
                 <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${KPI_TONE_CLASSES[item.tone]}`}>
                   <item.icon size={18} strokeWidth={1.5} aria-hidden="true" />
                 </span>
                 <div>
-                  <p className="text-[12px] font-medium text-muted-foreground">{item.label}</p>
+                  <p className="text-[11px] font-medium text-muted-foreground">{item.label}</p>
                   <strong className="mt-1 block text-2xl leading-none">{item.value}</strong>
                   <small className="mt-2 block text-[11px] text-muted-foreground">{copy.sections.vsYesterday} <span className="font-semibold text-success">{item.delta}</span></small>
                 </div>
@@ -160,18 +160,18 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
           <div className="grid grid-cols-3 gap-3">
             {copy.startCards.map((card, index) => (
-              <section key={card.track} className="grid min-h-[142px] gap-2.5 rounded-2xl border border-border bg-card p-[14px]">
+              <section key={card.track} className="grid min-h-[142px] gap-2.5 rounded-2xl border border-border bg-card p-4">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md bg-[var(--info-soft)] text-[12px] font-extrabold text-[var(--accent-blue)]">{index + 1}</span>
-                  <strong className="min-w-0 flex-1 overflow-hidden text-[14px] leading-tight line-clamp-2 break-words">{card.title}</strong>
-                  <em className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-[3px] text-[11px] not-italic font-bold ${AUDIT_TAG_TONE_CLASSES[card.tagTone === "low" ? "low" : "high"]}`}>{card.tag}</em>
+                  <span className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md bg-[var(--info-soft)] text-[11px] font-extrabold text-[var(--accent-blue)]">{index + 1}</span>
+                  <strong className="min-w-0 flex-1 overflow-hidden text-[13px] leading-tight line-clamp-2 break-words">{card.title}</strong>
+                  <em className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] not-italic font-bold ${AUDIT_TAG_TONE_CLASSES[card.tagTone === "low" ? "low" : "high"]}`}>{card.tag}</em>
                 </div>
-                <p className="text-[12px] leading-[1.55] text-muted-foreground">{card.desc}</p>
-                <div className="flex flex-wrap items-baseline gap-x-[14px] gap-y-1">
+                <p className="text-[13px] leading-[1.55] text-muted-foreground">{card.desc}</p>
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <small className="text-[11px] leading-[1.55] text-muted-foreground">{copy.sections.baselineAucPrefix} {card.auc}</small>
                   <small className="text-[11px] leading-[1.55] text-muted-foreground">{card.detail}</small>
                 </div>
-                <Link href={`/workspace/audits/new?track=${card.track}`} className="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--accent-blue)]">
+                <Link href={`/workspace/audits/new?track=${card.track}`} className="inline-flex items-center gap-1 text-[13px] font-semibold text-[var(--accent-blue)]">
                   {copy.auditTracks.createAudit}
                   <ArrowRight size={12} strokeWidth={1.5} aria-hidden="true" />
                 </Link>
@@ -246,14 +246,14 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <div className="px-4 py-6 space-y-4">
                   <div className="text-center">
                     <p className="text-[13px] font-semibold">{localeData.emptyWorkspace.title}</p>
-                    <p className="mt-1 text-[12px] text-muted-foreground">{localeData.emptyWorkspace.description}</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">{localeData.emptyWorkspace.description}</p>
                   </div>
                   <div className="grid gap-2">
                     {localeData.emptyWorkspace.steps.map((s) => (
                       <div key={s.step} className="flex items-center gap-3 rounded-xl border border-border bg-muted/10 px-3 py-2">
                         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--accent-blue)]/10 text-[11px] font-bold text-[var(--accent-blue)]">{s.step}</span>
                         <div>
-                          <p className="text-[12px] font-medium">{s.title}</p>
+                          <p className="text-[11px] font-medium">{s.title}</p>
                           <p className="text-[11px] text-muted-foreground">{s.desc}</p>
                         </div>
                       </div>
@@ -270,11 +270,11 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
         <aside className="grid min-w-0 gap-4">
           <section className="rounded-2xl border border-border bg-card p-3">
-            <h2 className="m-0 text-[14px] font-semibold">{copy.sections.progressTitle}</h2>
+            <h2 className="m-0 text-[13px] font-semibold">{copy.sections.progressTitle}</h2>
             <div className="mt-3 h-[7px] rounded-full bg-[var(--muted)]">
               <span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--accent-blue),var(--accent-purple),var(--success))]" style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
             </div>
-            <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
+            <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
               <span>{totalRows - 2} / {totalRows} {localeData.audits.statusLabels.completed}</span>
               <span>{((totalRows - 2) / Math.max(1, totalRows) * 100).toFixed(1)}%</span>
             </div>
@@ -285,7 +285,7 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 { key: "gsa", short: "GSA", total: coverageMatrix.find((c) => c.key === "white-box")?.total ?? 3, tone: "gsa" },
                 { key: "other", short: copy.sections.otherLabel, total: 2, tone: "other" },
               ].map((row) => (
-                <div key={row.key} className="flex items-center justify-between text-[12px]">
+                <div key={row.key} className="flex items-center justify-between text-[11px]">
                   <span className={`h-2 w-2 rounded-[2px] ${LEGEND_TONE_CLASSES[row.tone]}`} />
                   <strong className="mr-auto ml-2 text-muted-foreground">{row.short}</strong>
                   <em className="not-italic font-semibold">{row.total}</em>
@@ -296,8 +296,8 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
           <section className="rounded-2xl border border-border bg-card p-3">
             <div className="flex items-center justify-between">
-              <h2 className="m-0 text-[14px] font-semibold">{copy.sections.recentTasks}</h2>
-              <Link href="/workspace/audits" className="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--accent-blue)]">{copy.sections.viewAllResults}</Link>
+              <h2 className="m-0 text-[13px] font-semibold">{copy.sections.recentTasks}</h2>
+              <Link href="/workspace/audits" className="inline-flex items-center gap-1 text-[13px] font-semibold text-[var(--accent-blue)]">{copy.sections.viewAllResults}</Link>
             </div>
             {[
               { id: "job_demo_003", sub: "stable-diffusion-v1-4 · GSA", time: locale === "zh-CN" ? "17 分钟前" : "17m ago", state: "done", badge: null },
@@ -308,26 +308,26 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               <div key={task.id} className="mt-2.5 flex items-center justify-between gap-2.5">
                 <span className={`h-5 w-5 shrink-0 rounded-full ${TASK_DOT_STATE_CLASSES[task.state]}`} />
                 <div className="min-w-0 flex-1">
-                  <strong className="block truncate text-[12px]">{task.id}</strong>
+                  <strong className="block truncate text-[11px]">{task.id}</strong>
                   <small className="block text-[11px] leading-tight line-clamp-2 break-words text-muted-foreground">{task.sub}</small>
                 </div>
-                {task.badge ? <i className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-0.5 text-[10px] not-italic font-bold ${TASK_BADGE_STATE_CLASSES[task.state]}`}>{task.badge}</i> : null}
+                {task.badge ? <i className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] not-italic font-bold ${TASK_BADGE_STATE_CLASSES[task.state]}`}>{task.badge}</i> : null}
                 <em className="text-[11px] not-italic text-muted-foreground">{task.time}</em>
               </div>
             ))}
-            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex w-full items-center justify-center gap-[5px] rounded-xl border border-border p-2 text-[12px] font-semibold text-[var(--accent-blue)]">
+            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex w-full items-center justify-center gap-1 rounded-xl border border-border p-2 text-[13px] font-semibold text-[var(--accent-blue)]">
               {copy.sections.viewAllResults}
             </Link>
           </section>
 
           <section className="rounded-2xl border border-border bg-card p-3">
-            <h2 className="m-0 text-[14px] font-semibold">{copy.sections.recommendations}</h2>
-            <ul className="mt-2.5 grid gap-2 pl-4 text-[12px] leading-[1.55] text-muted-foreground marker:text-[var(--accent-blue)]">
+            <h2 className="m-0 text-[13px] font-semibold">{copy.sections.recommendations}</h2>
+            <ul className="mt-2.5 grid gap-2 pl-4 text-[13px] leading-[1.55] text-muted-foreground marker:text-[var(--accent-blue)]">
               {copy.suggestions.recommendationItems(riskCounts.high).map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
-            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--accent-blue)]">
+            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex items-center gap-1 text-[13px] font-semibold text-[var(--accent-blue)]">
               {copy.sections.viewAllSuggestions}
               <ArrowRight size={12} strokeWidth={1.5} aria-hidden="true" />
             </Link>

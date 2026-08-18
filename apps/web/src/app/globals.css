@@ -77,6 +77,7 @@
   --info: #2f6df6;
   --info-soft: rgba(47, 109, 246, 0.12);
   --info-soft-strong: rgba(47, 109, 246, 0.22);
+  --accent-purple-soft: rgba(151, 92, 255, 0.12);
   --error: #bf2f2f;
   --error-soft: rgba(191, 47, 47, 0.12);
   --error-soft-strong: rgba(191, 47, 47, 0.22);
@@ -224,6 +225,7 @@
   --warning-soft-strong: rgba(217, 148, 31, 0.26);
   --info-soft: rgba(74, 142, 249, 0.16);
   --info-soft-strong: rgba(74, 142, 249, 0.26);
+  --accent-purple-soft: rgba(181, 140, 249, 0.16);
   --error-soft: rgba(229, 69, 69, 0.16);
   --error-soft-strong: rgba(229, 69, 69, 0.26);
 
