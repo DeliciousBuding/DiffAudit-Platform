@@ -234,7 +234,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         {!showCreate && !createdKey ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="workspace-btn-primary self-stretch px-5 py-2.5 text-sm font-semibold shadow-[0_12px_32px_rgba(47,109,246,0.16)] hover:opacity-95 lg:min-w-[140px]"
+            className="workspace-btn-primary self-stretch px-5 py-2.5 text-sm font-semibold hover:opacity-95 lg:min-w-[140px]"
           >
             <Plus size={14} strokeWidth={1.5} aria-hidden="true" />
             {copy.create}
@@ -354,7 +354,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
         role="region"
         aria-label={copy.activeKeys}
       >
-      <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm dark:border-border/50 dark:shadow-[0_16px_48px_rgba(0,0,0,0.25)]">
+      <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm dark:border-border/50">
         {/* Table header */}
         <div className="hidden border-b border-border/70 bg-muted/40 px-6 py-3 dark:bg-muted/20 md:grid md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_100px_120px] md:gap-4 md:items-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{copy.keyName}</span>
@@ -439,7 +439,7 @@ export function ApiKeysClient({ locale }: { locale: Locale }) {
       />
 
       {/* Code example */}
-      <div className="api-code-block mt-6 overflow-hidden rounded-2xl shadow-sm dark:shadow-[0_16px_48px_rgba(0,0,0,0.1)]">
+      <div className="api-code-block mt-6 overflow-hidden rounded-2xl shadow-sm">
         <div className="api-code-block-header flex items-center gap-2 px-4 py-2.5">
           <span className="inline-flex items-center rounded-md bg-[var(--accent-blue)]/10 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-[var(--accent-blue)] dark:text-muted-foreground">bash</span>
           <span className="text-[11px] text-muted-foreground dark:text-muted-foreground">{copy.usageExample}</span>
