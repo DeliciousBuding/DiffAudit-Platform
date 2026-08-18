@@ -54,15 +54,8 @@ export function WorkspaceKeyboardShortcuts({ locale }: { locale?: string }) {
         return;
       }
 
-      // Ctrl+B: Toggle sidebar collapse
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
-        event.preventDefault();
-        const toggleFn = (window as unknown as Record<string, unknown>).__toggleSidebar;
-        if (typeof toggleFn === "function") {
-          toggleFn();
-        }
-        return;
-      }
+      // Ctrl+B is handled by the Sidebar block (SidebarProvider), so it is
+      // intentionally not handled here — see components/ui/sidebar.tsx.
 
       // Ctrl+number/Ctrl+comma: Navigate to registered workspace items.
       if (event.ctrlKey || event.metaKey) {

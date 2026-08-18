@@ -228,11 +228,12 @@ export function MetricTooltip({
           onMouseLeave={handleLeave}
           onFocus={handleEnter}
           onBlur={handleLeave}
-          className={`inline-flex items-center cursor-help text-muted-foreground/50 hover:text-muted-foreground transition-colors ${className ?? ""}`}
+          className={`inline-flex items-center gap-1 cursor-help transition-colors ${className ?? ""}`}
           tabIndex={0}
           aria-label={text.name}
         >
-          <Info size={13} strokeWidth={1.5} />
+          {children}
+          <Info size={13} strokeWidth={1.5} className="text-muted-foreground/50 hover:text-muted-foreground" aria-hidden="true" />
         </span>
         {mounted && typeof document !== "undefined"
           ? createPortal(tooltipElement, document.body)

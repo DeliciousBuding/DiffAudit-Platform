@@ -1,14 +1,22 @@
 "use client";
+
 import { useState, useSyncExternalStore } from "react";
 import { Copy, Check } from "lucide-react";
 
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import { getStoredLocale, type Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
+/**
+ * CopyButton — inline 12px copy affordance.
+ *
+ * Kept as a bare styled <button> (not the Button primitive): the 12px inline
+ * icon sits next to content (API keys, model names) where the Button's square
+ * icon sizes would break the inline rhythm. Migrated to the direct sonner
+ * `toast` import (was `useToast()`).
+ */
 export function CopyButton({ text, label }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
   const locale = useSyncExternalStore<Locale>(
     () => () => undefined,
     () => getStoredLocale(),
@@ -20,10 +28,10 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      toast({ type: "success", title: copy.copiedLabel });
+      toast.success(copy.copiedLabel);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for non-HTTPS
+      // Fallback for non-HTTPS / older browsers
       const textarea = document.createElement("textarea");
       textarea.value = text;
       document.body.appendChild(textarea);
@@ -31,7 +39,7 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
       document.execCommand("copy");
       document.body.removeChild(textarea);
       setCopied(true);
-      toast({ type: "success", title: copy.copiedLabel });
+      toast.success(copy.copiedLabel);
       setTimeout(() => setCopied(false), 2000);
     }
   }
@@ -40,11 +48,11 @@ export function CopyButton({ text, label }: { text: string; label?: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-1 text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+      className="inline-flex items-center gap-1 text-muted-foreground/60 transition-colors hover:text-muted-foreground"
       aria-label={copied ? copy.copiedLabel : `${copy.copyLabel} ${label ?? text}`}
     >
       {copied ? (
-        <Check size={12} strokeWidth={1.5} className="text-[var(--success)]" />
+        <Check size={12} strokeWidth={1.5} className="text-success" />
       ) : (
         <Copy size={12} strokeWidth={1.5} />
       )}

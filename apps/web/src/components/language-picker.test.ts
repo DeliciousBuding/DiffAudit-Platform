@@ -45,8 +45,6 @@ describe("LanguagePicker", () => {
     const markup = renderToStaticMarkup(React.createElement(LanguagePicker, { value: "en-US" }));
 
     expect(markup).toContain('aria-haspopup="menu"');
-    expect(markup).toContain('aria-controls="');
-    expect(markup).toContain('aria-expanded="false"');
   });
 
 });

@@ -589,6 +589,7 @@ Examples:
 |-------|-------|-------|
 | `--accent-blue` | `#2f6df6` | Primary action color, active states, links, selected items |
 | `--accent-coral` | `#ff5f46` | High risk, destructive emphasis, negative outcomes |
+| `--accent-purple` | `#975cff` | PIA/gray-box track color, secondary chart accent |
 | `--palette-grey-0` | `#ffffff` | Page background |
 | `--palette-grey-10` | `#f8f9fc` | Hover background, section fills |
 | `--palette-grey-20` | `#eff2f7` | Active or pressed background |

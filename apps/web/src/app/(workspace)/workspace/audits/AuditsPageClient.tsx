@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { RefreshCw, Search, ChevronDown } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type JobRecord, RunningCard, HistoryTable } from "./TaskListClient";
@@ -22,7 +22,6 @@ export function AuditsPageClient({
   const router = useRouter();
   const pathname = usePathname();
   const urlSyncSource = useRef<"state" | "url">("state");
-  const { toast } = useToast();
   const prevJobStatuses = useRef<Map<string, string>>(new Map());
 
   const [allJobs, setAllJobs] = useState<JobRecord[]>(initialJobs);
@@ -52,9 +51,9 @@ export function AuditsPageClient({
             const prevStatus = prevJobStatuses.current.get(job.job_id);
             if (prevStatus && (prevStatus === "running" || prevStatus === "queued")) {
               if (job.status === "completed") {
-                toast({ type: "success", title: copy.toastTaskCompleted(job.job_id) });
+                toast.success(copy.toastTaskCompleted(job.job_id));
               } else if (job.status === "failed") {
-                toast({ type: "error", title: copy.toastTaskFailed(job.job_id) });
+                toast.error(copy.toastTaskFailed(job.job_id));
               }
             }
             prevJobStatuses.current.set(job.job_id, job.status);
@@ -155,10 +154,10 @@ export function AuditsPageClient({
                 <option value="completed">{copy.filters.statusCompleted}</option>
                 <option value="failed">{copy.filters.statusFailed}</option>
               </select>
-              <ChevronDown size={13} strokeWidth={1.7} aria-hidden="true" />
+              <ChevronDown size={13} strokeWidth={1.5} aria-hidden="true" />
             </div>
             <div className="audits-search">
-              <Search size={13} strokeWidth={1.7} aria-hidden="true" />
+              <Search size={13} strokeWidth={1.5} aria-hidden="true" />
               <input
                 type="search"
                 placeholder={copy.filters.searchPlaceholder}
@@ -174,7 +173,7 @@ export function AuditsPageClient({
               aria-label={copy.retry}
               title={copy.retry}
             >
-              <RefreshCw size={14} strokeWidth={1.7} aria-hidden="true" />
+              <RefreshCw size={14} strokeWidth={1.5} aria-hidden="true" />
             </button>
           </div>
         </header>

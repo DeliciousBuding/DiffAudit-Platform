@@ -1,16 +1,31 @@
+import * as React from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
+/**
+ * StatusBadge — thin wrapper over the `<Badge>` primitive.
+ *
+ * The legacy tone taxonomy (primary/success/warning/danger/info/neutral) maps
+ * onto the sanctioned Badge variants; `compact` toggles the tighter padding
+ * for table cells. No separate visual language — this is the only status pill.
+ */
 type StatusBadgeProps = {
   children: React.ReactNode;
   tone?: "primary" | "success" | "warning" | "danger" | "info" | "neutral";
   compact?: boolean;
 };
 
-const toneClasses: Record<NonNullable<StatusBadgeProps["tone"]>, string> = {
-  primary: "border-primary/30 bg-primary/20 text-primary",
-  success: "border-[var(--success)]/25 bg-[var(--success-soft-strong)] text-[var(--success)]",
-  warning: "border-[var(--warning)]/25 bg-[var(--warning-soft-strong)] text-[var(--warning)]",
-  danger: "border-[var(--risk-high)]/25 bg-[var(--risk-high)]/10 text-[var(--risk-high)]",
-  info: "border-[var(--info)]/25 bg-[var(--info-soft-strong)] text-[var(--info)]",
-  neutral: "border-border bg-muted/50 text-muted-foreground",
+const TONE_TO_VARIANT: Record<
+  NonNullable<StatusBadgeProps["tone"]>,
+  NonNullable<React.ComponentProps<typeof Badge>["variant"]>
+> = {
+  primary: "default",
+  success: "success",
+  warning: "warning",
+  danger: "destructive",
+  info: "info",
+  neutral: "secondary",
 };
 
 export function StatusBadge({
@@ -19,10 +34,11 @@ export function StatusBadge({
   compact = false,
 }: StatusBadgeProps) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full border text-[11px] font-semibold ${compact ? "px-1.5 py-0.5" : "px-3 py-1.5 gap-2"} ${toneClasses[tone]}`}
+    <Badge
+      variant={TONE_TO_VARIANT[tone]}
+      className={cn(!compact && "px-3 py-1.5 gap-2")}
     >
       {children}
-    </span>
+    </Badge>
   );
 }

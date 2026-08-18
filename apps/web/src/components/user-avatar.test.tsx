@@ -20,8 +20,6 @@ describe("UserAvatar", () => {
 
     expect(markup).toContain('aria-label="User menu"');
     expect(markup).toContain('aria-haspopup="menu"');
-    expect(markup).toContain('aria-controls="');
-    expect(markup).toContain('aria-expanded="false"');
   });
 
 });

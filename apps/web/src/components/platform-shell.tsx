@@ -1,40 +1,54 @@
 import { headers } from "next/headers";
 
 import { LanguagePicker } from "@/components/language-picker";
-import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { UserAvatar } from "@/components/user-avatar";
 import { WorkspaceSidebar } from "@/components/workspace-sidebar";
 import { BrandMark, GithubIcon } from "@/components/platform-shell-icons";
-import { PlatformNavMobile } from "@/components/platform-nav.client";
 import { WorkspaceTopbarTitle } from "@/components/workspace-topbar-title";
 import { WorkspaceGlobalSearch } from "@/components/workspace-global-search";
+import {
+  Sidebar,
+  SidebarHeader,
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
+/**
+ * PlatformShell — the workspace frame, now built on the shadcn sidebar block.
+ *
+ * Replaces the bespoke `.workspace-layout` / `.workspace-sidebar` /
+ * `.workspace-main-area` grid (in globals.css) with `SidebarProvider` +
+ * `Sidebar collapsible="icon"` + `SidebarInset`. Collapse is Ctrl+B or the
+ * topbar `SidebarTrigger` (cookie-persisted, SSR-correct). On mobile the
+ * sidebar renders as a Sheet opened by the same trigger — replacing the
+ * legacy `PlatformNavMobile` bottom dock with one nav surface. The topbar's
+ * duplicate `ThemeToggleButton` is gone; the single theme control lives in
+ * the sidebar footer (see WorkspaceSidebar).
+ */
 export async function PlatformShell({ children }: { children: React.ReactNode }) {
   const locale = resolveLocaleFromHeaderStore(await headers());
   const copy = WORKSPACE_COPY[locale];
 
   return (
-    <div className="workspace-layout">
-      <aside className="workspace-sidebar">
-        <div className="workspace-sidebar-header">
+    <SidebarProvider>
+      <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+        <SidebarHeader className="p-3">
           <BrandMark />
-        </div>
-        <div className="workspace-sidebar-body">
-          <WorkspaceSidebar locale={locale} />
-        </div>
-      </aside>
-
-      <div className="workspace-main-area">
-        <header className="workspace-topbar">
-          <div className="workspace-topbar-left">
+        </SidebarHeader>
+        <WorkspaceSidebar locale={locale} />
+      </Sidebar>
+      <SidebarInset>
+        <header className="workspace-topbar sticky top-0 z-40 flex h-12 items-center gap-3 px-4">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger />
             <WorkspaceTopbarTitle locale={locale} />
           </div>
-          <WorkspaceGlobalSearch locale={locale} />
-          <div className="workspace-topbar-actions">
+          <div className="ml-auto flex items-center gap-2">
+            <WorkspaceGlobalSearch locale={locale} />
             <LanguagePicker value={locale} reloadOnChange />
-            <ThemeToggleButton />
             <a
               href="https://github.com/DeliciousBuding/DiffAudit-Platform"
               target="_blank"
@@ -47,10 +61,8 @@ export async function PlatformShell({ children }: { children: React.ReactNode })
             <UserAvatar locale={locale} />
           </div>
         </header>
-        <main className="workspace-main-content">{children}</main>
-      </div>
-
-      <PlatformNavMobile locale={locale} />
-    </div>
+        <main className="flex-1">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

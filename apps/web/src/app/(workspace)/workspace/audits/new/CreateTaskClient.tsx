@@ -386,7 +386,7 @@ export function CreateTaskClient({ locale, availableModels }: CreateTaskClientPr
                           </StatusBadge>
                         </div>
                         <div className="text-[13px] text-muted-foreground mb-2 leading-relaxed flex-1">{desc}</div>
-                        <div className="mono text-[12px] text-muted-foreground">{model?.contractKey ?? "--"}</div>
+                        <div className="mono text-[11px] text-muted-foreground">{model?.contractKey ?? "--"}</div>
                       </button>
                     );
                   })}

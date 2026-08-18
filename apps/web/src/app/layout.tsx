@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import { RouteRecovery } from "@/components/route-recovery";
 import { JsonLd } from "@/components/json-ld";
 import { resolveLocaleFromHeaderStore } from "@/lib/locale";
@@ -60,7 +61,11 @@ export default async function RootLayout({
   const locale = resolveLocaleFromHeaderStore(await headers());
 
   return (
-    <html lang={locale === "zh-CN" ? "zh-CN" : "en-US"} className={`h-full antialiased ${inter.variable}`}>
+    <html
+      lang={locale === "zh-CN" ? "zh-CN" : "en-US"}
+      className={`h-full antialiased ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full bg-background text-foreground font-sans">
         <a
           href="#main-content"
@@ -71,7 +76,15 @@ export default async function RootLayout({
         <div id="main-content" tabIndex={-1} />
         <RouteRecovery />
         <JsonLd />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          storageKey="theme"
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

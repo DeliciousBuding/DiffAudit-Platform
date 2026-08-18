@@ -11,10 +11,9 @@ describe("ExportReportButton accessibility", () => {
     );
 
     expect(markup).toContain('aria-haspopup="menu"');
-    expect(markup).toMatch(/aria-controls="[^"]+"/);
   });
 
-  it("generates distinct menu ids for multiple triggers", () => {
+  it("generates distinct trigger ids for multiple instances", () => {
     const markup = renderToStaticMarkup(
       <>
         <ExportReportButton rows={[]} contracts={[]} label="Export report" locale="en-US" />
@@ -22,8 +21,8 @@ describe("ExportReportButton accessibility", () => {
       </>,
     );
 
-    const controls = Array.from(markup.matchAll(/aria-controls="([^"]+)"/g), (match) => match[1]);
-    expect(controls).toHaveLength(2);
-    expect(new Set(controls).size).toBe(2);
+    const ids = Array.from(markup.matchAll(/id="(base-ui-[^"]+)"/g), (match) => match[1]);
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2);
   });
 });

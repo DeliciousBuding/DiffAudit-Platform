@@ -6,7 +6,7 @@ import { Activity, Eye, Search, Shield, ClipboardList, RefreshCw } from "lucide-
 
 import { type Locale } from "@/components/language-picker";
 import { EmptyState } from "@/components/empty-state";
-import { useToast } from "@/components/toast-provider";
+import { toast } from "@/components/ui/sonner";
 import { buildCompletedJobReportHref } from "@/lib/audit-flow";
 import { formatCompactTime, formatDuration, formatMetricValue } from "@/lib/format";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -42,7 +42,7 @@ function trackTone(job: JobRecord): Tone {
 }
 
 function TrackIcon({ tone, size }: { tone: Tone; size: number }) {
-  const props = { size, strokeWidth: 1.7, "aria-hidden": true as const };
+  const props = { size, strokeWidth: 1.5, "aria-hidden": true as const };
   if (tone === "green") return <Shield {...props} />;
   if (tone === "purple") return <Eye {...props} />;
   if (tone === "blue") return <Activity {...props} />;
@@ -122,7 +122,6 @@ interface HistoryTableProps {
 export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: HistoryTableProps) {
   const copy = WORKSPACE_COPY[locale].audits;
   const tableCopy = copy.taskTable;
-  const { toast } = useToast();
   const [retryingJobId, setRetryingJobId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 10;
@@ -144,10 +143,10 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
       if (res.ok) {
         onRefresh();
       } else {
-        toast({ type: "error", title: copy.toastRetryFailed(res.status) });
+        toast.error(copy.toastRetryFailed(res.status));
       }
     } catch {
-      toast({ type: "error", title: copy.toastServerUnreachable });
+      toast.error(copy.toastServerUnreachable);
     } finally {
       setRetryingJobId(null);
     }
@@ -197,6 +196,7 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
             <th>{tableCopy.status}</th>
             <th>{tableCopy.created}</th>
             <th>{tableCopy.duration}</th>
+            <th className="text-right">{tableCopy.auc}</th>
             <th className="text-right">{tableCopy.action}</th>
           </tr>
         </thead>
@@ -212,7 +212,9 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
                       <TrackIcon tone={tone} size={13} />
                     </span>
                     <div>
-                      <strong>{job.job_id}</strong>
+                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="hover:underline">
+                        <strong>{job.job_id}</strong>
+                      </Link>
                       <small className="mono">{job.contract_key}</small>
                     </div>
                   </div>
@@ -221,10 +223,7 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
                   <span className="mono audits-cell-muted">{job.job_type}</span>
                 </td>
                 <td>
-                  <div className="audits-cell-model">
-                    <span className="mono">{job.target_model ?? "--"}</span>
-                    {job.summary_note ? <small>{job.summary_note}</small> : null}
-                  </div>
+                  <span className="mono">{job.target_model ?? "--"}</span>
                 </td>
                 <td>
                   <span className={`audits-status-pill ${statusToneClass(job.status)}`}>
@@ -235,17 +234,18 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
                   <span className="mono audits-cell-muted">{formatCompactTime(job.created_at, locale)}</span>
                 </td>
                 <td>
-                  <div className="audits-cell-duration">
-                    <span className="mono">{formatDuration(job.created_at, job.updated_at, locale)}</span>
-                    {job.metrics?.auc !== undefined ? (
-                      <small className="mono">AUC {formatMetricValue(job.metrics.auc)}</small>
-                    ) : null}
-                  </div>
+                  <span className="mono">{formatDuration(job.created_at, job.updated_at, locale)}</span>
+                </td>
+                <td className="text-right">
+                  <span className="mono">{job.metrics?.auc !== undefined ? formatMetricValue(job.metrics.auc) : "—"}</span>
                 </td>
                 <td className="text-right">
                   <div className="audits-cell-actions">
-                    <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}>{copy.viewDetails}</Link>
-                    {reportHref ? <Link href={reportHref}>{copy.viewReport}</Link> : null}
+                    {reportHref ? (
+                      <Link href={reportHref} className="audits-cell-action-primary">{copy.viewReport}</Link>
+                    ) : (
+                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}>{copy.viewDetails}</Link>
+                    )}
                     {job.status === "failed" ? (
                       <button
                         type="button"

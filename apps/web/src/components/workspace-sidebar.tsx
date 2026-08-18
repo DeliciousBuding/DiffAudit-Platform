@@ -1,139 +1,86 @@
 "use client";
 
-import { useEffect, useCallback, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, Moon, Sun } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";
-import { useTheme } from "@/hooks/use-theme";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
+import {
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
 import { getNavItems } from "@/lib/navigation";
 import { findActiveNavItem } from "@/lib/platform-shell";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-const STORAGE_KEY = "diffaudit-sidebar-collapsed";
-const STORAGE_EVENT = "diffaudit:sidebar-collapsed";
-
-function getCollapsedFromStorage(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return localStorage.getItem(STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-function subscribeCollapsedStorage(onStoreChange: () => void) {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", onStoreChange);
-  window.addEventListener(STORAGE_EVENT, onStoreChange);
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-    window.removeEventListener(STORAGE_EVENT, onStoreChange);
-  };
-}
-
+/**
+ * WorkspaceSidebar — the workspace navigation, now rendered through the
+ * shadcn sidebar block.
+ *
+ * Replaces the legacy file's hand-rolled `.workspace-sidebar-link` markup,
+ * localStorage collapse state, arrow-key roving, and footer Sun/Moon toggle.
+ * The sidebar block (SidebarProvider, Ctrl+B, cookie state, mobile Sheet) owns
+ * all of that; this component only describes the nav: one SidebarMenu of
+ * SidebarMenuButtons, each a `next/link` via `render` with `isActive` state
+ * and a collapsed-state tooltip. The label span hides on icon-collapse; the
+ * NavIcon persists. The footer holds the single theme control (the topbar's
+ * duplicate ThemeToggleButton is dropped), consolidating two toggles to one.
+ */
 export function WorkspaceSidebar({ locale = "en-US" }: { locale?: Locale }) {
   const pathname = usePathname();
-  const { resolvedTheme, toggle } = useTheme();
   const items = getNavItems(locale);
   const current = findActiveNavItem(pathname, items);
-  const sidebarLabel = WORKSPACE_COPY[locale].shell.desktopNavAriaLabel;
-  const isDark = resolvedTheme === "dark";
-  const themeLabel = isDark
-    ? WORKSPACE_COPY[locale].userMenu.themeDark
-    : WORKSPACE_COPY[locale].userMenu.themeLight;
-  const collapsed = useSyncExternalStore(subscribeCollapsedStorage, getCollapsedFromStorage, () => false);
-
-  const toggleCollapse = useCallback(() => {
-    const next = !getCollapsedFromStorage();
-    try {
-      localStorage.setItem(STORAGE_KEY, String(next));
-    } catch {
-      // localStorage may be unavailable
-    }
-    window.dispatchEvent(new Event(STORAGE_EVENT));
-  }, []);
-
-  // Expose toggle for keyboard shortcut
-  useEffect(() => {
-    (window as unknown as Record<string, unknown>).__toggleSidebar = toggleCollapse;
-    return () => {
-      delete (window as unknown as Record<string, unknown>).__toggleSidebar;
-    };
-  }, [toggleCollapse]);
-
-  // Sync collapsed class on the sidebar element
-  useEffect(() => {
-    const sidebar = document.querySelector(".workspace-sidebar");
-    if (sidebar) {
-      sidebar.classList.toggle("is-collapsed", collapsed);
-    }
-  }, [collapsed]);
-
-  const navRef = useRef<HTMLElement>(null);
-
-  // Arrow key navigation between sidebar links
-  const onNavKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
-    const links = navRef.current?.querySelectorAll<HTMLAnchorElement>("a.workspace-sidebar-link");
-    if (!links || links.length === 0) return;
-    const current = Array.from(links).indexOf(e.target as HTMLAnchorElement);
-    if (current < 0) return;
-    e.preventDefault();
-    const next = e.key === "ArrowDown"
-      ? (current + 1) % links.length
-      : (current - 1 + links.length) % links.length;
-    links[next].focus();
-  }, []);
 
   return (
-    <div className="workspace-sidebar-inner">
-      <nav ref={navRef} className="workspace-sidebar-nav" aria-label={sidebarLabel} onKeyDown={onNavKeyDown}>
-        {items.map((item, index) => {
-          const active = current.href === item.href;
-          const prevItem = index > 0 ? items[index - 1] : null;
-          const startsAccountGroup = item.group === "account" && prevItem?.group !== item.group;
-          return (
-            <div key={item.href}>
-              {startsAccountGroup ? (
-                <div className="workspace-sidebar-divider" aria-hidden="true" />
-              ) : null}
-              <Link
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`workspace-sidebar-link ${active ? "is-active" : ""}`}
-                title={item.title}
-              >
-                <NavIcon icon={item.icon} />
-                <span className="workspace-sidebar-label text-[13px] font-medium leading-tight truncate">{item.title}</span>
-              </Link>
-            </div>
-          );
-        })}
-      </nav>
-      <div className="workspace-sidebar-footer">
-        <button
-          type="button"
-          onClick={toggle}
-          className="workspace-sidebar-link w-full"
-          aria-label={themeLabel}
-          title={themeLabel}
-        >
-          {isDark ? <Moon size={16} strokeWidth={1.5} aria-hidden="true" /> : <Sun size={16} strokeWidth={1.5} aria-hidden="true" />}
-          <span className="workspace-sidebar-label text-[13px] font-medium leading-tight truncate">{themeLabel}</span>
-        </button>
-        <button
-          type="button"
-          onClick={toggleCollapse}
-          className="sidebar-collapse-btn"
-          aria-label={collapsed ? WORKSPACE_COPY[locale].shell.expandSidebar : WORKSPACE_COPY[locale].shell.collapseSidebar}
-          title={collapsed ? WORKSPACE_COPY[locale].shell.expandSidebar : WORKSPACE_COPY[locale].shell.collapseSidebar}
-        >
-          <ChevronLeft size={16} strokeWidth={1.5} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
+    <>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item, index) => {
+                const active = current.href === item.href;
+                const prevItem = index > 0 ? items[index - 1] : null;
+                const startsAccountGroup =
+                  item.group === "account" && prevItem?.group !== item.group;
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    {startsAccountGroup ? <SidebarSeparator className="my-1" /> : null}
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={active}
+                      tooltip={item.title}
+                    >
+                      <NavIcon icon={item.icon} />
+                      <span className="group-has-data-[collapsible=icon]/sidebar-wrapper:hidden truncate">
+                        {item.title}
+                      </span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="gap-0 p-2">
+        <SidebarSeparator className="mb-2" />
+        <ThemeToggleButton
+          labels={{
+            prefix: WORKSPACE_COPY[locale].userMenu.themeLabel,
+            light: WORKSPACE_COPY[locale].userMenu.themeLight,
+            dark: WORKSPACE_COPY[locale].userMenu.themeDark,
+            system: WORKSPACE_COPY[locale].userMenu.themeSystem,
+          }}
+        />
+      </SidebarFooter>
+    </>
   );
 }

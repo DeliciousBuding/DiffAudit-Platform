@@ -1,9 +1,18 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import type { Locale } from "@/components/language-picker";
 
+/**
+ * RiskBadge — AUC → risk level pill over the `<Badge>` primitive.
+ *
+ * The non-compact form is a Badge (high/medium/low variant) with a dot that
+ * inherits the variant's text color via `currentColor`. The compact form is a
+ * bare 8px dot for dense table cells — there's no dot variant on the
+ * primitive, so the compact path keeps a styled span.
+ */
 type RiskBadgeProps = {
   auc: number;
   label?: string;
@@ -11,82 +20,46 @@ type RiskBadgeProps = {
   locale?: Locale;
 };
 
-const LEVEL_CONFIG: Record<
-  RiskLevel,
-  { color: string; bg: string }
-> = {
-  high: {
-    color: "var(--risk-high)",
-    bg: "var(--risk-high-bg)",
-  },
-  medium: {
-    color: "var(--risk-medium)",
-    bg: "var(--risk-medium-bg)",
-  },
-  low: {
-    color: "var(--risk-low)",
-    bg: "var(--risk-low-bg)",
-  },
+const LEVEL_TO_VARIANT: Record<RiskLevel, "high" | "medium" | "low"> = {
+  high: "high",
+  medium: "medium",
+  low: "low",
 };
 
-export function RiskBadge({ auc, label, compact = false, locale = "en-US" }: RiskBadgeProps) {
+const LEVEL_COLOR: Record<RiskLevel, string> = {
+  high: "var(--risk-high)",
+  medium: "var(--risk-medium)",
+  low: "var(--risk-low)",
+};
+
+export function RiskBadge({
+  auc,
+  label,
+  compact = false,
+  locale = "en-US",
+}: RiskBadgeProps) {
   const level = classifyRisk(auc);
-  const config = LEVEL_CONFIG[level];
   const copy = WORKSPACE_COPY[locale].workspace.riskBadgeLabels;
-  const fallbackLabels: Record<RiskLevel, string> = {
-    high: copy.high,
-    medium: copy.medium,
-    low: copy.low,
-  };
-  const displayLabel = label ?? fallbackLabels[level];
+  const displayLabel = label ?? copy[level];
 
   if (compact) {
     return (
       <span
-        className="risk-badge-compact"
         title={displayLabel}
         aria-label={displayLabel}
-        style={{
-          display: "inline-block",
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          background: config.color,
-          flexShrink: 0,
-        }}
+        className="inline-block h-2 w-2 shrink-0 rounded-full"
+        style={{ background: LEVEL_COLOR[level] }}
       />
     );
   }
 
   return (
-    <span
-      className="risk-badge"
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 5,
-        borderRadius: 9999,
-        padding: "3px 10px",
-        fontSize: 11,
-        fontWeight: 600,
-        lineHeight: 1,
-        whiteSpace: "nowrap",
-        color: config.color,
-        background: config.bg,
-        border: `1px solid transparent`,
-      }}
-    >
+    <Badge variant={LEVEL_TO_VARIANT[level]}>
       <span
-        style={{
-          display: "inline-block",
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          background: config.color,
-          flexShrink: 0,
-        }}
+        className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ background: "currentColor" }}
       />
       {displayLabel}
-    </span>
+    </Badge>
   );
 }
