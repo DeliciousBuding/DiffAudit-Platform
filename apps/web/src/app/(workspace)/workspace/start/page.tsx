@@ -34,37 +34,33 @@ function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
  * generates each variant (a dynamic `is-${tone}` template can't be detected).
  */
 const KPI_TONE_CLASSES: Record<string, string> = {
-  blue: "bg-[rgba(47,109,246,0.12)] text-[var(--accent-blue)]",
-  green: "bg-[rgba(16,185,129,0.14)] text-[var(--success)]",
-  purple: "bg-[rgba(151,92,255,0.14)] text-[#975cff]",
-  orange: "bg-[rgba(255,122,24,0.13)] text-[#ff7a18]",
+  blue: "bg-[var(--info-soft)] text-[var(--accent-blue)]",
+  green: "bg-[var(--success-soft)] text-[var(--success)]",
+  purple: "bg-[rgba(151,92,255,0.14)] text-[var(--accent-purple)]",
+  orange: "bg-[var(--warning-soft)] text-[var(--warning)]",
 };
 
-/** Audit-card tag tint — coral for high risk, green for low (the bespoke `is-high`/`is-low`). */
 const AUDIT_TAG_TONE_CLASSES: Record<string, string> = {
-  high: "bg-[rgba(255,95,70,0.14)] text-[var(--risk-high)]",
-  low: "bg-[rgba(16,185,129,0.12)] text-[var(--success)]",
+  high: "bg-[var(--risk-high-bg)] text-[var(--risk-high)]",
+  low: "bg-[var(--risk-low-bg)] text-[var(--risk-low)]",
 };
 
-/** Progress-legend dot tints — one per attack track. */
 const LEGEND_TONE_CLASSES: Record<string, string> = {
   recon: "bg-[var(--accent-blue)]",
-  pia: "bg-[#975cff]",
+  pia: "bg-[var(--accent-purple)]",
   gsa: "bg-[var(--success)]",
-  other: "bg-[rgba(148,163,184,0.7)]",
+  other: "bg-[var(--muted-foreground)]",
 };
 
-/** Task-row state dot tints (done = green, live = blue, failed = red). */
 const TASK_DOT_STATE_CLASSES: Record<string, string> = {
-  done: "bg-[rgba(16,185,129,0.14)]",
-  live: "bg-[rgba(47,109,246,0.14)]",
-  failed: "bg-[rgba(255,94,94,0.14)]",
+  done: "bg-[var(--success-soft)]",
+  live: "bg-[var(--info-soft)]",
+  failed: "bg-[var(--error-soft)]",
 };
 
-/** Task badge pill tints (live = blue, failed = coral). */
 const TASK_BADGE_STATE_CLASSES: Record<string, string> = {
-  live: "bg-[rgba(47,109,246,0.14)] text-[var(--accent-blue)]",
-  failed: "bg-[rgba(255,95,70,0.14)] text-[var(--risk-high)]",
+  live: "bg-[var(--info-soft)] text-[var(--accent-blue)]",
+  failed: "bg-[var(--risk-high-bg)] text-[var(--risk-high)]",
 };
 
 /** Async server component that fetches and renders the KPI + table data */
@@ -149,14 +145,14 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
               { label: copy.kpis.avgAucLabel, value: avgAuc, icon: TrendingUp, tone: "purple", delta: "+0.031" },
               { label: copy.kpis.defenseEvaluatedLabel, value: defendedRows + 4, icon: Shield, tone: "orange", delta: "+3" },
             ].map((item) => (
-              <section key={item.label} className="flex min-h-[92px] items-center gap-[14px] rounded-[14px] border border-border bg-card p-[14px] shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+              <section key={item.label} className="flex min-h-[92px] items-center gap-[14px] rounded-2xl border border-border bg-card p-[14px]">
                 <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${KPI_TONE_CLASSES[item.tone]}`}>
-                  <item.icon size={18} strokeWidth={1.7} aria-hidden="true" />
+                  <item.icon size={18} strokeWidth={1.5} aria-hidden="true" />
                 </span>
                 <div>
-                  <p className="text-[12px] font-[650] text-muted-foreground">{item.label}</p>
-                  <strong className="mt-1 block text-[26px] leading-none">{item.value}</strong>
-                  <small className="mt-2 block text-[11px] text-muted-foreground">{copy.sections.vsYesterday} <span className="font-[750] text-success">{item.delta}</span></small>
+                  <p className="text-[12px] font-medium text-muted-foreground">{item.label}</p>
+                  <strong className="mt-1 block text-2xl leading-none">{item.value}</strong>
+                  <small className="mt-2 block text-[11px] text-muted-foreground">{copy.sections.vsYesterday} <span className="font-semibold text-success">{item.delta}</span></small>
                 </div>
               </section>
             ))}
@@ -164,20 +160,20 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
 
           <div className="grid grid-cols-3 gap-3">
             {copy.startCards.map((card, index) => (
-              <section key={card.track} className="grid min-h-[142px] gap-2.5 rounded-[14px] border border-border bg-card p-[14px] shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+              <section key={card.track} className="grid min-h-[142px] gap-2.5 rounded-2xl border border-border bg-card p-[14px]">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[rgba(47,109,246,0.12)] text-[12px] font-extrabold text-[var(--accent-blue)]">{index + 1}</span>
-                  <strong className="min-w-0 flex-1 overflow-hidden truncate text-[14px]">{card.title}</strong>
+                  <span className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md bg-[var(--info-soft)] text-[12px] font-extrabold text-[var(--accent-blue)]">{index + 1}</span>
+                  <strong className="min-w-0 flex-1 overflow-hidden text-[14px] leading-tight line-clamp-2 break-words">{card.title}</strong>
                   <em className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-[3px] text-[11px] not-italic font-bold ${AUDIT_TAG_TONE_CLASSES[card.tagTone === "low" ? "low" : "high"]}`}>{card.tag}</em>
                 </div>
                 <p className="text-[12px] leading-[1.55] text-muted-foreground">{card.desc}</p>
                 <div className="flex flex-wrap items-baseline gap-x-[14px] gap-y-1">
-                  <small className="text-[11.5px] leading-[1.55] text-muted-foreground">{copy.sections.baselineAucPrefix} {card.auc}</small>
-                  <small className="text-[11.5px] leading-[1.55] text-muted-foreground">{card.detail}</small>
+                  <small className="text-[11px] leading-[1.55] text-muted-foreground">{copy.sections.baselineAucPrefix} {card.auc}</small>
+                  <small className="text-[11px] leading-[1.55] text-muted-foreground">{card.detail}</small>
                 </div>
-                <Link href={`/workspace/audits/new?track=${card.track}`} className="inline-flex items-center gap-[5px] text-[12px] font-[750] text-[var(--accent-blue)]">
+                <Link href={`/workspace/audits/new?track=${card.track}`} className="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--accent-blue)]">
                   {copy.auditTracks.createAudit}
-                  <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
+                  <ArrowRight size={12} strokeWidth={1.5} aria-hidden="true" />
                 </Link>
               </section>
             ))}
@@ -273,10 +269,10 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
         </div>
 
         <aside className="grid min-w-0 gap-4">
-          <section className="rounded-[14px] border border-border bg-card p-3 shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
-            <h2 className="m-0 text-[14px] font-[760]">{copy.sections.progressTitle}</h2>
-            <div className="mt-3 h-[7px] rounded-full bg-[rgba(148,163,184,0.24)]">
-              <span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--accent-blue),#975cff,var(--success))]" style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
+          <section className="rounded-2xl border border-border bg-card p-3">
+            <h2 className="m-0 text-[14px] font-semibold">{copy.sections.progressTitle}</h2>
+            <div className="mt-3 h-[7px] rounded-full bg-[var(--muted)]">
+              <span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--accent-blue),var(--accent-purple),var(--success))]" style={{ width: `${Math.min(100, Math.max(0, (totalRows - 2) / Math.max(1, totalRows) * 100))}%` }} />
             </div>
             <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
               <span>{totalRows - 2} / {totalRows} {localeData.audits.statusLabels.completed}</span>
@@ -292,16 +288,16 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <div key={row.key} className="flex items-center justify-between text-[12px]">
                   <span className={`h-2 w-2 rounded-[2px] ${LEGEND_TONE_CLASSES[row.tone]}`} />
                   <strong className="mr-auto ml-2 text-muted-foreground">{row.short}</strong>
-                  <em className="not-italic font-[750]">{row.total}</em>
+                  <em className="not-italic font-semibold">{row.total}</em>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="rounded-[14px] border border-border bg-card p-3 shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
+          <section className="rounded-2xl border border-border bg-card p-3">
             <div className="flex items-center justify-between">
-              <h2 className="m-0 text-[14px] font-[760]">{copy.sections.recentTasks}</h2>
-              <Link href="/workspace/audits" className="inline-flex items-center gap-[5px] text-[12px] font-[750] text-[var(--accent-blue)]">{copy.sections.viewAllResults}</Link>
+              <h2 className="m-0 text-[14px] font-semibold">{copy.sections.recentTasks}</h2>
+              <Link href="/workspace/audits" className="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--accent-blue)]">{copy.sections.viewAllResults}</Link>
             </div>
             {[
               { id: "job_demo_003", sub: "stable-diffusion-v1-4 · GSA", time: locale === "zh-CN" ? "17 分钟前" : "17m ago", state: "done", badge: null },
@@ -313,27 +309,27 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
                 <span className={`h-5 w-5 shrink-0 rounded-full ${TASK_DOT_STATE_CLASSES[task.state]}`} />
                 <div className="min-w-0 flex-1">
                   <strong className="block truncate text-[12px]">{task.id}</strong>
-                  <small className="block truncate text-[11px] text-muted-foreground">{task.sub}</small>
+                  <small className="block text-[11px] leading-tight line-clamp-2 break-words text-muted-foreground">{task.sub}</small>
                 </div>
-                {task.badge ? <i className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-0.5 text-[10.5px] not-italic font-bold ${TASK_BADGE_STATE_CLASSES[task.state]}`}>{task.badge}</i> : null}
+                {task.badge ? <i className={`inline-flex shrink-0 items-center rounded-full px-[7px] py-0.5 text-[10px] not-italic font-bold ${TASK_BADGE_STATE_CLASSES[task.state]}`}>{task.badge}</i> : null}
                 <em className="text-[11px] not-italic text-muted-foreground">{task.time}</em>
               </div>
             ))}
-            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex w-full items-center justify-center gap-[5px] rounded-[10px] border border-border p-2 text-[12px] font-[750] text-[var(--accent-blue)]">
+            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex w-full items-center justify-center gap-[5px] rounded-xl border border-border p-2 text-[12px] font-semibold text-[var(--accent-blue)]">
               {copy.sections.viewAllResults}
             </Link>
           </section>
 
-          <section className="rounded-[14px] border border-border bg-card p-3 shadow-[0_8px_24px_rgba(15,23,42,0.045)]">
-            <h2 className="m-0 text-[14px] font-[760]">{copy.sections.recommendations}</h2>
+          <section className="rounded-2xl border border-border bg-card p-3">
+            <h2 className="m-0 text-[14px] font-semibold">{copy.sections.recommendations}</h2>
             <ul className="mt-2.5 grid gap-2 pl-4 text-[12px] leading-[1.55] text-muted-foreground marker:text-[var(--accent-blue)]">
               {copy.suggestions.recommendationItems(riskCounts.high).map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
-            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex items-center gap-[5px] text-[12px] font-[750] text-[var(--accent-blue)]">
+            <Link href="/workspace/risk-findings" className="mt-2.5 inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--accent-blue)]">
               {copy.sections.viewAllSuggestions}
-              <ArrowRight size={12} strokeWidth={1.7} aria-hidden="true" />
+              <ArrowRight size={12} strokeWidth={1.5} aria-hidden="true" />
             </Link>
           </section>
         </aside>

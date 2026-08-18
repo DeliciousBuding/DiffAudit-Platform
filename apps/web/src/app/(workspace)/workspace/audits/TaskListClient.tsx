@@ -42,7 +42,7 @@ function trackTone(job: JobRecord): Tone {
 }
 
 function TrackIcon({ tone, size }: { tone: Tone; size: number }) {
-  const props = { size, strokeWidth: 1.7, "aria-hidden": true as const };
+  const props = { size, strokeWidth: 1.5, "aria-hidden": true as const };
   if (tone === "green") return <Shield {...props} />;
   if (tone === "purple") return <Eye {...props} />;
   if (tone === "blue") return <Activity {...props} />;
@@ -196,6 +196,7 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
             <th>{tableCopy.status}</th>
             <th>{tableCopy.created}</th>
             <th>{tableCopy.duration}</th>
+            <th className="text-right">{tableCopy.auc}</th>
             <th className="text-right">{tableCopy.action}</th>
           </tr>
         </thead>
@@ -211,7 +212,9 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
                       <TrackIcon tone={tone} size={13} />
                     </span>
                     <div>
-                      <strong>{job.job_id}</strong>
+                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="hover:underline">
+                        <strong>{job.job_id}</strong>
+                      </Link>
                       <small className="mono">{job.contract_key}</small>
                     </div>
                   </div>
@@ -220,10 +223,7 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
                   <span className="mono audits-cell-muted">{job.job_type}</span>
                 </td>
                 <td>
-                  <div className="audits-cell-model">
-                    <span className="mono">{job.target_model ?? "--"}</span>
-                    {job.summary_note ? <small>{job.summary_note}</small> : null}
-                  </div>
+                  <span className="mono">{job.target_model ?? "--"}</span>
                 </td>
                 <td>
                   <span className={`audits-status-pill ${statusToneClass(job.status)}`}>
@@ -234,17 +234,18 @@ export function HistoryTable({ jobs, locale, loading, loadError, onRefresh }: Hi
                   <span className="mono audits-cell-muted">{formatCompactTime(job.created_at, locale)}</span>
                 </td>
                 <td>
-                  <div className="audits-cell-duration">
-                    <span className="mono">{formatDuration(job.created_at, job.updated_at, locale)}</span>
-                    {job.metrics?.auc !== undefined ? (
-                      <small className="mono">AUC {formatMetricValue(job.metrics.auc)}</small>
-                    ) : null}
-                  </div>
+                  <span className="mono">{formatDuration(job.created_at, job.updated_at, locale)}</span>
+                </td>
+                <td className="text-right">
+                  <span className="mono">{job.metrics?.auc !== undefined ? formatMetricValue(job.metrics.auc) : "—"}</span>
                 </td>
                 <td className="text-right">
                   <div className="audits-cell-actions">
-                    <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}>{copy.viewDetails}</Link>
-                    {reportHref ? <Link href={reportHref}>{copy.viewReport}</Link> : null}
+                    {reportHref ? (
+                      <Link href={reportHref} className="audits-cell-action-primary">{copy.viewReport}</Link>
+                    ) : (
+                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`}>{copy.viewDetails}</Link>
+                    )}
                     {job.status === "failed" ? (
                       <button
                         type="button"

@@ -154,10 +154,10 @@ export function AuditsPageClient({
                 <option value="completed">{copy.filters.statusCompleted}</option>
                 <option value="failed">{copy.filters.statusFailed}</option>
               </select>
-              <ChevronDown size={13} strokeWidth={1.7} aria-hidden="true" />
+              <ChevronDown size={13} strokeWidth={1.5} aria-hidden="true" />
             </div>
             <div className="audits-search">
-              <Search size={13} strokeWidth={1.7} aria-hidden="true" />
+              <Search size={13} strokeWidth={1.5} aria-hidden="true" />
               <input
                 type="search"
                 placeholder={copy.filters.searchPlaceholder}
@@ -173,7 +173,7 @@ export function AuditsPageClient({
               aria-label={copy.retry}
               title={copy.retry}
             >
-              <RefreshCw size={14} strokeWidth={1.7} aria-hidden="true" />
+              <RefreshCw size={14} strokeWidth={1.5} aria-hidden="true" />
             </button>
           </div>
         </header>

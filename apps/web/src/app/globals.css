@@ -31,6 +31,7 @@
   --accent-blue: #2f6df6;
   --accent-blue-hover: #1f5ce0;
   --accent-coral: #ff5f46;
+  --accent-purple: #975cff;
   --accent-green: #16a34a;
   --background: var(--palette-grey-0);
   --foreground: var(--palette-grey-1200);
@@ -162,6 +163,7 @@
   --accent-blue: #4a8ef9;
   --accent-blue-hover: #5b9cff;
   --accent-coral: #ff7a64;
+  --accent-purple: #b58cf9;
   --accent-green: #2db27a;
 
   --background: #0d0f13;
@@ -266,6 +268,7 @@
   --color-risk-high: var(--risk-high);
   --color-risk-medium: var(--risk-medium);
   --color-risk-low: var(--risk-low);
+  --color-accent-purple: var(--accent-purple);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -7311,13 +7314,14 @@ html.dark .command-palette-empty {
   white-space: nowrap;
 }
 .audits-history-table thead th.text-right { text-align: right; }
-.audits-history-table thead th:nth-child(1) { width: 18%; }
-.audits-history-table thead th:nth-child(2) { width: 16%; }
-.audits-history-table thead th:nth-child(3) { width: 27%; }
-.audits-history-table thead th:nth-child(4) { width: 7%; }
-.audits-history-table thead th:nth-child(5) { width: 8%; }
+.audits-history-table thead th:nth-child(1) { width: 15%; }
+.audits-history-table thead th:nth-child(2) { width: 13%; }
+.audits-history-table thead th:nth-child(3) { width: 18%; }
+.audits-history-table thead th:nth-child(4) { width: 8%; }
+.audits-history-table thead th:nth-child(5) { width: 10%; }
 .audits-history-table thead th:nth-child(6) { width: 9%; }
-.audits-history-table thead th:nth-child(7) { width: 15%; min-width: 190px; }
+.audits-history-table thead th:nth-child(7) { width: 7%; }
+.audits-history-table thead th:nth-child(8) { width: 20%; min-width: 180px; }
 .audits-history-table tbody tr {
   border-bottom: 1px solid var(--border);
   transition: background 0.15s;
@@ -7398,7 +7402,7 @@ html.dark .command-palette-empty {
 .audits-cell-actions {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   justify-content: flex-end;
   min-width: max-content;
   white-space: nowrap;
@@ -7416,6 +7420,20 @@ html.dark .command-palette-empty {
 }
 .audits-cell-actions a:hover,
 .audits-cell-retry:hover { text-decoration: underline; }
+.audits-cell-actions a.audits-cell-action-secondary {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+.audits-cell-actions a.audits-cell-action-secondary:hover {
+  color: var(--accent-blue);
+}
+.audits-cell-actions a.audits-cell-action-primary {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+.audits-cell-actions a.audits-cell-action-primary:hover {
+  text-decoration: underline;
+}
 .audits-cell-retry { color: var(--risk-high, #d8412e); }
 .audits-cell-retry:disabled { opacity: 0.55; cursor: default; }
 

@@ -145,7 +145,7 @@ export function ReportsPageClient({
       <div className="workspace-section-card-header">
         <div>
           <h2 className="workspace-section-card-title">{copy.taskReportsTitle}</h2>
-          <p className="mt-1 text-[12px] text-muted-foreground">{copy.taskReportsDescription}</p>
+          <p className="mt-1 text-[11px] text-muted-foreground">{copy.taskReportsDescription}</p>
         </div>
         <button type="button" onClick={exportCsv} className="workspace-btn-secondary px-3 py-2 text-xs font-medium">
           <Download size={14} strokeWidth={1.5} aria-hidden="true" />
@@ -172,7 +172,9 @@ export function ReportsPageClient({
                 <tr key={job.job_id} className="border-b border-border/40 transition-colors hover:bg-muted/20">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="mono text-xs font-medium whitespace-nowrap">{job.job_id}</span>
+                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="mono text-xs font-medium whitespace-nowrap text-[var(--accent-blue)] hover:underline">
+                        {job.job_id}
+                      </Link>
                       <CopyButton text={job.job_id} label="job ID" />
                     </div>
                     <div className="mt-1 text-[11px] text-muted-foreground">{job.workspace_name}</div>
@@ -192,16 +194,15 @@ export function ReportsPageClient({
                     <div className="mt-1 text-[11px] text-muted-foreground">{formatDuration(job.created_at, job.updated_at, locale)}</div>
                   </td>
                   <td className="reports-actions-col px-4 py-3 text-right">
-                    <div className="reports-cell-actions">
-                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="text-xs text-[var(--accent-blue)] hover:underline">
-                                                {copy.viewTask}
+                    {reportHref ? (
+                      <Link href={reportHref} className="workspace-btn-primary inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium">
+                        {copy.view}
                       </Link>
-                      {reportHref ? (
-                        <Link href={reportHref} className="text-xs text-[var(--accent-blue)] hover:underline">
-                          {copy.view}
-                        </Link>
-                      ) : null}
-                    </div>
+                    ) : (
+                      <Link href={`/workspace/audits/${encodeURIComponent(job.job_id)}`} className="text-xs text-[var(--accent-blue)] hover:underline">
+                        {copy.viewTask}
+                      </Link>
+                    )}
                   </td>
                 </tr>
               );
