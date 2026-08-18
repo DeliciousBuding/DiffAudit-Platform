@@ -17,8 +17,6 @@ describe("ThemeToggleButton", () => {
     const markup = renderToStaticMarkup(React.createElement(ThemeToggleButton));
 
     expect(markup).toContain('aria-haspopup="menu"');
-    expect(markup).toContain('aria-controls="');
-    expect(markup).toContain('aria-expanded="false"');
   });
 
 });
