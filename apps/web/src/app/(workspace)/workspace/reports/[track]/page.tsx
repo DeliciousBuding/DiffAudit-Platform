@@ -1,23 +1,28 @@
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 import { useParams } from "react-router";
 import { useSearchParams } from "@/lib/router/navigation";
 
+import { stableLoad } from "@/lib/stable-promise";
+import { isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
+
 import { renderTrackReportPage } from "./track-report-page";
 
-const renderTrackReport = cache(
-  (
-    track: string,
-    view?: string,
-    job?: string,
-    contract?: string,
-    model?: string,
-    auc?: string,
-  ) =>
-    renderTrackReportPage({
-      params: { track },
-      searchParams: { view, job, contract, model, auc },
-    }),
-);
+const renderTrackReport = (
+  track: string,
+  view?: string,
+  job?: string,
+  contract?: string,
+  model?: string,
+  auc?: string,
+) =>
+  stableLoad(
+    `track:${track}|${view ?? ""}|${job ?? ""}|${contract ?? ""}|${model ?? ""}|${auc ?? ""}:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`,
+    () =>
+      renderTrackReportPage({
+        params: { track },
+        searchParams: { view, job, contract, model, auc },
+      }),
+  );
 
 type TrackReportLoadedProps = {
   track: string;

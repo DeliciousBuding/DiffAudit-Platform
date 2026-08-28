@@ -1,4 +1,4 @@
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 import Link from "@/lib/router/link";
 import { ArrowRight, Check, FileText, Shield, TrendingUp } from "lucide-react";
 
@@ -16,9 +16,11 @@ import { ChartRiskDonut } from "@/components/chart-risk-donut";
 import { ChartAttackComparison } from "@/components/chart-attack-comparison";
 import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace-frame";
 import { MetricTooltip } from "@/components/metric-tooltip";
-import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
+import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData, isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
+import { stableLoad } from "@/lib/stable-promise";
 
-const loadStartDashboardData = cache(() =>
+const loadStartDashboardData = () =>
+  stableLoad(`workspace:start:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`, () =>
   Promise.all([
     getWorkspaceCatalogData(),
     getWorkspaceAttackDefenseData(),

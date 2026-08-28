@@ -1,15 +1,17 @@
 import Link from "@/lib/router/link";
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 import { Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { getWorkspaceAuditJobsData } from "@/lib/workspace-source";
+import { getWorkspaceAuditJobsData, isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
+import { stableLoad } from "@/lib/stable-promise";
 import { AuditsPageClient } from "./AuditsPageClient";
 
-const loadAuditJobs = cache(() => getWorkspaceAuditJobsData());
+const loadAuditJobs = () =>
+  stableLoad(`workspace:audits:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`, () => getWorkspaceAuditJobsData());
 
 function AuditsLoaded({ locale }: { locale: Locale }) {
   const initialJobs = use(loadAuditJobs());

@@ -79,7 +79,7 @@ export function AuditsPageClient({
       controller.abort();
       clearInterval(interval);
     };
-  }, [refreshToken, pollInterval, locale, copy, toast]);
+  }, [refreshToken, pollInterval, locale, copy, demoMode]);
 
   useEffect(() => {
     if (urlSyncSource.current === "url") {

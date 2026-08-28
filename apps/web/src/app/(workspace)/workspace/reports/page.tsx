@@ -1,13 +1,15 @@
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { getWorkspaceAuditJobsData } from "@/lib/workspace-source";
+import { getWorkspaceAuditJobsData, isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
+import { stableLoad } from "@/lib/stable-promise";
 import { ReportsPageClient } from "./ReportsPageClient";
 
-const loadReportJobs = cache(() => getWorkspaceAuditJobsData());
+const loadReportJobs = () =>
+  stableLoad(`workspace:reports:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`, () => getWorkspaceAuditJobsData());
 
 function ReportsLoaded({ locale }: { locale: Locale }) {
   const initialJobs = use(loadReportJobs());

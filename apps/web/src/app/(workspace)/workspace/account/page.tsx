@@ -1,16 +1,21 @@
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 import { useSearchParams } from "@/lib/router/navigation";
+
+import { clientSessionToken } from "@/lib/auth-config";
+import { stableLoad } from "@/lib/stable-promise";
 
 import type { WorkspaceSettingsSearchParams } from "../settings/render-workspace-settings";
 import { renderWorkspaceSettingsPage } from "../settings/render-workspace-settings";
 
-const renderAccountPage = cache(
-  (emailVerified: string | undefined, provider: string | undefined) =>
-    renderWorkspaceSettingsPage({
-      mode: "account",
-      searchParams: { emailVerified, provider } satisfies WorkspaceSettingsSearchParams,
-    }),
-);
+const renderAccountPage = (emailVerified: string | undefined, provider: string | undefined) =>
+  stableLoad(
+    `account:${emailVerified ?? ""}|${provider ?? ""}:${clientSessionToken() ? "signed-in" : "anon"}`,
+    () =>
+      renderWorkspaceSettingsPage({
+        mode: "account",
+        searchParams: { emailVerified, provider } satisfies WorkspaceSettingsSearchParams,
+      }),
+  );
 
 type AccountLoadedProps = {
   emailVerified?: string;

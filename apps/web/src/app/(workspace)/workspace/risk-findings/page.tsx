@@ -1,14 +1,16 @@
 import Link from "@/lib/router/link";
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { getWorkspaceAttackDefenseData } from "@/lib/workspace-source";
+import { getWorkspaceAttackDefenseData, isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
+import { stableLoad } from "@/lib/stable-promise";
 import { RiskFindingsClient } from "./RiskFindingsClient";
 
-const loadAttackDefense = cache(() => getWorkspaceAttackDefenseData());
+const loadAttackDefense = () =>
+  stableLoad(`workspace:risk-findings:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`, () => getWorkspaceAttackDefenseData());
 
 function RiskFindingsLoaded({ locale }: { locale: Locale }) {
   const table = use(loadAttackDefense());

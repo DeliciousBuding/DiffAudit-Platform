@@ -1,13 +1,15 @@
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-import { getWorkspaceCatalogData } from "@/lib/workspace-source";
+import { getWorkspaceCatalogData, isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
+import { stableLoad } from "@/lib/stable-promise";
 import { CreateTaskClient } from "./CreateTaskClient";
 
-const loadCatalog = cache(() => getWorkspaceCatalogData());
+const loadCatalog = () =>
+  stableLoad(`workspace:new-task:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`, () => getWorkspaceCatalogData());
 
 function CreateTaskLoaded({ locale }: { locale: Locale }) {
   const copy = WORKSPACE_COPY[locale].createTask;

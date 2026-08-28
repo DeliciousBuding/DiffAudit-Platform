@@ -1,4 +1,4 @@
-import { Suspense, cache, use } from "react";
+import { Suspense, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
@@ -7,11 +7,14 @@ import {
   getWorkspaceCatalogData,
   getWorkspaceAttackDefenseData,
 } from "@/lib/workspace-source";
+import { stableLoad } from "@/lib/stable-promise";
+import { isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 import { ModelAssetsClient } from "./ModelAssetsClient";
 
-const loadModelAssets = cache(() =>
+const loadModelAssets = () =>
+  stableLoad(`workspace:model-assets:${isWorkspaceDemoModeEnabled() ? "demo" : "live"}`, () =>
   Promise.all([
     getWorkspaceCatalogData(),
     getWorkspaceAttackDefenseData(),
