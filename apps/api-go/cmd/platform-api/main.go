@@ -13,7 +13,9 @@ import (
 	"syscall"
 	"time"
 
+	"diffaudit/platform-api-go/internal/auth"
 	"diffaudit/platform-api-go/internal/proxy"
+	"diffaudit/platform-api-go/internal/static"
 )
 
 type runtimeConfig struct {
@@ -25,6 +27,17 @@ type runtimeConfig struct {
 	BuildDate      string
 	DemoMode       bool
 	CORSOrigins    string
+	StaticDir      string
+	DBPath         string
+	PlatformURL    string
+	SharedUsername string
+	SharedPassword string
+	GitHubClientID string
+	GitHubSecret   string
+	GoogleClientID string
+	GoogleSecret   string
+	OAuthProxyURL  string
+	CookieSecure   bool
 }
 
 const (
@@ -82,6 +95,61 @@ func parseConfig(args []string) (runtimeConfig, error) {
 		envOrDefault("unknown", "DIFFAUDIT_BUILD_DATE"),
 		"public build timestamp",
 	)
+	staticDir := flagSet.String(
+		"static-dir",
+		envOrDefault("", "DIFFAUDIT_STATIC_DIR"),
+		"root directory of the SPA build to serve (empty = API only)",
+	)
+	dbPath := flagSet.String(
+		"db-path",
+		envOrDefault("", "DIFFAUDIT_DB_PATH"),
+		"sqlite database path for the auth store",
+	)
+	platformURL := flagSet.String(
+		"platform-url",
+		envOrDefault("", "DIFFAUDIT_PLATFORM_URL"),
+		"public platform origin used for oauth/verification links",
+	)
+	sharedUsername := flagSet.String(
+		"shared-username",
+		envOrDefault("", "DIFFAUDIT_SHARED_USERNAME"),
+		"legacy shared account username (auto-bootstrapped at login)",
+	)
+	sharedPassword := flagSet.String(
+		"shared-password",
+		envOrDefault("", "DIFFAUDIT_SHARED_PASSWORD"),
+		"legacy shared account password",
+	)
+	githubClientID := flagSet.String(
+		"github-client-id",
+		envOrDefault("", "GITHUB_CLIENT_ID"),
+		"github oauth client id",
+	)
+	githubSecret := flagSet.String(
+		"github-client-secret",
+		envOrDefault("", "GITHUB_CLIENT_SECRET"),
+		"github oauth client secret",
+	)
+	googleClientID := flagSet.String(
+		"google-client-id",
+		envOrDefault("", "GOOGLE_CLIENT_ID"),
+		"google oauth client id",
+	)
+	googleSecret := flagSet.String(
+		"google-client-secret",
+		envOrDefault("", "GOOGLE_CLIENT_SECRET"),
+		"google oauth client secret",
+	)
+	oauthProxyURL := flagSet.String(
+		"oauth-proxy-url",
+		envOrDefault("", "DIFFAUDIT_OAUTH_PROXY_URL"),
+		"http(s) proxy used for oauth provider calls",
+	)
+	cookieSecure := flagSet.Bool(
+		"cookie-secure",
+		envOrDefault("", "NODE_ENV") == "production",
+		"set the Secure attribute on session cookies",
+	)
 	if err := flagSet.Parse(args); err != nil {
 		if err == flag.ErrHelp {
 			os.Exit(0)
@@ -107,6 +175,17 @@ func parseConfig(args []string) (runtimeConfig, error) {
 		BuildDate:      *buildDate,
 		DemoMode:       *demoMode,
 		CORSOrigins:    *corsOrigins,
+		StaticDir:      *staticDir,
+		DBPath:         *dbPath,
+		PlatformURL:    *platformURL,
+		SharedUsername: *sharedUsername,
+		SharedPassword: *sharedPassword,
+		GitHubClientID: *githubClientID,
+		GitHubSecret:   *githubSecret,
+		GoogleClientID: *googleClientID,
+		GoogleSecret:   *googleSecret,
+		OAuthProxyURL:  *oauthProxyURL,
+		CookieSecure:   *cookieSecure,
 	}, nil
 }
 
@@ -126,7 +205,7 @@ func main() {
 		}
 	}
 
-	server := proxy.NewServer(proxy.Config{
+	apiHandler := proxy.NewServer(proxy.Config{
 		PublicDataDir:  config.PublicDataDir,
 		RuntimeBaseURL: config.RuntimeBaseURL,
 		BuildRevision:  config.BuildRevision,
@@ -137,12 +216,55 @@ func main() {
 			Methods:        []string{"GET", "POST", "DELETE", "OPTIONS"},
 			Headers:        []string{"Content-Type", "Authorization", "X-Request-ID"},
 		},
-	})
+	}).Handler()
 
-	handler := server.Handler()
-	handler = proxy.CORSMiddleware(server.GetConfig().CORS)(handler)
-	handler = proxy.RecoveryMiddleware()(handler)
-	handler = proxy.NewStructuredLogger()(handler)
+	if config.DBPath != "" {
+		authStore, err := auth.OpenStore(config.DBPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "open auth store: %v\n", err)
+			os.Exit(1)
+		}
+		defer authStore.Close()
+		if err := authStore.Migrate(context.Background()); err != nil {
+			fmt.Fprintf(os.Stderr, "migrate auth store: %v\n", err)
+			os.Exit(1)
+		}
+
+		authServer := auth.NewServer(auth.Options{
+			Store:          authStore,
+			PlatformURL:    config.PlatformURL,
+			SharedUsername: config.SharedUsername,
+			SharedPassword: config.SharedPassword,
+			GitHubClientID: config.GitHubClientID,
+			GitHubSecret:   config.GitHubSecret,
+			GoogleClientID: config.GoogleClientID,
+			GoogleSecret:   config.GoogleSecret,
+			OAuthProxyURL:  config.OAuthProxyURL,
+			CookieSecure:   config.CookieSecure,
+		})
+		authHandler := authServer.Routes()
+
+		apiHandler = http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			if strings.HasPrefix(request.URL.Path, "/api/auth/") {
+				authHandler.ServeHTTP(writer, request)
+				return
+			}
+			apiHandler.ServeHTTP(writer, request)
+		})
+	}
+
+	apiHandler = proxy.CORSMiddleware(proxy.CORSConfig{
+		AllowedOrigins: allowedOrigins,
+		Methods:        []string{"GET", "POST", "DELETE", "OPTIONS"},
+		Headers:        []string{"Content-Type", "Authorization", "X-Request-ID"},
+	})(apiHandler)
+	apiHandler = proxy.RecoveryMiddleware()(apiHandler)
+	apiHandler = proxy.NewStructuredLogger()(apiHandler)
+
+	var handler http.Handler = apiHandler
+	if config.StaticDir != "" {
+		handler = static.Wrap(apiHandler, config.StaticDir)
+	}
 
 	address := fmt.Sprintf("%s:%s", config.Host, config.Port)
 	httpServer := &http.Server{

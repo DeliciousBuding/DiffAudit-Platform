@@ -15,70 +15,70 @@ const (
 
 // CatalogEntry represents a single audit contract in the catalog.
 type CatalogEntry struct {
-	ContractKey      string            `json:"contract_key"`
-	Track            string            `json:"track"`
-	AttackFamily     string            `json:"attack_family"`
-	TargetKey        string            `json:"target_key"`
-	Label            string            `json:"label"`
-	Availability     string            `json:"availability"`
-	EvidenceLevel    string            `json:"evidence_level"`
-	BestWorkspace    string            `json:"best_workspace"`
-	SystemGap        string            `json:"system_gap,omitempty"`
-	AdmissionStatus  string            `json:"admission_status,omitempty"`
-	ProvenanceStatus string            `json:"provenance_status,omitempty"`
-	RiskInterpretation map[string]any  `json:"risk_interpretation,omitempty"`
+	ContractKey        string         `json:"contract_key"`
+	Track              string         `json:"track"`
+	AttackFamily       string         `json:"attack_family"`
+	TargetKey          string         `json:"target_key"`
+	Label              string         `json:"label"`
+	Availability       string         `json:"availability"`
+	EvidenceLevel      string         `json:"evidence_level"`
+	BestWorkspace      string         `json:"best_workspace"`
+	SystemGap          string         `json:"system_gap,omitempty"`
+	AdmissionStatus    string         `json:"admission_status,omitempty"`
+	ProvenanceStatus   string         `json:"provenance_status,omitempty"`
+	RiskInterpretation map[string]any `json:"risk_interpretation,omitempty"`
 }
 
 // AttackDefenseRow represents a single attack-defense evaluation result.
 type AttackDefenseRow struct {
-	Track           string  `json:"track"`
-	Attack          string  `json:"attack"`
-	Defense         string  `json:"defense"`
-	Model           string  `json:"model"`
-	AUC             float64 `json:"auc"`
-	ASR             float64 `json:"asr"`
-	TPRAt1PctFPR    float64 `json:"tpr_at_1pct_fpr"`
-	QualityCost     string  `json:"quality_cost,omitempty"`
-	EvidenceLevel   string  `json:"evidence_level,omitempty"`
-	Note            string  `json:"note,omitempty"`
-	Boundary        string  `json:"boundary,omitempty"`
-	Source          string  `json:"source,omitempty"`
-	ProvenanceStatus string `json:"provenance_status,omitempty"`
-	DefenseStage    string  `json:"defense_stage,omitempty"`
+	Track            string  `json:"track"`
+	Attack           string  `json:"attack"`
+	Defense          string  `json:"defense"`
+	Model            string  `json:"model"`
+	AUC              float64 `json:"auc"`
+	ASR              float64 `json:"asr"`
+	TPRAt1PctFPR     float64 `json:"tpr_at_1pct_fpr"`
+	QualityCost      string  `json:"quality_cost,omitempty"`
+	EvidenceLevel    string  `json:"evidence_level,omitempty"`
+	Note             string  `json:"note,omitempty"`
+	Boundary         string  `json:"boundary,omitempty"`
+	Source           string  `json:"source,omitempty"`
+	ProvenanceStatus string  `json:"provenance_status,omitempty"`
+	DefenseStage     string  `json:"defense_stage,omitempty"`
 }
 
 // AttackDefenseTable is the top-level structure for the attack-defense-table snapshot.
 type AttackDefenseTable struct {
-	Schema      string              `json:"schema"`
-	Dataset     string              `json:"dataset"`
-	ModelFamily string              `json:"model_family"`
-	UpdatedAt   string              `json:"updated_at"`
-	Rows        []AttackDefenseRow  `json:"rows"`
+	Schema      string             `json:"schema"`
+	Dataset     string             `json:"dataset"`
+	ModelFamily string             `json:"model_family"`
+	UpdatedAt   string             `json:"updated_at"`
+	Rows        []AttackDefenseRow `json:"rows"`
 }
 
 // AuditJob represents an audit job in any state.
 type AuditJob struct {
-	JobID         string         `json:"job_id"`
-	Status        string         `json:"status"`
-	ContractKey   string         `json:"contract_key"`
-	WorkspaceName string         `json:"workspace_name"`
-	JobType       string         `json:"job_type"`
-	TargetModel   string         `json:"target_model,omitempty"`
-	Track         string         `json:"track,omitempty"`
-	ProgressPct   *int           `json:"progress_pct,omitempty"`
-	Metrics       *JobMetrics    `json:"metrics,omitempty"`
-	SummaryNote   string         `json:"summary_note,omitempty"`
-	Error         string         `json:"error,omitempty"`
-	CreatedAt     string         `json:"created_at"`
-	UpdatedAt     string         `json:"updated_at"`
-	DemoMode      bool           `json:"demo_mode,omitempty"`
+	JobID         string      `json:"job_id"`
+	Status        string      `json:"status"`
+	ContractKey   string      `json:"contract_key"`
+	WorkspaceName string      `json:"workspace_name"`
+	JobType       string      `json:"job_type"`
+	TargetModel   string      `json:"target_model,omitempty"`
+	Track         string      `json:"track,omitempty"`
+	ProgressPct   *int        `json:"progress_pct,omitempty"`
+	Metrics       *JobMetrics `json:"metrics,omitempty"`
+	SummaryNote   string      `json:"summary_note,omitempty"`
+	Error         string      `json:"error,omitempty"`
+	CreatedAt     string      `json:"created_at"`
+	UpdatedAt     string      `json:"updated_at"`
+	DemoMode      bool        `json:"demo_mode,omitempty"`
 }
 
 // JobMetrics contains computed metrics for a completed job.
 type JobMetrics struct {
-	AUC  string `json:"auc,omitempty"`
-	ASR  string `json:"asr,omitempty"`
-	TPR  string `json:"tpr,omitempty"`
+	AUC string `json:"auc,omitempty"`
+	ASR string `json:"asr,omitempty"`
+	TPR string `json:"tpr,omitempty"`
 }
 
 // DemoJobStore manages in-memory demo jobs with time-based state progression.
