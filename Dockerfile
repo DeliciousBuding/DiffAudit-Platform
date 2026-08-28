@@ -31,7 +31,11 @@ FROM alpine:3.21
 
 RUN apk add --no-cache ca-certificates
 
-RUN addgroup -S diffaudit && adduser -S diffaudit -G diffaudit
+# Run as UID/GID 1002 by default to match the production data volume owner;
+# override via build args for other deployment hosts.
+ARG APP_UID=1002
+ARG APP_GID=1002
+RUN addgroup -g ${APP_GID} -S diffaudit && adduser -u ${APP_UID} -S diffaudit -G diffaudit
 
 WORKDIR /app
 
