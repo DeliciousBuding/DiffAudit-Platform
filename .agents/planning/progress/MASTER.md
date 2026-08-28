@@ -2,9 +2,19 @@
 
 > **Task**: Remove the Next.js layer; Vite + React SPA frontend, auth migrated to the Go gateway, single-binary container, deploy to production.
 > **Started**: 2026-08-28
-> **Last Updated**: 2026-08-28
+> **Last Updated**: 2026-08-29
 > **Mode**: GITHUB_STANDARD
 > **Repo**: DeliciousBuding/DiffAudit-Platform
+
+## Status: COMPLETE
+
+All four phases delivered and verified:
+- B1 web SPA migration: vitest 223/223, build green
+- B2 auth to Go: byte-compatible contract tests green (12 groups)
+- B3 build chain: chromium e2e 44/44 (41 + auth regressions), check:fast green
+- B4 release: image `sha-7442b74` live on production (gz2), public chain all 200, auth register/me/logout 200
+
+Main pushed as `4ff1d97..8048c82`; all spec-driven issues #60-#79 closed.
 
 ## GitHub Resources
 - **All Issues**: `gh issue list -R DeliciousBuding/DiffAudit-Platform --label "spec-driven" --state all`
@@ -122,3 +132,4 @@ milestones:
 | Date | Session | Summary |
 |:-----|:--------|:--------|
 | 2026-08-28 | 1 | Incident diagnosis (Next 16 standalone static 404); analysis/plan/planning created; 20 issues tracked; MASTER initialized |
+| 2026-08-29 | 2 | WIP discovered in main (Vite/Go auth); completed B1-B3 (223 vitest + 41 e2e + go tests green); image sha-7442b74 shipped; production verified (public all 200, auth flow 200); issues closed; STATE/LOG written back |
