@@ -14,7 +14,7 @@ REGISTRY_PATH = REPO_ROOT / "apps" / "web" / "src" / "lib" / "workspace-registry
 
 def workspace_inventory_section(markdown: str) -> str:
     match = re.search(
-        r"^## Workspace Page Inventory\s*(?P<section>.*?)(?=^## |\Z)",
+        r"^## (?:\d+\. )?Workspace Page Inventory\s*(?P<section>.*?)(?=^## |\Z)",
         markdown,
         flags=re.MULTILINE | re.DOTALL,
     )

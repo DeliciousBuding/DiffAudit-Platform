@@ -38,7 +38,7 @@ export default defineConfig({
     "process.env.DIFFAUDIT_DEMO_MODE": JSON.stringify(process.env.DIFFAUDIT_DEMO_MODE ?? ""),
     "process.env.DIFFAUDIT_FORCE_DEMO_MODE": JSON.stringify(process.env.DIFFAUDIT_FORCE_DEMO_MODE ?? ""),
     "process.env.DIFFAUDIT_API_BASE_URL": JSON.stringify(
-      process.env.DIFFAUDIT_API_BASE_URL ?? "http://127.0.0.1:8780",
+      process.env.DIFFAUDIT_API_BASE_URL ?? "",
     ),
     "process.env.DIFFAUDIT_PLATFORM_URL": JSON.stringify(
       process.env.DIFFAUDIT_PLATFORM_URL ?? "",

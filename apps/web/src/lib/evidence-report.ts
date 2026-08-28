@@ -1,6 +1,5 @@
 import type { EvidenceSourceSnapshot, EvidenceSummaryPayload } from "@/lib/audit-client";
 import { summarizeEvidenceMetrics } from "@/lib/audit-client";
-import { backendBaseUrl } from "@/lib/api-proxy";
 import type { CatalogEntryPayload } from "@/lib/catalog";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 
@@ -86,7 +85,7 @@ export async function fetchBestEvidenceSourceSnapshot(
 ): Promise<EvidenceSourceSnapshot | null> {
   try {
     const catalogResponse = await fetchWithTimeout(
-      new URL("/api/v1/catalog", backendBaseUrl()),
+      "/api/v1/catalog",
       { cache: "no-store" },
       { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
     );
@@ -105,10 +104,7 @@ export async function fetchBestEvidenceSourceSnapshot(
     }
 
     const summaryResponse = await fetchWithTimeout(
-      new URL(
-        `/api/v1/experiments/${encodeURIComponent(entry.best_workspace)}/summary`,
-        backendBaseUrl(),
-      ),
+      `/api/v1/experiments/${encodeURIComponent(entry.best_workspace)}/summary`,
       { cache: "no-store" },
       { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
     );
@@ -137,10 +133,7 @@ export async function fetchBestEvidenceByContract(
 ): Promise<EvidenceSourceSnapshot | null> {
   try {
     const response = await fetchWithTimeout(
-      new URL(
-        `/api/v1/experiments/best?contract_key=${encodeURIComponent(contractKey)}`,
-        backendBaseUrl(),
-      ),
+      `/api/v1/experiments/best?contract_key=${encodeURIComponent(contractKey)}`,
       { cache: "no-store" },
       { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
     );

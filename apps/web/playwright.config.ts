@@ -38,6 +38,13 @@ export default defineConfig({
 
   webServer: [
     {
+      command:
+        "cd ../api-go && go run ./cmd/platform-api --host 127.0.0.1 --port 8780 --static-dir ../web/dist",
+      url: "http://127.0.0.1:8780/health",
+      reuseExistingServer: !process.env.CI,
+      timeout: 90000,
+    },
+    {
       command: "npm run dev",
       url: "http://localhost:3000",
       reuseExistingServer: !process.env.CI,

@@ -263,7 +263,19 @@ func main() {
 
 	var handler http.Handler = apiHandler
 	if config.StaticDir != "" {
-		handler = static.Wrap(apiHandler, config.StaticDir)
+		metaHandler := http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			switch request.URL.Path {
+			case "/robots.txt":
+				static.RobotsHandler(config.PlatformURL).ServeHTTP(writer, request)
+				return
+			case "/sitemap.xml":
+				static.SitemapHandler(config.PlatformURL).ServeHTTP(writer, request)
+				return
+			default:
+				static.Wrap(apiHandler, config.StaticDir).ServeHTTP(writer, request)
+			}
+		})
+		handler = metaHandler
 	}
 
 	address := fmt.Sprintf("%s:%s", config.Host, config.Port)

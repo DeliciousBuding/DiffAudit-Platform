@@ -1,4 +1,3 @@
-import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { DEMO_CATALOG_ENTRIES } from "@/lib/demo-snapshot";
 import { isDemoModeEnabledClient } from "@/lib/demo-mode";
@@ -219,7 +218,7 @@ export async function fetchCatalogDashboard(): Promise<CatalogDashboardViewModel
     return summarizeCatalogEntries(DEMO_CATALOG_ENTRIES);
   }
 
-  const url = new URL("/api/v1/catalog", backendBaseUrl());
+  const url = "/api/v1/catalog";
 
   try {
     const response = await fetchWithTimeout(

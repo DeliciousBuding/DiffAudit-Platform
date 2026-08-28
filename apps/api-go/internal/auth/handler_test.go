@@ -24,7 +24,7 @@ func newTestServer(t *testing.T, mutate func(*Options)) (*Server, func()) {
 
 	opts := Options{
 		Store:          store,
-		PlatformURL:    "https://diffaudit.vectorcontrol.tech",
+		PlatformURL:    "https://platform.example.com",
 		SharedUsername: "",
 		SharedPassword: "",
 		GitHubClientID: "gh-client",

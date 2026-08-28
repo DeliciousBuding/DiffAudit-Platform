@@ -1,4 +1,3 @@
-import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
 import { DEMO_ATTACK_DEFENSE_ROWS } from "@/lib/demo-snapshot";
@@ -124,7 +123,7 @@ export async function fetchAttackDefenseTable(): Promise<AttackDefenseTableViewM
     return summarizeAttackDefenseTable(DEMO_ATTACK_DEFENSE_ROWS);
   }
 
-  const url = new URL("/api/v1/evidence/attack-defense-table", backendBaseUrl());
+  const url = "/api/v1/evidence/attack-defense-table";
 
   try {
     const response = await fetchWithTimeout(

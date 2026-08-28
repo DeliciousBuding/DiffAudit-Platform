@@ -12,7 +12,6 @@ import {
   type CatalogTrack,
 } from "@/lib/workspace-source";
 import { type EvidenceSummaryPayload } from "@/lib/audit-client";
-import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { ReportAuditView, type ReportProducerContext, type ReportProvenance } from "./ReportAuditView";
@@ -114,7 +113,7 @@ async function fetchTrackProvenance(entry?: CatalogEntryViewModel): Promise<Repo
 
   try {
     const response = await fetchWithTimeout(
-      new URL(`/api/v1/experiments/${encodeURIComponent(workspace)}/summary`, backendBaseUrl()),
+      `/api/v1/experiments/${encodeURIComponent(workspace)}/summary`,
       { cache: "no-store" },
       { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
     );
@@ -201,7 +200,7 @@ async function fetchProducerContext(jobContext: ReturnType<typeof buildJobContex
 
   try {
     const response = await fetchWithTimeout(
-      new URL(`/api/v1/audit/jobs/${encodeURIComponent(jobContext.jobId)}`, backendBaseUrl()),
+      `/api/v1/audit/jobs/${encodeURIComponent(jobContext.jobId)}`,
       { cache: "no-store" },
       { timeoutMs: DEFAULT_SERVER_FETCH_TIMEOUT_MS },
     );

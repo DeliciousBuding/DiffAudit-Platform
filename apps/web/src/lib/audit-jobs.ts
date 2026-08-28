@@ -1,4 +1,3 @@
-import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
 import { sanitizeRuntimeText } from "@/lib/runtime-text";
@@ -106,7 +105,7 @@ export function summarizeAuditJobs(jobs: AuditJobPayload[]): AuditJobViewModel[]
 }
 
 export async function fetchAuditJobs(): Promise<AuditJobViewModel[] | null> {
-  const url = new URL("/api/v1/audit/jobs", backendBaseUrl());
+  const url = "/api/v1/audit/jobs";
 
   try {
     const response = await fetchWithTimeout(
