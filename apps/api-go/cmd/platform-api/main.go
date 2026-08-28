@@ -244,13 +244,9 @@ func main() {
 		})
 		authHandler := authServer.Routes()
 
-		apiHandler = http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			if strings.HasPrefix(request.URL.Path, "/api/auth/") {
-				authHandler.ServeHTTP(writer, request)
-				return
-			}
-			apiHandler.ServeHTTP(writer, request)
-		})
+		// Capture the pre-auth handler in a local so the later middleware
+		// reassignments to apiHandler cannot create a handler loop.
+		apiHandler = combineWithAuth(apiHandler, authHandler)
 	}
 
 	apiHandler = proxy.CORSMiddleware(proxy.CORSConfig{
@@ -309,6 +305,19 @@ func main() {
 		fmt.Fprintln(os.Stderr, "shutdown error:", err)
 		os.Exit(1)
 	}
+}
+
+// combineWithAuth routes /api/auth/* to the auth handler and everything else
+// to the API handler. Both handlers are captured by value so later wrapping
+// cannot create a handler loop.
+func combineWithAuth(apiHandler http.Handler, authHandler http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if strings.HasPrefix(request.URL.Path, "/api/auth/") {
+			authHandler.ServeHTTP(writer, request)
+			return
+		}
+		apiHandler.ServeHTTP(writer, request)
+	})
 }
 
 func envOrDefault(fallback string, names ...string) string {
