@@ -27,8 +27,8 @@ These five principles govern every Platform design decision:
 
 | Area | Owns | Source of truth |
 |------|------|-----------------|
-| `apps/web` | Next.js product surface: marketing, auth, workspace, reports, account, settings | `apps/web/DESIGN.md` (design), `apps/web/README.md` (dev) |
-| `apps/api-go` | Go gateway, snapshot read plane, optional Runtime proxy, snapshot publisher | `apps/api-go/README.md` (dev onboarding), this file (backend API rules) |
+| `apps/web` | Vite + React 19 SPA product surface: marketing, auth, workspace, reports, account, settings (React Router v7, no meta-framework) | `apps/web/DESIGN.md` (design), `apps/web/README.md` (dev) |
+| `apps/api-go` | Go gateway: SPA static serving, snapshot read plane, optional Runtime proxy, auth (SQLite), snapshot publisher | `apps/api-go/README.md` (dev onboarding), this file (backend API rules) |
 | `packages/shared` | Public contracts, schema notes, example payloads | `packages/shared/contracts/README.md` |
 | `deploy` | Public-safe Docker/compose templates with placeholder config | `deploy/README.md` |
 | `docs` | Public architecture, roadmap, API contracts, engineering governance | `docs/README.md` (index only — docs are for humans, not agents) |
@@ -68,7 +68,7 @@ Every architectural boundary in Platform has an explicit enforcement mechanism:
 
 | Boundary | Mechanism | Detail |
 |----------|-----------|--------|
-| **Web frontend vs Go API** | `apps/web/src/lib/api-proxy.ts` facade | 15s timeout; all frontend→backend calls go through this single facade |
+| **Web frontend vs Go API** | `apps/web/src/lib/workspace-source.ts` facade + same-origin `fetch` | All frontend→backend calls use relative `/api/*` paths served by the Go gateway; no server-side proxy layer |
 | **Read plane vs Control plane** | Route-level separation in Go server | Snapshot-backed `GET` routes never proxy; only `/api/v1/audit/*` routes forward to Runtime |
 | **Publish-time vs Request-time** | Snapshot publisher (Python) writes public JSON; Go server reads only from `data/public/` | Request handlers never discover Research workspaces; publisher sanitizes paths to `research://...` |
 | **Public vs Private** | `scripts/check_public_boundary.py` | 13 rule categories: secrets, IPs, hostnames, paths, emails, SSH, tokens, private keys, certificates, connection strings, system paths, user names, private datasets |
@@ -79,7 +79,7 @@ Every architectural boundary in Platform has an explicit enforcement mechanism:
 
 Each layer's demo mode is built **self-contained** — either can run standalone. This is intentional architectural debt, not a bug:
 
-- **Frontend demo**: `apps/web/src/lib/demo-snapshot.ts` + `demo-jobs-store.ts`. When `DIFFAUDIT_DEMO_MODE=1`, Next.js API routes serve hardcoded TypeScript demo data without calling the Go backend.
+- **Frontend demo**: `apps/web/src/lib/demo-snapshot.ts` + `demo-jobs-store.ts`. When demo mode is enabled, the SPA imports the hardcoded TypeScript demo data directly — no network call.
 - **Go backend demo**: `DemoJobStore` in `internal/proxy/models.go`. When `--demo-mode=true`, Go serves 6 pre-seeded jobs with time-based state progression.
 - **To use Go demo data in the browser**: set `DIFFAUDIT_DEMO_MODE=0` (frontend) and ensure Go runs with `--demo-mode=true`.
 
