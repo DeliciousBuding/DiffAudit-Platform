@@ -12,7 +12,7 @@ All four phases delivered and verified:
 - B1 web SPA migration: vitest 223/223, build green
 - B2 auth to Go: byte-compatible contract tests green (12 groups)
 - B3 build chain: chromium e2e 44/44 (41 + auth regressions), check:fast green
-- B4 release: image `sha-7442b74` live on production (gz2), public chain all 200, auth register/me/logout 200
+- B4 release: image `sha-7442b74` live on the production host, public chain all 200, auth register/me/logout 200
 
 Main pushed as `4ff1d97..8048c82`; all spec-driven issues #60-#79 closed.
 
