@@ -1,22 +1,19 @@
-import { headers } from "next/headers";
+import { Suspense, cache, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { getWorkspaceCatalogData } from "@/lib/workspace-source";
 import { CreateTaskClient } from "./CreateTaskClient";
 
-type CreateTaskPageOptions = {
-  locale?: Locale;
-};
+const loadCatalog = cache(() => getWorkspaceCatalogData());
 
-async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
-  const copy = WORKSPACE_COPY[resolvedLocale].createTask;
+function CreateTaskLoaded({ locale }: { locale: Locale }) {
+  const copy = WORKSPACE_COPY[locale].createTask;
 
   // Fetch catalog for model selection step
-  const catalog = await getWorkspaceCatalogData();
+  const catalog = use(loadCatalog());
   const availableModels = catalog
     ? catalog.tracks.flatMap((track) =>
         track.entries
@@ -31,7 +28,7 @@ async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
       )
     : [];
 
-  const isZh = resolvedLocale === "zh-CN";
+  const isZh = locale === "zh-CN";
   const breadcrumbItems = [
     { label: isZh ? "工作台" : "Dashboard", href: "/workspace/start" },
     { label: isZh ? "审计任务" : "Audits", href: "/workspace/audits" },
@@ -48,13 +45,19 @@ async function renderCreateTaskPage({ locale }: CreateTaskPageOptions = {}) {
       </div>
 
       <CreateTaskClient
-        locale={resolvedLocale}
+        locale={locale}
         availableModels={availableModels}
       />
     </div>
   );
 }
 
-export default async function CreateTaskPage() {
-  return renderCreateTaskPage();
+export default function CreateTaskPage() {
+  const locale = clientLocale();
+
+  return (
+    <Suspense fallback={<div className="p-6">Loading…</div>}>
+      <CreateTaskLoaded locale={locale} />
+    </Suspense>
+  );
 }

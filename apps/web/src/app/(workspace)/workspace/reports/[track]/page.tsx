@@ -1,21 +1,51 @@
-import {
-  renderTrackReportPage,
-  type TrackReportPageSearchParams,
-} from "./track-report-page";
+import { Suspense, cache, use } from "react";
+import { useParams } from "react-router";
+import { useSearchParams } from "@/lib/next-shims/navigation";
 
-export const dynamic = "force-dynamic";
+import { renderTrackReportPage } from "./track-report-page";
 
-type TrackReportPageProps = {
-  params: Promise<{ track: string }>;
-  searchParams?: Promise<TrackReportPageSearchParams>;
+const renderTrackReport = cache(
+  (
+    track: string,
+    view?: string,
+    job?: string,
+    contract?: string,
+    model?: string,
+    auc?: string,
+  ) =>
+    renderTrackReportPage({
+      params: { track },
+      searchParams: { view, job, contract, model, auc },
+    }),
+);
+
+type TrackReportLoadedProps = {
+  track: string;
+  view?: string;
+  job?: string;
+  contract?: string;
+  model?: string;
+  auc?: string;
 };
 
-export default async function TrackReportPage(props: TrackReportPageProps) {
-  const resolvedParams = await props.params;
-  const resolvedSearchParams = props.searchParams ? await props.searchParams : {};
+function TrackReportLoaded({ track, view, job, contract, model, auc }: TrackReportLoadedProps) {
+  return use(renderTrackReport(track, view, job, contract, model, auc));
+}
 
-  return renderTrackReportPage({
-    params: resolvedParams,
-    searchParams: resolvedSearchParams,
-  });
+export default function TrackReportPage() {
+  const { track } = useParams();
+  const searchParams = useSearchParams();
+
+  return (
+    <Suspense fallback={<div className="p-6">Loading…</div>}>
+      <TrackReportLoaded
+        track={track ?? ""}
+        view={searchParams.get("view") ?? undefined}
+        job={searchParams.get("job") ?? undefined}
+        contract={searchParams.get("contract") ?? undefined}
+        model={searchParams.get("model") ?? undefined}
+        auc={searchParams.get("auc") ?? undefined}
+      />
+    </Suspense>
+  );
 }

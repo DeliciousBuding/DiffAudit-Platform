@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
 
+import NotFound from "@/app/not-found";
 import { type Locale } from "@/components/language-picker";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import {
   getWorkspaceAttackDefenseData,
   getWorkspaceCatalogData,
@@ -14,7 +14,6 @@ import {
 import { type EvidenceSummaryPayload } from "@/lib/audit-client";
 import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { ReportAuditView, type ReportProducerContext, type ReportProvenance } from "./ReportAuditView";
 import { ReportDisplayView } from "./ReportDisplayView";
@@ -252,10 +251,10 @@ export async function renderTrackReportPage({
 }: RenderTrackReportPageOptions) {
   const track = params.track;
   if (!isTrack(track)) {
-    notFound();
+    return <NotFound />;
   }
 
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
+  const resolvedLocale = locale ?? clientLocale();
   const currentView = parseViewMode(searchParams?.view);
   const jobContext = buildJobContext(searchParams);
   const [table, catalog] = await Promise.all([

@@ -1,16 +1,12 @@
-import { redirect } from "next/navigation";
+import { Navigate } from "react-router";
+
 import { getDocsContent } from "./docs-data";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
-import { headers } from "next/headers";
+import { clientLocale } from "@/lib/next-shims/runtime";
 
-export const dynamic = "force-dynamic";
-
-export default async function DocsPage() {
-  const headerStore = await headers();
-  const locale = resolveLocaleFromHeaderStore(headerStore);
-
+export default function DocsPage() {
+  const locale = clientLocale();
   const content = getDocsContent(locale);
   const firstSlug = content.pages[0]?.slug ?? "quick-start";
 
-  redirect(`/docs/${firstSlug}`);
+  return <Navigate to={`/docs/${firstSlug}`} replace />;
 }

@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-
 import { LanguagePicker } from "@/components/language-picker";
 import { UserAvatar } from "@/components/user-avatar";
 import { WorkspaceSidebar } from "@/components/workspace-sidebar";
@@ -13,7 +11,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 /**
@@ -22,14 +20,14 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
  * Replaces the bespoke `.workspace-layout` / `.workspace-sidebar` /
  * `.workspace-main-area` grid (in globals.css) with `SidebarProvider` +
  * `Sidebar collapsible="icon"` + `SidebarInset`. Collapse is Ctrl+B or the
- * topbar `SidebarTrigger` (cookie-persisted, SSR-correct). On mobile the
- * sidebar renders as a Sheet opened by the same trigger — replacing the
- * legacy `PlatformNavMobile` bottom dock with one nav surface. The topbar's
+ * topbar `SidebarTrigger` (cookie-persisted). On mobile the sidebar renders
+ * as a Sheet opened by the same trigger — replacing the legacy
+ * `PlatformNavMobile` bottom dock with one nav surface. The topbar's
  * duplicate `ThemeToggleButton` is gone; the single theme control lives in
  * the sidebar footer (see WorkspaceSidebar).
  */
-export async function PlatformShell({ children }: { children: React.ReactNode }) {
-  const locale = resolveLocaleFromHeaderStore(await headers());
+export function PlatformShell({ children }: { children: React.ReactNode }) {
+  const locale = clientLocale();
   const copy = WORKSPACE_COPY[locale];
 
   return (

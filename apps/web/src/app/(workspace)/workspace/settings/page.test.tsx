@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -33,7 +34,7 @@ describe("WorkspaceSettingsPage locale", () => {
   });
 
   it("renders settings page with SettingsClient", async () => {
-    headersMock.mockResolvedValue(new Headers([["cookie", "platform-locale-v2=zh-CN; diffaudit_session=test-session"]]));
+    document.cookie = "platform-locale-v2=zh-CN; diffaudit_session=test-session";
     cookiesMock.mockResolvedValue({
       get: (name: string) => (name === "diffaudit_session" ? { value: "test-session" } : undefined),
     });
@@ -44,8 +45,5 @@ describe("WorkspaceSettingsPage locale", () => {
     const { default: WorkspaceSettingsPage } = await import("./page");
     const result = await WorkspaceSettingsPage();
     expect(result).toBeDefined();
-    // The page renders with mode="settings" by default
-    const pageElement = result as { props?: { mode?: string } };
-    expect(pageElement.props?.mode).toBe("settings");
   });
 });

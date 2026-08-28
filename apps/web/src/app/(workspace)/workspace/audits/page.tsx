@@ -1,24 +1,25 @@
-import { headers } from "next/headers";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, cache, use } from "react";
 import { Plus } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { type Locale } from "@/components/language-picker";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { getWorkspaceAuditJobsData } from "@/lib/workspace-source";
 import { AuditsPageClient } from "./AuditsPageClient";
 
-type WorkspaceAuditsPageOptions = {
-  locale?: "en-US" | "zh-CN";
-};
+const loadAuditJobs = cache(() => getWorkspaceAuditJobsData());
 
-async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
-  const copy = WORKSPACE_COPY[resolvedLocale].audits;
-  const initialJobs = await getWorkspaceAuditJobsData();
+function AuditsLoaded({ locale }: { locale: Locale }) {
+  const initialJobs = use(loadAuditJobs());
+
+  return <AuditsPageClient locale={locale} initialJobs={initialJobs} />;
+}
+
+export default function WorkspaceAuditsPage() {
+  const locale = clientLocale();
+  const copy = WORKSPACE_COPY[locale].audits;
 
   return (
     <WorkspacePageFrame
@@ -37,12 +38,8 @@ async function renderWorkspaceAuditsPage({ locale }: WorkspaceAuditsPageOptions 
       }
     >
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/20" />}>
-        <AuditsPageClient locale={resolvedLocale} initialJobs={initialJobs} />
+        <AuditsLoaded locale={locale} />
       </Suspense>
     </WorkspacePageFrame>
   );
-}
-
-export default async function WorkspaceAuditsPage() {
-  return renderWorkspaceAuditsPage();
 }

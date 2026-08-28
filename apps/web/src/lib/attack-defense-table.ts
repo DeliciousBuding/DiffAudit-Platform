@@ -2,7 +2,7 @@ import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { classifyRisk, type RiskLevel } from "@/lib/risk-report";
 import { DEMO_ATTACK_DEFENSE_ROWS } from "@/lib/demo-snapshot";
-import { isDemoModeEnabledServer } from "@/lib/demo-mode";
+import { isDemoModeEnabledClient } from "@/lib/demo-mode";
 
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 
@@ -120,7 +120,7 @@ export function summarizeAttackDefenseTable(rows: AttackDefenseRowPayload[]) {
 }
 
 export async function fetchAttackDefenseTable(): Promise<AttackDefenseTableViewModel | null> {
-  if (await isDemoModeEnabledServer()) {
+  if (isDemoModeEnabledClient()) {
     return summarizeAttackDefenseTable(DEMO_ATTACK_DEFENSE_ROWS);
   }
 

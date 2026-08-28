@@ -1,5 +1,6 @@
 import { type Locale, LOCALE_STORAGE_KEY } from "@/components/language-picker";
 
+export type { Locale };
 export const LOCALE_COOKIE_NAME = LOCALE_STORAGE_KEY;
 
 export function resolveLocale(cookieValue: string | undefined | null): Locale {

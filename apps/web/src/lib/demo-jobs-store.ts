@@ -1,5 +1,3 @@
-import crypto from "node:crypto";
-
 import { DEMO_JOBS, type DemoJobRecord } from "@/lib/demo-snapshot";
 
 type DemoJobDraft = {
@@ -169,10 +167,15 @@ export function findDemoJob(jobId: string) {
   return job ? materializeDemoJob(job) : null;
 }
 
+function randomJobId() {
+  const id = globalThis.crypto?.randomUUID?.()?.slice(0, 8);
+  return `job_demo_${id ?? Date.now().toString(36)}`;
+}
+
 export function createDemoJob(draft: DemoJobDraft) {
   const now = new Date().toISOString();
   const job: DemoJobRecord = {
-    job_id: `job_demo_${crypto.randomUUID().slice(0, 8)}`,
+    job_id: randomJobId(),
     status: "queued",
     contract_key: draft.contract_key ?? "recon_artifact_mainline",
     workspace_name:

@@ -13,7 +13,7 @@ import {
   type CatalogTrack,
 } from "@/lib/catalog";
 import { listDemoJobs } from "@/lib/demo-jobs-store";
-import { isDemoModeEnabledServer, isDemoModeForcedServer } from "@/lib/demo-mode";
+import { isDemoModeEnabledClient, isDemoModeForcedClient } from "@/lib/demo-mode";
 
 export type {
   AttackDefenseRowViewModel,
@@ -30,16 +30,20 @@ export type WorkspaceModeState = {
   demoModeLocked: boolean;
 };
 
+export function isWorkspaceDemoModeEnabled(): boolean {
+  return isDemoModeEnabledClient();
+}
+
 export async function getWorkspaceDataMode(): Promise<WorkspaceDataMode> {
-  return (await isDemoModeEnabledServer()) ? "demo" : "live";
+  return isDemoModeEnabledClient() ? "demo" : "live";
 }
 
 export async function getWorkspaceModeState(): Promise<WorkspaceModeState> {
-  const demoModeEnabled = await isDemoModeEnabledServer();
+  const demoModeEnabled = isDemoModeEnabledClient();
   return {
     mode: demoModeEnabled ? "demo" : "live",
     demoModeEnabled,
-    demoModeLocked: isDemoModeForcedServer(),
+    demoModeLocked: isDemoModeForcedClient(),
   };
 }
 
@@ -52,7 +56,7 @@ export async function getWorkspaceAttackDefenseData(): Promise<AttackDefenseTabl
 }
 
 export async function getWorkspaceAuditJobsData(): Promise<ReturnType<typeof listDemoJobs>> {
-  return (await isDemoModeEnabledServer())
+  return isDemoModeEnabledClient()
     ? sanitizeAuditJobPayload(listDemoJobs())
     : [];
 }

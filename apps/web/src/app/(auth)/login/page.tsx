@@ -1,17 +1,14 @@
-import { headers } from "next/headers";
+import { useSearchParams } from "@/lib/next-shims/navigation";
 
-import { githubOAuthConfigured, googleOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth";
+import { githubOAuthConfigured, googleOAuthConfigured, sanitizeRedirectPath } from "@/lib/auth-config";
 import { LoginForm } from "@/components/login-form";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ redirectTo?: string }>;
-}) {
-  const { redirectTo } = await searchParams;
-  const locale = resolveLocaleFromHeaderStore(await headers());
+export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const locale = clientLocale();
   const copy = WORKSPACE_COPY[locale];
   const oauthEnabled = {
     google: googleOAuthConfigured(),

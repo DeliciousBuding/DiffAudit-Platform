@@ -1,12 +1,5 @@
-import { cookies, headers } from "next/headers";
-
-import {
-  getCurrentUserProfile,
-  githubOAuthConfigured,
-  googleOAuthConfigured,
-  SESSION_COOKIE_NAME,
-} from "@/lib/auth";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale, clientSessionToken } from "@/lib/next-shims/runtime";
+import { githubOAuthConfigured, googleOAuthConfigured } from "@/lib/auth-config";
 import { getWorkspaceModeState } from "@/lib/workspace-source";
 import {
   SettingsClient,
@@ -32,18 +25,16 @@ export async function renderWorkspaceSettingsPage({
   mode = "settings",
   searchParams,
 }: RenderWorkspaceSettingsOptions = {}) {
-  const headerStore = await headers();
-  const cookieStore = await cookies();
-  const locale = resolveLocaleFromHeaderStore(headerStore);
+  const locale = clientLocale();
   const modeState = await getWorkspaceModeState();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const sessionToken = clientSessionToken();
 
   return (
     <SettingsClient
       locale={locale}
       initialDemoMode={modeState.demoModeEnabled}
       demoModeLocked={modeState.demoModeLocked}
-      initialProfile={getCurrentUserProfile(sessionToken)}
+      initialProfile={sessionToken ? undefined : null}
       initialEmailVerificationStatus={firstParam(searchParams?.emailVerified) as EmailVerificationStatus | undefined}
       initialProviderLinkStatus={firstParam(searchParams?.provider) as ProviderLinkStatus | undefined}
       oauthEnabled={{

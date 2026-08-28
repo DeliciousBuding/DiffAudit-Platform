@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { renderToReadableStream } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -27,7 +28,7 @@ describe("WorkspaceHomePage", () => {
   });
 
   it("renders zh-CN copy with forced demo data", async () => {
-    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "zh-CN"]]));
+    document.cookie = "platform-locale-v2=zh-CN";
     const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 
@@ -41,7 +42,7 @@ describe("WorkspaceHomePage", () => {
   });
 
   it("renders en-US copy with forced demo data", async () => {
-    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "en-US"]]));
+    document.cookie = "platform-locale-v2=en-US";
     const { default: WorkspaceHomePage } = await import("./start/page");
     const markup = await renderMarkup(await WorkspaceHomePage());
 

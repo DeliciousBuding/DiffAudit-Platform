@@ -1,8 +1,8 @@
-import { headers } from "next/headers";
-import { Suspense } from "react";
+import { Suspense, cache, use } from "react";
 
+import { type Locale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import {
   getWorkspaceCatalogData,
   getWorkspaceAttackDefenseData,
@@ -11,14 +11,15 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 import { ModelAssetsClient } from "./ModelAssetsClient";
 
-export const dynamic = "force-dynamic";
-
-export default async function ModelAssetsPage() {
-  const locale = resolveLocaleFromHeaderStore(await headers());
-  const [catalog, attackDefense] = await Promise.all([
+const loadModelAssets = cache(() =>
+  Promise.all([
     getWorkspaceCatalogData(),
     getWorkspaceAttackDefenseData(),
-  ]);
+  ]),
+);
+
+function ModelAssetsLoaded({ locale }: { locale: Locale }) {
+  const [catalog, attackDefense] = use(loadModelAssets());
 
   const copy = WORKSPACE_COPY[locale].modelAssetsPage;
 
@@ -49,14 +50,22 @@ export default async function ModelAssetsPage() {
         <span>{categoryCount} {copy.categoriesCount}</span>
       </div>
 
-      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/20" />}>
-        <ModelAssetsClient
-          catalog={catalog}
-          attackDefense={attackDefense}
-          copy={copy}
-          locale={locale}
-        />
-      </Suspense>
+      <ModelAssetsClient
+        catalog={catalog}
+        attackDefense={attackDefense}
+        copy={copy}
+        locale={locale}
+      />
     </WorkspacePageFrame>
+  );
+}
+
+export default function ModelAssetsPage() {
+  const locale = clientLocale();
+
+  return (
+    <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/20" />}>
+      <ModelAssetsLoaded locale={locale} />
+    </Suspense>
   );
 }

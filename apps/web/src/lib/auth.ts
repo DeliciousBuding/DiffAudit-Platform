@@ -4,60 +4,37 @@ import crypto from "node:crypto";
 
 import { getDb, schema } from "@/lib/db";
 
-export const SESSION_COOKIE_NAME = "diffaudit_session";
-export const DEFAULT_REDIRECT_PATH = "/workspace";
+import {
+  SESSION_COOKIE_NAME,
+  DEFAULT_REDIRECT_PATH,
+  protectedPagePath,
+  protectedApiPath,
+  authPagePath,
+  sanitizeRedirectPath,
+  buildLoginPath,
+  githubOAuthConfigured,
+  googleOAuthConfigured,
+  hasPlausibleSessionToken,
+  type GitHubOAuthEnv,
+  type GoogleOAuthEnv,
+} from "./auth-config";
+
+export {
+  SESSION_COOKIE_NAME,
+  DEFAULT_REDIRECT_PATH,
+  protectedPagePath,
+  protectedApiPath,
+  authPagePath,
+  sanitizeRedirectPath,
+  buildLoginPath,
+  githubOAuthConfigured,
+  googleOAuthConfigured,
+  hasPlausibleSessionToken,
+  type GitHubOAuthEnv,
+  type GoogleOAuthEnv,
+};
+
 const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
-
-export function protectedPagePath(pathname: string): boolean {
-  return pathname === "/workspace" || pathname.startsWith("/workspace/");
-}
-
-export function protectedApiPath(pathname: string): boolean {
-  return pathname.startsWith("/api/v1/");
-}
-
-export function authPagePath(pathname: string): boolean {
-  return pathname === "/login" || pathname === "/register";
-}
-
-export function sanitizeRedirectPath(
-  redirectPath: string | null | undefined,
-  fallbackPath: string = DEFAULT_REDIRECT_PATH,
-): string {
-  if (!redirectPath) return fallbackPath;
-  const p = redirectPath.trim();
-  if (!p.startsWith("/") || p.startsWith("//")) return fallbackPath;
-  return p;
-}
-
-export function buildLoginPath(redirectPath: string): string {
-  const safe = sanitizeRedirectPath(redirectPath);
-  const url = new URL("/login", "http://localhost");
-  url.searchParams.set("redirectTo", safe);
-  return `${url.pathname}${url.search}`;
-}
-
-type GitHubOAuthEnv = {
-  GITHUB_CLIENT_ID?: string;
-  GITHUB_CLIENT_SECRET?: string;
-};
-
-type GoogleOAuthEnv = {
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-};
-
-export function githubOAuthConfigured(
-  env: GitHubOAuthEnv = process.env as GitHubOAuthEnv,
-): boolean {
-  return Boolean(env.GITHUB_CLIENT_ID?.trim() && env.GITHUB_CLIENT_SECRET?.trim());
-}
-
-export function googleOAuthConfigured(
-  env: GoogleOAuthEnv = process.env as GoogleOAuthEnv,
-): boolean {
-  return Boolean(env.GOOGLE_CLIENT_ID?.trim() && env.GOOGLE_CLIENT_SECRET?.trim());
-}
 
 function validConfiguredPlatformUrl(value: string | undefined): string | null {
   const trimmed = value?.trim();

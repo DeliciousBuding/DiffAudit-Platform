@@ -1,29 +1,20 @@
-import { headers } from "next/headers";
+import { useParams } from "react-router";
 
-import { type Locale } from "@/components/language-picker";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { JobDetailClient } from "./JobDetailClient";
 
-type RenderJobDetailPageOptions = {
-  params: Promise<{ jobId: string }>;
-  locale?: Locale;
-};
-
-async function renderJobDetailPage({
-  params,
-  locale,
-}: RenderJobDetailPageOptions) {
-  const { jobId } = await params;
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
-  const copy = WORKSPACE_COPY[resolvedLocale].jobDetail;
-  const isZh = resolvedLocale === "zh-CN";
+export default function JobDetailPage() {
+  const { jobId } = useParams();
+  const locale = clientLocale();
+  const copy = WORKSPACE_COPY[locale].jobDetail;
+  const isZh = locale === "zh-CN";
 
   const breadcrumbItems = [
     { label: isZh ? "工作台" : "Dashboard", href: "/workspace/start" },
     { label: isZh ? "审计任务" : "Audits", href: "/workspace/audits" },
-    { label: jobId },
+    { label: jobId ?? "" },
   ];
 
   return (
@@ -35,15 +26,7 @@ async function renderJobDetailPage({
         <h1 className="text-lg font-semibold">{copy.title}</h1>
       </div>
 
-      <JobDetailClient jobId={jobId} locale={resolvedLocale} />
+      <JobDetailClient jobId={jobId ?? ""} locale={locale} />
     </div>
   );
-}
-
-export default async function JobDetailPage({
-  params,
-}: {
-  params: Promise<{ jobId: string }>;
-}) {
-  return renderJobDetailPage({ params });
 }

@@ -1,7 +1,7 @@
 import { backendBaseUrl } from "@/lib/api-proxy";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { DEMO_CATALOG_ENTRIES } from "@/lib/demo-snapshot";
-import { isDemoModeEnabledServer } from "@/lib/demo-mode";
+import { isDemoModeEnabledClient } from "@/lib/demo-mode";
 
 const DEFAULT_SERVER_FETCH_TIMEOUT_MS = 600;
 
@@ -215,7 +215,7 @@ export function summarizeCatalogEntries(
 
 export async function fetchCatalogDashboard(): Promise<CatalogDashboardViewModel | null> {
   // Demo Mode: return snapshot data without calling Runtime
-  if (await isDemoModeEnabledServer()) {
+  if (isDemoModeEnabledClient()) {
     return summarizeCatalogEntries(DEMO_CATALOG_ENTRIES);
   }
 

@@ -1,14 +1,11 @@
-import { headers } from "next/headers";
 import Link from "next/link";
 
 import { BrandMark } from "@/components/brand-mark";
 import { LanguagePicker, type Locale } from "@/components/language-picker";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { TrialForm } from "@/components/trial-form";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
-
-export const dynamic = "force-dynamic";
 
 const TRIAL_PAGE_META: Record<
   Locale,
@@ -73,11 +70,11 @@ const TRIAL_PAGE_META: Record<
   },
 };
 
-export default async function TrialPage() {
-  const locale = resolveLocaleFromHeaderStore(await headers());
+export default function TrialPage() {
+  const locale = clientLocale();
   const copy = WORKSPACE_COPY[locale];
   const meta = TRIAL_PAGE_META[locale];
-  const trialFormUrl = process.env.DIFFAUDIT_TRIAL_FORM_URL?.trim();
+  const trialFormUrl = import.meta.env.VITE_DIFFAUDIT_TRIAL_FORM_URL?.trim();
   const hasExternalForm = Boolean(trialFormUrl);
 
   return (

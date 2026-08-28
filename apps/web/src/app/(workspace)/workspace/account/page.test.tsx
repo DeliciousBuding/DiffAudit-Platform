@@ -1,4 +1,7 @@
-import { renderToStaticMarkup } from "react-dom/server";
+// @vitest-environment jsdom
+import React, { act } from "react";
+import { createRoot } from "react-dom/client";
+import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -34,7 +37,7 @@ describe("WorkspaceAccountPage locale", () => {
   });
 
   it("renders zh-CN account copy from the locale cookie", async () => {
-    headersMock.mockResolvedValue(new Headers([["cookie", "platform-locale-v2=zh-CN; diffaudit_session=test-session"]]));
+    document.cookie = "platform-locale-v2=zh-CN; diffaudit_session=test-session";
     cookiesMock.mockResolvedValue({
       get: (name: string) => (name === "diffaudit_session" ? { value: "test-session" } : undefined),
     });
@@ -43,8 +46,20 @@ describe("WorkspaceAccountPage locale", () => {
     getCurrentUserProfileMock.mockReturnValue(null);
 
     const { default: WorkspaceAccountPage } = await import("./page");
-    const markup = renderToStaticMarkup(await WorkspaceAccountPage({}));
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: ["/workspace/account?emailVerified=1"] },
+          React.createElement(WorkspaceAccountPage),
+        ),
+      );
+    });
 
-    expect(markup).toContain("账户");
+    expect(container.innerHTML).toContain("账户");
+    root.unmount();
   });
 });

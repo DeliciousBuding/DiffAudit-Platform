@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { Navigate } from "react-router";
 
 export default function WorkspaceRootPage() {
-  redirect("/workspace/start");
+  return <Navigate to="/workspace/start" replace />;
 }

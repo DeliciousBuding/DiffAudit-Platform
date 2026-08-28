@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -19,6 +20,7 @@ vi.mock("@/lib/auth", () => ({
 
 vi.mock("@/lib/locale", () => ({
   resolveLocaleFromHeaderStore: resolveLocaleFromHeaderStoreMock,
+  resolveLocaleFromCookieHeader: () => "zh-CN",
 }));
 
 vi.mock("@/components/marketing-home", () => ({
@@ -50,7 +52,7 @@ describe("Marketing HomePage", () => {
     cookiesMock.mockResolvedValue({
       get: () => undefined,
     });
-    headersMock.mockResolvedValue(new Headers([["x-platform-locale", "zh-CN"]]));
+    document.cookie = "platform-locale-v2=zh-CN";
     validateSessionMock.mockReturnValue(null);
     resolveLocaleFromHeaderStoreMock.mockReturnValue("zh-CN");
 

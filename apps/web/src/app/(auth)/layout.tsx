@@ -1,15 +1,13 @@
-import { headers } from "next/headers";
+import { Outlet } from "react-router";
 
 import { LanguagePicker } from "@/components/language-picker";
 import { BrandMark } from "@/components/brand-mark";
 import { GithubIcon } from "@/components/platform-shell-icons";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 
-export const dynamic = "force-dynamic";
-
-export default async function AuthLayout({ children }: { children: React.ReactNode }) {
-  const locale = resolveLocaleFromHeaderStore(await headers());
+export default function AuthLayout() {
+  const locale = clientLocale();
 
   return (
     <main className="min-h-[100svh] flex flex-col lg:flex-row relative">
@@ -32,7 +30,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </div>
       </header>
 
-      {children}
+      {<Outlet />}
     </main>
   );
 }

@@ -7,6 +7,7 @@ import { RefreshCw, Search, ChevronDown } from "lucide-react";
 import { type Locale } from "@/components/language-picker";
 import { toast } from "@/components/ui/sonner";
 import { normalizeAuditJobList } from "@/lib/audit-job-payload";
+import { isWorkspaceDemoModeEnabled } from "@/lib/workspace-source";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { type JobRecord, RunningCard, HistoryTable } from "./TaskListClient";
 
@@ -31,10 +32,12 @@ export function AuditsPageClient({
   const [filter, setFilter] = useState(() => searchParams.get("filter") ?? "all");
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
 
+  const demoMode = isWorkspaceDemoModeEnabled();
   const hasActiveJobs = allJobs.some((j) => j.status === "running" || j.status === "queued");
   const pollInterval = hasActiveJobs ? 5000 : 30000;
 
   useEffect(() => {
+    if (demoMode) return;
     const controller = new AbortController();
 
     async function fetchAllJobs() {

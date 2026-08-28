@@ -1,11 +1,10 @@
-import { Suspense } from "react";
-import { headers } from "next/headers";
+import { Suspense, cache, use } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, FileText, Shield, TrendingUp } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { ClickableRow } from "@/components/clickable-row";
-import { resolveLocaleFromHeaderStore } from "@/lib/locale";
+import { clientLocale } from "@/lib/next-shims/runtime";
 import { StatusBadge } from "@/components/status-badge";
 import { RiskBadge } from "@/components/risk-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
@@ -19,7 +18,12 @@ import { WorkspacePageFrame, WorkspaceSectionCard } from "@/components/workspace
 import { MetricTooltip } from "@/components/metric-tooltip";
 import { getWorkspaceAttackDefenseData, getWorkspaceCatalogData } from "@/lib/workspace-source";
 
-export const dynamic = "force-dynamic";
+const loadStartDashboardData = cache(() =>
+  Promise.all([
+    getWorkspaceCatalogData(),
+    getWorkspaceAttackDefenseData(),
+  ]),
+);
 
 function generateRocData(targetAuc: number): { fpr: number; tpr: number }[] {
   return Array.from({ length: 21 }, (_, index) => {
@@ -63,14 +67,11 @@ const TASK_BADGE_STATE_CLASSES: Record<string, string> = {
   failed: "bg-[var(--risk-high-bg)] text-[var(--risk-high)]",
 };
 
-/** Async server component that fetches and renders the KPI + table data */
-async function WorkspaceData({ locale }: { locale: Locale }) {
+/** Fetches and renders the KPI + table data via Suspense + use */
+function WorkspaceData({ locale }: { locale: Locale }) {
   const localeData = WORKSPACE_COPY[locale];
   const copy = localeData.workspace;
-  const [catalog, table] = await Promise.all([
-    getWorkspaceCatalogData(),
-    getWorkspaceAttackDefenseData(),
-  ]);
+  const [catalog, table] = use(loadStartDashboardData());
 
   const activeContracts = catalog?.stats.total ?? 0;
   const defendedRows = table?.stats.defended ?? 0;
@@ -338,17 +339,9 @@ async function WorkspaceData({ locale }: { locale: Locale }) {
   );
 }
 
-export default async function WorkspaceHomePage() {
-  return renderWorkspaceHomePage();
-}
-
-type WorkspaceHomePageOptions = {
-  locale?: Locale;
-};
-
-async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}) {
-  const resolvedLocale = locale ?? resolveLocaleFromHeaderStore(await headers());
-  const copy = WORKSPACE_COPY[resolvedLocale].workspace;
+export default function WorkspaceHomePage() {
+  const locale = clientLocale();
+  const copy = WORKSPACE_COPY[locale].workspace;
 
   return (
     <WorkspacePageFrame
@@ -373,7 +366,7 @@ async function renderWorkspaceHomePage({ locale }: WorkspaceHomePageOptions = {}
           </div>
         </>
       }>
-        <WorkspaceData locale={resolvedLocale} />
+        <WorkspaceData locale={locale} />
       </Suspense>
     </WorkspacePageFrame>
   );

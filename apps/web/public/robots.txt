@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /workspace/
+
+Sitemap: https://diffaudit.vectorcontrol.tech/sitemap.xml
