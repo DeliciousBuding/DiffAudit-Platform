@@ -6,11 +6,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import AuthLayout from "./layout";
 
-vi.mock("next/headers", () => ({
-  headers: vi.fn(async () => new Headers()),
-}));
 
 vi.mock("@/lib/locale", () => ({
+  clientLocale: () => "en-US",
   resolveLocaleFromHeaderStore: vi.fn(() => "en-US"),
   resolveLocaleFromCookieHeader: vi.fn(() => "en-US"),
   Locale: undefined,

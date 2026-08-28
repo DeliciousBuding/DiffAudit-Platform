@@ -8,7 +8,7 @@
 ---
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vite.dev)
 [![React](https://img.shields.io/badge/React-19-149eca?logo=react)](https://react.dev)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
@@ -65,8 +65,8 @@ to "we have full access to the model."
 ### Architecture
 
 ```
-Browser → Next.js Web App → Go API Gateway → Snapshot Bundle (demo / read)
-                                         → Runtime Server (optional, live jobs)
+Browser → React SPA (Vite) → Go API Gateway → Snapshot Bundle (demo / read)
+                                      → Runtime Server (optional, live jobs)
 ```
 
 The platform separates **read** and **control** paths. The read path serves a
@@ -183,7 +183,7 @@ npm run dev:api              # → http://127.0.0.1:8780
 ### 架构
 
 ```
-浏览器 → Next.js 前端 → Go API 网关 → Snapshot 数据包（演示 / 只读）
+浏览器 → React SPA (Vite) → Go API 网关 → Snapshot 数据包（演示 / 只读）
                                     → Runtime 服务（可选，实时任务）
 ```
 

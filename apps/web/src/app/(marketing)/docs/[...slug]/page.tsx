@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 
 import NotFound from "@/app/not-found";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 
 import { DocsHome } from "../docs-home";
 import { getDocsContent } from "../docs-data";

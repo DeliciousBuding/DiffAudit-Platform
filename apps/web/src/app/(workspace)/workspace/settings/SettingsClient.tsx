@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/lib/router/link";
+import { useRouter } from "@/lib/router/navigation";
 import { useEffect, useState, useRef } from "react";
 
 import { Calendar } from "lucide-react";
@@ -16,7 +16,7 @@ import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { toast } from "@/components/ui/sonner";
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemeMode } from "@/lib/theme";
-import type { CurrentUserProfile } from "@/lib/auth";
+import type { CurrentUserProfile } from "@/lib/auth-config";
 import { setDemoModeClient } from "@/lib/demo-mode-client";
 import {
   getResearchBoundarySummary,

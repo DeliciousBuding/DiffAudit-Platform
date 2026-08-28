@@ -4,11 +4,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { BrandMark } from "./brand-mark";
 
-vi.mock("next/image", () => ({
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => React.createElement("img", props),
-}));
 
-vi.mock("next/link", () => ({
+vi.mock("@/lib/router/link", () => ({
   default: ({
     children,
     href,

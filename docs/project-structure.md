@@ -6,7 +6,7 @@ This document defines the stable engineering boundaries for the Platform reposit
 
 | Area | Owns | Must not own |
 | --- | --- | --- |
-| `apps/web` | Next.js product surface: marketing, docs, auth, workspace, reports, account, settings, and browser-facing API routes | Raw research execution, private deployment topology, server runbooks |
+| `apps/web` | React 19 SPA (Vite) product surface: marketing, docs, auth, workspace, reports, account, settings | Raw research execution, private deployment topology, server runbooks |
 | `apps/api-go` | Go gateway, public snapshot read plane, optional Runtime proxy, public snapshot publisher | Web UI state, private Runtime implementation, request-time Research workspace discovery |
 | `packages/shared` | Public contracts, stable examples, schema notes shared across Platform layers | Operator prompts, private datasets, generated local state |
 | `deploy` | Public-safe Docker and compose templates with placeholder configuration | Real environment files, domains, certificates, host bind paths, process-manager notes |
@@ -15,12 +15,12 @@ This document defines the stable engineering boundaries for the Platform reposit
 
 ## Web Structure
 
-`apps/web/src/app` is route ownership only:
+`apps/web/src/app` is page-route ownership only; the actual route table lives in `src/router/routes.tsx`:
 
 - `(marketing)` owns public pages and docs.
 - `(auth)` owns login and registration pages.
 - `(workspace)` owns authenticated product workspace pages.
-- `api` owns Next.js route handlers that support the web surface.
+- There are no browser-facing API route handlers in the web app; all `/api/*` handling lives in the Go gateway.
 - Legacy route groups must not gain new product logic. If a route is only a redirect, treat it as removable compatibility debt.
 
 `apps/web/src/components` is shared UI. Components here must be reusable and product-generic inside Platform. Page-specific composition should stay near the page unless it is reused.

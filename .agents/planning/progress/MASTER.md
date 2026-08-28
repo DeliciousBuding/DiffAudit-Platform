@@ -9,10 +9,12 @@
 ## Status: COMPLETE
 
 All four phases delivered and verified:
-- B1 web SPA migration: vitest 223/223, build green
+- B1 web SPA migration: vitest green, build green
 - B2 auth to Go: byte-compatible contract tests green (12 groups)
-- B3 build chain: chromium e2e 44/44 (41 + auth regressions), check:fast green
+- B3 build chain: chromium e2e green, check:fast green
 - B4 release: image `sha-7442b74` live on the production host, public chain all 200, auth register/me/logout 200
+
+Cleanup pass (neat-freak) also delivered: zero `next/*` imports in `src/`, `next-shims/` removed and replaced by `src/lib/router/`, server-only auth modules (`lib/auth.ts`, `lib/db/`, `lib/oauth-fetch.ts`) removed, `next`/`eslint-config-next`/drizzle/better-sqlite3/bcryptjs/undici/otpauth/qrcode/webauthn deps removed, docs (README, AGENTS, CONTRIBUTING, deploy, portability, project-structure, web README) updated to the Vite+Go architecture.
 
 Main pushed as `4ff1d97..8048c82`; all spec-driven issues #60-#79 closed.
 

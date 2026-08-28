@@ -5,21 +5,14 @@ import { defineConfig } from "vite";
 /**
  * Vite config for the DiffAudit web SPA.
  *
- * Next shims are aliased to local modules so legacy page modules that still
- * import from `next/*` compile unchanged during the migration. Each shim must
- * disappear once the corresponding module is fully migrated (track in
- * `.agents/planning/progress/MASTER.md`, task A3).
+ * The SPA is served same-origin by the Go gateway; dev proxies /api to the
+ * gateway on 8780. Build-time env injection follows the DIFFAUDIT_* envs.
  */
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "next/link": path.resolve(__dirname, "./src/lib/next-shims/link.tsx"),
-      "next/navigation": path.resolve(__dirname, "./src/lib/next-shims/navigation.ts"),
-      "next/headers": path.resolve(__dirname, "./src/lib/next-shims/headers.ts"),
-      "next/font/google": path.resolve(__dirname, "./src/lib/next-shims/font.ts"),
-      "next/font/local": path.resolve(__dirname, "./src/lib/next-shims/font.ts"),
     },
   },
   server: {

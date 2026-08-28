@@ -4,7 +4,7 @@ import { LanguagePicker } from "@/components/language-picker";
 import { BrandMark } from "@/components/brand-mark";
 import { GithubIcon } from "@/components/platform-shell-icons";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 
 export default function AuthLayout() {
   const locale = clientLocale();

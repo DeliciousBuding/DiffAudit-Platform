@@ -22,3 +22,8 @@ export function resolveLocaleFromHeaderStore(headerStore: {
 
   return resolveLocaleFromCookieHeader(headerStore.get("cookie"));
 }
+
+export function clientLocale(): Locale {
+  if (typeof document === "undefined") return "en-US";
+  return resolveLocaleFromCookieHeader(document.cookie);
+}

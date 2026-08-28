@@ -13,7 +13,7 @@ DiffAudit Platform uses a small PR-based workflow. Keep changes focused, verifia
 
 ## Repository Boundaries
 
-- `apps/web`: Next.js product surface.
+- `apps/web`: React 19 SPA (Vite 7) product surface.
 - `apps/api-go`: Go API gateway and snapshot read plane.
 - `packages/shared`: shared contracts and payload examples.
 - `docs`: public architecture and developer documentation.

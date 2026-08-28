@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({ refresh: () => {} }),
 }));
 
@@ -11,15 +11,11 @@ const githubOAuthConfiguredMock = vi.fn();
 const googleOAuthConfiguredMock = vi.fn();
 const getCurrentUserProfileMock = vi.fn();
 
-vi.mock("next/headers", () => ({
-  headers: headersMock,
-  cookies: cookiesMock,
-}));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth-config", () => ({
   githubOAuthConfigured: githubOAuthConfiguredMock,
   googleOAuthConfigured: googleOAuthConfiguredMock,
-  getCurrentUserProfile: getCurrentUserProfileMock,
+
   SESSION_COOKIE_NAME: "diffaudit_session",
 }));
 

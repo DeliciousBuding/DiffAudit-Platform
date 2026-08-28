@@ -1,4 +1,4 @@
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { ApiKeysClient } from "./ApiKeysClient";
 
 export default function ApiKeysPage() {

@@ -7,7 +7,7 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 import { WorkspaceGlobalSearch, getWorkspaceSearchItems, nextSearchActiveIndex } from "./workspace-global-search";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
   }),

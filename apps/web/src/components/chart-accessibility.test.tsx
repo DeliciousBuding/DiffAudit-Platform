@@ -7,7 +7,7 @@ import { ChartAucDistribution } from "./chart-auc-distribution";
 import { ChartRiskDonut } from "./chart-risk-donut";
 import { ChartRocCurve } from "./chart-roc-curve";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
   }),

@@ -5,7 +5,7 @@ import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 import { getCommandItems, getNavigationCommandId } from "./command-palette";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
   }),

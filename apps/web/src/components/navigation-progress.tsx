@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/router/navigation";
 
 /**
  * Thin progress bar at the top of the page that shows during navigation.

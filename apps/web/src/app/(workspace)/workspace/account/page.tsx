@@ -1,5 +1,5 @@
 import { Suspense, cache, use } from "react";
-import { useSearchParams } from "@/lib/next-shims/navigation";
+import { useSearchParams } from "@/lib/router/navigation";
 
 import type { WorkspaceSettingsSearchParams } from "../settings/render-workspace-settings";
 import { renderWorkspaceSettingsPage } from "../settings/render-workspace-settings";

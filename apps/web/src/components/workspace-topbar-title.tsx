@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/router/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { getNavItems } from "@/lib/navigation";

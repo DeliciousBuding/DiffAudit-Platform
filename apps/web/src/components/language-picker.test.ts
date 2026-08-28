@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { LanguagePicker, resolveActiveLocale } from "./language-picker";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({
     refresh: vi.fn(),
   }),

@@ -1,5 +1,5 @@
-import { clientLocale, clientSessionToken } from "@/lib/next-shims/runtime";
-import { githubOAuthConfigured, googleOAuthConfigured } from "@/lib/auth-config";
+import { clientLocale } from "@/lib/locale";
+import { clientSessionToken, githubOAuthConfigured, googleOAuthConfigured } from "@/lib/auth-config";
 import { getWorkspaceModeState } from "@/lib/workspace-source";
 import {
   SettingsClient,

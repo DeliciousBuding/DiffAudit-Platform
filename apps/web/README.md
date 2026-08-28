@@ -1,6 +1,6 @@
 # DiffAudit Web App
 
-`apps/web` is the Next.js 16 product surface for DiffAudit Platform — a privacy-risk audit workspace for diffusion models.
+`apps/web` is the React 19 SPA (Vite 7 + React Router v7) product surface for DiffAudit Platform — a privacy-risk audit workspace for diffusion models. There is no meta-framework and no frontend server runtime; the Go gateway in `apps/api-go` serves the build output and the API.
 
 ## Local Development
 
@@ -22,8 +22,10 @@ The default local URL is `http://localhost:3000`. Demo mode is enabled via `DIFF
 
 ```powershell
 npm --prefix apps/web run lint
+npm --prefix apps/web run typecheck
 npm --prefix apps/web run test        # vitest
 npm --prefix apps/web run build
+npm --prefix apps/web run test:e2e    # Playwright (starts gateway + Vite)
 ```
 
 ## Architecture
@@ -36,8 +38,8 @@ app/
   (auth)/             — Login, registration
   (workspace)/        — Authenticated workspace
     workspace/
-      start/          — Dashboard (server component)
-      audits/         — Task list (client component)
+      start/          — Dashboard
+      audits/         — Task list
       audits/new/     — Task creation wizard
       audits/[jobId]/ — Job detail with polling
       model-assets/   — Model CRUD + evidence
@@ -45,17 +47,18 @@ app/
       reports/        — Report generation center
       settings/       — System config + templates
       account/        — User profile
-  api/                — Next.js route handlers
+  *                   — NotFound
 ```
 
 ### Key Patterns
 
-- **Server/Client split**: Pages like `start/page.tsx` are async server components. Interactive components (TaskListClient, RiskFindingsClient) are `"use client"`.
+- **Async page shells**: Page wrappers are async functions suspended via React 19 `use()`; interactive components are client components under `"use client"`.
+- **Routing abstraction**: `lib/router/` wraps React Router (Link, useRouter, usePathname, useSearchParams) so page modules keep a stable navigation API.
 - **Data facade**: `lib/workspace-source.ts` provides view models. Pages don't import raw data adapters directly.
 - **i18n**: All user-facing copy lives in `lib/workspace-copy.ts` (en-US + zh-CN). No inline locale ternaries.
 - **Design tokens**: CSS custom properties in `globals.css`. JSX uses `[var(...)]` syntax for Tailwind colors.
-- **Demo data**: Workspace pages use server-injected demo snapshots where possible so first paint is stable under Next/Turbopack dev.
-- **Charts**: Small workspace charts are local SVG components. Avoid reintroducing Recharts unless it is verified under the current Next/React/Turbopack stack.
+- **Demo data**: Client demo stores (`lib/demo-snapshot.ts`, `demo-jobs-store.ts`) back the workspace when demo mode is enabled.
+- **Charts**: Small workspace charts are local SVG components. Avoid reintroducing Recharts unless it is verified under the current Vite/React stack.
 
 ### Shared Hooks (`src/hooks/`)
 
@@ -94,7 +97,7 @@ OAuth provider buttons are rendered only when the matching client ID and client 
 
 ## Containers
 
-The web app has a production Dockerfile at `apps/web/Dockerfile`. For the full two-service stack, use the templates in `deploy/`:
+The production image is built from the repository-root `Dockerfile`: it compiles the SPA with Node, builds the Go single binary with `//go:embed` static assets, and runs the gateway in `alpine`. There is no separate frontend container. For the stack templates, see `deploy/`:
 
 ```powershell
 Copy-Item .\deploy\compose.env.example .\deploy\.env

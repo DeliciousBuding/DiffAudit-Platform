@@ -2,7 +2,7 @@ import { Suspense, cache, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import {
   getWorkspaceCatalogData,
   getWorkspaceAttackDefenseData,

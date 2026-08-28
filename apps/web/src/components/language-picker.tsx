@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router/navigation";
 import { Check, Languages } from "lucide-react";
 
 import {

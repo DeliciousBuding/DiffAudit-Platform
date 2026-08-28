@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router/navigation";
 import { LanguagePicker, type Locale } from "@/components/language-picker";
 import type { DocsContent, DocsPage, DocsSection } from "./docs-data";
 import { getDocsContent, getDocsPage } from "./docs-data";

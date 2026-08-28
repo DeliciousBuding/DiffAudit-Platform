@@ -2,7 +2,7 @@ import { Suspense, cache, use } from "react";
 
 import { type Locale } from "@/components/language-picker";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { getWorkspaceCatalogData } from "@/lib/workspace-source";
 import { CreateTaskClient } from "./CreateTaskClient";

@@ -11,7 +11,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 /**

@@ -1,10 +1,16 @@
+import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { SettingsClient } from "./SettingsClient";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({ refresh: () => {} }),
+}));
+
+vi.mock("@/lib/router/link", () => ({
+  default: ({ children, href }: { children?: React.ReactNode; href?: string }) =>
+    React.createElement("a", { href }, children),
 }));
 
 function withToast(ui: React.ReactElement) {

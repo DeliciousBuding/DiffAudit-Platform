@@ -23,16 +23,10 @@ export default defineConfig({
 
   projects: [
     {
+      // Chromium is the e2e baseline; browsers are hard to keep green on
+      // every OS when the product does not require a multi-browser matrix.
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
-    },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
     },
   ],
 

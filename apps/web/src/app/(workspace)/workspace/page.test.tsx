@@ -1,21 +1,19 @@
 // @vitest-environment jsdom
 import { renderToReadableStream } from "react-dom/server";
+import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const headersMock = vi.fn();
 
-vi.mock("next/headers", () => ({
-  headers: headersMock,
-}));
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({ push: () => {}, refresh: () => {}, replace: () => {} }),
   useSearchParams: () => new URLSearchParams(),
   usePathname: () => "/",
 }));
 
 async function renderMarkup(element: React.ReactNode) {
-  const stream = await renderToReadableStream(element);
+  const stream = await renderToReadableStream(<MemoryRouter>{element}</MemoryRouter>);
   await stream.allReady;
   return await new Response(stream).text();
 }

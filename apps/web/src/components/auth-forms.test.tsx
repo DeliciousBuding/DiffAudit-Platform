@@ -5,9 +5,15 @@ import { describe, expect, it, vi } from "vitest";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 
+vi.mock("@/lib/router/link", () => ({
+  default: ({ children, href }: { children?: React.ReactNode; href?: string }) =>
+    React.createElement("a", { href }, children),
+}));
+
+
 let searchParamsValue = "";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({
     replace: vi.fn(),
     refresh: vi.fn(),

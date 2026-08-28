@@ -1,7 +1,7 @@
 import { Navigate } from "react-router";
 
 import { getDocsContent } from "./docs-data";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 
 export default function DocsPage() {
   const locale = clientLocale();

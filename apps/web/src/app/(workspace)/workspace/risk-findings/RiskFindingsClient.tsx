@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, AlertTriangle, Shield, BarChart3, Search, X, ChevronLeft, ChevronRight, Layers, Tag, LayoutGrid, CheckCircle2, ShieldCheck } from "lucide-react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "@/lib/router/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatedValue } from "@/components/animated-value";
 import { useScrollFade } from "@/hooks/use-scroll-fade";

@@ -1,6 +1,6 @@
 import { Suspense, cache, use } from "react";
 import { useParams } from "react-router";
-import { useSearchParams } from "@/lib/next-shims/navigation";
+import { useSearchParams } from "@/lib/router/navigation";
 
 import { renderTrackReportPage } from "./track-report-page";
 

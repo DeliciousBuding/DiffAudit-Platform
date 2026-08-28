@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import type { Locale } from "@/components/language-picker";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 

@@ -1,8 +1,8 @@
-import { useSearchParams } from "@/lib/next-shims/navigation";
+import { useSearchParams } from "@/lib/router/navigation";
 
 import { sanitizeRedirectPath } from "@/lib/auth-config";
 import { RegisterForm } from "@/components/register-form";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 export default function RegisterPage() {

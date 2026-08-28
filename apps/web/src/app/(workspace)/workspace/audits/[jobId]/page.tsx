@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 
 import { Breadcrumb } from "@/components/breadcrumb";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { JobDetailClient } from "./JobDetailClient";
 

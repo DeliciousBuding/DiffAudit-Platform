@@ -17,11 +17,11 @@ const linkMock = vi.fn(
     React.createElement("a", { href, "data-prefetch": String(prefetch), ...rest }, children),
 );
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   usePathname: () => usePathnameMock(),
 }));
 
-vi.mock("next/link", () => ({
+vi.mock("@/lib/router/link", () => ({
   default: (props: React.PropsWithChildren<{ href: string; prefetch?: boolean }>) =>
     linkMock(props),
 }));

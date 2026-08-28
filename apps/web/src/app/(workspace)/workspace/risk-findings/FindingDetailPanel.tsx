@@ -1,7 +1,7 @@
 "use client";
 
 import { X, Shield, ShieldCheck, ExternalLink, Link2, RotateCcw } from "lucide-react";
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CopyButton } from "@/components/copy-button";

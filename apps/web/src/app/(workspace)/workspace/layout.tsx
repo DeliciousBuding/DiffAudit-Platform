@@ -6,7 +6,7 @@ import { PlatformShell } from "@/components/platform-shell";
 import { Providers } from "@/components/providers";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { WorkspaceKeyboardShortcuts } from "@/components/workspace-keyboard-shortcuts";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 
 export default function WorkspaceLayout() {
   const locale = clientLocale();

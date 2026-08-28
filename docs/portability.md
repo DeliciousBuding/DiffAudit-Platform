@@ -20,7 +20,7 @@ DiffAudit Platform is packaged as a public, portable product layer. A clean chec
 flowchart LR
   Source["Clean Git revision"] --> Images["Local Docker images or GHCR images"]
   Snapshot["Sanitized public snapshot"] --> Gateway["Go API Gateway"]
-  Env["Deployment env / secret store"] --> Web["Next.js Web App"]
+  Env["Deployment env / secret store"] --> Web["React SPA (Vite)"]
   Images --> Web
   Images --> Gateway
   Gateway --> Web

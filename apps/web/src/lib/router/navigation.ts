@@ -1,8 +1,9 @@
 /**
- * next/navigation shim for the SPA, backed by React Router v7.
+ * SPA navigation hooks over React Router.
  *
- * Mirrors the subset of the Next API used by page modules:
- * useRouter, useSearchParams, usePathname, useParams, redirect.
+ * Mirrors the subset of the SPA navigation API used by page modules:
+ * useRouter (push/replace/back/forward), usePathname, useSearchParams,
+ * useParams and redirect.
  */
 
 import {
@@ -15,11 +16,13 @@ import {
 export function useRouter() {
   const navigate = useNavigate();
   return {
-    push(to: string | URL) {
-      navigate(String(to));
+    push(to: string, options?: { scroll?: boolean }) {
+      void options;
+      navigate(to);
     },
-    replace(to: string | URL) {
-      navigate(String(to), { replace: true });
+    replace(to: string, options?: { scroll?: boolean }) {
+      void options;
+      navigate(to, { replace: true });
     },
     back() {
       navigate(-1);
@@ -28,10 +31,10 @@ export function useRouter() {
       navigate(1);
     },
     refresh() {
-      // No server router in the SPA; navigation refetches are implicit.
+      // SPA data refetch is implicit on navigation; no server router exists.
     },
     prefetch() {
-      // React Router performs code-splitting prefetch on link hover.
+      // React Router prefetches code-split routes on link hover.
     },
   };
 }
@@ -48,12 +51,6 @@ export function useParams() {
   return useReactRouterParams();
 }
 
-export function useSelectedLayoutSegments() {
-  return [];
-}
-
 export function redirect(to: string) {
-  // Equivalent of Next's server redirect for non-render call sites.
-  // Inside components prefer `<Navigate to={to} replace />`.
   window.location.assign(to);
 }

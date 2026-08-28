@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { FormEvent, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "@/lib/router/navigation";
 
 import { InputIcon, ProviderIcon } from "@/components/auth-icons";
 

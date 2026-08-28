@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "@/lib/router/navigation";
 import { RefreshCw, Search, ChevronDown } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";

@@ -8,17 +8,15 @@ const headersMock = vi.fn();
 const validateSessionMock = vi.fn();
 const resolveLocaleFromHeaderStoreMock = vi.fn();
 
-vi.mock("next/headers", () => ({
-  cookies: cookiesMock,
-  headers: headersMock,
-}));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth-config", () => ({
   SESSION_COOKIE_NAME: "diffaudit_session",
-  validateSession: validateSessionMock,
+  clientLoggedIn: () => false,
+
 }));
 
 vi.mock("@/lib/locale", () => ({
+  clientLocale: () => "zh-CN",
   resolveLocaleFromHeaderStore: resolveLocaleFromHeaderStoreMock,
   resolveLocaleFromCookieHeader: () => "zh-CN",
 }));

@@ -48,7 +48,6 @@ const ICON_STROKE = { strokeWidth: 1.5 } as const;
 export function ThemeToggleButton({ labels }: { labels?: Partial<ThemeToggleLabels> } = {}) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- mounted gate is the standard next-themes SSR-safe pattern
   useEffect(() => setMounted(true), []);
 
   const mergedLabels = { ...DEFAULT_LABELS, ...labels };

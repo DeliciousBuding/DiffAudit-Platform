@@ -1,9 +1,9 @@
-import Link from "next/link";
+import Link from "@/lib/router/link";
 
 import NotFound from "@/app/not-found";
 import { type Locale } from "@/components/language-picker";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import {
   getWorkspaceAttackDefenseData,
   getWorkspaceCatalogData,

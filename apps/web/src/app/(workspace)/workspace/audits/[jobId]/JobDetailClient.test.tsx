@@ -18,7 +18,7 @@ vi.mock("react", async () => {
   };
 });
 
-vi.mock("next/link", () => ({
+vi.mock("@/lib/router/link", () => ({
   default: ({ href, children, ...rest }: React.PropsWithChildren<{ href: string }>) =>
     React.createElement("a", { href, ...rest }, children),
 }));

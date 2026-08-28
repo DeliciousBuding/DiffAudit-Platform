@@ -1,10 +1,10 @@
 import { Suspense, cache, use } from "react";
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { ArrowRight, Check, FileText, Shield, TrendingUp } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
 import { ClickableRow } from "@/components/clickable-row";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { StatusBadge } from "@/components/status-badge";
 import { RiskBadge } from "@/components/risk-badge";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";

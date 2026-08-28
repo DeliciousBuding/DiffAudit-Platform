@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/lib/router/link";
+import { usePathname } from "@/lib/router/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { NavIcon } from "@/components/platform-shell-icons";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { type LucideIcon } from "lucide-react";
 
 export function EmptyState({

@@ -1,5 +1,6 @@
 import { MarketingHome } from "@/components/marketing-home";
-import { clientLocale, clientLoggedIn } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
+import { clientLoggedIn } from "@/lib/auth-config";
 
 export default function HomePage() {
   return (

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { CreateTaskClient } from "./CreateTaskClient";
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/lib/router/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 

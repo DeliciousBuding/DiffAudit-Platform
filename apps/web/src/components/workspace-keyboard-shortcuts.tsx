@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router/navigation";
 
 import { type Locale } from "@/components/language-picker";
 import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";

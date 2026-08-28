@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { UserAvatar } from "./user-avatar";
 
-vi.mock("next/link", () => ({
+vi.mock("@/lib/router/link", () => ({
   default: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) =>
     React.createElement("a", { href, ...props }, children),
 }));

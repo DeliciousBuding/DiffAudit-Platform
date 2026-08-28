@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { useEffect, useState } from "react";
 import { Settings as SettingsIcon, User as UserIcon } from "lucide-react";
 
@@ -98,7 +98,6 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
         }
       >
         {user?.avatarUrl && !avatarError ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={user.avatarUrl}
             alt={user.username}
@@ -119,7 +118,6 @@ export function UserAvatar({ locale: localeProp }: { locale?: Locale }) {
       <DropdownMenuContent align="end" className="w-64">
         <div className="flex items-center gap-2 border-b border-border bg-muted/10 px-3 py-2.5">
           {user?.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.avatarUrl}
               alt=""

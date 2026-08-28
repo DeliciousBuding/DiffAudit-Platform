@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { Activity, Eye, Search, Shield, ClipboardList, RefreshCw } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";

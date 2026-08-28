@@ -1,10 +1,10 @@
-import Link from "next/link";
+import Link from "@/lib/router/link";
 
 import { BrandMark } from "@/components/brand-mark";
 import { LanguagePicker, type Locale } from "@/components/language-picker";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
 import { TrialForm } from "@/components/trial-form";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 
 const TRIAL_PAGE_META: Record<

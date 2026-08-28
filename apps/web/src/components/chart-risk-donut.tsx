@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/router/navigation";
 
 interface RiskDonutProps {
   data: { key: string; label: string; count: number }[];

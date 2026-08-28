@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/router/link";
 
 export function BrandMark({
   compact = false,
@@ -34,7 +34,6 @@ export function BrandMark({
   const content = (
     <span className={className}>
       {/* Light mode logo — hidden in dark mode */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={lightSrc}
         alt="DiffAudit"
@@ -42,7 +41,6 @@ export function BrandMark({
         loading={hero ? "eager" : "lazy"}
       />
       {/* Dark mode logo — hidden in light mode */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={darkSrc}
         alt=""

@@ -1,9 +1,9 @@
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { Suspense, cache, use } from "react";
 import { Plus } from "lucide-react";
 
 import { type Locale } from "@/components/language-picker";
-import { clientLocale } from "@/lib/next-shims/runtime";
+import { clientLocale } from "@/lib/locale";
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { WorkspacePageFrame } from "@/components/workspace-frame";
 import { getWorkspaceAuditJobsData } from "@/lib/workspace-source";

@@ -31,8 +31,7 @@ The repository can publish release images to GitHub Container Registry through `
 
 | Image | Purpose |
 | --- | --- |
-| `ghcr.io/deliciousbuding/diffaudit-platform-web` | Next.js product surface |
-| `ghcr.io/deliciousbuding/diffaudit-platform-api` | Go gateway |
+| `ghcr.io/deliciousbuding/diffaudit-platform` | Single image — SPA static assets embedded in the Go gateway |
 
 The workflow publishes:
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 

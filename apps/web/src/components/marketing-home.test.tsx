@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { MarketingHome } from "./marketing-home";
 
-vi.mock("next/link", () => ({
+vi.mock("@/lib/router/link", () => ({
   default: ({
     children,
     href,

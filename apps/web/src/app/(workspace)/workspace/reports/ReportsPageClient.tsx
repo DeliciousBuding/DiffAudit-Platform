@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/lib/router/link";
 import { Download, FileText, RefreshCw } from "lucide-react";
 
 import { CopyButton } from "@/components/copy-button";

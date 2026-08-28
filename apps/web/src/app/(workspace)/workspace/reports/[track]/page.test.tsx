@@ -1,4 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { renderTrackReportPage } from "./track-report-page";
@@ -10,11 +11,13 @@ describe("TrackReportPage", () => {
 
   it("defaults to the display view and renders the view toggle", async () => {
     const markup = renderToStaticMarkup(
-      await renderTrackReportPage({
+      <MemoryRouter>
+        {await renderTrackReportPage({
         locale: "zh-CN",
         params: { track: "black-box" },
         searchParams: {},
-      }),
+        })}
+    </MemoryRouter>
     );
 
     expect(markup).toContain("展示视图");
@@ -28,11 +31,13 @@ describe("TrackReportPage", () => {
 
   it("switches to the audit view and hides empty provenance fields", async () => {
     const markup = renderToStaticMarkup(
-      await renderTrackReportPage({
+      <MemoryRouter>
+        {await renderTrackReportPage({
         locale: "zh-CN",
         params: { track: "gray-box" },
         searchParams: { view: "audit" },
-      }),
+        })}
+    </MemoryRouter>
     );
 
     expect(markup).toContain("实验溯源");
@@ -48,7 +53,8 @@ describe("TrackReportPage", () => {
 
   it("renders completed job context and highlights matching rows", async () => {
     const markup = renderToStaticMarkup(
-      await renderTrackReportPage({
+      <MemoryRouter>
+        {await renderTrackReportPage({
         locale: "en-US",
         params: { track: "black-box" },
         searchParams: {
@@ -58,7 +64,8 @@ describe("TrackReportPage", () => {
           model: "stable-diffusion-v1-4",
           auc: "0.849",
         },
-      }),
+        })}
+    </MemoryRouter>
     );
 
     expect(markup).toContain("Reviewing completed job");
@@ -90,7 +97,8 @@ describe("TrackReportPage", () => {
     }));
 
     const markup = renderToStaticMarkup(
-      await renderTrackReportPage({
+      <MemoryRouter>
+        {await renderTrackReportPage({
         locale: "en-US",
         params: { track: "black-box" },
         searchParams: {
@@ -100,7 +108,8 @@ describe("TrackReportPage", () => {
           model: "stable-diffusion-v1-4",
           auc: "0.849",
         },
-      }),
+        })}
+    </MemoryRouter>
     );
 
     expect(markup).toContain("Producer context");
@@ -124,7 +133,8 @@ describe("TrackReportPage", () => {
     }));
 
     const markup = renderToStaticMarkup(
-      await renderTrackReportPage({
+      <MemoryRouter>
+        {await renderTrackReportPage({
         locale: "en-US",
         params: { track: "black-box" },
         searchParams: {
@@ -134,7 +144,8 @@ describe("TrackReportPage", () => {
           model: "stable-diffusion-v1-4",
           auc: "0.849",
         },
-      }),
+        })}
+    </MemoryRouter>
     );
 
     expect(markup).toContain("Runtime disconnected");
@@ -145,7 +156,8 @@ describe("TrackReportPage", () => {
 
   it("keeps completed job context safe when no snapshot row matches", async () => {
     const markup = renderToStaticMarkup(
-      await renderTrackReportPage({
+      <MemoryRouter>
+        {await renderTrackReportPage({
         locale: "en-US",
         params: { track: "black-box" },
         searchParams: {
@@ -155,7 +167,8 @@ describe("TrackReportPage", () => {
           model: "not-in-snapshot",
           auc: "0.999",
         },
-      }),
+        })}
+    </MemoryRouter>
     );
 
     expect(markup).toContain("Reviewing completed job");

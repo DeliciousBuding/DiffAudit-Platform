@@ -2,7 +2,7 @@
 
 import { Search, Plus, Pencil, Trash2, X, ChevronLeft, ChevronRight, Upload, Check, Database } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "@/lib/router/navigation";
 
 import { WORKSPACE_COPY } from "@/lib/workspace-copy";
 import { CopyButton } from "@/components/copy-button";
