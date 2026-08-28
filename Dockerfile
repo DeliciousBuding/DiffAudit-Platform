@@ -11,9 +11,9 @@ WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/web/package.json ./apps/web/package.json
 RUN npm ci
+COPY apps/web ./apps/web
 
 WORKDIR /repo/apps/web
-COPY apps/web ./apps/web
 RUN npm run build
 
 # ── Stage 2: Go API static binary ──
