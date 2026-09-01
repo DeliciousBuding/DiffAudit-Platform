@@ -5,7 +5,7 @@
 # which removes the standalone-layout failure class of the previous image.
 
 # ── Stage 1: SPA build (vite) ──
-FROM node:22-bookworm-slim AS web-builder
+FROM --platform=$BUILDPLATFORM node:22-bookworm-slim AS web-builder
 WORKDIR /repo
 
 COPY package.json package-lock.json ./
@@ -17,13 +17,14 @@ WORKDIR /repo/apps/web
 RUN npm run build
 
 # ── Stage 2: Go API static binary ──
-FROM golang:1.26.1-bookworm AS go-builder
+FROM --platform=$BUILDPLATFORM golang:1.26.1-bookworm AS go-builder
+ARG TARGETOS TARGETARCH
 WORKDIR /src
 COPY apps/api-go/go.mod ./
 RUN go mod download
 COPY apps/api-go ./
 COPY --from=web-builder /repo/apps/web/dist /out/www
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
   go build -trimpath -ldflags="-w -s" -o /out/platform-api ./cmd/platform-api
 
 # ── Stage 3: Runner ──
