@@ -8,11 +8,11 @@
 FROM --platform=$BUILDPLATFORM node:22-bookworm-slim AS web-builder
 WORKDIR /repo
 
-COPY package.json package-lock.json ./
+COPY package.json ./
 COPY apps/web/package.json ./apps/web/package.json
-# npm install (not npm ci): npm ci skips platform-specific optional native
-# bindings (PostCSS/Tailwind oxide) when the lockfile was generated on another
-# arch, breaking native arm64 builds (npm/cli#4828).
+# npm install without lockfile (not npm ci / no package-lock.json): the lockfile
+# pins amd64-only optional native bindings (PostCSS/Tailwind oxide), which breaks
+# native arm64 builds (npm/cli#4828). Re-resolve so the arm64 binding is installed.
 RUN npm install
 COPY apps/web ./apps/web
 
