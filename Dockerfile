@@ -10,7 +10,10 @@ WORKDIR /repo
 
 COPY package.json package-lock.json ./
 COPY apps/web/package.json ./apps/web/package.json
-RUN npm ci
+# npm install (not npm ci): npm ci skips platform-specific optional native
+# bindings (PostCSS/Tailwind oxide) when the lockfile was generated on another
+# arch, breaking native arm64 builds (npm/cli#4828).
+RUN npm install
 COPY apps/web ./apps/web
 
 WORKDIR /repo/apps/web
