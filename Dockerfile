@@ -8,16 +8,20 @@
 FROM --platform=$BUILDPLATFORM node:22-bookworm-slim AS web-builder
 WORKDIR /repo
 
-COPY package.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json ./apps/web/package.json
-# npm install without lockfile (not npm ci / no package-lock.json): the lockfile
-# pins amd64-only optional native bindings (PostCSS/Tailwind oxide), which breaks
-# native arm64 builds (npm/cli#4828). Re-resolve so the arm64 binding is installed.
-RUN npm install
+# corepack reads the pinned pnpm version from package.json (packageManager).
+# Unlike package-lock.json, pnpm-lock.yaml records the optional native bindings
+# for every platform (PostCSS/Tailwind oxide, rollup, esbuild — including
+# linux-arm64-gnu and linux-arm64-musl), so --frozen-lockfile is correct on both
+# the amd64 and the native arm64 builder and the npm/cli#4828 workaround of
+# re-resolving without a lockfile is no longer needed.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable && pnpm install --frozen-lockfile
 COPY apps/web ./apps/web
 
 WORKDIR /repo/apps/web
-RUN npm run build
+RUN pnpm run build
 
 # ── Stage 2: Go API static binary ──
 FROM --platform=$BUILDPLATFORM golang:1.26.1-bookworm AS go-builder

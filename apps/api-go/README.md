@@ -131,8 +131,8 @@ py -3 .\apps\api-go\scripts\publish_public_snapshot.py \
   --bundle-path /path/to/admitted-evidence-bundle.json \
   --output-dir .\apps\api-go\data\public
 
-# Via npm script
-npm run publish:public-snapshot
+# Via package script
+pnpm run publish:public-snapshot
 ```
 
 ### Sanitization
@@ -266,8 +266,8 @@ go -C ./apps/api-go test -run TestDemoJobStore_Create ./internal/proxy/...
 # Run Python publisher tests
 py -3 -m unittest apps.api-go.scripts.test_publish_public_snapshot
 
-# Via npm scripts
-npm run test:api
+# Via package scripts
+pnpm run test:api
 ```
 
 ### Test Coverage
@@ -288,10 +288,10 @@ gofmt -l apps/api-go
 # Build check
 go -C ./apps/api-go build ./cmd/platform-api
 
-# Via npm scripts
-npm run lint:api
-npm run format:api
-npm run build:api
+# Via package scripts
+pnpm run lint:api
+pnpm run format:api
+pnpm run build:api
 ```
 
 ## Architecture Constraints

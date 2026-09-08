@@ -32,7 +32,7 @@ const copy = WORKSPACE_COPY[locale].reports;
 2. 在 `en-US` 对象中添加英文值
 3. 在 `zh-CN` 对象中添加中文值
 4. 在组件中使用 `WORKSPACE_COPY[locale].<section>.<key>`
-5. 运行 `npm run test:web` 确保 key parity test 通过
+5. 运行 `pnpm run test:web` 确保 key parity test 通过
 
 共享函数放 `workspace-copy.ts` 顶部，如 `getTrackDisplayLabel()`。
 
@@ -44,12 +44,12 @@ const copy = WORKSPACE_COPY[locale].reports;
 | Unit (api) | Go test | API handlers, middleware, models |
 | E2E | Playwright | 页面加载、用户流程、i18n、a11y |
 
-- `npm run test:web` — Vitest (67 files / 250 tests)
-- `npm run test:api` — Go tests (49 tests)
-- `npm run test:e2e` — Playwright (41 cases × 3 browsers = 123 total)
-- `npm run test:all` — web + e2e
+- `pnpm run test:web` — Vitest (67 files / 250 tests)
+- `pnpm run test:api` — Go tests (49 tests)
+- `pnpm run test:e2e` — Playwright (41 cases × 3 browsers = 123 total)
+- `pnpm run test:all` — web + e2e
 
-从 Platform 根目录运行: `npm run lint:web`, `npm run test:web`, `npm run build:web`.
+从 Platform 根目录运行: `pnpm run lint:web`, `pnpm run test:web`, `pnpm run build:web`.
 新建 lib 工具必须写 test。E2E 测试至少覆盖每个 workspace 页面的加载和核心用户流程。
 
 ### 3. Copy Contract 速查
@@ -113,6 +113,6 @@ const copy = WORKSPACE_COPY[locale].reports;
 ## 质量门
 
 每次 commit 前：
-- [ ] `npm run lint:web` — 0 errors
-- [ ] `npm run test:web` — all pass
-- [ ] `npm run build:web` — success (大型变更时)
+- [ ] `pnpm run lint:web` — 0 errors
+- [ ] `pnpm run test:web` — all pass
+- [ ] `pnpm run build:web` — success (大型变更时)

@@ -14,13 +14,13 @@ This note describes the public-safe audit flow exercised by the workspace.
 1. Start the Go gateway:
 
    ```powershell
-   npm run dev:api
+   pnpm run dev:api
    ```
 
 2. Start the web app:
 
    ```powershell
-   npm run dev:web
+   pnpm run dev:web
    ```
 
 3. Open `http://localhost:3000/workspace/audits`.

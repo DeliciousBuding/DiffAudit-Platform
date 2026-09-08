@@ -4,18 +4,15 @@
   "private": true,
   "license": "Apache-2.0",
   "description": "Platform shell for DiffAudit frontend and API.",
-  "workspaces": [
-    "apps/web"
-  ],
   "scripts": {
-    "dev:web": "npm --prefix apps/web run dev",
-    "build:web": "npm --prefix apps/web run build",
-    "lint:web": "npm --prefix apps/web run lint",
-    "test:web": "npm --prefix apps/web run test",
-    "test:e2e": "npm --prefix apps/web run test:e2e",
-    "test:e2e:ui": "npm --prefix apps/web run test:e2e:ui",
-    "test:e2e:chromium": "npm --prefix apps/web run test:e2e:chromium",
-    "test:all": "npm run test:web && npm run test:e2e",
+    "dev:web": "pnpm --filter web dev",
+    "build:web": "pnpm --filter web build",
+    "lint:web": "pnpm --filter web lint",
+    "test:web": "pnpm --filter web test",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "test:e2e:ui": "pnpm --filter web test:e2e:ui",
+    "test:e2e:chromium": "pnpm --filter web test:e2e:chromium",
+    "test:all": "pnpm run test:web && pnpm run test:e2e",
     "dev:api": "go -C ./apps/api-go run ./cmd/platform-api --host 127.0.0.1 --port 8780",
     "test:api": "go -C ./apps/api-go test ./...",
     "build:api": "go -C ./apps/api-go build ./cmd/platform-api",
@@ -28,5 +25,6 @@
   },
   "devDependencies": {
     "playwright": "^1.59.1"
-  }
+  },
+  "packageManager": "pnpm@10.32.1"
 }

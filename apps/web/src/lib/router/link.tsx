@@ -9,8 +9,14 @@
 import type { ComponentProps } from "react";
 import { Link as RouterLink } from "react-router";
 
-type NextLinkProps = Omit<ComponentProps<typeof RouterLink>, "to"> & {
+type NextLinkProps = Omit<ComponentProps<typeof RouterLink>, "to" | "prefetch"> & {
   href: string;
+  /**
+   * Accepted for Next `Link` API compatibility and ignored. React Router's own
+   * `prefetch` takes a descriptor string (`"intent" | "render" | ...`), so it is
+   * omitted above rather than intersected — a boolean and a string union
+   * intersect to `never`.
+   */
   prefetch?: boolean;
 };
 

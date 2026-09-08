@@ -31,15 +31,15 @@ def main() -> None:
 
     run(["python", "scripts/check_public_boundary.py"], repo_root)
     run(["python", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_*.py"], repo_root)
-    run(["npm", "--prefix", "apps/web", "run", "lint"], repo_root)
-    run(["npm", "--prefix", "apps/web", "run", "test"], repo_root)
+    run(["pnpm", "--filter", "web", "run", "lint"], repo_root)
+    run(["pnpm", "--filter", "web", "run", "test"], repo_root)
     run(["go", "-C", "./apps/api-go", "test", "./..."], repo_root)
 
     if not args.fast:
         build_dir = repo_root / "quality-gates"
         build_dir.mkdir(parents=True, exist_ok=True)
         build_name = "platform-api-check.exe" if sys.platform.startswith("win") else "platform-api-check"
-        run(["npm", "--prefix", "apps/web", "run", "build"], repo_root)
+        run(["pnpm", "--filter", "web", "run", "build"], repo_root)
         run(
             [
                 "go",

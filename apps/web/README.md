@@ -7,13 +7,13 @@
 Install dependencies from the repository root:
 
 ```powershell
-npm --prefix apps/web install
+pnpm install
 ```
 
 Start the web app:
 
 ```powershell
-npm --prefix apps/web run dev
+pnpm --filter web dev
 ```
 
 The default local URL is `http://localhost:3000`. Demo mode is enabled via `DIFFAUDIT_DEMO_MODE=1` in `.env.local`; it can render the workspace, audits, reports, and account surfaces without a live runtime.
@@ -21,11 +21,11 @@ The default local URL is `http://localhost:3000`. Demo mode is enabled via `DIFF
 ## Useful Commands
 
 ```powershell
-npm --prefix apps/web run lint
-npm --prefix apps/web run typecheck
-npm --prefix apps/web run test        # vitest
-npm --prefix apps/web run build
-npm --prefix apps/web run test:e2e    # Playwright (starts gateway + Vite)
+pnpm --filter web lint
+pnpm --filter web typecheck
+pnpm --filter web test                # vitest
+pnpm --filter web build
+pnpm --filter web test:e2e            # Playwright (starts gateway + Vite)
 ```
 
 ## Architecture

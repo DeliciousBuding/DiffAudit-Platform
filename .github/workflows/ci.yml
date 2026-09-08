@@ -20,19 +20,21 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci --include=optional
-      - run: npm run lint:web
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint:web
         name: ESLint
-      - run: cd apps/web && npx tsc --noEmit
+      - run: pnpm --filter web typecheck
         name: Type check
-      - run: npm run test:web
+      - run: pnpm run test:web
         name: Unit tests (Vitest)
-      - run: npm run build:web
+      - run: pnpm run build:web
         name: Production build
 
   backend:
@@ -76,15 +78,17 @@ jobs:
     needs: [frontend]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci --include=optional
-      - run: cd apps/web && npx playwright install --with-deps chromium
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter web exec playwright install --with-deps chromium
         name: Install Playwright browsers
-      - run: npm run test:e2e:chromium
+      - run: pnpm run test:e2e:chromium
         name: E2E tests (Chromium)
         env:
           CI: true

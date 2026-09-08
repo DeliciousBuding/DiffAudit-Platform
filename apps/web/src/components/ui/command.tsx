@@ -36,9 +36,12 @@ function CommandDialog({
   description = "Type a command or search",
   children,
   ...props
-}: React.ComponentProps<typeof Dialog> & {
+}: Omit<React.ComponentProps<typeof Dialog>, "children"> & {
   title?: string;
   description?: string;
+  // Base UI also accepts a render-function child; cmdk only renders nodes, so
+  // the palette keeps the narrower ReactNode form.
+  children?: React.ReactNode;
 }) {
   return (
     <Dialog {...props}>

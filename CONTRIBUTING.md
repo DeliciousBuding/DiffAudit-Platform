@@ -44,9 +44,9 @@ Run these checks for most changes:
 
 ```powershell
 python scripts/check_public_boundary.py
-npm --prefix apps/web run lint
-npm --prefix apps/web run test
-npm --prefix apps/web run build
+pnpm --filter web lint
+pnpm --filter web test
+pnpm --filter web build
 ```
 
 If the Go gateway changed, also run:

@@ -233,9 +233,9 @@ For code changes, run the relevant gates:
 
 ```powershell
 python scripts/check_public_boundary.py
-npm --prefix apps/web run lint
-npm --prefix apps/web run test
-npm --prefix apps/web run build
+pnpm --filter web lint
+pnpm --filter web test
+pnpm --filter web build
 go -C apps/api-go test ./...
 go -C apps/api-go build ./cmd/platform-api
 ```

@@ -1,5 +1,18 @@
 # Changelog
 
+## [2026-09-08] — pnpm Workspace Migration
+
+### Changed
+- Web dependency management moved from npm workspaces to pnpm: `pnpm-workspace.yaml` declares `apps/web`, root scripts use `pnpm --filter web …`, and `packageManager` pins the pnpm version for corepack.
+- `package-lock.json` is replaced by `pnpm-lock.yaml`. The pnpm lockfile records the optional native bindings for every platform (Tailwind oxide, rollup, esbuild — including `linux-arm64-gnu` and `linux-arm64-musl`), so the Docker build no longer has to re-resolve without a lockfile (the npm/cli#4828 arm64 workaround) and installs with `--frozen-lockfile`.
+- CI frontend and e2e jobs install through `pnpm/action-setup` with a pnpm cache; `scripts/run_local_checks.py` and `scripts/check_public_boundary.py` follow the same commands.
+
+### Fixed
+- Third-party component types were silently unresolved under npm. `@types/react` was nested in `apps/web/node_modules`, so libraries installed at the repository root could not see it and their props degraded to `any`, which made `tsc --noEmit` a false green. pnpm hoists `@types/react` to the root and exposed five real errors:
+  - `lib/router/link.tsx` intersected its own `prefetch?: boolean` with react-router's descriptor union, collapsing the prop to `never`; it now omits `prefetch` from the router props.
+  - `ui/command.tsx` forwarded Base UI's render-function `children` into cmdk, which only renders nodes; `CommandDialog` now declares `children?: React.ReactNode`.
+  - `ui/sidebar.tsx` annotated the trigger's click event as `React.MouseEvent` instead of Base UI's `BaseUIEvent`; the handler is now contextually typed.
+
 ## [2026-07-05] — Security Hardening & Docker Audit
 
 ### Added

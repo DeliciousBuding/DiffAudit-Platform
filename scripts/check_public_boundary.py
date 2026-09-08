@@ -46,7 +46,7 @@ TEXT_NAMES = {
 }
 
 SKIP_PATHS = {
-    "apps/web/package-lock.json",
+    "pnpm-lock.yaml",
     "scripts/check_public_boundary.py",
 }
 

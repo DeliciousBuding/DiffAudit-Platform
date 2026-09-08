@@ -79,17 +79,17 @@ For a full walkthrough see [docs/architecture.md](docs/architecture.md).
 ### Quick Start
 
 ```bash
-# Prerequisites: Node.js ≥20, Go ≥1.22
+# Prerequisites: Node.js ≥20 (Corepack supplies the pinned pnpm), Go ≥1.22
 
 git clone https://github.com/DeliciousBuding/DiffAudit-Platform.git
 cd DiffAudit-Platform
 
 # Install and run the web app
-npm --prefix apps/web install
-npm run dev:web              # → http://localhost:3000
+pnpm install
+pnpm run dev:web             # → http://localhost:3000
 
 # In another terminal — start the API gateway
-npm run dev:api              # → http://127.0.0.1:8780
+pnpm run dev:api             # → http://127.0.0.1:8780
 ```
 
 The frontend ships with demo data. Open `http://localhost:3000` and you'll
@@ -156,16 +156,16 @@ DiffAudit Platform 围绕三个问题提供答案：
 本地启动：
 
 ```bash
-# 前提：Node.js ≥20，Go ≥1.22
+# 前提：Node.js ≥20（Corepack 提供钉住的 pnpm），Go ≥1.22
 
 git clone https://github.com/DeliciousBuding/DiffAudit-Platform.git
 cd DiffAudit-Platform
 
-npm --prefix apps/web install
-npm run dev:web              # → http://localhost:3000
+pnpm install
+pnpm run dev:web             # → http://localhost:3000
 
 # 另开终端启动 API 网关
-npm run dev:api              # → http://127.0.0.1:8780
+pnpm run dev:api             # → http://127.0.0.1:8780
 ```
 
 前端自带演示数据，打开浏览器就能看到工作台——不需要配数据库，不需要启动运行时。
